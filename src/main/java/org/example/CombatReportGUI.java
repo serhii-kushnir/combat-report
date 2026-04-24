@@ -2,6 +2,7 @@ package org.example;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.apache.poi.xwpf.usermodel.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.AbstractDocument;
@@ -10,6 +11,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 import java.awt.*;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -33,12 +35,11 @@ public class CombatReportGUI extends JFrame {
     private File selectedFile;
     private JComboBox<String> formatCombo;
 
-    // Поля для ручного введення
-    private JTextField distanceField;  // Відстань від місця взльоту
-    private JTextField speedField;      // Швидкість цілі
+    private JTextField distanceField;
+    private JTextField speedField;
 
     public CombatReportGUI() {
-        setTitle("Конвертер бойових звітів JSON -> TXT");
+        setTitle("Конвертер бойових звітів JSON -> TXT / PDF / DOCX");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1300, 850);
         setLocationRelativeTo(null);
@@ -46,7 +47,6 @@ public class CombatReportGUI extends JFrame {
         initComponents();
     }
 
-    // Метод для обмеження введення тільки цифрами
     private void setNumericOnly(JTextField textField) {
         ((AbstractDocument) textField.getDocument()).setDocumentFilter(new DocumentFilter() {
             @Override
@@ -89,11 +89,19 @@ public class CombatReportGUI extends JFrame {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEtchedBorder());
 
-        // Панель для полів вводу (розташована ЗВЕРХУ перед кнопками)
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 8));
         inputPanel.setBorder(BorderFactory.createTitledBorder("Параметри звіту"));
 
-        // Поле для відстані
+        JLabel formatLabel = new JLabel("Формат звіту:");
+        formatLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        inputPanel.add(formatLabel);
+
+        String[] formats = {"[1] Стандартний формат", "[2] Скорочений формат (Екіпаж/Ціль)", "[3] Детальний формат (Дійсним доповідаю)"};
+        formatCombo = new JComboBox<>(formats);
+        formatCombo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        formatCombo.setPreferredSize(new Dimension(320, 28));
+        inputPanel.add(formatCombo);
+
         JLabel distanceLabel = new JLabel("Відстань від місця взльоту (м):");
         distanceLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         inputPanel.add(distanceLabel);
@@ -105,7 +113,6 @@ public class CombatReportGUI extends JFrame {
         setNumericOnly(distanceField);
         inputPanel.add(distanceField);
 
-        // Поле для швидкості
         JLabel speedLabel = new JLabel("Швидкість цілі (км/год):");
         speedLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
         inputPanel.add(speedLabel);
@@ -117,23 +124,10 @@ public class CombatReportGUI extends JFrame {
         setNumericOnly(speedField);
         inputPanel.add(speedField);
 
-        // Панель для кнопок
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
         buttonPanel.setBorder(BorderFactory.createTitledBorder("Дії"));
 
-        // Вибір формату виводу
-        JLabel formatLabel = new JLabel("Формат звіту:");
-        formatLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        buttonPanel.add(formatLabel);
-
-        String[] formats = {"[1] Стандартний формат", "[2] Скорочений формат (Екіпаж/Ціль)", "[3] Детальний формат (Дійсним доповідаю)"};
-        formatCombo = new JComboBox<>(formats);
-        formatCombo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        formatCombo.setPreferredSize(new Dimension(280, 28));
-        buttonPanel.add(formatCombo);
-
-        // Кнопка вибору файлу
-        JButton fileButton = new JButton("[+] Вибрати JSON файл");
+        JButton fileButton = new JButton("Вибрати JSON файл");
         fileButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
         fileButton.setBackground(new Color(59, 89, 182));
         fileButton.setForeground(Color.BLACK);
@@ -142,8 +136,7 @@ public class CombatReportGUI extends JFrame {
         fileButton.addActionListener(e -> chooseJsonFile());
         buttonPanel.add(fileButton);
 
-        // Кнопка конвертації
-        JButton convertButton = new JButton("[=>] Конвертувати");
+        JButton convertButton = new JButton("Конвертувати");
         convertButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
         convertButton.setBackground(new Color(0, 128, 0));
         convertButton.setForeground(Color.BLACK);
@@ -152,18 +145,7 @@ public class CombatReportGUI extends JFrame {
         convertButton.addActionListener(e -> convertToReport());
         buttonPanel.add(convertButton);
 
-        // Кнопка збереження
-        JButton saveButton = new JButton("[*] Зберегти звіт");
-        saveButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        saveButton.setBackground(new Color(255, 140, 0));
-        saveButton.setForeground(Color.BLACK);
-        saveButton.setFocusPainted(false);
-        saveButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        saveButton.addActionListener(e -> saveReport());
-        buttonPanel.add(saveButton);
-
-        // Кнопка копіювання
-        JButton copyButton = new JButton("[C] Копіювати");
+        JButton copyButton = new JButton("Копіювати");
         copyButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
         copyButton.setBackground(new Color(70, 130, 180));
         copyButton.setForeground(Color.BLACK);
@@ -172,8 +154,34 @@ public class CombatReportGUI extends JFrame {
         copyButton.addActionListener(e -> copyToClipboard());
         buttonPanel.add(copyButton);
 
-        // Кнопка очищення
-        JButton clearButton = new JButton("[X] Очистити");
+        JButton saveTxtButton = new JButton("Зберегти TXT");
+        saveTxtButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        saveTxtButton.setBackground(new Color(70, 130, 180));
+        saveTxtButton.setForeground(Color.BLACK);
+        saveTxtButton.setFocusPainted(false);
+        saveTxtButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        saveTxtButton.addActionListener(e -> saveReportAsTxt());
+        buttonPanel.add(saveTxtButton);
+
+        JButton savePdfButton = new JButton("Зберегти PDF");
+        savePdfButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        savePdfButton.setBackground(new Color(178, 34, 34));
+        savePdfButton.setForeground(Color.BLACK);
+        savePdfButton.setFocusPainted(false);
+        savePdfButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        savePdfButton.addActionListener(e -> saveReportAsPdf());
+        buttonPanel.add(savePdfButton);
+
+        JButton saveDocxButton = new JButton("Зберегти DOCX");
+        saveDocxButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        saveDocxButton.setBackground(new Color(46, 125, 50));
+        saveDocxButton.setForeground(Color.BLACK);
+        saveDocxButton.setFocusPainted(false);
+        saveDocxButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        saveDocxButton.addActionListener(e -> saveReportAsDocx());
+        buttonPanel.add(saveDocxButton);
+
+        JButton clearButton = new JButton("Очистити");
         clearButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
         clearButton.setBackground(new Color(220, 20, 60));
         clearButton.setForeground(Color.BLACK);
@@ -182,14 +190,12 @@ public class CombatReportGUI extends JFrame {
         clearButton.addActionListener(e -> clearAll());
         buttonPanel.add(clearButton);
 
-        // Панель для відображення файлу
         JPanel filePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         fileLabel = new JLabel("[Файл] Файл не вибрано");
         fileLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         fileLabel.setForeground(new Color(100, 100, 100));
         filePanel.add(fileLabel);
 
-        // Збираємо все разом
         JPanel topContainer = new JPanel(new BorderLayout());
         topContainer.add(inputPanel, BorderLayout.NORTH);
         topContainer.add(buttonPanel, BorderLayout.CENTER);
@@ -236,15 +242,13 @@ public class CombatReportGUI extends JFrame {
     private JPanel createBottomPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEtchedBorder());
-        panel.setPreferredSize(new Dimension(panel.getWidth(), 60)); // Збільшено висоту
+        panel.setPreferredSize(new Dimension(panel.getWidth(), 60));
 
-        // Ліва частина - статус
         statusLabel = new JLabel("[OK] Готовий до роботи. Виберіть JSON файл або вставте JSON вручну.");
         statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         statusLabel.setForeground(Color.BLACK);
         panel.add(statusLabel, BorderLayout.WEST);
 
-        // Права частина - авторські права
         JLabel authorLabel = new JLabel("by Serhii Kushnir");
         authorLabel.setFont(new Font("Segoe UI", Font.ITALIC, 11));
         authorLabel.setForeground(new Color(100, 100, 100));
@@ -327,7 +331,6 @@ public class CombatReportGUI extends JFrame {
     private String formatStandardReport(CombatReport report) {
         StringBuilder sb = new StringBuilder();
 
-        // Отримуємо значення з ручних полів (вже гарантовано цифри)
         int manualDistance;
         int manualSpeed;
 
@@ -343,41 +346,48 @@ public class CombatReportGUI extends JFrame {
             manualSpeed = 160;
         }
 
-        if (report.getContactTime() != null) {
-            sb.append(report.getContactTime()
+        String takeoffTime = "";
+        String lossTime = "";
+        String reportDate = "";
+
+        if (report.getTakeoffTime() != null) {
+            takeoffTime = report.getTakeoffTime()
                     .atZone(ZoneId.of("UTC"))
-                    .format(DATE_FORMATTER)).append("\n");
+                    .format(TIME_FORMATTER);
+        }
+
+        if (report.getContactTime() != null) {
+            reportDate = report.getContactTime()
+                    .atZone(ZoneId.of("UTC"))
+                    .format(DATE_FORMATTER);
+            lossTime = report.getContactTime()
+                    .atZone(ZoneId.of("UTC"))
+                    .format(TIME_FORMATTER);
+        } else {
+            reportDate = java.time.LocalDate.now().format(DATE_FORMATTER);
+            lossTime = java.time.LocalTime.now().format(TIME_FORMATTER);
+        }
+
+        if (!reportDate.isEmpty()) {
+            sb.append(reportDate).append("\n");
         }
 
         sb.append("Екіпаж: ").append(report.getUnitName()).append("\n");
 
-        // Втрата борту - беремо з effectorStatus
         String effectorStatus = report.getEffectorStatus() != null ? report.getEffectorStatus() : "";
         sb.append(effectorStatus).append("\n");
 
         sb.append("\n");
 
-        if (report.getTakeoffTime() != null) {
-            sb.append("Час взльоту: ").append(report.getTakeoffTime()
-                    .atZone(ZoneId.of("UTC"))
-                    .format(TIME_FORMATTER)).append("\n");
-        }
-
-        if (report.getContactTime() != null) {
-            sb.append("Втрата борту: ").append(report.getContactTime()
-                    .atZone(ZoneId.of("UTC"))
-                    .format(TIME_FORMATTER)).append("\n");
-        }
+        sb.append("Час: ").append(takeoffTime).append(" - ").append(lossTime).append("\n");
 
         String coordinates = convertMgrsToLatLon(report.getCoordinates());
         sb.append("Координати: ").append(coordinates).append("\n");
 
-        // Відстань - беремо з ручного поля
         sb.append("Відстань від місця взльоту: ").append(manualDistance).append(" м\n");
 
         sb.append("Тип: ").append(report.getTargetType()).append("\n");
 
-        // Ідентифікація: ЗАВЖДИ "Дружній"
         sb.append("Ідентифікація: Дружній\n");
 
         String weapon = report.getWeaponId() != null ?
@@ -388,7 +398,6 @@ public class CombatReportGUI extends JFrame {
         sb.append("Вибухівка: ШИФР «3-1.2 КУФ» 1.2 кг (8g 35m H)\n");
         sb.append("Детонатор: Вбудована розумна плата ініціації.\n");
 
-        // ========== ПРИМІТКА ==========
         String unitName = report.getUnitName() != null ? report.getUnitName() : "";
         String militaryUnit = report.getMilitaryUnit() != null ? report.getMilitaryUnit() : "";
         String geoMarker = report.getGeoMarker() != null ? report.getGeoMarker() : "";
@@ -403,7 +412,6 @@ public class CombatReportGUI extends JFrame {
                 .append(", ").append(effectorStatusForNote)
                 .append(", ").append(effectorLossReason).append("\n");
 
-        // ========== ВИСОТА ТА ЦІЛЬ ==========
         int altitude = report.getAltitude() != 0 ? report.getAltitude() : 500;
         String targetSubType = report.getTargetSubType() != null ? report.getTargetSubType() : "Інший";
         int targetNum = report.getTargetNumberVirazh() != 0 ? report.getTargetNumberVirazh() : 0;
@@ -473,7 +481,6 @@ public class CombatReportGUI extends JFrame {
     private String formatDetailedReport(CombatReport report) {
         StringBuilder sb = new StringBuilder();
 
-        // Отримуємо дані з JSON
         String unitName = report.getUnitName() != null ? report.getUnitName() : "";
         String militaryUnit = report.getMilitaryUnit() != null ? report.getMilitaryUnit() : "";
         String geoMarker = report.getGeoMarker() != null ? report.getGeoMarker() : "Одеса";
@@ -482,13 +489,11 @@ public class CombatReportGUI extends JFrame {
         String weaponNumber = report.getWeaponNumber() != null ? report.getWeaponNumber() : "";
         String effectorLossReason = report.getEffectorLossReason() != null ? report.getEffectorLossReason() : "";
 
-        // Визначаємо, чи ціль вражена на основі effectorLossReason
         boolean targetDestroyed = effectorLossReason.toLowerCase().contains("успішне") ||
                 effectorLossReason.toLowerCase().contains("вражена") ||
                 effectorLossReason.toLowerCase().contains("знищ") ||
                 effectorLossReason.toLowerCase().contains("камікадзе");
 
-        // Отримуємо дату та час з JSON
         String reportDate;
         String takeoffTime = "";
         String contactTime = "";
@@ -513,11 +518,10 @@ public class CombatReportGUI extends JFrame {
             takeoffTime = contactTime;
         }
 
-        // Виправляємо назву області (Одесаської -> Одеської)
         String regionName = geoMarker.equals("Одеса") ? "Одеської" : geoMarker + "ської";
+        String targetResult = targetDestroyed ? "вражена" : "не вражена";
 
-        // ========== ДЕТАЛЬНИЙ ЗВІТ ==========
-        sb.append("    Дійсним доповідаю що ").append(reportDate)
+        sb.append("Дійсним доповідаю, що ").append(reportDate)
                 .append(" в ").append(takeoffTime)
                 .append(" в районі м.").append(geoMarker)
                 .append(", ").append(regionName).append(" області, екіпаж «").append(unitName.toUpperCase())
@@ -528,15 +532,7 @@ public class CombatReportGUI extends JFrame {
                 .append(reportDate).append(" в ").append(contactTime)
                 .append(" БпЛА Merops (нічний) зав. номер № ").append(weaponNumber)
                 .append(" споряджений тротиловою шашкою КУФ 1200 грам, та вбудованою розумною платою ініціації був витрачений в результаті контрольованого підриву для знищення повітряної цілі №").append(targetNumber)
-                .append(" (БПЛА противника типу ").append(targetSubType).append("), ціль ");
-
-        if (targetDestroyed) {
-            sb.append("вражена.");
-        } else {
-            sb.append("не вражена.");
-        }
-
-        sb.append("\n");
+                .append(" (БПЛА противника типу ").append(targetSubType).append("), ціль ").append(targetResult).append(".");
 
         return sb.toString();
     }
@@ -551,7 +547,7 @@ public class CombatReportGUI extends JFrame {
         return "46.1508854, 30.873441";
     }
 
-    private void saveReport() {
+    private void saveReportAsTxt() {
         String report = outputArea.getText().trim();
 
         if (report.isEmpty()) {
@@ -562,10 +558,11 @@ public class CombatReportGUI extends JFrame {
         }
 
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Зберегти звіт");
+        fileChooser.setDialogTitle("Зберегти TXT звіт");
         fileChooser.setFileFilter(new FileNameExtensionFilter("Текстові файли (*.txt)", "txt"));
 
-        String suffix = formatCombo.getSelectedIndex() == 0 ? "_report" : "_short_report";
+        String suffix = formatCombo.getSelectedIndex() == 0 ? "_report" :
+                (formatCombo.getSelectedIndex() == 1 ? "_short_report" : "_detailed_report");
         if (selectedFile != null) {
             String defaultName = selectedFile.getName().replace(".json", suffix + ".txt");
             fileChooser.setSelectedFile(new File(defaultName));
@@ -582,9 +579,9 @@ public class CombatReportGUI extends JFrame {
 
             try {
                 Files.writeString(saveFile.toPath(), report, StandardCharsets.UTF_8);
-                statusLabel.setText("[OK] Звіт збережено: " + saveFile.getName());
+                statusLabel.setText("[OK] TXT звіт збережено: " + saveFile.getName());
                 JOptionPane.showMessageDialog(this,
-                        "Звіт успішно збережено!\n" + saveFile.getAbsolutePath(),
+                        "TXT звіт успішно збережено!\n" + saveFile.getAbsolutePath(),
                         "Збережено", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException e) {
                 statusLabel.setText("[X] Помилка збереження: " + e.getMessage());
@@ -612,6 +609,241 @@ public class CombatReportGUI extends JFrame {
         JOptionPane.showMessageDialog(this,
                 "Звіт скопійовано в буфер обміну!",
                 "Скопійовано", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void saveReportAsPdf() {
+        String reportText = outputArea.getText().trim();
+
+        if (reportText.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Немає даних для збереження. Спочатку виконайте конвертацію.",
+                    "Помилка", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        JOptionPane.showMessageDialog(this,
+                "Функція експорту в PDF знаходиться в розробці.\n" +
+                        "Будь ласка, використовуйте експорт у DOCX або TXT.",
+                "У розробці", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void saveReportAsDocx() {
+        String reportText = outputArea.getText().trim();
+
+        if (reportText.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Немає даних для збереження. Спочатку виконайте конвертацію.",
+                    "Помилка", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        CombatReport report = null;
+        String jsonText = inputArea.getText().trim();
+        if (!jsonText.isEmpty()) {
+            try {
+                report = objectMapper.readValue(jsonText, CombatReport.class);
+            } catch (Exception e) {
+                // Не вдалося розпарсити JSON
+            }
+        }
+
+        String fullReport;
+        if (report != null && formatCombo.getSelectedIndex() == 2) {
+            fullReport = formatFullReportWithSignatures(report, reportText);
+        } else {
+            fullReport = reportText;
+        }
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Зберегти DOCX звіт");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Word документи (*.docx)", "docx"));
+
+        String suffix = formatCombo.getSelectedIndex() == 0 ? "_report" :
+                (formatCombo.getSelectedIndex() == 1 ? "_short_report" : "_detailed_report");
+        if (selectedFile != null) {
+            String defaultName = selectedFile.getName().replace(".json", suffix + ".docx");
+            fileChooser.setSelectedFile(new File(defaultName));
+        } else {
+            fileChooser.setSelectedFile(new File("combat" + suffix + ".docx"));
+        }
+
+        int result = fileChooser.showSaveDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File saveFile = fileChooser.getSelectedFile();
+            if (!saveFile.getName().endsWith(".docx")) {
+                saveFile = new File(saveFile.getAbsolutePath() + ".docx");
+            }
+
+            try {
+                createDocx(saveFile, fullReport);
+                statusLabel.setText("[OK] DOCX звіт збережено: " + saveFile.getName());
+                JOptionPane.showMessageDialog(this,
+                        "DOCX звіт успішно збережено!\n" + saveFile.getAbsolutePath(),
+                        "Збережено", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e) {
+                statusLabel.setText("[X] Помилка створення DOCX: " + e.getMessage());
+                JOptionPane.showMessageDialog(this,
+                        "Помилка створення DOCX файлу:\n" + e.getMessage(),
+                        "Помилка", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private String formatFullReportWithSignatures(CombatReport report, String reportText) {
+        StringBuilder sb = new StringBuilder();
+
+        String unitName = report.getUnitName() != null ? report.getUnitName() : "СКОПА";
+        String militaryUnit = report.getMilitaryUnit() != null ? report.getMilitaryUnit() : "А0826";
+        String weaponNumber = report.getWeaponNumber() != null ? report.getWeaponNumber() : "e9-36-dd";
+        String targetNumber = report.getTargetNumberVirazh() != 0 ? String.valueOf(report.getTargetNumberVirazh()) : "8217";
+        String targetSubType = report.getTargetSubType() != null ? report.getTargetSubType() : "Шахед (Герань)";
+        String geoMarker = report.getGeoMarker() != null ? report.getGeoMarker() : "Одеса";
+        String effectorLossReason = report.getEffectorLossReason() != null ? report.getEffectorLossReason() : "";
+
+        boolean targetDestroyed = effectorLossReason.toLowerCase().contains("успішне") ||
+                effectorLossReason.toLowerCase().contains("вражена") ||
+                effectorLossReason.toLowerCase().contains("знищ") ||
+                effectorLossReason.toLowerCase().contains("камікадзе");
+
+        String reportDate;
+        String takeoffTime = "";
+        String contactTime = "";
+
+        if (report.getContactTime() != null) {
+            reportDate = report.getContactTime()
+                    .atZone(ZoneId.of("UTC"))
+                    .format(DATE_FORMATTER);
+            contactTime = report.getContactTime()
+                    .atZone(ZoneId.of("UTC"))
+                    .format(TIME_FORMATTER);
+        } else {
+            reportDate = java.time.LocalDate.now().format(DATE_FORMATTER);
+            contactTime = java.time.LocalTime.now().format(TIME_FORMATTER);
+        }
+
+        if (report.getTakeoffTime() != null) {
+            takeoffTime = report.getTakeoffTime()
+                    .atZone(ZoneId.of("UTC"))
+                    .format(TIME_FORMATTER);
+        } else {
+            takeoffTime = contactTime;
+        }
+
+        String regionName = geoMarker.equals("Одеса") ? "Одеської" : geoMarker + "ської";
+        String targetResult = targetDestroyed ? "вражена" : "не вражена";
+
+        // Заголовок - вирівняний вправо
+        sb.append("Командиру взводу перехоплювачів безпілотних літальних апаратів військової частини А0826\n\n\n");
+
+        // Рапорт - по центру
+        sb.append("Рапорт\n\n");
+
+        // Текст рапорту - один суцільний рядок з табуляцією на початку
+        sb.append("\tДійсним доповідаю, що ").append(reportDate)  // кома після "що"
+                .append(" о ").append(takeoffTime)  // "в" -> "о"
+                .append(" в районі м.").append(geoMarker)
+                .append(", ").append(regionName).append(" області, екіпаж «").append(unitName.toUpperCase())
+                .append("» військової частини ").append(militaryUnit)
+                .append(" здійснив пуск БпЛА Merops (нічний) зав. номер № ").append(weaponNumber)
+                .append(" спорядженого тротиловою шашкою КУФ 1200 грам, та вбудованою розумною платою ініціації для виконання бойового завдання з перехоплення повітряної цілі №").append(targetNumber)  // "по перехопленню" -> "з перехоплення"
+                .append(" (БПЛА противника типу ").append(targetSubType).append("). ")
+                .append(reportDate).append(" о ").append(contactTime)  // "в" -> "о"
+                .append(" БпЛА Merops (нічний) зав. номер № ").append(weaponNumber)
+                .append(" споряджений тротиловою шашкою КУФ 1200 грам, та вбудованою розумною платою ініціації був витрачений у результаті контрольованого підриву для знищення повітряної цілі №").append(targetNumber)  // "в результаті" -> "у результаті"
+                .append(" (БПЛА противника типу ").append(targetSubType).append("), ціль ").append(targetResult).append(".\n\n");
+
+        // Пілот - за шириною
+        sb.append("Пілот:\n");
+        sb.append("Оператор безпілотних літальних апаратів екіпажу безпілотного авіаційного комплексу\n");
+        sb.append("взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
+        sb.append("солдат                                                                                                           Костянтин БИТКА\n");
+        sb.append(reportDate).append(" р.\n\n");
+
+        // Командир екіпажу - за шириною
+        sb.append("Командир екіпажу:\n");
+        sb.append("Командир екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
+        sb.append("старший сержант                                                                                    Олександр ШЕПРУК\n");
+        sb.append(reportDate).append(" р.\n\n\n\n");
+
+        // Начальнику - за шириною
+        sb.append("Начальнику позаштатної служби безпілотних авіаційних комплексів військової частини А1620\n\n");
+
+        // Рапорт
+        sb.append("Рапорт\n\n");
+
+        // Клопочу - по центру
+        sb.append("Клопочу по суті рапорту пілота солдата Костянтина БИТКА\n\n");
+
+        // Командир взводу - за шириною
+        sb.append("Командир взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
+        sb.append("старший лейтенант                                                                                    Микола САВЕНКО\n");
+        sb.append(reportDate).append(" р.\n");
+
+        return sb.toString();
+    }
+
+    private void createDocx(File file, String text) throws Exception {
+        XWPFDocument document = new XWPFDocument();
+
+        String[] lines = text.split("\n");
+
+        for (String line : lines) {
+            XWPFParagraph paragraph = document.createParagraph();
+
+            // Встановлюємо інтервал 0 (без відступів між рядками)
+            paragraph.setSpacingBefore(0);
+            paragraph.setSpacingAfter(0);
+
+            // Відступ зліва для рядка командиру
+            if (line.contains("Командиру взводу перехоплювачів безпілотних літальних апаратів військової частини А0826")) {
+                paragraph.setIndentationLeft(5400);
+                paragraph.setAlignment(ParagraphAlignment.LEFT);
+            }
+
+            // Відступ зліва для рядка начальнику
+            if (line.contains("Начальнику позаштатної служби безпілотних авіаційних комплексів військової частини А1620")) {
+                paragraph.setIndentationLeft(5400);
+                paragraph.setAlignment(ParagraphAlignment.LEFT);
+            }
+
+            // Вирівнювання для заголовка (вправо)
+            if (line.contains("Командир взводу перехоплювачів") && !line.contains("Клопочу") && !line.contains("військової частини")) {
+                paragraph.setAlignment(ParagraphAlignment.RIGHT);
+            }
+
+            // "Рапорт" по центру
+            if (line.trim().equals("Рапорт") && !line.contains("Клопочу")) {
+                paragraph.setAlignment(ParagraphAlignment.CENTER);
+            }
+
+            // "Клопочу" по центру
+            if (line.contains("Клопочу по суті")) {
+                paragraph.setAlignment(ParagraphAlignment.CENTER);
+            }
+
+            // Вирівнювання по ширині для абзаців Пілот, Командир екіпажу
+            if (line.contains("Пілот:") || line.contains("Оператор безпілотних") ||
+                    line.contains("взводу перехоплювачів безпілотних") ||
+                    line.contains("\tДійсним доповідаю") ||
+                    line.contains("Командир екіпажу:") || line.contains("Командир екіпажу безпілотних") ||
+                    line.contains("Начальнику позаштатної") || line.contains("Командир взводу взводу")) {
+                paragraph.setAlignment(ParagraphAlignment.BOTH);
+            }
+
+            XWPFRun run = paragraph.createRun();
+            run.setFontFamily("Times New Roman");
+            run.setFontSize(12);
+
+            // ========== ВСТАНОВЛЮЄМО УКРАЇНСЬКУ МОВУ ДЛЯ ПЕРЕВІРКИ ПРАВОПИСУ ==========
+            run.setLang("uk-UA");
+
+            run.setText(line);
+        }
+
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            document.write(out);
+        }
+        document.close();
     }
 
     private void clearAll() {
