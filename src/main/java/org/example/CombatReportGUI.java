@@ -34,6 +34,7 @@ public class CombatReportGUI extends JFrame {
     private JLabel fileLabel;
     private File selectedFile;
     private JComboBox<String> formatCombo;
+    private JComboBox<String> pilotCombo;  // Комбобокс для вибору пілота
 
     private JTextField distanceField;
     private JTextField speedField;
@@ -101,6 +102,18 @@ public class CombatReportGUI extends JFrame {
         formatCombo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         formatCombo.setPreferredSize(new Dimension(320, 28));
         inputPanel.add(formatCombo);
+
+        // ========== ВИБІР ПІЛОТА ==========
+        JLabel pilotLabel = new JLabel("Пілот:");
+        pilotLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        inputPanel.add(pilotLabel);
+
+        String[] pilots = {"Костянтин БИТКА", "Ярослав НАГОРНИЙ"};
+        pilotCombo = new JComboBox<>(pilots);
+        pilotCombo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        pilotCombo.setPreferredSize(new Dimension(180, 28));
+        inputPanel.add(pilotCombo);
+        // ================================
 
         JLabel distanceLabel = new JLabel("Відстань від місця взльоту (м):");
         distanceLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -522,14 +535,14 @@ public class CombatReportGUI extends JFrame {
         String targetResult = targetDestroyed ? "вражена" : "не вражена";
 
         sb.append("Дійсним доповідаю, що ").append(reportDate)
-                .append(" в ").append(takeoffTime)
-                .append(" в районі м.").append(geoMarker)
+                .append(" о ").append(takeoffTime)
+                .append(" в районі м. ").append(geoMarker)
                 .append(", ").append(regionName).append(" області, екіпаж «").append(unitName.toUpperCase())
                 .append("» військової частини ").append(militaryUnit)
                 .append(" здійснив пуск БпЛА Merops (нічний) зав. номер № ").append(weaponNumber)
                 .append(" спорядженого тротиловою шашкою КУФ 1200 грам, та вбудованою розумною платою ініціації для виконання бойового завдання по перехопленню повітряної цілі №").append(targetNumber)
                 .append(" (БПЛА противника типу ").append(targetSubType).append("). ")
-                .append(reportDate).append(" в ").append(contactTime)
+                .append(reportDate).append(" о ").append(contactTime)
                 .append(" БпЛА Merops (нічний) зав. номер № ").append(weaponNumber)
                 .append(" споряджений тротиловою шашкою КУФ 1200 грам, та вбудованою розумною платою ініціації був витрачений в результаті контрольованого підриву для знищення повітряної цілі №").append(targetNumber)
                 .append(" (БПЛА противника типу ").append(targetSubType).append("), ціль ").append(targetResult).append(".");
@@ -692,6 +705,12 @@ public class CombatReportGUI extends JFrame {
     private String formatFullReportWithSignatures(CombatReport report, String reportText) {
         StringBuilder sb = new StringBuilder();
 
+        // Отримуємо вибраного пілота з комбобоксу
+        String selectedPilot = (String) pilotCombo.getSelectedItem();
+        if (selectedPilot == null) {
+            selectedPilot = "Костянтин БИТКА";
+        }
+
         String unitName = report.getUnitName() != null ? report.getUnitName() : "СКОПА";
         String militaryUnit = report.getMilitaryUnit() != null ? report.getMilitaryUnit() : "А0826";
         String weaponNumber = report.getWeaponNumber() != null ? report.getWeaponNumber() : "e9-36-dd";
@@ -732,49 +751,53 @@ public class CombatReportGUI extends JFrame {
         String regionName = geoMarker.equals("Одеса") ? "Одеської" : geoMarker + "ської";
         String targetResult = targetDestroyed ? "вражена" : "не вражена";
 
-        // Заголовок - вирівняний вправо
+        // Заголовок
         sb.append("Командиру взводу перехоплювачів безпілотних літальних апаратів військової частини А0826\n\n\n");
-
-        // Рапорт - по центру
         sb.append("Рапорт\n\n");
 
-        // Текст рапорту - один суцільний рядок з табуляцією на початку
-        sb.append("\tДійсним доповідаю, що ").append(reportDate)  // кома після "що"
-                .append(" о ").append(takeoffTime)  // "в" -> "о"
-                .append(" в районі м.").append(geoMarker)
+        // Текст рапорту
+        sb.append("\tДійсним доповідаю, що ").append(reportDate)
+                .append(" о ").append(takeoffTime)
+                .append(" в районі м. ").append(geoMarker)
                 .append(", ").append(regionName).append(" області, екіпаж «").append(unitName.toUpperCase())
                 .append("» військової частини ").append(militaryUnit)
                 .append(" здійснив пуск БпЛА Merops (нічний) зав. номер № ").append(weaponNumber)
-                .append(" спорядженого тротиловою шашкою КУФ 1200 грам, та вбудованою розумною платою ініціації для виконання бойового завдання з перехоплення повітряної цілі №").append(targetNumber)  // "по перехопленню" -> "з перехоплення"
+                .append(" спорядженого тротиловою шашкою КУФ 1200 грам, та вбудованою розумною платою ініціації для виконання бойового завдання з перехоплення повітряної цілі №").append(targetNumber)
                 .append(" (БПЛА противника типу ").append(targetSubType).append("). ")
-                .append(reportDate).append(" о ").append(contactTime)  // "в" -> "о"
+                .append(reportDate).append(" о ").append(contactTime)
                 .append(" БпЛА Merops (нічний) зав. номер № ").append(weaponNumber)
-                .append(" споряджений тротиловою шашкою КУФ 1200 грам, та вбудованою розумною платою ініціації був витрачений у результаті контрольованого підриву для знищення повітряної цілі №").append(targetNumber)  // "в результаті" -> "у результаті"
+                .append(" споряджений тротиловою шашкою КУФ 1200 грам, та вбудованою розумною платою ініціації був витрачений у результаті контрольованого підриву для знищення повітряної цілі №").append(targetNumber)
                 .append(" (БПЛА противника типу ").append(targetSubType).append("), ціль ").append(targetResult).append(".\n\n");
 
-        // Пілот - за шириною
+        // Пілот - з динамічним званням
         sb.append("Пілот:\n");
         sb.append("Оператор безпілотних літальних апаратів екіпажу безпілотного авіаційного комплексу\n");
         sb.append("взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
-        sb.append("солдат                                                                                                           Костянтин БИТКА\n");
+
+        // Додаємо звання та ім'я залежно від вибраного пілота
+        if (selectedPilot.equals("Костянтин БИТКА")) {
+            sb.append("солдат                                                                                                           Костянтин БИТКА\n");
+        } else {
+            sb.append("старший солдат                                                                                      Ярослав НАГОРНИЙ\n");
+        }
         sb.append(reportDate).append(" р.\n\n");
 
-        // Командир екіпажу - за шириною
+        // Командир екіпажу
         sb.append("Командир екіпажу:\n");
         sb.append("Командир екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
         sb.append("старший сержант                                                                                    Олександр ШЕПРУК\n");
         sb.append(reportDate).append(" р.\n\n\n\n");
 
-        // Начальнику - за шириною
+        // Начальнику
         sb.append("Начальнику позаштатної служби безпілотних авіаційних комплексів військової частини А1620\n\n");
 
         // Рапорт
         sb.append("Рапорт\n\n");
 
-        // Клопочу - по центру
-        sb.append("Клопочу по суті рапорту пілота солдата Костянтина БИТКА\n\n");
+        // Клопочу
+        sb.append("Клопочу по суті рапорту пілота ").append(selectedPilot.equals("Костянтин БИТКА") ? "солдата Костянтина БИТКА" : "старшого солдата Ярослава НАГОРНОГО").append("\n\n");
 
-        // Командир взводу - за шириною
+        // Командир взводу
         sb.append("Командир взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
         sb.append("старший лейтенант                                                                                    Микола САВЕНКО\n");
         sb.append(reportDate).append(" р.\n");
@@ -795,19 +818,19 @@ public class CombatReportGUI extends JFrame {
             paragraph.setSpacingAfter(0);
 
             // Відступ зліва для рядка командиру
-            if (line.contains("Командиру взводу перехоплювачів безпілотних літальних апаратів військової частини А0826")) {
+            if (line.contains("Командиру взводу перехоплювачів")) {
                 paragraph.setIndentationLeft(5400);
                 paragraph.setAlignment(ParagraphAlignment.LEFT);
             }
 
             // Відступ зліва для рядка начальнику
-            if (line.contains("Начальнику позаштатної служби безпілотних авіаційних комплексів військової частини А1620")) {
+            if (line.contains("Начальнику позаштатної служби")) {
                 paragraph.setIndentationLeft(5400);
                 paragraph.setAlignment(ParagraphAlignment.LEFT);
             }
 
             // Вирівнювання для заголовка (вправо)
-            if (line.contains("Командир взводу перехоплювачів") && !line.contains("Клопочу") && !line.contains("військової частини")) {
+            if (line.contains("Командир взводу перехоплювачів") && !line.contains("Клопочу") && !line.contains("військової частини") && !line.contains("Командиру")) {
                 paragraph.setAlignment(ParagraphAlignment.RIGHT);
             }
 
@@ -821,22 +844,19 @@ public class CombatReportGUI extends JFrame {
                 paragraph.setAlignment(ParagraphAlignment.CENTER);
             }
 
-            // Вирівнювання по ширині для абзаців Пілот, Командир екіпажу
+            // Вирівнювання по ширині
             if (line.contains("Пілот:") || line.contains("Оператор безпілотних") ||
                     line.contains("взводу перехоплювачів безпілотних") ||
                     line.contains("\tДійсним доповідаю") ||
                     line.contains("Командир екіпажу:") || line.contains("Командир екіпажу безпілотних") ||
-                    line.contains("Начальнику позаштатної") || line.contains("Командир взводу взводу")) {
+                    line.contains("Начальнику позаштатної") || line.contains("Командир взводу перехоплювачів") && line.contains("військової частини") && !line.contains("Командиру")) {
                 paragraph.setAlignment(ParagraphAlignment.BOTH);
             }
 
             XWPFRun run = paragraph.createRun();
             run.setFontFamily("Times New Roman");
             run.setFontSize(12);
-
-            // ========== ВСТАНОВЛЮЄМО УКРАЇНСЬКУ МОВУ ДЛЯ ПЕРЕВІРКИ ПРАВОПИСУ ==========
             run.setLang("uk-UA");
-
             run.setText(line);
         }
 
@@ -859,6 +879,7 @@ public class CombatReportGUI extends JFrame {
             statusLabel.setText("[OK] Всі поля очищено.");
             distanceField.setText("10000");
             speedField.setText("160");
+            pilotCombo.setSelectedIndex(0);
         }
     }
 
