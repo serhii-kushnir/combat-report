@@ -176,15 +176,6 @@ public class CombatReportGUI extends JFrame {
         saveTxtButton.addActionListener(e -> saveReportAsTxt());
         buttonPanel.add(saveTxtButton);
 
-        JButton savePdfButton = new JButton("Зберегти PDF");
-        savePdfButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        savePdfButton.setBackground(new Color(178, 34, 34));
-        savePdfButton.setForeground(Color.BLACK);
-        savePdfButton.setFocusPainted(false);
-        savePdfButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        savePdfButton.addActionListener(e -> saveReportAsPdf());
-        buttonPanel.add(savePdfButton);
-
         JButton saveDocxButton = new JButton("Зберегти DOCX");
         saveDocxButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
         saveDocxButton.setBackground(new Color(46, 125, 50));
@@ -622,22 +613,6 @@ public class CombatReportGUI extends JFrame {
         JOptionPane.showMessageDialog(this,
                 "Звіт скопійовано в буфер обміну!",
                 "Скопійовано", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private void saveReportAsPdf() {
-        String reportText = outputArea.getText().trim();
-
-        if (reportText.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Немає даних для збереження. Спочатку виконайте конвертацію.",
-                    "Помилка", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        JOptionPane.showMessageDialog(this,
-                "Функція експорту в PDF знаходиться в розробці.\n" +
-                        "Будь ласка, використовуйте експорт у DOCX або TXT.",
-                "У розробці", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void saveReportAsDocx() {
