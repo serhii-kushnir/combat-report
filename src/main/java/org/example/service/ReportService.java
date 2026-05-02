@@ -35,8 +35,8 @@ public class ReportService {
         TARGET_TYPE_MAPPINGS.put("Shahed (Geran)", "Шахід");
         TARGET_TYPE_MAPPINGS.put("шахед", "Шахід");
         TARGET_TYPE_MAPPINGS.put("SHAHED", "Шахід");
-        TARGET_TYPE_MAPPINGS.put("БПЛА - крило", "БпЛА крило");
-        TARGET_TYPE_MAPPINGS.put("БПЛА крило", "БпЛА крило");
+        TARGET_TYPE_MAPPINGS.put("БпЛА - крило", "БпЛА крило");
+        TARGET_TYPE_MAPPINGS.put("БпЛА крило", "БпЛА крило");
         TARGET_TYPE_MAPPINGS.put("Крилата ракета", "КР");
         TARGET_TYPE_MAPPINGS.put("Крилата ракета (КР)", "КР");
         TARGET_TYPE_MAPPINGS.put("Балістична ракета", "БР");
@@ -92,6 +92,7 @@ public class ReportService {
         String takeoffTime = "";
         String lossTime = "";
         String reportDate = "";
+        String weaponNumber = report.getWeaponNumber() != null ? report.getWeaponNumber() : "";
 
         if (report.getTakeoffTime() != null) {
             takeoffTime = report.getTakeoffTime().format(TIME_FORMATTER);
@@ -119,7 +120,7 @@ public class ReportService {
 
         String coordinates = report.getCoordinates();
         if (coordinates == null || coordinates.isEmpty()) {
-            coordinates = "36TUS3097308507";
+            coordinates = "";
         }
         sb.append("Координати: ").append(coordinates).append("\n");
         sb.append("Відстань від місця взльоту: ").append(manualDistance).append(" м\n");
@@ -128,9 +129,9 @@ public class ReportService {
 
         String weapon = extractWeaponName(report.getWeaponId());
         sb.append("Засіб ураження: ").append(weapon)
-                .append(" ").append(report.getWeaponNumber()).append("\n");
+                .append(" (нічний) \"").append(weaponNumber.toUpperCase()).append("\"").append("\n");
 
-        sb.append("Вибухівка: ШИФР «3-1.2 КУФ» 1.2 кг (8g 35m H)\n");
+        sb.append("Вибухівка: ШИФР «3-1.2 КУФ» 1,2 кг\n");
         sb.append("Детонатор: Вбудована розумна плата ініціації.\n");
 
         String unitName = report.getUnitName() != null ? report.getUnitName() : "";
@@ -141,11 +142,10 @@ public class ReportService {
         String effectorLossReason = report.getEffectorLossReason() != null ? report.getEffectorLossReason() : "";
 
         sb.append("Примітка: Екіпажем ").append("\"").append(unitName).append("\"")
-                .append(" ").append(militaryUnit)
-                .append(", який виконує завдання ведення повітряної розвідки та ураження противника в смузі відповідальності ОТУ ").append(geoMarker)
-                .append(", дроном - камікадзе ").append("\"").append(weapon).append("\"").append(" було здійснено виліт з метою ураження ворожого ударного дрона №").append(targetNumber)
-                .append(", ").append(effectorStatusForNote)
-                .append(", ").append(effectorLossReason).append("\n");
+                .append(" в/ч ").append(militaryUnit)
+                .append(", який виконує завдання ведення повітряної розвідки та ураження противника в смузі відповідальності ОТУ м. Одеса").append(" здійснено виліт дроном-камікадзе ").append("\"").append(weapon).append(" (нічний)\"").append(" з метою ураження ворожого ударного дрона №").append(targetNumber)
+                .append(". ").append(effectorStatusForNote)
+                .append(", ").append(effectorLossReason.toLowerCase()).append("\n");
 
         int altitude = report.getAltitude() != 0 ? report.getAltitude() : 500;
         String targetSubTypeDisplay = getTargetTypeDisplay(report);
@@ -153,7 +153,7 @@ public class ReportService {
 
         sb.append("Висота: ").append(altitude).append("м, ціль ").append("\"").append(targetSubTypeDisplay).append("\"");
         if (targetNum != 0) {
-            sb.append(" ").append("\"№").append(targetNum).append(" (по віражу)").append("\"");
+            sb.append(" ").append("№").append(targetNum).append(" (по віражу)");
         }
         sb.append(", швидкість цілі: ").append(manualSpeed).append(" км/год.");
 
@@ -164,32 +164,37 @@ public class ReportService {
     public String formatShortReport(CombatReport report) {
         StringBuilder sb = new StringBuilder();
 
+        String weaponNumber = report.getWeaponNumber() != null ? report.getWeaponNumber() : "";
+
         sb.append("Екіпаж: ").append(report.getUnitName()).append("\n");
+
+        String effectorStatus = report.getEffectorStatus() != null ? report.getEffectorStatus() : "";
+        sb.append(effectorStatus).append("\n");
 
         if (report.getTakeoffTime() != null) {
             sb.append("Час вильоту: ").append(report.getTakeoffTime().format(TIME_FORMATTER)).append("\n");
         }
 
         if (report.getContactTime() != null) {
-            sb.append("Час підриву по цілі: ").append(report.getContactTime().format(TIME_FORMATTER)).append("\n");
+            sb.append("Час підриву: ").append(report.getContactTime().format(TIME_FORMATTER)).append("\n");
         }
 
         String region = report.getGeoMarker() != null && !report.getGeoMarker().isEmpty()
                 ? report.getGeoMarker() : "Невідомо";
-        sb.append("Район підриву по цілі: ").append(region).append("\n");
+        sb.append("Район підриву: Море").append("\n");
 
         String coordinates = report.getCoordinates();
         if (coordinates == null || coordinates.isEmpty()) {
-            coordinates = "36TUS3097308507";
+            coordinates = "";
         }
-        sb.append("Приблизні координати підриву по цілі: ").append(coordinates).append("\n");
+        sb.append("Приблизні координати підриву: ").append(coordinates).append("\n");
 
         sb.append("Тип цілі: ").append(getTargetTypeDisplay(report)).append("\n");
         sb.append("Висота цілі: ").append(report.getAltitude()).append(" метрів\n");
 
         String weapon = extractWeaponName(report.getWeaponId());
         sb.append("Засіб ураження: ").append(weapon)
-                .append(" ").append(report.getWeaponNumber()).append("\n");
+                .append(" (нічний) \"").append(weaponNumber.toUpperCase()).append("\"").append("\n");
 
         sb.append("Номер цілі по Віражу: ").append(report.getTargetNumberVirazh()).append("\n");
 
@@ -245,35 +250,42 @@ public class ReportService {
         sb.append("Рапорт\n\n");
         sb.append("\tДійсним доповідаю, що ").append(reportDate)
                 .append(" о ").append(takeoffTime)
-                .append(" в районі м.Одеса, Одеської області, екіпажем «").append(unitName.toUpperCase())
+                .append(" в районі м. Одеса, Одеської області, екіпажем «").append(unitName.toUpperCase())
                 .append("» військової частини ").append(militaryUnit)
-                .append(" здійснив пуск БпЛА \"").append(weapon).append(" (нічний)\" зав. номер №").append(weaponNumber)
-                .append(" спорядженого тротиловою шашкою КУФ 1200 грам, та вбудованою розумною платою ініціації для виконання бойового завдання з перехоплення повітряної цілі №").append(targetNumber)
-                .append(" БПЛА противника типу ").append(targetTypeDisplay).append(". ")
+                .append(" здійснено пуск БпЛА \"").append(weapon).append(" (нічний)\" серійний номер ").append("\"").append(weaponNumber.toUpperCase()).append("\"")
+                .append(" спорядженого тротиловою шашкою «3-1.2 КУФ» 1,2 кг та вбудованою розумною платою ініціації для виконання бойового завдання з перехоплення повітряної цілі №").append(targetNumber)
+                .append(" (БпЛА противника типу ").append(targetTypeDisplay).append("). ")
                 .append(reportDate).append(" о ").append(contactTime)
-                .append(" БпЛА \"").append(weapon).append(" (нічний)\" зав. номер №").append(weaponNumber)
-                .append(" споряджений тротиловою шашкою КУФ 1200 грам, та вбудованою розумною платою ініціації був витрачений у результаті контрольованого підриву для знищення повітряної цілі №").append(targetNumber)
-                .append(" БПЛА противника типу ").append(targetTypeDisplay).append(", ціль ").append(targetResult).append(".\n\n");
+                .append(" БпЛА \"").append(weapon).append(" (нічний)\" серійний номер ").append("\"").append(weaponNumber.toUpperCase()).append("\"")
+                .append(" споряджений тротиловою шашкою «3-1.2 КУФ» 1,2 кг та вбудованою розумною платою ініціації був витрачений у результаті контрольованого підриву для знищення повітряної цілі №").append(targetNumber)
+                .append(" (БпЛА противника типу ").append(targetTypeDisplay).append("). Ціль ").append(targetResult).append(".\n\n");
 
         sb.append("Пілот:\n");
-        sb.append("Оператор безпілотних літальних апаратів екіпажу безпілотного авіаційного комплексу\n");
-        sb.append("взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
 
         if (pilot.equals("Костянтин БИТКА")) {
+            sb.append("Оператор безпілотних літальних апаратів екіпажу безпілотного авіаційного комплексу\n");
+            sb.append("взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
             sb.append("солдат                                                                                                           Костянтин БИТКА\n");
-        } else {
-            sb.append("старший солдат                                                                                      Ярослав НАГОРНИЙ\n");
-        }
-        sb.append(reportDate).append(" р.\n\n");
+            sb.append(reportDate).append(" р.\n\n");
 
-        sb.append("Командир екіпажу:\n");
-        sb.append("Командир екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
-        sb.append("старший сержант                                                                                    Олександр ШЕПРУК\n");
-        sb.append(reportDate).append(" р.\n\n\n\n");
+            sb.append("Командир екіпажу:\n");
+            sb.append("Командир екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
+            sb.append("старший сержант                                                                                    Олександр ШЕПРУК\n");
+            sb.append(reportDate).append(" р.\n\n\n\n");
+        } else {
+            sb.append("Командир екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
+            sb.append("старший сержант                                                                                    Олександр ШЕПРУК\n");
+            sb.append(reportDate).append(" р.\n\n");
+
+            sb.append("Командир екіпажу:\n");
+            sb.append("Командир взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
+            sb.append("старший лейтенант                                                                                    Микола САВЕНКО\n");
+            sb.append(reportDate).append(" р.\n\n\n\n");
+        }
 
         sb.append("Начальнику позаштатної служби безпілотних авіаційних комплексів військової частини А1620\n\n");
         sb.append("Рапорт\n\n");
-        sb.append("Клопочу по суті рапорту пілота ").append(pilot.equals("Костянтин БИТКА") ? "солдата Костянтина БИТКА" : "старшого солдата Ярослава НАГОРНОГО").append("\n\n");
+        sb.append("Клопочу по суті рапорту пілота ").append(pilot.equals("Костянтин БИТКА") ? "солдата Костянтина БИТКА" : "старшого сержанта Олександра ШЕПРУКА").append("\n\n");
         sb.append("Командир взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
         sb.append("старший лейтенант                                                                                    Микола САВЕНКО\n");
         sb.append(reportDate).append(" р.\n");
