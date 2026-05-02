@@ -1,8 +1,11 @@
 package org.example.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.ZonedDateTime;
 
+// [ВИПРАВЛЕННЯ #5] Невідомі поля в JSON більше не викликають виняток
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CombatReport {
     private Long id;
     private ZonedDateTime reportDate;
@@ -45,8 +48,8 @@ public class CombatReport {
     private String description;
     private Integer authorId;
     private Integer operatorId;
-    private Integer pilotId;           // НОВЕ ПОЛЕ
-    private Integer navigatorId;       // НОВЕ ПОЛЕ
+    private Integer pilotId;
+    private Integer navigatorId;
     private String status;
     private String reportType;
     private String militaryUnit;
@@ -54,8 +57,8 @@ public class CombatReport {
     private String dfBranch;
     private String authorName;
     private String operatorName;
-    private String pilotName;          // НОВЕ ПОЛЕ
-    private String navigatorName;      // НОВЕ ПОЛЕ
+    private String pilotName;
+    private String navigatorName;
 
     public CombatReport() {}
 

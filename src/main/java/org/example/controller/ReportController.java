@@ -31,25 +31,35 @@ public class ReportController {
         return "index";
     }
 
+    // [ВИПРАВЛЕННЯ #7] Повертає ResponseEntity — JS тепер може відрізнити успіх (200) від помилки (400)
     @PostMapping("/convert")
     @ResponseBody
-    public String convertReport(@RequestParam String json,
-                                @RequestParam int format,
-                                @RequestParam String pilot,
-                                @RequestParam int distance,
-                                @RequestParam int speed) {
+    public ResponseEntity<String> convertReport(@RequestParam String json,
+                                                @RequestParam int format,
+                                                @RequestParam String pilot,
+                                                @RequestParam int distance,
+                                                @RequestParam int speed) {
         try {
             CombatReport report = reportService.parseJson(json);
 
-            // [ВИПРАВЛЕННЯ #8] Switch expression (Java 14+)
-            return switch (format) {
+            String result = switch (format) {
                 case 1 -> reportService.formatStandardReport(report, distance, speed);
                 case 2 -> reportService.formatShortReport(report);
                 case 3 -> reportService.formatDetailedReport(report, pilot);
-                default -> "Невідомий формат";
+                default -> throw new IllegalArgumentException("Невідомий формат: " + format);
             };
+
+            return ResponseEntity.ok()
+                    .contentType(new MediaType("text", "plain", StandardCharsets.UTF_8))
+                    .body(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .contentType(new MediaType("text", "plain", StandardCharsets.UTF_8))
+                    .body("Помилка: " + e.getMessage());
         } catch (Exception e) {
-            return "Помилка: " + e.getMessage();
+            return ResponseEntity.internalServerError()
+                    .contentType(new MediaType("text", "plain", StandardCharsets.UTF_8))
+                    .body("Помилка парсингу JSON: " + e.getMessage());
         }
     }
 
