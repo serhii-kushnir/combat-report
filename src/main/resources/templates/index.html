@@ -131,10 +131,6 @@
         <button id="saveDocxBtn" class="save-docx">📝 Зберегти DOCX</button>
     </div>
 
-    <div class="status" id="status">
-        ✅ Готовий до роботи. Вставте JSON або виберіть файл.
-    </div>
-
     <div class="split-pane">
         <div class="json-panel">
             <h3>📄 Вхідний JSON</h3>
@@ -144,6 +140,10 @@
             <h3>📝 Форматований звіт</h3>
             <textarea id="reportOutput" readonly placeholder="Тут буде звіт..."></textarea>
         </div>
+    </div>
+
+    <div class="status" id="status">
+        ✅ Готовий до роботи. Вставте JSON або виберіть файл.
     </div>
 
     <div class="footer">
@@ -203,18 +203,31 @@
         convertBtn.disabled = true;
         convertBtn.textContent = '⏳ Конвертація...';
 
-        const params = new URLSearchParams();
-        params.append('json', json);
-        params.append('format', formatSelect.value);
-        params.append('pilot', pilotSelect.value);
-        params.append('distance', distanceInput.value);
-        params.append('speed', speedInput.value);
+        // Парсимо JSON щоб передати як об'єкт, а не рядок
+        let reportObj;
+        try {
+            reportObj = JSON.parse(json);
+        } catch (parseError) {
+            setStatus('❌ Невірний JSON: ' + parseError.message, true);
+            convertBtn.disabled = false;
+            convertBtn.textContent = '🔄 Конвертувати';
+            return;
+        }
+
+        // Рефакторинг: було form-urlencoded, стало application/json
+        const requestBody = {
+            report: reportObj,
+            format: parseInt(formatSelect.value),
+            pilot: pilotSelect.value,
+            distance: parseInt(distanceInput.value),
+            speed: parseInt(speedInput.value)
+        };
 
         try {
             const response = await fetch('/convert', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: params
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
             });
 
             const text = await response.text();

@@ -4,6 +4,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.example.dto.ConvertRequest;
 import org.example.model.CombatReport;
 import org.example.service.ReportService;
 import org.example.validation.ReportRequestValidator;
@@ -38,16 +39,27 @@ public class ReportController {
         return "index";
     }
 
+    /**
+     * Рефакторинг: було @RequestParam (form-urlencoded) — стало @RequestBody (application/json).
+     * JS тепер надсилає один JSON об'єкт { report: {...}, format, pilot, distance, speed }.
+     * report передається як JsonNode — без подвійної серіалізації через рядок.
+     */
     @PostMapping("/convert")
     @ResponseBody
-    public ResponseEntity<String> convertReport(@RequestParam String json,
-                                                @RequestParam int format,
-                                                @RequestParam String pilot,
-                                                @RequestParam int distance,
-                                                @RequestParam int speed) {
+    public ResponseEntity<String> convertReport(@RequestBody ConvertRequest request) {
+        if (request == null || request.getReport() == null) {
+            return badRequest("Тіло запиту не може бути порожнім");
+        }
 
-        // Валідація через окремий клас
-        List<String> errors = validator.validate(json, format, pilot, distance, speed);
+        String reportJson = request.getReport().toString();
+
+        List<String> errors = validator.validate(
+                reportJson,
+                request.getFormat(),
+                request.getPilot(),
+                request.getDistance(),
+                request.getSpeed()
+        );
         if (!errors.isEmpty()) {
             String message = String.join("\n", errors);
             log.warn("Невірний запит: {}", message);
@@ -55,15 +67,15 @@ public class ReportController {
         }
 
         try {
-            CombatReport report = reportService.parseJson(json);
+            CombatReport report = reportService.parseJson(reportJson);
             log.info("Конвертація: формат={}, пілот={}, відстань={}м, швидкість={}км/год",
-                    format, pilot, distance, speed);
+                    request.getFormat(), request.getPilot(), request.getDistance(), request.getSpeed());
 
-            String result = switch (format) {
-                case 1 -> reportService.formatStandardReport(report, distance, speed);
+            String result = switch (request.getFormat()) {
+                case 1 -> reportService.formatStandardReport(report, request.getDistance(), request.getSpeed());
                 case 2 -> reportService.formatShortReport(report);
-                case 3 -> reportService.formatDetailedReport(report, pilot);
-                default -> throw new IllegalArgumentException("Невідомий формат: " + format);
+                case 3 -> reportService.formatDetailedReport(report, request.getPilot());
+                default -> throw new IllegalArgumentException("Невідомий формат: " + request.getFormat());
             };
 
             log.info("Звіт сформовано: {} рядків", result.split("\n").length);
@@ -73,10 +85,10 @@ public class ReportController {
             log.warn("Невірний аргумент: {}", e.getMessage());
             return badRequest("Помилка: " + e.getMessage());
         } catch (Exception e) {
-            log.error("Помилка парсингу JSON: {}", e.getMessage(), e);
+            log.error("Помилка обробки звіту: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError()
                     .contentType(new MediaType("text", "plain", StandardCharsets.UTF_8))
-                    .body("Помилка парсингу JSON: " + e.getMessage());
+                    .body("Помилка обробки звіту: " + e.getMessage());
         }
     }
 
