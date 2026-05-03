@@ -6,6 +6,9 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.example.model.CombatReport;
 import org.example.service.ReportService;
+import org.example.validation.ReportRequestValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,15 +18,19 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Controller
 public class ReportController {
 
-    // [ВИПРАВЛЕННЯ #5] Конструкторна інʼєкція замість @Autowired на полі
-    private final ReportService reportService;
+    private static final Logger log = LoggerFactory.getLogger(ReportController.class);
 
-    public ReportController(ReportService reportService) {
+    private final ReportService reportService;
+    private final ReportRequestValidator validator;
+
+    public ReportController(ReportService reportService, ReportRequestValidator validator) {
         this.reportService = reportService;
+        this.validator = validator;
     }
 
     @GetMapping("/")
@@ -31,7 +38,6 @@ public class ReportController {
         return "index";
     }
 
-    // [ВИПРАВЛЕННЯ #7] Повертає ResponseEntity — JS тепер може відрізнити успіх (200) від помилки (400)
     @PostMapping("/convert")
     @ResponseBody
     public ResponseEntity<String> convertReport(@RequestParam String json,
@@ -39,8 +45,19 @@ public class ReportController {
                                                 @RequestParam String pilot,
                                                 @RequestParam int distance,
                                                 @RequestParam int speed) {
+
+        // Валідація через окремий клас
+        List<String> errors = validator.validate(json, format, pilot, distance, speed);
+        if (!errors.isEmpty()) {
+            String message = String.join("\n", errors);
+            log.warn("Невірний запит: {}", message);
+            return badRequest(message);
+        }
+
         try {
             CombatReport report = reportService.parseJson(json);
+            log.info("Конвертація: формат={}, пілот={}, відстань={}м, швидкість={}км/год",
+                    format, pilot, distance, speed);
 
             String result = switch (format) {
                 case 1 -> reportService.formatStandardReport(report, distance, speed);
@@ -49,14 +66,14 @@ public class ReportController {
                 default -> throw new IllegalArgumentException("Невідомий формат: " + format);
             };
 
-            return ResponseEntity.ok()
-                    .contentType(new MediaType("text", "plain", StandardCharsets.UTF_8))
-                    .body(result);
+            log.info("Звіт сформовано: {} рядків", result.split("\n").length);
+            return ok(result);
+
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .contentType(new MediaType("text", "plain", StandardCharsets.UTF_8))
-                    .body("Помилка: " + e.getMessage());
+            log.warn("Невірний аргумент: {}", e.getMessage());
+            return badRequest("Помилка: " + e.getMessage());
         } catch (Exception e) {
+            log.error("Помилка парсингу JSON: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError()
                     .contentType(new MediaType("text", "plain", StandardCharsets.UTF_8))
                     .body("Помилка парсингу JSON: " + e.getMessage());
@@ -66,10 +83,13 @@ public class ReportController {
     @PostMapping("/save/txt")
     public ResponseEntity<byte[]> saveAsTxt(@RequestParam String report,
                                             @RequestParam String filename) {
-        byte[] content = report.getBytes(StandardCharsets.UTF_8);
+        if (report == null || report.isBlank()) {
+            log.warn("Спроба зберегти порожній TXT звіт");
+            return ResponseEntity.badRequest().body("Звіт порожній".getBytes(StandardCharsets.UTF_8));
+        }
 
-        // [ВИПРАВЛЕННЯ #3] Прибрано дублювання розширення — JS вже передає filename з .txt
-        // [ВИПРАВЛЕННЯ #6] Безпечний Content-Disposition заголовок з лапками та UTF-8 encoded
+        log.info("Збереження TXT: {}", filename);
+        byte[] content = report.getBytes(StandardCharsets.UTF_8);
         String safeFilename = encodeFilename(filename);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -81,11 +101,14 @@ public class ReportController {
     @PostMapping("/save/docx")
     public ResponseEntity<byte[]> saveAsDocx(@RequestParam String report,
                                              @RequestParam String filename) {
-        try {
-            byte[] content = createDocxContent(report);
+        if (report == null || report.isBlank()) {
+            log.warn("Спроба зберегти порожній DOCX звіт");
+            return ResponseEntity.badRequest().body("Звіт порожній".getBytes(StandardCharsets.UTF_8));
+        }
 
-            // [ВИПРАВЛЕННЯ #3] Прибрано дублювання розширення — JS вже передає filename з .docx
-            // [ВИПРАВЛЕННЯ #6] Безпечний Content-Disposition заголовок
+        try {
+            log.info("Збереження DOCX: {}", filename);
+            byte[] content = createDocxContent(report);
             String safeFilename = encodeFilename(filename);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -93,26 +116,36 @@ public class ReportController {
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(content);
         } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(("Помилка: " + e.getMessage()).getBytes(StandardCharsets.UTF_8));
+            log.error("Помилка створення DOCX: {}", filename, e);
+            return ResponseEntity.internalServerError()
+                    .body(("Помилка створення DOCX: " + e.getMessage()).getBytes(StandardCharsets.UTF_8));
         }
     }
 
-    /**
-     * [ВИПРАВЛЕННЯ #6] Кодує імʼя файлу для безпечного використання в HTTP заголовку.
-     * Замінює пробіли та спецсимволи щоб заголовок не зламався.
-     */
+    // ========== ХЕЛПЕРИ ==========
+
+    private ResponseEntity<String> ok(String body) {
+        return ResponseEntity.ok()
+                .contentType(new MediaType("text", "plain", StandardCharsets.UTF_8))
+                .body(body);
+    }
+
+    private ResponseEntity<String> badRequest(String message) {
+        return ResponseEntity.badRequest()
+                .contentType(new MediaType("text", "plain", StandardCharsets.UTF_8))
+                .body(message);
+    }
+
     private String encodeFilename(String filename) {
         try {
-            return URLEncoder.encode(filename, StandardCharsets.UTF_8)
-                    .replace("+", "%20");
+            return URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
         } catch (Exception e) {
+            log.warn("Не вдалось закодувати ім'я файлу: {}", filename);
             return "report";
         }
     }
 
     private byte[] createDocxContent(String text) throws Exception {
-        // [ВИПРАВЛЕННЯ #7] try-with-resources — XWPFDocument завжди закривається
         try (XWPFDocument document = new XWPFDocument()) {
             String[] lines = text.split("\n");
 
@@ -125,27 +158,22 @@ public class ReportController {
                     paragraph.setIndentationLeft(5400);
                     paragraph.setAlignment(ParagraphAlignment.LEFT);
                 }
-
                 if (line.contains("Начальнику позаштатної служби безпілотних авіаційних комплексів")) {
                     paragraph.setIndentationLeft(5400);
                     paragraph.setAlignment(ParagraphAlignment.BOTH);
                 }
-
                 if (line.contains("Командир взводу перехоплювачів")
                         && !line.contains("Клопочу")
                         && !line.contains("військової частини")
                         && !line.contains("Командиру")) {
                     paragraph.setAlignment(ParagraphAlignment.RIGHT);
                 }
-
                 if (line.trim().equals("Рапорт") && !line.contains("Клопочу")) {
                     paragraph.setAlignment(ParagraphAlignment.CENTER);
                 }
-
                 if (line.contains("Клопочу по суті")) {
                     paragraph.setAlignment(ParagraphAlignment.CENTER);
                 }
-
                 if (line.contains("Пілот:") || line.contains("Оператор безпілотних")
                         || line.contains("взводу перехоплювачів безпілотних")
                         || line.contains("\tДійсним доповідаю")
