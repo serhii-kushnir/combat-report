@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Особовий склад</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f0f2f5; }
+
+        .navbar {
+            background: #1a237e;
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .navbar a { color: #90caf9; text-decoration: none; font-size: 14px; }
+        .navbar a:hover { color: white; }
+        .navbar .title { font-size: 18px; font-weight: bold; margin-right: auto; }
+
+        .container { max-width: 1300px; margin: 24px auto; padding: 0 16px; }
+
+        .toolbar {
+            background: white;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        .toolbar input { padding: 7px 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; width: 220px; }
+        .btn { padding: 7px 16px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600; }
+        .btn-primary { background: #1976d2; color: white; }
+        .btn-primary:hover { background: #1565c0; }
+        .btn-success { background: #388e3c; color: white; }
+        .btn-success:hover { background: #2e7d32; }
+        .btn-danger { background: #d32f2f; color: white; }
+        .btn-danger:hover { background: #b71c1c; }
+        .btn-warning { background: #f57c00; color: white; }
+        .btn-warning:hover { background: #e65100; }
+        .btn-sm { padding: 4px 10px; font-size: 12px; }
+
+        .stats {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 12px 18px;
+            text-align: center;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            min-width: 110px;
+        }
+        .stat-card .num { font-size: 28px; font-weight: bold; color: #1976d2; }
+        .stat-card .lbl { font-size: 12px; color: #666; margin-top: 2px; }
+        .stat-card.duty .num { color: #f57c00; }
+        .stat-card.absent .num { color: #d32f2f; }
+
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        thead { background: #1a237e; color: white; }
+        th { padding: 11px 12px; text-align: left; font-size: 13px; font-weight: 600; }
+        td { padding: 9px 12px; font-size: 13px; border-bottom: 1px solid #f0f0f0; }
+        tr:hover td { background: #f5f9ff; }
+        tr:last-child td { border-bottom: none; }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-present  { background: #e8f5e9; color: #2e7d32; }
+        .badge-duty     { background: #fff3e0; color: #e65100; }
+        .badge-vacation { background: #e3f2fd; color: #1565c0; }
+        .badge-sick     { background: #fce4ec; color: #c62828; }
+        .badge-training { background: #f3e5f5; color: #6a1b9a; }
+        .badge-business { background: #e0f2f1; color: #00695c; }
+        .badge-other    { background: #f5f5f5; color: #555; }
+
+        /* Модальне вікно */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 10px;
+            padding: 28px;
+            width: 480px;
+            max-width: 95vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .modal h2 { margin: 0 0 20px; font-size: 18px; color: #1a237e; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #444; }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .form-group textarea { height: 70px; resize: vertical; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+        .confirm-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+        }
+        .confirm-overlay.open { display: flex; }
+        .confirm-box {
+            background: white;
+            border-radius: 10px;
+            padding: 24px;
+            width: 340px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .confirm-box p { margin: 0 0 16px; }
+        .confirm-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 20px;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 2000;
+        }
+        .toast.show { opacity: 1; }
+        .toast.success { background: #2e7d32; }
+        .toast.error   { background: #c62828; }
+
+        .empty-state { text-align: center; padding: 48px; color: #999; }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <span class="title">⚔️ Бойова частина А0826</span>
+    <a href="/">📋 Конвертер звітів</a>
+    <a href="/personnel">👥 Особовий склад</a>
+</div>
+
+<div class="container">
+    <div class="toolbar">
+        <input type="text" id="searchInput" placeholder="🔍 Пошук за прізвищем...">
+        <select id="statusFilter">
+            <option value="">Всі статуси</option>
+            <option value="PRESENT">Присутній</option>
+            <option value="DUTY">ЧБ</option>
+            <option value="VACATION">Відпустка</option>
+            <option value="SICK">Хворий</option>
+            <option value="TRAINING">Навчання</option>
+            <option value="BUSINESS_TRIP">Відрядження</option>
+            <option value="TRANSFERRED">Переведений</option>
+            <option value="OTHER">Інше</option>
+        </select>
+        <button class="btn btn-success" onclick="openAddModal()">+ Додати бійця</button>
+    </div>
+
+    <div class="stats" id="statsBar">
+        <!-- заповнюється JS -->
+    </div>
+
+    <table id="personnelTable">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Прізвище І. П.</th>
+                <th>Звання</th>
+                <th>Посада</th>
+                <th>Телефон</th>
+                <th>Статус</th>
+                <th>Примітка</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody id="personnelBody">
+            <tr><td colspan="8" class="empty-state">Завантаження...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Модальне: Додати / Редагувати -->
+<div class="modal-overlay" id="formModal">
+    <div class="modal">
+        <h2 id="modalTitle">Додати бійця</h2>
+        <input type="hidden" id="editId">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Прізвище *</label>
+                <input type="text" id="fLastName" placeholder="Шепрук">
+            </div>
+            <div class="form-group">
+                <label>Ім'я *</label>
+                <input type="text" id="fFirstName" placeholder="Олександр">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>По батькові</label>
+            <input type="text" id="fMiddleName" placeholder="Васильович">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Звання</label>
+                <select id="fRank">
+                    <option value="">— не вказано —</option>
+                    <option>Солдат</option>
+                    <option>Старший солдат</option>
+                    <option>Молодший сержант</option>
+                    <option>Сержант</option>
+                    <option>Старший сержант</option>
+                    <option>Головний сержант</option>
+                    <option>Штаб-сержант</option>
+                    <option>Майстер-сержант</option>
+                    <option>Молодший лейтенант</option>
+                    <option>Лейтенант</option>
+                    <option>Старший лейтенант</option>
+                    <option>Капітан</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Посада</label>
+                <input type="text" id="fPosition" placeholder="Оператор БПЛА">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Телефон</label>
+            <input type="text" id="fPhone" placeholder="+380...">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Статус</label>
+                <select id="fStatus">
+                    <option value="PRESENT">Присутній</option>
+                    <option value="DUTY">ЧБ</option>
+                    <option value="VACATION">Відпустка</option>
+                    <option value="SICK">Хворий</option>
+                    <option value="TRAINING">Навчання</option>
+                    <option value="BUSINESS_TRIP">Відрядження</option>
+                    <option value="OTHER">Інше</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Примітка</label>
+            <textarea id="fNote" placeholder="Причина відсутності, коментар..."></textarea>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn" onclick="closeModal('formModal')" style="background:#eee">Скасувати</button>
+            <button class="btn btn-primary" onclick="savePerson()">Зберегти</button>
+        </div>
+    </div>
+</div>
+
+<!-- Підтвердження видалення -->
+<div class="confirm-overlay" id="confirmModal">
+    <div class="confirm-box">
+        <p id="confirmText">Видалити бійця?</p>
+        <div class="confirm-actions">
+            <button class="btn" onclick="closeModal('confirmModal')" style="background:#eee">Скасувати</button>
+            <button class="btn btn-danger" id="confirmBtn">Видалити</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    let allPersonnel = [];
+    let deleteTargetId = null;
+
+    const STATUS_LABELS = {
+        PRESENT:       { label: 'Присутній',    cls: 'badge-present'  },
+        DUTY:          { label: 'ЧБ',            cls: 'badge-duty'     },
+        VACATION:      { label: 'Відпустка',     cls: 'badge-vacation' },
+        SICK:          { label: 'Хворий',        cls: 'badge-sick'     },
+        TRAINING:      { label: 'Навчання',      cls: 'badge-training' },
+        BUSINESS_TRIP: { label: 'Відрядження',   cls: 'badge-business' },
+        TRANSFERRED:   { label: 'Переведений',   cls: 'badge-other'    },
+        OTHER:         { label: 'Інше',          cls: 'badge-other'    },
+    };
+
+    // ===== ЗАВАНТАЖЕННЯ =====
+    async function loadPersonnel() {
+        const res = await fetch('/personnel/api');
+        allPersonnel = await res.json();
+        renderTable(allPersonnel);
+        renderStats(allPersonnel);
+    }
+
+    function renderStats(data) {
+        const counts = {};
+        data.forEach(p => counts[p.status] = (counts[p.status] || 0) + 1);
+        const total = data.length;
+        const present = counts['PRESENT'] || 0;
+        const duty = counts['DUTY'] || 0;
+        const absent = total - present - duty;
+
+        document.getElementById('statsBar').innerHTML = `
+            <div class="stat-card"><div class="num">${total}</div><div class="lbl">Всього</div></div>
+            <div class="stat-card"><div class="num" style="color:#2e7d32">${present}</div><div class="lbl">Присутні</div></div>
+            <div class="stat-card duty"><div class="num">${duty}</div><div class="lbl">ЧБ</div></div>
+            <div class="stat-card absent"><div class="num">${absent}</div><div class="lbl">Відсутні</div></div>
+            ${Object.entries(counts).filter(([k]) => !['PRESENT','DUTY'].includes(k)).map(([k,v]) =>
+                `<div class="stat-card"><div class="num" style="color:#555">${v}</div><div class="lbl">${STATUS_LABELS[k]?.label || k}</div></div>`
+            ).join('')}
+        `;
+    }
+
+    function renderTable(data) {
+        const body = document.getElementById('personnelBody');
+        if (!data.length) {
+            body.innerHTML = '<tr><td colspan="8" class="empty-state">Особовий склад порожній</td></tr>';
+            return;
+        }
+        body.innerHTML = data.map((p, i) => {
+            const s = STATUS_LABELS[p.status] || { label: p.status, cls: 'badge-other' };
+            const short = `${p.lastName} ${p.firstName ? p.firstName[0]+'.' : ''} ${p.middleName ? p.middleName[0]+'.' : ''}`;
+            return `
+            <tr>
+                <td>${i + 1}</td>
+                <td><strong>${short}</strong></td>
+                <td>${p.rank || '—'}</td>
+                <td>${p.position || '—'}</td>
+                <td>${p.phone || '—'}</td>
+                <td><span class="badge ${s.cls}">${s.label}</span></td>
+                <td style="color:#777;font-size:12px">${p.note || ''}</td>
+                <td style="white-space:nowrap">
+                    <button class="btn btn-warning btn-sm" onclick="openEditModal(${p.id})">✏️</button>
+                    <button class="btn btn-danger btn-sm" onclick="confirmDelete(${p.id}, '${short}')">🗑</button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    // ===== ФІЛЬТРИ =====
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+    document.getElementById('statusFilter').addEventListener('change', applyFilters);
+
+    function applyFilters() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        const s = document.getElementById('statusFilter').value;
+        const filtered = allPersonnel.filter(p => {
+            const matchName = !q || p.lastName.toLowerCase().includes(q) ||
+                              (p.firstName || '').toLowerCase().includes(q);
+            const matchStatus = !s || p.status === s;
+            return matchName && matchStatus;
+        });
+        renderTable(filtered);
+    }
+
+    // ===== ФОРМА ДОДАВАННЯ / РЕДАГУВАННЯ =====
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent = 'Додати бійця';
+        document.getElementById('editId').value = '';
+        ['fLastName','fFirstName','fMiddleName','fPosition','fPhone','fNote'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('fRank').value = '';
+        document.getElementById('fStatus').value = 'PRESENT';
+        openModal('formModal');
+    }
+
+    function openEditModal(id) {
+        const p = allPersonnel.find(x => x.id === id);
+        if (!p) return;
+        document.getElementById('modalTitle').textContent = 'Редагувати бійця';
+        document.getElementById('editId').value = id;
+        document.getElementById('fLastName').value = p.lastName || '';
+        document.getElementById('fFirstName').value = p.firstName || '';
+        document.getElementById('fMiddleName').value = p.middleName || '';
+        document.getElementById('fRank').value = p.rank || '';
+        document.getElementById('fPosition').value = p.position || '';
+        document.getElementById('fPhone').value = p.phone || '';
+        document.getElementById('fStatus').value = p.status || 'PRESENT';
+        document.getElementById('fNote').value = p.note || '';
+        openModal('formModal');
+    }
+
+    async function savePerson() {
+        const id = document.getElementById('editId').value;
+        const body = {
+            lastName:   document.getElementById('fLastName').value.trim(),
+            firstName:  document.getElementById('fFirstName').value.trim(),
+            middleName: document.getElementById('fMiddleName').value.trim(),
+            rank:       document.getElementById('fRank').value,
+            position:   document.getElementById('fPosition').value.trim(),
+            phone:      document.getElementById('fPhone').value.trim(),
+            status:     document.getElementById('fStatus').value,
+            note:       document.getElementById('fNote').value.trim(),
+        };
+
+        if (!body.lastName) { showToast('Прізвище обовʼязкове', 'error'); return; }
+        if (!body.firstName) { showToast('Імʼя обовʼязкове', 'error'); return; }
+
+        const url    = id ? `/personnel/api/${id}` : '/personnel/api';
+        const method = id ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        if (res.ok) {
+            closeModal('formModal');
+            await loadPersonnel();
+            showToast(id ? 'Дані оновлено' : 'Бійця додано', 'success');
+        } else {
+            const msg = await res.text();
+            showToast('Помилка: ' + msg, 'error');
+        }
+    }
+
+    // ===== ВИДАЛЕННЯ =====
+    function confirmDelete(id, name) {
+        deleteTargetId = id;
+        document.getElementById('confirmText').textContent = `Видалити бійця "${name}"?`;
+        document.getElementById('confirmBtn').onclick = deletePerson;
+        openModal('confirmModal');
+    }
+
+    async function deletePerson() {
+        const res = await fetch(`/personnel/api/${deleteTargetId}`, { method: 'DELETE' });
+        closeModal('confirmModal');
+        if (res.ok) {
+            await loadPersonnel();
+            showToast('Бійця видалено', 'success');
+        } else {
+            showToast('Помилка видалення', 'error');
+        }
+    }
+
+    // ===== УТИЛІТИ =====
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    document.querySelectorAll('.modal-overlay').forEach(el => {
+        el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+    });
+
+    function showToast(msg, type = 'success') {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = `toast ${type} show`;
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // Старт
+    loadPersonnel();
+</script>
+</body>
+</html>
