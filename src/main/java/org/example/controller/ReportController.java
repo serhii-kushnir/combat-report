@@ -39,11 +39,6 @@ public class ReportController {
         return "index";
     }
 
-    /**
-     * Рефакторинг: було @RequestParam (form-urlencoded) — стало @RequestBody (application/json).
-     * JS тепер надсилає один JSON об'єкт { report: {...}, format, pilot, distance, speed }.
-     * report передається як JsonNode — без подвійної серіалізації через рядок.
-     */
     @PostMapping("/convert")
     @ResponseBody
     public ResponseEntity<String> convertReport(@RequestBody ConvertRequest request) {
@@ -68,12 +63,25 @@ public class ReportController {
 
         try {
             CombatReport report = reportService.parseJson(reportJson);
-            log.info("Конвертація: формат={}, пілот={}, відстань={}м, швидкість={}км/год",
-                    request.getFormat(), request.getPilot(), request.getDistance(), request.getSpeed());
+
+            int targetAltitude = report.getAltitude() != null ? report.getAltitude() : 0;
+
+            log.info("Конвертація: формат={}, пілот={}, відстань={}м, швидкість={}км/год, курс={}°, висота(ручна)={}м, висота(з JSON)={}м",
+                    request.getFormat(), request.getPilot(), request.getDistance(),
+                    request.getSpeed(), request.getCourse(), request.getManualAltitude(), targetAltitude);
 
             String result = switch (request.getFormat()) {
-                case 1 -> reportService.formatStandardReport(report, request.getDistance(), request.getSpeed());
-                case 2 -> reportService.formatShortReport(report);
+                case 1 -> reportService.formatStandardReport(report,
+                        request.getDistance(),
+                        request.getSpeed(),
+                        request.getCourse(),
+                        request.getManualAltitude(),
+                        request.getTargetAltitude());  // Додано
+                case 2 -> reportService.formatShortReport(report,
+                        request.getDistance(),
+                        request.getCourse(),
+                        request.getManualAltitude(),
+                        request.getTargetAltitude());  // Додано
                 case 3 -> reportService.formatDetailedReport(report, request.getPilot());
                 default -> throw new IllegalArgumentException("Невідомий формат: " + request.getFormat());
             };

@@ -104,7 +104,8 @@ public class ReportService {
     }
 
     // ========== ФОРМАТ 1: СТАНДАРТНИЙ ==========
-    public String formatStandardReport(CombatReport report, int manualDistance, int manualSpeed) {
+    public String formatStandardReport(CombatReport report, int manualDistance, int manualSpeed,
+                                       int course, int manualAltitude, int targetAltitude) {
         log.debug("Формування стандартного звіту для екіпажу: {}", report.getUnitName());
         StringBuilder sb = new StringBuilder();
 
@@ -138,7 +139,11 @@ public class ReportService {
 
         String coordinates = report.getCoordinates() != null ? report.getCoordinates() : "";
         sb.append("Координати: ").append(coordinates).append("\n");
-        sb.append("Відстань від місця взльоту: ").append(manualDistance).append(" м\n");
+
+        // Рядок з курсом, відстанню та висотою (ручні поля)
+        //sb.append("А-").append(course).append("°, Д-").append(manualDistance).append(" м., В-").append(manualAltitude).append(" м.\n");
+        sb.append("Азимут-").append(course).append("°, Дальність-").append(manualDistance).append(" м., Висота-").append(manualAltitude).append(" м.\n");
+
         sb.append("Тип: ").append(getTargetTypeDisplay(report)).append("\n");
         sb.append("Ідентифікація: Дружній\n");
 
@@ -162,11 +167,11 @@ public class ReportService {
                 .append(". ").append(effectorStatusForNote)
                 .append(", ").append(effectorLossReason.toLowerCase()).append("\n");
 
-        int altitude = safeInt(report.getAltitude(), 500);
         int targetNum = safeInt(report.getTargetNumberVirazh(), 0);
         String targetSubTypeDisplay = getTargetTypeDisplay(report);
 
-        sb.append("Висота: ").append(altitude).append("м, ціль ").append("\"").append(targetSubTypeDisplay).append("\"");
+        // Використовуємо targetAltitude (висота з JSON) для рядка "Висота цілі"
+        sb.append("Висота цілі: ").append(targetAltitude).append(" м, ціль \"").append(targetSubTypeDisplay).append("\"");
         if (targetNum != 0) {
             sb.append(" №").append(targetNum).append(" (по віражу)");
         }
@@ -176,7 +181,8 @@ public class ReportService {
     }
 
     // ========== ФОРМАТ 2: СКОРОЧЕНИЙ ==========
-    public String formatShortReport(CombatReport report) {
+    public String formatShortReport(CombatReport report, int manualDistance, int course,
+                                    int manualAltitude, int targetAltitude) {
         log.debug("Формування скороченого звіту для екіпажу: {}", report.getUnitName());
         StringBuilder sb = new StringBuilder();
 
@@ -198,8 +204,15 @@ public class ReportService {
 
         String coordinates = report.getCoordinates() != null ? report.getCoordinates() : "";
         sb.append("Приблизні координати підриву: ").append(coordinates).append("\n");
+
+        // Рядок з курсом, відстанню та висотою (ручні поля)
+        //sb.append("А-").append(course).append("°, Д-").append(manualDistance).append(" м., В-").append(manualAltitude).append(" м.\n");
+        sb.append("Азимут-").append(course).append("°, Дальність-").append(manualDistance).append(" м., Висота-").append(manualAltitude).append(" м.\n");
+
         sb.append("Тип цілі: ").append(getTargetTypeDisplay(report)).append("\n");
-        sb.append("Висота цілі: ").append(safeInt(report.getAltitude(), 0)).append(" метрів\n");
+
+        // Використовуємо targetAltitude (висота з JSON)
+        sb.append("Висота цілі: ").append(targetAltitude).append(" метрів\n");
 
         String weapon = extractWeaponName(report.getWeaponId());
         sb.append("Засіб ураження: ").append(weapon)

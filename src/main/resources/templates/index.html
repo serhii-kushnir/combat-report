@@ -8,6 +8,7 @@
         .container { max-width: 1400px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         h1 { color: #333; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; margin-top: 0; }
 
+        /* ПЕРШИЙ РЯДОК: основні параметри */
         .params-bar {
             background: #e8f5e9;
             padding: 12px 15px;
@@ -20,10 +21,29 @@
             gap: 15px;
         }
 
-        .params-bar label { font-weight: bold; font-size: 13px; margin: 0; }
-        .params-bar select, .params-bar input { padding: 6px 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 13px; }
+        /* ДРУГИЙ РЯДОК: додаткові параметри (А, Д, В, швидкість) */
+        .additional-bar {
+            background: #e3f2fd;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 15px;
+        }
+
+        .params-bar label, .additional-bar label { font-weight: bold; font-size: 13px; margin: 0; }
+        .params-bar select, .params-bar input, .additional-bar select, .additional-bar input {
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 13px;
+        }
         .params-bar select { min-width: 220px; }
         .params-bar input { width: 80px; }
+        .additional-bar input { width: 80px; }
 
         .file-button {
             background: #9C27B0;
@@ -42,7 +62,7 @@
             background: #e8f5e9;
             padding: 10px 15px;
             border-radius: 5px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
@@ -73,17 +93,24 @@
 
         .actions-bar .clear-btn { background: #f44336; }
         .actions-bar .clear-btn:hover { background: #d32f2f; }
-
         .actions-bar .convert-btn { background: #4CAF50; }
-        .actions-bar .convert-btn:hover:not(:disabled) { background: #45a049; }
+
+        /* СТАТУС ЗВЕРХУ (після кнопок) */
+        .status {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            background: #e3f2fd;
+            color: #1565c0;
+            font-size: 13px;
+        }
+        .status.error { background: #ffebee; color: #c62828; }
 
         .split-pane { display: flex; gap: 20px; margin-top: 20px; }
         .json-panel, .report-panel { flex: 1; border: 1px solid #ddd; border-radius: 5px; padding: 15px; background: #fafafa; }
         .json-panel h3, .report-panel h3 { margin-top: 0; color: #555; }
         textarea { width: 100%; height: 500px; font-family: 'Consolas', monospace; font-size: 13px; border: 1px solid #ccc; border-radius: 4px; padding: 10px; resize: vertical; box-sizing: border-box; }
         .report-panel textarea { background: #fffff0; }
-        .status { margin-top: 15px; padding: 10px; border-radius: 4px; background: #e3f2fd; color: #1565c0; font-size: 13px; }
-        .status.error { background: #ffebee; color: #c62828; }
         .footer { margin-top: 20px; text-align: right; color: #999; font-size: 12px; border-top: 1px solid #eee; padding-top: 10px; }
         .file-input-wrapper { display: inline-block; position: relative; }
         .file-input-wrapper input { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; left: 0; top: 0; }
@@ -94,6 +121,7 @@
 <div class="container">
     <h1>📋 Конвертер бойових звітів JSON → TXT / DOCX</h1>
 
+    <!-- ПЕРШИЙ РЯДОК: основні параметри -->
     <div class="params-bar">
         <div class="file-input-wrapper">
             <button class="file-button">📂 Вибрати JSON</button>
@@ -114,14 +142,30 @@
             <option value="Костянтин БИТКА">Костянтин БИТКА</option>
             <option value="Олександр ШЕПРУК">Олександр ШЕПРУК</option>
         </select>
-
-        <label>Відстань (м):</label>
-        <input type="number" id="distance" value="10000" style="width: 80px;">
-
-        <label>Швидкість (км/год):</label>
-        <input type="number" id="speed" value="160" style="width: 80px;">
     </div>
 
+    <!-- ДРУГИЙ РЯДОК: додаткові параметри (А, Д, В, швидкість) -->
+    <div class="additional-bar">
+        <label style="color: #1565c0;">Азимут (А):</label>
+        <input type="number" id="course" value="50" step="1" style="width: 60px;">
+        <span>°</span>
+
+        <label style="color: #1565c0;">Дальність (Д):</label>
+        <input type="number" id="distance" value="17900" step="100" style="width: 80px;">
+        <span>м.</span>
+
+        <label style="color: #1565c0;">Висота (В):</label>
+        <input type="number" id="altitude" value="2042" step="10" style="width: 80px;">
+        <span>м.</span>
+
+        <div class="separator"></div>
+
+        <label>Швидкість цілі:</label>
+        <input type="number" id="speed" value="160" step="10" style="width: 80px;">
+        <span>км/год</span>
+    </div>
+
+    <!-- ТРЕТІЙ РЯДОК: кнопки дій -->
     <div class="actions-bar">
         <button id="convertBtn" class="convert-btn">🔄 Конвертувати</button>
         <button id="copyBtn" class="copy-btn">📋 Копіювати</button>
@@ -129,6 +173,11 @@
         <div class="separator"></div>
         <button id="saveTxtBtn" class="save-txt">📄 Зберегти TXT</button>
         <button id="saveDocxBtn" class="save-docx">📝 Зберегти DOCX</button>
+    </div>
+
+    <!-- СТАТУС ЗВЕРХУ (під кнопками, над JSON) -->
+    <div class="status" id="status">
+        ✅ Готовий до роботи. Вставте JSON або виберіть файл.
     </div>
 
     <div class="split-pane">
@@ -140,10 +189,6 @@
             <h3>📝 Форматований звіт</h3>
             <textarea id="reportOutput" readonly placeholder="Тут буде звіт..."></textarea>
         </div>
-    </div>
-
-    <div class="status" id="status">
-        ✅ Готовий до роботи. Вставте JSON або виберіть файл.
     </div>
 
     <div class="footer">
@@ -159,6 +204,8 @@
     const pilotSelect = document.getElementById('pilot');
     const distanceInput = document.getElementById('distance');
     const speedInput = document.getElementById('speed');
+    const courseInput = document.getElementById('course');
+    const altitudeInput = document.getElementById('altitude');
     const convertBtn = document.getElementById('convertBtn');
     const copyBtn = document.getElementById('copyBtn');
     const clearBtn = document.getElementById('clearBtn');
@@ -167,8 +214,6 @@
     const fileInput = document.getElementById('fileInput');
 
     let currentReportText = '';
-    // [ВИПРАВЛЕННЯ #2] Зберігаємо ім'я файлу одразу при завантаженні,
-    // бо fileInput.value скидається після читання і files[0] стає undefined
     let currentFilename = 'combat_report';
 
     function setStatus(message, isError = false) {
@@ -176,12 +221,22 @@
         statusDiv.className = 'status' + (isError ? ' error' : '');
     }
 
+    function getTargetAltitudeFromJson() {
+        const json = jsonInput.value.trim();
+        if (!json) return 0;
+
+        try {
+            const reportObj = JSON.parse(json);
+            return reportObj.altitude || 0;
+        } catch (e) {
+            return 0;
+        }
+    }
+
     fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
-            // [ВИПРАВЛЕННЯ #2] Зберігаємо ім'я тут, поки file ще доступний
             currentFilename = file.name.replace(/\.json$/i, '');
-
             const reader = new FileReader();
             reader.onload = (event) => {
                 jsonInput.value = event.target.result;
@@ -199,11 +254,9 @@
             return;
         }
 
-        // [ВИПРАВЛЕННЯ #10] Блокуємо кнопку під час запиту
         convertBtn.disabled = true;
         convertBtn.textContent = '⏳ Конвертація...';
 
-        // Парсимо JSON щоб передати як об'єкт, а не рядок
         let reportObj;
         try {
             reportObj = JSON.parse(json);
@@ -214,13 +267,18 @@
             return;
         }
 
-        // Рефакторинг: було form-urlencoded, стало application/json
+        // Висота цілі береться з JSON
+        const targetAltitude = reportObj.altitude || 0;
+
         const requestBody = {
             report: reportObj,
             format: parseInt(formatSelect.value),
             pilot: pilotSelect.value,
             distance: parseInt(distanceInput.value),
-            speed: parseInt(speedInput.value)
+            speed: parseInt(speedInput.value),
+            course: parseInt(courseInput.value),
+            manualAltitude: parseInt(altitudeInput.value),
+            targetAltitude: targetAltitude
         };
 
         try {
@@ -232,7 +290,6 @@
 
             const text = await response.text();
 
-            // [ВИПРАВЛЕННЯ #7] Перевіряємо HTTP статус — тепер сервер повертає 400/500 при помилці
             if (!response.ok) {
                 setStatus('❌ ' + text, true);
                 return;
@@ -249,7 +306,6 @@
         }
     });
 
-    // [ВИПРАВЛЕННЯ #3] Сучасний Clipboard API замість застарілого execCommand('copy')
     copyBtn.addEventListener('click', async () => {
         if (!reportOutput.value.trim()) {
             setStatus('❌ Немає даних для копіювання.', true);
@@ -259,7 +315,6 @@
             await navigator.clipboard.writeText(reportOutput.value);
             setStatus('✅ Скопійовано в буфер обміну!');
         } catch (err) {
-            // Fallback для старих браузерів або якщо clipboard API недоступний
             reportOutput.select();
             document.execCommand('copy');
             setStatus('✅ Скопійовано в буфер обміну!');
@@ -272,6 +327,10 @@
             reportOutput.value = '';
             currentReportText = '';
             currentFilename = 'combat_report';
+            distanceInput.value = '17900';
+            speedInput.value = '160';
+            courseInput.value = '50';
+            altitudeInput.value = '2042';
             setStatus('✅ Всі поля очищено.');
         }
     });
@@ -312,7 +371,6 @@
             setStatus('❌ Немає даних для збереження. Спочатку виконайте конвертацію.', true);
             return;
         }
-        // [ВИПРАВЛЕННЯ #2] Використовуємо збережене ім'я файлу
         const success = await downloadFile('/save/txt', currentFilename + '.txt', currentReportText);
         setStatus(success ? '✅ TXT звіт збережено!' : '❌ Помилка збереження TXT', !success);
     });
@@ -322,7 +380,6 @@
             setStatus('❌ Немає даних для збереження. Спочатку виконайте конвертацію.', true);
             return;
         }
-        // [ВИПРАВЛЕННЯ #2] Використовуємо збережене ім'я файлу
         const success = await downloadFile('/save/docx', currentFilename + '.docx', currentReportText);
         setStatus(success ? '✅ DOCX звіт збережено!' : '❌ Помилка збереження DOCX', !success);
     });

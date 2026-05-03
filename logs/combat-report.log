@@ -104,3 +104,688 @@
 2026-05-03 14:29:18 INFO  [o.e.c.ReportController] Звіт сформовано: 9 рядків
 2026-05-03 14:29:18 WARN  [o.e.c.ReportController] Невірний запит: Відстань не може бути від'ємною: -1
 2026-05-03 14:29:18 WARN  [o.e.service.ReportService] weaponId порожній, використовується значення за замовчуванням
+2026-05-03 14:35:48 INFO  [o.e.c.ReportControllerTest] Starting ReportControllerTest using Java 17.0.18 with PID 12328 (started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 14:35:48 INFO  [o.e.c.ReportControllerTest] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 14:35:51 INFO  [o.e.c.ReportControllerTest] Started ReportControllerTest in 3.578 seconds (process running for 5.689)
+2026-05-03 14:35:53 WARN  [o.e.c.ReportController] Спроба зберегти порожній DOCX звіт
+2026-05-03 14:35:53 INFO  [o.e.c.ReportController] Конвертація: формат=3, пілот=Костянтин БИТКА, відстань=5000м, швидкість=160км/год
+2026-05-03 14:35:53 WARN  [o.e.service.ReportService] contactTime не вказано у детальному звіті, використовується поточний час
+2026-05-03 14:35:53 INFO  [o.e.c.ReportController] Звіт сформовано: 29 рядків
+2026-05-03 14:35:53 WARN  [o.e.c.ReportController] Невірний запит: Невідомий пілот: "Невідомий ПІЛОТ". Допустимі: [Костянтин БИТКА, Олександр ШЕПРУК]
+2026-05-03 14:35:53 WARN  [o.e.c.ReportController] Невірний запит: Невідомий формат: 99. Допустимі значення: 1, 2, 3
+2026-05-03 14:35:53 INFO  [o.e.c.ReportController] Збереження DOCX: test.docx
+2026-05-03 14:35:54 WARN  [o.e.c.ReportController] Невірний запит: Невідомий формат: 99. Допустимі значення: 1, 2, 3
+Невідомий пілот: "Невідомий ПІЛОТ". Допустимі: [Костянтин БИТКА, Олександр ШЕПРУК]
+Відстань не може бути від'ємною: -1
+Швидкість не може бути від'ємною: -1
+2026-05-03 14:35:54 INFO  [o.e.c.ReportController] Збереження TXT: test.txt
+2026-05-03 14:35:54 WARN  [o.e.c.ReportController] Спроба зберегти порожній TXT звіт
+2026-05-03 14:35:54 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Олександр ШЕПРУК, відстань=5000м, швидкість=160км/год
+2026-05-03 14:35:54 WARN  [o.e.service.ReportService] contactTime не вказано, використовується поточний час
+2026-05-03 14:35:54 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 14:35:54 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Олександр ШЕПРУК, відстань=5000м, швидкість=160км/год
+2026-05-03 14:35:54 INFO  [o.e.c.ReportController] Звіт сформовано: 9 рядків
+2026-05-03 14:35:54 WARN  [o.e.c.ReportController] Невірний запит: Відстань не може бути від'ємною: -1
+2026-05-03 14:35:54 WARN  [o.e.service.ReportService] weaponId порожній, використовується значення за замовчуванням
+2026-05-03 14:36:24 INFO  [o.e.c.ReportControllerTest] Starting ReportControllerTest using Java 17.0.18 with PID 21016 (started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 14:36:24 INFO  [o.e.c.ReportControllerTest] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 14:36:27 INFO  [o.e.c.ReportControllerTest] Started ReportControllerTest in 3.623 seconds (process running for 6.069)
+2026-05-03 14:36:29 WARN  [o.e.c.ReportController] Спроба зберегти порожній DOCX звіт
+2026-05-03 14:36:29 INFO  [o.e.c.ReportController] Конвертація: формат=3, пілот=Костянтин БИТКА, відстань=5000м, швидкість=160км/год
+2026-05-03 14:36:29 WARN  [o.e.service.ReportService] contactTime не вказано у детальному звіті, використовується поточний час
+2026-05-03 14:36:29 INFO  [o.e.c.ReportController] Звіт сформовано: 29 рядків
+2026-05-03 14:36:29 WARN  [o.e.c.ReportController] Невірний запит: Невідомий пілот: "Невідомий ПІЛОТ". Допустимі: [Олександр ШЕПРУК, Костянтин БИТКА]
+2026-05-03 14:36:29 WARN  [o.e.c.ReportController] Невірний запит: Невідомий формат: 99. Допустимі значення: 1, 2, 3
+2026-05-03 14:36:29 INFO  [o.e.c.ReportController] Збереження DOCX: test.docx
+2026-05-03 14:36:30 WARN  [o.e.c.ReportController] Невірний запит: Невідомий формат: 99. Допустимі значення: 1, 2, 3
+Невідомий пілот: "Невідомий ПІЛОТ". Допустимі: [Олександр ШЕПРУК, Костянтин БИТКА]
+Відстань не може бути від'ємною: -1
+Швидкість не може бути від'ємною: -1
+2026-05-03 14:36:30 INFO  [o.e.c.ReportController] Збереження TXT: test.txt
+2026-05-03 14:36:30 WARN  [o.e.c.ReportController] Спроба зберегти порожній TXT звіт
+2026-05-03 14:36:30 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Олександр ШЕПРУК, відстань=5000м, швидкість=160км/год
+2026-05-03 14:36:30 WARN  [o.e.service.ReportService] contactTime не вказано, використовується поточний час
+2026-05-03 14:36:30 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 14:36:30 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Олександр ШЕПРУК, відстань=5000м, швидкість=160км/год
+2026-05-03 14:36:30 INFO  [o.e.c.ReportController] Звіт сформовано: 9 рядків
+2026-05-03 14:36:30 WARN  [o.e.c.ReportController] Невірний запит: Відстань не може бути від'ємною: -1
+2026-05-03 14:36:30 WARN  [o.e.service.ReportService] weaponId порожній, використовується значення за замовчуванням
+2026-05-03 15:04:13 INFO  [o.e.CombatReportApplication] Starting CombatReportApplication using Java 17.0.18 with PID 26144 (D:\java\WEB CombatReportFormatter\target\classes started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 15:04:13 INFO  [o.e.CombatReportApplication] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 15:04:15 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 15:04:15 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 15:04:15 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 15:04:16 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 15:04:16 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 15:04:16 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 15:04:16 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 15:04:16 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 15:04:17 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 15:04:17 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 15:04:18 INFO  [o.e.CombatReportApplication] Started CombatReportApplication in 5.372 seconds (process running for 8.014)
+2026-05-03 15:04:27 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 15:04:27 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 15:04:30 INFO  [o.e.CombatReportApplication] Starting CombatReportApplication using Java 17.0.18 with PID 3024 (D:\java\WEB CombatReportFormatter\target\classes started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 15:04:30 INFO  [o.e.CombatReportApplication] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 15:04:32 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 15:04:32 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 15:04:32 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 15:04:33 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 15:04:33 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 15:04:33 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 15:04:33 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 15:04:33 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 15:04:34 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 15:04:34 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 15:04:35 INFO  [o.e.CombatReportApplication] Started CombatReportApplication in 5.378 seconds (process running for 6.309)
+2026-05-03 15:06:51 INFO  [o.e.service.PersonnelService] Додано бійця: Кушнір Сергій Олегович (id=1)
+2026-05-03 15:08:53 INFO  [o.e.service.PersonnelService] Оновлено бійця: Кушнір Сергій Олегович (id=1)
+2026-05-03 15:09:11 INFO  [o.e.service.PersonnelService] Додано бійця: вм вс мвам (id=2)
+2026-05-03 15:09:29 INFO  [o.e.service.PersonnelService] Оновлено бійця: 11 11 11 (id=2)
+2026-05-03 15:09:40 INFO  [o.e.service.PersonnelService] Деактивовано бійця: 11 11 11 (id=2)
+2026-05-03 15:10:05 INFO  [o.e.service.PersonnelService] Додано бійця: 22 22 22 (id=3)
+2026-05-03 15:10:18 INFO  [o.e.service.PersonnelService] Оновлено бійця: 22 22 22 (id=3)
+2026-05-03 15:10:22 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 15:10:22 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 15:11:32 INFO  [o.e.CombatReportApplication] Starting CombatReportApplication using Java 17.0.18 with PID 14916 (D:\java\WEB CombatReportFormatter\target\classes started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 15:11:32 INFO  [o.e.CombatReportApplication] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 15:11:34 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 15:11:34 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 15:11:34 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 15:11:34 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 15:11:34 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 15:11:34 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 15:11:34 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 15:11:34 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 15:11:35 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 15:11:36 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 15:11:36 INFO  [o.e.CombatReportApplication] Started CombatReportApplication in 4.673 seconds (process running for 5.715)
+2026-05-03 15:21:01 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 15:21:01 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 16:02:20 INFO  [o.e.CombatReportApplication] Starting CombatReportApplication using Java 17.0.18 with PID 15788 (D:\java\WEB CombatReportFormatter\target\classes started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 16:02:20 INFO  [o.e.CombatReportApplication] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 16:02:22 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 16:02:22 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 16:02:22 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 16:02:22 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 16:02:23 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 16:02:23 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 16:02:23 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 16:02:23 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 16:02:24 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 16:02:24 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 16:02:24 INFO  [o.e.CombatReportApplication] Started CombatReportApplication in 5.485 seconds (process running for 6.346)
+2026-05-03 16:02:43 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=10000м, швидкість=160км/год
+2026-05-03 16:02:43 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 16:11:24 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 16:11:24 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 16:34:07 INFO  [o.e.CombatReportApplication] Starting CombatReportApplication using Java 17.0.18 with PID 2280 (D:\java\WEB CombatReportFormatter\target\classes started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 16:34:07 INFO  [o.e.CombatReportApplication] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 16:34:09 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 16:34:10 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 16:34:10 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 16:34:10 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 16:34:10 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 16:34:10 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 16:34:10 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 16:34:10 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 16:34:11 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 16:34:12 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 16:34:12 INFO  [o.e.CombatReportApplication] Started CombatReportApplication in 5.996 seconds (process running for 7.309)
+2026-05-03 16:34:37 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 16:34:37 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 16:35:10 INFO  [o.e.CombatReportApplication] Starting CombatReportApplication using Java 17.0.18 with PID 16920 (D:\java\WEB CombatReportFormatter\target\classes started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 16:35:10 INFO  [o.e.CombatReportApplication] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 16:35:12 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 16:35:12 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 16:35:12 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 16:35:13 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 16:35:13 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 16:35:13 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 16:35:13 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 16:35:13 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 16:35:14 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 16:35:15 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 16:35:15 INFO  [o.e.CombatReportApplication] Started CombatReportApplication in 6.068 seconds (process running for 7.38)
+2026-05-03 16:36:13 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=17900м, швидкість=160км/год, курс=50°, висота=2042м
+2026-05-03 16:36:13 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 16:36:33 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=16500м, швидкість=160км/год, курс=57°, висота=1952м
+2026-05-03 16:36:33 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 16:37:50 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Костянтин БИТКА, відстань=16500м, швидкість=160км/год, курс=57°, висота=1952м
+2026-05-03 16:37:50 INFO  [o.e.c.ReportController] Звіт сформовано: 12 рядків
+2026-05-03 16:38:41 INFO  [o.e.c.ReportController] Конвертація: формат=3, пілот=Костянтин БИТКА, відстань=16500м, швидкість=160км/год, курс=57°, висота=1952м
+2026-05-03 16:38:41 INFO  [o.e.c.ReportController] Звіт сформовано: 29 рядків
+2026-05-03 16:38:44 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=16500м, швидкість=160км/год, курс=57°, висота=1952м
+2026-05-03 16:38:44 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 16:39:09 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 16:39:09 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 16:52:02 INFO  [o.e.CombatReportApplication] Starting CombatReportApplication using Java 17.0.18 with PID 3332 (D:\java\WEB CombatReportFormatter\target\classes started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 16:52:02 INFO  [o.e.CombatReportApplication] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 16:52:04 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 16:52:04 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 16:52:04 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 16:52:04 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 16:52:05 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 16:52:05 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 16:52:05 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 16:52:05 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 16:52:06 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 16:52:06 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 16:52:06 INFO  [o.e.CombatReportApplication] Started CombatReportApplication in 4.803 seconds (process running for 5.608)
+2026-05-03 16:52:42 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=17900м, швидкість=160км/год, курс=50°, висота(ручна)=2042м, висота(з JSON)=2042м
+2026-05-03 16:52:42 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 16:55:24 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Костянтин БИТКА, відстань=17900м, швидкість=160км/год, курс=50°, висота(ручна)=2042м, висота(з JSON)=2042м
+2026-05-03 16:55:24 INFO  [o.e.c.ReportController] Звіт сформовано: 12 рядків
+2026-05-03 16:55:59 INFO  [o.e.c.ReportController] Конвертація: формат=3, пілот=Костянтин БИТКА, відстань=17900м, швидкість=160км/год, курс=50°, висота(ручна)=2042м, висота(з JSON)=2042м
+2026-05-03 16:55:59 INFO  [o.e.c.ReportController] Звіт сформовано: 29 рядків
+2026-05-03 16:56:01 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Костянтин БИТКА, відстань=17900м, швидкість=160км/год, курс=50°, висота(ручна)=2042м, висота(з JSON)=2042м
+2026-05-03 16:56:01 INFO  [o.e.c.ReportController] Звіт сформовано: 12 рядків
+2026-05-03 16:56:14 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Костянтин БИТКА, відстань=18400м, швидкість=200км/год, курс=50°, висота(ручна)=2092м, висота(з JSON)=2042м
+2026-05-03 16:56:14 INFO  [o.e.c.ReportController] Звіт сформовано: 12 рядків
+2026-05-03 16:56:18 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Костянтин БИТКА, відстань=18400м, швидкість=200км/год, курс=55°, висота(ручна)=2092м, висота(з JSON)=2042м
+2026-05-03 16:56:18 INFO  [o.e.c.ReportController] Звіт сформовано: 12 рядків
+2026-05-03 16:56:36 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=18400м, швидкість=200км/год, курс=55°, висота(ручна)=2092м, висота(з JSON)=2042м
+2026-05-03 16:56:36 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:03:34 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 17:03:34 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 17:05:13 INFO  [o.e.CombatReportApplication] Starting CombatReportApplication using Java 17.0.18 with PID 23692 (D:\java\WEB CombatReportFormatter\target\classes started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 17:05:13 INFO  [o.e.CombatReportApplication] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 17:05:15 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 17:05:15 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 17:05:15 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 17:05:15 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 17:05:16 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 17:05:16 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 17:05:16 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 17:05:16 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 17:05:16 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 17:05:17 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 17:05:17 INFO  [o.e.CombatReportApplication] Started CombatReportApplication in 4.461 seconds (process running for 5.281)
+2026-05-03 17:05:38 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=55м, швидкість=200км/год, курс=2042°, висота(ручна)=18400м, висота(з JSON)=2042м
+2026-05-03 17:05:38 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:06:20 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=900м, швидкість=180км/год, курс=2047°, висота(ручна)=18452м, висота(з JSON)=2042м
+2026-05-03 17:06:20 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:06:30 INFO  [o.e.c.ReportController] Збереження TXT: combat_report.txt
+2026-05-03 17:07:12 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Костянтин БИТКА, відстань=900м, швидкість=180км/год, курс=2047°, висота(ручна)=18452м, висота(з JSON)=2042м
+2026-05-03 17:07:12 INFO  [o.e.c.ReportController] Звіт сформовано: 12 рядків
+2026-05-03 17:08:08 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=900м, швидкість=180км/год, курс=2047°, висота(ручна)=18452м, висота(з JSON)=2042м
+2026-05-03 17:08:08 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:08:33 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Костянтин БИТКА, відстань=900м, швидкість=180км/год, курс=2047°, висота(ручна)=18452м, висота(з JSON)=2042м
+2026-05-03 17:08:33 INFO  [o.e.c.ReportController] Звіт сформовано: 12 рядків
+2026-05-03 17:09:40 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 17:09:40 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 17:11:56 INFO  [o.e.CombatReportApplication] Starting CombatReportApplication using Java 17.0.18 with PID 12156 (D:\java\WEB CombatReportFormatter\target\classes started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 17:11:56 INFO  [o.e.CombatReportApplication] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 17:11:59 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 17:11:59 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 17:11:59 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 17:12:00 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 17:12:00 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 17:12:00 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 17:12:00 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 17:12:00 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 17:12:01 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 17:12:01 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 17:12:02 INFO  [o.e.CombatReportApplication] Started CombatReportApplication in 6.467 seconds (process running for 8.223)
+2026-05-03 17:12:18 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=900м, швидкість=180км/год, курс=2047°, висота(ручна)=18452м, висота(з JSON)=2042м
+2026-05-03 17:12:18 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:12:42 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=900м, швидкість=180км/год, курс=2047°, висота(ручна)=18452м, висота(з JSON)=1000м
+2026-05-03 17:12:42 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:13:04 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=900м, швидкість=180км/год, курс=2047°, висота(ручна)=18452м, висота(з JSON)=1000м
+2026-05-03 17:13:04 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:13:08 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=900м, швидкість=180км/год, курс=2047°, висота(ручна)=18452м, висота(з JSON)=1000м
+2026-05-03 17:13:08 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:13:12 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=900м, швидкість=180км/год, курс=2047°, висота(ручна)=18452м, висота(з JSON)=600м
+2026-05-03 17:13:12 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:13:34 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=900м, швидкість=180км/год, курс=2047°, висота(ручна)=18452м, висота(з JSON)=600м
+2026-05-03 17:13:34 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:13:40 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=900м, швидкість=180км/год, курс=2047°, висота(ручна)=18452м, висота(з JSON)=1000м
+2026-05-03 17:13:40 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:13:56 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=900м, швидкість=180км/год, курс=2047°, висота(ручна)=18452м, висота(з JSON)=400м
+2026-05-03 17:13:56 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:13:57 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=900м, швидкість=180км/год, курс=2047°, висота(ручна)=18452м, висота(з JSON)=400м
+2026-05-03 17:13:57 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:15:19 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 17:15:19 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 17:21:33 INFO  [o.e.CombatReportApplication] Starting CombatReportApplication using Java 17.0.18 with PID 26000 (D:\java\WEB CombatReportFormatter\target\classes started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 17:21:33 INFO  [o.e.CombatReportApplication] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 17:21:35 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 17:21:35 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 17:21:35 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 17:21:35 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 17:21:36 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 17:21:36 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 17:21:36 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 17:21:36 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 17:21:37 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 17:21:37 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 17:21:37 INFO  [o.e.CombatReportApplication] Started CombatReportApplication in 4.722 seconds (process running for 5.701)
+2026-05-03 17:22:32 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=900м, швидкість=180км/год, курс=2047°, висота(ручна)=18452м, висота(з JSON)=400м
+2026-05-03 17:22:32 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:22:46 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=900м, швидкість=180км/год, курс=2047°, висота(ручна)=18452м, висота(з JSON)=2042м
+2026-05-03 17:22:46 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:22:57 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=900м, швидкість=180км/год, курс=2047°, висота(ручна)=18452м, висота(з JSON)=500м
+2026-05-03 17:22:57 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:27:26 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 17:27:26 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 17:27:56 INFO  [o.e.CombatReportApplication] Starting CombatReportApplication using Java 17.0.18 with PID 15920 (D:\java\WEB CombatReportFormatter\target\classes started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 17:27:56 INFO  [o.e.CombatReportApplication] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 17:27:58 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 17:27:58 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 17:27:58 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 17:27:59 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 17:27:59 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 17:27:59 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 17:27:59 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 17:27:59 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 17:28:00 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 17:28:01 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 17:28:01 INFO  [o.e.CombatReportApplication] Started CombatReportApplication in 5.689 seconds (process running for 6.472)
+2026-05-03 17:30:00 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 17:30:00 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 17:30:08 INFO  [o.e.CombatReportApplication] Starting CombatReportApplication using Java 17.0.18 with PID 21932 (D:\java\WEB CombatReportFormatter\target\classes started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 17:30:08 INFO  [o.e.CombatReportApplication] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 17:30:10 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 17:30:10 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 17:30:10 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 17:30:11 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 17:30:11 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 17:30:11 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 17:30:11 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 17:30:11 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 17:30:12 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 17:30:12 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 17:30:13 INFO  [o.e.CombatReportApplication] Started CombatReportApplication in 5.038 seconds (process running for 5.892)
+2026-05-03 17:31:07 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=17900м, швидкість=160км/год, курс=50°, висота(ручна)=2042м, висота(з JSON)=1000м
+2026-05-03 17:31:07 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:31:35 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=17900м, швидкість=160км/год, курс=50°, висота(ручна)=2042м, висота(з JSON)=400м
+2026-05-03 17:31:35 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:32:03 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=12900м, швидкість=160км/год, курс=250°, висота(ручна)=124м, висота(з JSON)=400м
+2026-05-03 17:32:03 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:32:59 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 17:32:59 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 17:33:06 INFO  [o.e.CombatReportApplication] Starting CombatReportApplication using Java 17.0.18 with PID 25836 (D:\java\WEB CombatReportFormatter\target\classes started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 17:33:06 INFO  [o.e.CombatReportApplication] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 17:33:07 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 17:33:07 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 17:33:07 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 17:33:08 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 17:33:08 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 17:33:08 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 17:33:08 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 17:33:08 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 17:33:09 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 17:33:09 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 17:33:09 INFO  [o.e.CombatReportApplication] Started CombatReportApplication in 4.46 seconds (process running for 5.253)
+2026-05-03 17:33:16 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=12900м, швидкість=160км/год, курс=250°, висота(ручна)=124м, висота(з JSON)=400м
+2026-05-03 17:33:16 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:33:44 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=17900м, швидкість=160км/год, курс=50°, висота(ручна)=2042м, висота(з JSON)=400м
+2026-05-03 17:33:44 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:33:45 INFO  [o.e.c.ReportController] Збереження TXT: contact-report-air-10090.txt
+2026-05-03 17:34:07 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=17200м, швидкість=140км/год, курс=150°, висота(ручна)=1722м, висота(з JSON)=400м
+2026-05-03 17:34:07 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:34:19 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=17200м, швидкість=140км/год, курс=150°, висота(ручна)=400м, висота(з JSON)=400м
+2026-05-03 17:34:19 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:34:30 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Костянтин БИТКА, відстань=17200м, швидкість=140км/год, курс=150°, висота(ручна)=400м, висота(з JSON)=400м
+2026-05-03 17:34:30 INFO  [o.e.c.ReportController] Звіт сформовано: 12 рядків
+2026-05-03 17:34:43 INFO  [o.e.c.ReportController] Конвертація: формат=3, пілот=Костянтин БИТКА, відстань=17200м, швидкість=140км/год, курс=150°, висота(ручна)=400м, висота(з JSON)=400м
+2026-05-03 17:34:43 INFO  [o.e.c.ReportController] Звіт сформовано: 29 рядків
+2026-05-03 17:34:45 INFO  [o.e.c.ReportController] Збереження TXT: contact-report-air-10090.txt
+2026-05-03 17:34:51 INFO  [o.e.c.ReportController] Збереження DOCX: contact-report-air-10090.docx
+2026-05-03 17:35:21 INFO  [o.e.c.ReportController] Збереження DOCX: contact-report-air-10090.docx
+2026-05-03 17:35:45 INFO  [o.e.c.ReportController] Конвертація: формат=3, пілот=Олександр ШЕПРУК, відстань=17200м, швидкість=140км/год, курс=150°, висота(ручна)=400м, висота(з JSON)=400м
+2026-05-03 17:35:45 INFO  [o.e.c.ReportController] Звіт сформовано: 28 рядків
+2026-05-03 17:35:46 INFO  [o.e.c.ReportController] Збереження DOCX: contact-report-air-10090.docx
+2026-05-03 17:36:42 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Олександр ШЕПРУК, відстань=17200м, швидкість=140км/год, курс=150°, висота(ручна)=400м, висота(з JSON)=400м
+2026-05-03 17:36:42 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:36:57 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Олександр ШЕПРУК, відстань=15100м, швидкість=50км/год, курс=131°, висота(ручна)=222м, висота(з JSON)=400м
+2026-05-03 17:36:57 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:37:52 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Олександр ШЕПРУК, відстань=15100м, швидкість=50км/год, курс=131°, висота(ручна)=222м, висота(з JSON)=400м
+2026-05-03 17:37:52 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:37:58 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Олександр ШЕПРУК, відстань=15100м, швидкість=50км/год, курс=131°, висота(ручна)=222м, висота(з JSON)=400м
+2026-05-03 17:37:58 INFO  [o.e.c.ReportController] Звіт сформовано: 12 рядків
+2026-05-03 17:38:03 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 17:38:03 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 17:41:01 INFO  [o.e.c.ReportControllerTest] Starting ReportControllerTest using Java 17.0.18 with PID 26248 (started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 17:41:01 INFO  [o.e.c.ReportControllerTest] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 17:41:03 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 17:41:03 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 17:41:03 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 17:41:04 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 17:41:05 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 17:41:05 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 17:41:05 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 17:41:05 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 17:41:06 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 17:41:07 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 17:41:08 INFO  [o.e.c.ReportControllerTest] Started ReportControllerTest in 8.483 seconds (process running for 10.786)
+2026-05-03 17:41:09 WARN  [o.e.c.ReportController] Спроба зберегти порожній DOCX звіт
+2026-05-03 17:41:09 INFO  [o.e.c.ReportController] Конвертація: формат=3, пілот=Костянтин БИТКА, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:41:09 WARN  [o.e.service.ReportService] contactTime не вказано у детальному звіті, використовується поточний час
+2026-05-03 17:41:09 INFO  [o.e.c.ReportController] Звіт сформовано: 29 рядків
+2026-05-03 17:41:10 WARN  [o.e.c.ReportController] Невірний запит: Невідомий пілот: "Невідомий ПІЛОТ". Допустимі: [Олександр ШЕПРУК, Костянтин БИТКА]
+2026-05-03 17:41:10 WARN  [o.e.c.ReportController] Невірний запит: Невідомий формат: 99. Допустимі значення: 1, 2, 3
+2026-05-03 17:41:10 INFO  [o.e.c.ReportController] Збереження DOCX: test.docx
+2026-05-03 17:41:11 WARN  [o.e.c.ReportController] Невірний запит: Невідомий формат: 99. Допустимі значення: 1, 2, 3
+Невідомий пілот: "Невідомий ПІЛОТ". Допустимі: [Олександр ШЕПРУК, Костянтин БИТКА]
+Відстань не може бути від'ємною: -1
+Швидкість не може бути від'ємною: -1
+2026-05-03 17:41:11 INFO  [o.e.c.ReportController] Збереження TXT: test.txt
+2026-05-03 17:41:11 WARN  [o.e.c.ReportController] Спроба зберегти порожній TXT звіт
+2026-05-03 17:41:11 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Олександр ШЕПРУК, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:41:11 WARN  [o.e.service.ReportService] contactTime не вказано, використовується поточний час
+2026-05-03 17:41:11 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:41:11 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Олександр ШЕПРУК, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:41:11 INFO  [o.e.c.ReportController] Звіт сформовано: 10 рядків
+2026-05-03 17:41:11 WARN  [o.e.c.ReportController] Невірний запит: Відстань не може бути від'ємною: -1
+2026-05-03 17:41:11 WARN  [o.e.service.ReportService] weaponId порожній, використовується значення за замовчуванням
+2026-05-03 17:41:11 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 17:41:11 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 17:44:46 INFO  [o.e.c.ReportControllerTest] Starting ReportControllerTest using Java 17.0.18 with PID 23088 (started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 17:44:46 INFO  [o.e.c.ReportControllerTest] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 17:44:49 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 17:44:49 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 17:44:49 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 17:44:50 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 17:44:51 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 17:44:51 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 17:44:51 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 17:44:51 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 17:44:52 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 17:44:53 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 17:44:54 INFO  [o.e.c.ReportControllerTest] Started ReportControllerTest in 8.179 seconds (process running for 10.315)
+2026-05-03 17:44:55 WARN  [o.e.c.ReportController] Спроба зберегти порожній DOCX звіт
+2026-05-03 17:44:55 INFO  [o.e.c.ReportController] Конвертація: формат=3, пілот=Костянтин БИТКА, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:44:55 WARN  [o.e.service.ReportService] contactTime не вказано у детальному звіті, використовується поточний час
+2026-05-03 17:44:55 INFO  [o.e.c.ReportController] Звіт сформовано: 29 рядків
+2026-05-03 17:44:55 WARN  [o.e.c.ReportController] Невірний запит: Невідомий пілот: "Невідомий ПІЛОТ". Допустимі: [Костянтин БИТКА, Олександр ШЕПРУК]
+2026-05-03 17:44:55 WARN  [o.e.c.ReportController] Невірний запит: Невідомий формат: 99. Допустимі значення: 1, 2, 3
+2026-05-03 17:44:55 INFO  [o.e.c.ReportController] Збереження DOCX: test.docx
+2026-05-03 17:44:56 WARN  [o.e.c.ReportController] Невірний запит: Невідомий формат: 99. Допустимі значення: 1, 2, 3
+Невідомий пілот: "Невідомий ПІЛОТ". Допустимі: [Костянтин БИТКА, Олександр ШЕПРУК]
+Відстань не може бути від'ємною: -1
+Швидкість не може бути від'ємною: -1
+2026-05-03 17:44:56 INFO  [o.e.c.ReportController] Збереження TXT: test.txt
+2026-05-03 17:44:56 WARN  [o.e.c.ReportController] Спроба зберегти порожній TXT звіт
+2026-05-03 17:44:56 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Олександр ШЕПРУК, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:44:56 WARN  [o.e.service.ReportService] contactTime не вказано, використовується поточний час
+2026-05-03 17:44:56 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:44:56 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Олександр ШЕПРУК, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:44:56 INFO  [o.e.c.ReportController] Звіт сформовано: 10 рядків
+2026-05-03 17:44:56 WARN  [o.e.c.ReportController] Невірний запит: Відстань не може бути від'ємною: -1
+2026-05-03 17:44:56 WARN  [o.e.service.ReportService] weaponId порожній, використовується значення за замовчуванням
+2026-05-03 17:44:57 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 17:44:57 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 17:47:49 INFO  [o.e.c.ReportControllerTest] Starting ReportControllerTest using Java 17.0.18 with PID 22252 (started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 17:47:49 INFO  [o.e.c.ReportControllerTest] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 17:47:51 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 17:47:51 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 17:47:51 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 17:47:52 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 17:47:53 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 17:47:53 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 17:47:53 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 17:47:53 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 17:47:54 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 17:47:55 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 17:47:56 INFO  [o.e.c.ReportControllerTest] Started ReportControllerTest in 7.835 seconds (process running for 10.376)
+2026-05-03 17:47:57 WARN  [o.e.c.ReportController] Спроба зберегти порожній DOCX звіт
+2026-05-03 17:47:57 INFO  [o.e.c.ReportController] Конвертація: формат=3, пілот=Костянтин БИТКА, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:47:57 WARN  [o.e.service.ReportService] contactTime не вказано у детальному звіті, використовується поточний час
+2026-05-03 17:47:57 INFO  [o.e.c.ReportController] Звіт сформовано: 29 рядків
+2026-05-03 17:47:57 WARN  [o.e.c.ReportController] Невірний запит: Невідомий пілот: "Невідомий ПІЛОТ". Допустимі: [Костянтин БИТКА, Олександр ШЕПРУК]
+2026-05-03 17:47:57 WARN  [o.e.c.ReportController] Невірний запит: Невідомий формат: 99. Допустимі значення: 1, 2, 3
+2026-05-03 17:47:57 INFO  [o.e.c.ReportController] Збереження DOCX: test.docx
+2026-05-03 17:47:58 WARN  [o.e.c.ReportController] Невірний запит: Невідомий формат: 99. Допустимі значення: 1, 2, 3
+Невідомий пілот: "Невідомий ПІЛОТ". Допустимі: [Костянтин БИТКА, Олександр ШЕПРУК]
+Відстань не може бути від'ємною: -1
+Швидкість не може бути від'ємною: -1
+2026-05-03 17:47:58 INFO  [o.e.c.ReportController] Збереження TXT: test.txt
+2026-05-03 17:47:58 WARN  [o.e.c.ReportController] Спроба зберегти порожній TXT звіт
+2026-05-03 17:47:58 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Олександр ШЕПРУК, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:47:58 WARN  [o.e.service.ReportService] contactTime не вказано, використовується поточний час
+2026-05-03 17:47:58 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:47:58 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Олександр ШЕПРУК, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:47:58 INFO  [o.e.c.ReportController] Звіт сформовано: 10 рядків
+2026-05-03 17:47:58 WARN  [o.e.c.ReportController] Невірний запит: Відстань не може бути від'ємною: -1
+2026-05-03 17:47:58 WARN  [o.e.service.ReportService] weaponId порожній, використовується значення за замовчуванням
+2026-05-03 17:47:58 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 17:47:58 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 17:49:18 INFO  [o.e.c.ReportControllerTest] Starting ReportControllerTest using Java 17.0.18 with PID 15248 (started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 17:49:18 INFO  [o.e.c.ReportControllerTest] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 17:49:21 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 17:49:21 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 17:49:21 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 17:49:22 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 17:49:23 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 17:49:23 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 17:49:23 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 17:49:23 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 17:49:24 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 17:49:25 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 17:49:26 INFO  [o.e.c.ReportControllerTest] Started ReportControllerTest in 8.361 seconds (process running for 10.377)
+2026-05-03 17:49:27 WARN  [o.e.c.ReportController] Спроба зберегти порожній DOCX звіт
+2026-05-03 17:49:27 INFO  [o.e.c.ReportController] Конвертація: формат=3, пілот=Костянтин БИТКА, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:49:27 WARN  [o.e.service.ReportService] contactTime не вказано у детальному звіті, використовується поточний час
+2026-05-03 17:49:27 INFO  [o.e.c.ReportController] Звіт сформовано: 29 рядків
+2026-05-03 17:49:27 WARN  [o.e.c.ReportController] Невірний запит: Невідомий пілот: "Невідомий ПІЛОТ". Допустимі: [Костянтин БИТКА, Олександр ШЕПРУК]
+2026-05-03 17:49:27 WARN  [o.e.c.ReportController] Невірний запит: Невідомий формат: 99. Допустимі значення: 1, 2, 3
+2026-05-03 17:49:27 INFO  [o.e.c.ReportController] Збереження DOCX: test.docx
+2026-05-03 17:49:28 WARN  [o.e.c.ReportController] Невірний запит: Невідомий формат: 99. Допустимі значення: 1, 2, 3
+Невідомий пілот: "Невідомий ПІЛОТ". Допустимі: [Костянтин БИТКА, Олександр ШЕПРУК]
+Відстань не може бути від'ємною: -1
+Швидкість не може бути від'ємною: -1
+2026-05-03 17:49:28 INFO  [o.e.c.ReportController] Збереження TXT: test.txt
+2026-05-03 17:49:28 WARN  [o.e.c.ReportController] Спроба зберегти порожній TXT звіт
+2026-05-03 17:49:28 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Олександр ШЕПРУК, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:49:28 WARN  [o.e.service.ReportService] contactTime не вказано, використовується поточний час
+2026-05-03 17:49:28 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:49:28 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Олександр ШЕПРУК, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:49:28 INFO  [o.e.c.ReportController] Звіт сформовано: 10 рядків
+2026-05-03 17:49:28 WARN  [o.e.c.ReportController] Невірний запит: Відстань не може бути від'ємною: -1
+2026-05-03 17:49:29 WARN  [o.e.service.ReportService] weaponId порожній, використовується значення за замовчуванням
+2026-05-03 17:49:29 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 17:49:29 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 17:49:59 INFO  [o.e.c.ReportControllerTest] Starting ReportControllerTest using Java 17.0.18 with PID 22508 (started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 17:49:59 INFO  [o.e.c.ReportControllerTest] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 17:50:01 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 17:50:01 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 17:50:02 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 17:50:02 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 17:50:03 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 17:50:03 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 17:50:03 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 17:50:03 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 17:50:05 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 17:50:06 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 17:50:07 INFO  [o.e.c.ReportControllerTest] Started ReportControllerTest in 8.73 seconds (process running for 11.206)
+2026-05-03 17:50:08 WARN  [o.e.c.ReportController] Спроба зберегти порожній DOCX звіт
+2026-05-03 17:50:08 INFO  [o.e.c.ReportController] Конвертація: формат=3, пілот=Костянтин БИТКА, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:50:08 WARN  [o.e.service.ReportService] contactTime не вказано у детальному звіті, використовується поточний час
+2026-05-03 17:50:08 INFO  [o.e.c.ReportController] Звіт сформовано: 29 рядків
+2026-05-03 17:50:08 WARN  [o.e.c.ReportController] Невірний запит: Невідомий пілот: "Невідомий ПІЛОТ". Допустимі: [Олександр ШЕПРУК, Костянтин БИТКА]
+2026-05-03 17:50:08 WARN  [o.e.c.ReportController] Невірний запит: Невідомий формат: 99. Допустимі значення: 1, 2, 3
+2026-05-03 17:50:08 INFO  [o.e.c.ReportController] Збереження DOCX: test.docx
+2026-05-03 17:50:09 WARN  [o.e.c.ReportController] Невірний запит: Невідомий формат: 99. Допустимі значення: 1, 2, 3
+Невідомий пілот: "Невідомий ПІЛОТ". Допустимі: [Олександр ШЕПРУК, Костянтин БИТКА]
+Відстань не може бути від'ємною: -1
+Швидкість не може бути від'ємною: -1
+2026-05-03 17:50:09 INFO  [o.e.c.ReportController] Збереження TXT: test.txt
+2026-05-03 17:50:09 WARN  [o.e.c.ReportController] Спроба зберегти порожній TXT звіт
+2026-05-03 17:50:09 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Олександр ШЕПРУК, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:50:09 WARN  [o.e.service.ReportService] contactTime не вказано, використовується поточний час
+2026-05-03 17:50:09 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:50:09 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Олександр ШЕПРУК, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:50:09 INFO  [o.e.c.ReportController] Звіт сформовано: 10 рядків
+2026-05-03 17:50:09 WARN  [o.e.c.ReportController] Невірний запит: Відстань не може бути від'ємною: -1
+2026-05-03 17:50:09 WARN  [o.e.service.ReportService] weaponId порожній, використовується значення за замовчуванням
+2026-05-03 17:50:10 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 17:50:10 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-03 17:55:17 INFO  [o.e.c.ReportControllerTest] Starting ReportControllerTest using Java 17.0.18 with PID 4116 (started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-03 17:55:17 INFO  [o.e.c.ReportControllerTest] No active profile set, falling back to 1 default profile: "default"
+2026-05-03 17:55:20 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-03 17:55:20 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-03 17:55:20 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-03 17:55:21 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-03 17:55:22 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-03 17:55:22 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-03 17:55:22 WARN  [org.hibernate.orm.deprecation] HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-03 17:55:22 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-03 17:55:23 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-03 17:55:24 WARN  [o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-03 17:55:25 INFO  [o.e.c.ReportControllerTest] Started ReportControllerTest in 8.147 seconds (process running for 10.16)
+2026-05-03 17:55:26 WARN  [o.e.c.ReportController] Спроба зберегти порожній DOCX звіт
+2026-05-03 17:55:26 INFO  [o.e.c.ReportController] Конвертація: формат=3, пілот=Костянтин БИТКА, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:55:26 WARN  [o.e.service.ReportService] contactTime не вказано у детальному звіті, використовується поточний час
+2026-05-03 17:55:26 INFO  [o.e.c.ReportController] Звіт сформовано: 29 рядків
+2026-05-03 17:55:26 WARN  [o.e.c.ReportController] Невірний запит: Невідомий пілот: "Невідомий ПІЛОТ". Допустимі: [Олександр ШЕПРУК, Костянтин БИТКА]
+2026-05-03 17:55:26 WARN  [o.e.c.ReportController] Невірний запит: Невідомий формат: 99. Допустимі значення: 1, 2, 3
+2026-05-03 17:55:26 INFO  [o.e.c.ReportController] Збереження DOCX: test.docx
+2026-05-03 17:55:27 WARN  [o.e.c.ReportController] Невірний запит: Невідомий формат: 99. Допустимі значення: 1, 2, 3
+Невідомий пілот: "Невідомий ПІЛОТ". Допустимі: [Олександр ШЕПРУК, Костянтин БИТКА]
+Відстань не може бути від'ємною: -1
+Швидкість не може бути від'ємною: -1
+2026-05-03 17:55:27 INFO  [o.e.c.ReportController] Збереження TXT: test.txt
+2026-05-03 17:55:27 WARN  [o.e.c.ReportController] Спроба зберегти порожній TXT звіт
+2026-05-03 17:55:27 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Олександр ШЕПРУК, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:55:27 WARN  [o.e.service.ReportService] contactTime не вказано, використовується поточний час
+2026-05-03 17:55:27 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-03 17:55:27 INFO  [o.e.c.ReportController] Конвертація: формат=2, пілот=Олександр ШЕПРУК, відстань=5000м, швидкість=160км/год, курс=0°, висота(ручна)=0м, висота(з JSON)=300м
+2026-05-03 17:55:27 INFO  [o.e.c.ReportController] Звіт сформовано: 10 рядків
+2026-05-03 17:55:27 WARN  [o.e.c.ReportController] Невірний запит: Відстань не може бути від'ємною: -1
+2026-05-03 17:55:27 WARN  [o.e.service.ReportService] weaponId порожній, використовується значення за замовчуванням
+2026-05-03 17:55:28 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-03 17:55:28 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
