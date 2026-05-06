@@ -88,15 +88,6 @@
         .form-group textarea { height: 80px; resize: vertical; }
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
 
-        /* Імпорт */
-        .import-zone {
-            border: 2px dashed #90caf9; border-radius: 8px;
-            padding: 20px; text-align: center; color: #1976d2;
-            cursor: pointer; transition: background 0.2s;
-        }
-        .import-zone:hover { background: #e3f2fd; }
-        .import-zone input { display: none; }
-
         .toast {
             position: fixed; bottom: 20px; right: 20px;
             padding: 10px 18px; border-radius: 6px; color: white;
@@ -150,12 +141,14 @@
 
         <div class="container">
             <div class="toolbar">
+                <select id="yearFilter">
+                    <option value="">— Всі роки —</option>
+                </select>
                 <select id="monthFilter">
                     <option value="">— Всі місяці —</option>
                 </select>
                 <input type="text" id="searchInput" placeholder="🔍 Пошук..." style="width:180px">
                 <button class="btn btn-success" onclick="openAddModal()">+ Додати запис</button>
-                <button class="btn btn-primary" onclick="document.getElementById('importModal').classList.add('open')">📥 Імпорт xlsx</button>
                 <button class="btn btn-warning" onclick="exportXlsx()">📤 Експорт xlsx</button>
             </div>
 
@@ -303,25 +296,6 @@
             </div>
         </div>
 
-        <!-- Імпорт -->
-        <div class="modal-overlay" id="importModal">
-            <div class="modal" style="width:420px">
-                <h2>📥 Імпорт з Excel</h2>
-                <p style="color:#666;font-size:13px;margin-bottom:16px">
-                    Вибери файл <b>Звіт_БпАК.xlsx</b>. Записи що вже є в БД — пропускаються (по порядковому №).
-                </p>
-                <div class="import-zone" onclick="document.getElementById('xlsxFile').click()">
-                    <input type="file" id="xlsxFile" accept=".xlsx" onchange="handleImport(this)">
-                    <div style="font-size:32px;margin-bottom:8px">📂</div>
-                    <div>Натисни або перетягни файл .xlsx</div>
-                </div>
-                <div id="importStatus" style="margin-top:12px;font-size:13px;color:#555"></div>
-                <div class="modal-actions" style="margin-top:16px">
-                    <button class="btn" onclick="closeModal('importModal')" style="background:#eee">Закрити</button>
-                </div>
-            </div>
-        </div>
-
         <!-- Підтвердження видалення -->
         <div class="confirm-overlay" id="confirmModal">
             <div class="confirm-box">
@@ -340,8 +314,20 @@
             let deleteTargetId = null;
 
             // ===== ІНІЦІАЛІЗАЦІЯ =====
+            loadYears();
             loadMonths();
             loadRecords();
+
+            async function loadYears() {
+                const res = await fetch('/flights/api/years');
+                const years = await res.json();
+                const sel = document.getElementById('yearFilter');
+                years.forEach(y => {
+                    const opt = document.createElement('option');
+                    opt.value = y; opt.textContent = y;
+                    sel.appendChild(opt);
+                });
+            }
 
             async function loadMonths() {
                 const res = await fetch('/flights/api/months');
@@ -356,7 +342,10 @@
 
             async function loadRecords() {
                 const month = document.getElementById('monthFilter').value;
-                const url = month ? `/flights/api?month=${encodeURIComponent(month)}` : '/flights/api';
+                const year  = document.getElementById('yearFilter').value;
+                let url = '/flights/api';
+                if (month) url += `?month=${encodeURIComponent(month)}`;
+                else if (year) url += `?year=${year}`;
                 const res = await fetch(url);
                 if (!res.ok) { showToast('Помилка завантаження', 'err'); return; }
                 allRecords = await res.json();
@@ -364,7 +353,8 @@
                 renderStats();
             }
 
-            document.getElementById('monthFilter').onchange = loadRecords;
+            document.getElementById('yearFilter').onchange = () => { document.getElementById('monthFilter').value = ''; loadRecords(); };
+            document.getElementById('monthFilter').onchange = () => { document.getElementById('yearFilter').value = ''; loadRecords(); };
             document.getElementById('searchInput').oninput = applyFilter;
 
             function applyFilter() {
@@ -527,31 +517,14 @@
             }
 
             // ===== ІМПОРТ =====
-            async function handleImport(input) {
-                const file = input.files[0];
-                if (!file) return;
-                document.getElementById('importStatus').textContent = '⏳ Імпортую...';
-                const formData = new FormData();
-                formData.append('file', file);
-                const res = await fetch('/flights/api/import', {method:'POST', body: formData});
-                if (res.ok) {
-                    const data = await res.json();
-                    document.getElementById('importStatus').innerHTML =
-                        `<span style="color:#2e7d32">✅ Імпортовано: <b>${data.imported}</b> записів</span>`;
-                    await loadRecords();
-                    await loadMonths();
-                } else {
-                    const msg = await res.text();
-                    document.getElementById('importStatus').innerHTML =
-                        `<span style="color:#c62828">❌ Помилка: ${msg}</span>`;
-                }
-                input.value = '';
-            }
 
             // ===== ЕКСПОРТ =====
             function exportXlsx() {
                 const month = document.getElementById('monthFilter').value;
-                const url = month ? `/flights/api/export?month=${encodeURIComponent(month)}` : '/flights/api/export';
+                const year  = document.getElementById('yearFilter').value;
+                let url = '/flights/api/export';
+                if (month) url += `?month=${encodeURIComponent(month)}`;
+                else if (year) url += `?year=${year}`;
                 window.location.href = url;
             }
 

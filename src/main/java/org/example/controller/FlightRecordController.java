@@ -9,12 +9,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/flights")
@@ -36,11 +34,17 @@ public class FlightRecordController {
     /** REST: всі записи або за місяцем */
     @GetMapping("/api")
     @ResponseBody
-    public ResponseEntity<?> getAll(@RequestParam(required = false) String month) {
+    public ResponseEntity<?> getAll(@RequestParam(required = false) String month,
+                                    @RequestParam(required = false) Integer year) {
         try {
-            List<FlightRecord> records = (month != null && !month.isBlank())
-                    ? service.getByMonth(month)
-                    : service.getAll();
+            List<FlightRecord> records;
+            if (month != null && !month.isBlank()) {
+                records = service.getByMonth(month);
+            } else if (year != null) {
+                records = service.getByYear(year);
+            } else {
+                records = service.getAll();
+            }
             return ResponseEntity.ok(records);
         } catch (Exception e) {
             log.error("Помилка отримання записів", e);
@@ -53,6 +57,13 @@ public class FlightRecordController {
     @ResponseBody
     public List<String> getMonths() {
         return service.getMonths();
+    }
+
+    /** REST: список років */
+    @GetMapping("/api/years")
+    @ResponseBody
+    public List<Integer> getYears() {
+        return service.getYears();
     }
 
     /** REST: один запис */
@@ -101,27 +112,15 @@ public class FlightRecordController {
         }
     }
 
-    /** Імпорт xlsx */
-    @PostMapping("/api/import")
-    @ResponseBody
-    public ResponseEntity<?> importXlsx(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) return ResponseEntity.badRequest().body("Файл порожній");
-        try {
-            int count = service.importFromXlsx(file);
-            return ResponseEntity.ok(Map.of("imported", count));
-        } catch (Exception e) {
-            log.error("Помилка імпорту xlsx", e);
-            return ResponseEntity.internalServerError().body("Помилка імпорту: " + e.getMessage());
-        }
-    }
-
     /** Експорт xlsx */
     @GetMapping("/api/export")
-    public ResponseEntity<byte[]> exportXlsx(@RequestParam(required = false) String month) {
+    public ResponseEntity<byte[]> exportXlsx(@RequestParam(required = false) String month,
+                                             @RequestParam(required = false) Integer year) {
         try {
-            byte[] data = service.exportToXlsx(month);
+            byte[] data = service.exportToXlsx(month, year);
+            String suffix = month != null ? "_" + month : (year != null ? "_" + year : "");
             String filename = URLEncoder.encode(
-                    "Звіт_БпАК" + (month != null ? "_" + month : "") + ".xlsx",
+                    "Звіт_БпАК" + suffix + ".xlsx",
                     StandardCharsets.UTF_8).replace("+", "%20");
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION,

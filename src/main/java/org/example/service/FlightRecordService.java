@@ -8,12 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -36,6 +34,18 @@ public class FlightRecordService {
 
     public List<FlightRecord> getByMonth(String month) {
         return repository.findByMonthOrderByRecordNumberAsc(month);
+    }
+
+    /** Унікальні роки з даних */
+    public List<Integer> getYears() {
+        return repository.findDistinctYears();
+    }
+
+    /** Записи за рік */
+    public List<FlightRecord> getByYear(int year) {
+        LocalDate from = LocalDate.of(year, 1, 1);
+        LocalDate to   = LocalDate.of(year, 12, 31);
+        return repository.findByFlightDateBetweenOrderByFlightDateAscRecordNumberAsc(from, to);
     }
 
     // Порядок місяців для резервного сортування
@@ -94,83 +104,17 @@ public class FlightRecordService {
         return repository.findMaxRecordNumber().map(n -> n + 1).orElse(1);
     }
 
-    // ========== ІМПОРТ XLSX ==========
-
-    @Transactional
-    public int importFromXlsx(MultipartFile file) throws Exception {
-        log.info("Імпорт файлу: {}", file.getOriginalFilename());
-        int imported = 0;
-
-        // Назви місяців для відповідності листів
-        Map<String, Integer> MONTH_ORDER = new LinkedHashMap<>();
-        MONTH_ORDER.put("Січень", 1); MONTH_ORDER.put("Лютий", 2);
-        MONTH_ORDER.put("Березень", 3); MONTH_ORDER.put("Квітень", 4);
-        MONTH_ORDER.put("Травень", 5); MONTH_ORDER.put("Червень", 6);
-        MONTH_ORDER.put("Липень", 7); MONTH_ORDER.put("Серпень", 8);
-        MONTH_ORDER.put("Вересень", 9); MONTH_ORDER.put("Жовтень", 10);
-        MONTH_ORDER.put("Листопад", 11); MONTH_ORDER.put("Грудень", 12);
-
-        try (Workbook wb = WorkbookFactory.create(file.getInputStream())) {
-            for (Sheet sheet : wb) {
-                String sheetName = sheet.getSheetName();
-                if (!MONTH_ORDER.containsKey(sheetName)) {
-                    log.debug("Пропускаємо лист: {}", sheetName);
-                    continue;
-                }
-
-                log.info("Обробляємо лист: {}", sheetName);
-                int firstDataRow = 1; // рядок 0 — заголовок
-
-                for (int i = firstDataRow; i <= sheet.getLastRowNum(); i++) {
-                    Row row = sheet.getRow(i);
-                    if (row == null) continue;
-
-                    // Перевіряємо що є порядковий номер
-                    Integer num = getInt(row.getCell(0));
-                    if (num == null) continue;
-
-                    // Пропускаємо якщо вже є в БД
-                    if (repository.existsByRecordNumber(num)) {
-                        log.debug("Запис №{} вже існує, пропускаємо", num);
-                        continue;
-                    }
-
-                    FlightRecord r = new FlightRecord();
-                    r.setRecordNumber(num);
-                    r.setFlightDate(getDate(row.getCell(1)));
-                    r.setCrew(getString(row.getCell(2)));
-                    r.setEvent(getString(row.getCell(3)));
-                    r.setTakeoffTime(getTime(row.getCell(4)));
-                    r.setLossTime(getTime(row.getCell(5)));
-                    r.setCoordinates(getString(row.getCell(6)));
-                    r.setDistance(getInt(row.getCell(7)));
-                    r.setTargetType(getString(row.getCell(8)));
-                    r.setIdentification(getString(row.getCell(9)));
-                    r.setWeapon(getString(row.getCell(10)));
-                    r.setExplosive(getString(row.getCell(11)));
-                    r.setDetonator(getString(row.getCell(12)));
-                    r.setAltitude(getString(row.getCell(13)));
-                    r.setTarget(getString(row.getCell(14)));
-                    r.setTargetSpeed(getInt(row.getCell(15)));
-                    r.setNote(getString(row.getCell(16)));
-                    r.setMonth(sheetName);
-
-                    repository.save(r);
-                    imported++;
-                }
-            }
-        }
-
-        log.info("Імпортовано {} записів", imported);
-        return imported;
-    }
-
     // ========== ГЕНЕРАЦІЯ XLSX ==========
 
-    public byte[] exportToXlsx(String monthFilter) throws Exception {
-        List<FlightRecord> records = monthFilter == null || monthFilter.isBlank()
-                ? getAll()
-                : getByMonth(monthFilter);
+    public byte[] exportToXlsx(String monthFilter, Integer year) throws Exception {
+        List<FlightRecord> records;
+        if (monthFilter != null && !monthFilter.isBlank()) {
+            records = getByMonth(monthFilter);
+        } else if (year != null) {
+            records = getByYear(year);
+        } else {
+            records = getAll();
+        }
 
         // Групуємо по місяцях
         Map<String, List<FlightRecord>> byMonth = new LinkedHashMap<>();
@@ -185,6 +129,8 @@ public class FlightRecordService {
             XSSFCellStyle headerStyle = createHeaderStyle(wb);
             XSSFCellStyle dataStyle   = createDataStyle(wb);
             XSSFCellStyle dateStyle   = createDateStyle(wb);
+            // [1] Зелений стиль для рядків "Знищення цілі"
+            XSSFCellStyle greenStyle  = createGreenStyle(wb);
 
             String[] HEADERS = {"№", "Дата", "Екіпаж", "Подія", "Час взльоту",
                     "Час втрати", "Координати", "Відстань (м)", "Тип",
@@ -219,91 +165,38 @@ public class FlightRecordService {
                     XSSFRow row = sheet.createRow(rowIdx++);
                     row.setHeightInPoints(40);
 
-                    setCell(row, 0, r.getRecordNumber(), dataStyle);
+                    // [1] Визначаємо стиль рядка — зелений якщо Знищення цілі
+                    boolean isDestroyed = r.getEvent() != null &&
+                            (r.getEvent().toLowerCase().contains("знищен") ||
+                                    r.getEvent().toLowerCase().contains("підрив"));
+                    XSSFCellStyle rowStyle = isDestroyed ? greenStyle : dataStyle;
+
+                    setCell(row, 0, r.getRecordNumber(), rowStyle);
                     setCell(row, 1, r.getFlightDate() != null
-                            ? r.getFlightDate().format(dateFmt) : "", dataStyle);
-                    setCell(row, 2, r.getCrew(), dataStyle);
-                    setCell(row, 3, r.getEvent(), dataStyle);
+                            ? r.getFlightDate().format(dateFmt) : "", rowStyle);
+                    setCell(row, 2, r.getCrew(), rowStyle);
+                    setCell(row, 3, r.getEvent(), rowStyle);
                     setCell(row, 4, r.getTakeoffTime() != null
-                            ? r.getTakeoffTime().format(timeFmt) : "", dataStyle);
+                            ? r.getTakeoffTime().format(timeFmt) : "", rowStyle);
                     setCell(row, 5, r.getLossTime() != null
-                            ? r.getLossTime().format(timeFmt) : "", dataStyle);
-                    setCell(row, 6, r.getCoordinates(), dataStyle);
-                    setCell(row, 7, r.getDistance(), dataStyle);
-                    setCell(row, 8, r.getTargetType(), dataStyle);
-                    setCell(row, 9, r.getIdentification(), dataStyle);
-                    setCell(row, 10, r.getWeapon(), dataStyle);
-                    setCell(row, 11, r.getExplosive(), dataStyle);
-                    setCell(row, 12, r.getDetonator(), dataStyle);
-                    setCell(row, 13, r.getAltitude(), dataStyle);
-                    setCell(row, 14, r.getTarget(), dataStyle);
-                    setCell(row, 15, r.getTargetSpeed(), dataStyle);
-                    setCell(row, 16, r.getNote(), dataStyle);
+                            ? r.getLossTime().format(timeFmt) : "", rowStyle);
+                    setCell(row, 6, r.getCoordinates(), rowStyle);
+                    setCell(row, 7, r.getDistance(), rowStyle);
+                    setCell(row, 8, r.getTargetType(), rowStyle);
+                    setCell(row, 9, r.getIdentification(), rowStyle);
+                    setCell(row, 10, r.getWeapon(), rowStyle);
+                    setCell(row, 11, r.getExplosive(), rowStyle);
+                    setCell(row, 12, r.getDetonator(), rowStyle);
+                    setCell(row, 13, r.getAltitude(), rowStyle);
+                    setCell(row, 14, r.getTarget(), rowStyle);
+                    setCell(row, 15, r.getTargetSpeed(), rowStyle);
+                    setCell(row, 16, r.getNote(), rowStyle);
                 }
             }
 
             wb.write(out);
             return out.toByteArray();
         }
-    }
-
-    // ========== ХЕЛПЕРИ ДЛЯ ЧИТАННЯ КЛІТИНОК ==========
-
-    private String getString(Cell cell) {
-        if (cell == null) return null;
-        return switch (cell.getCellType()) {
-            case STRING  -> cell.getStringCellValue().trim();
-            case NUMERIC -> String.valueOf((long) cell.getNumericCellValue());
-            case BLANK   -> null;
-            default      -> null;
-        };
-    }
-
-    private Integer getInt(Cell cell) {
-        if (cell == null) return null;
-        try {
-            return switch (cell.getCellType()) {
-                case NUMERIC -> (int) cell.getNumericCellValue();
-                case STRING  -> Integer.parseInt(cell.getStringCellValue().trim());
-                default      -> null;
-            };
-        } catch (Exception e) { return null; }
-    }
-
-    private LocalDate getDate(Cell cell) {
-        if (cell == null) return null;
-        try {
-            if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
-                return cell.getLocalDateTimeCellValue().toLocalDate();
-            }
-            if (cell.getCellType() == CellType.STRING) {
-                String s = cell.getStringCellValue().trim();
-                // Формати: dd.MM.yyyy або yyyy-MM-dd
-                if (s.matches("\\d{2}\\.\\d{2}\\.\\d{4}"))
-                    return LocalDate.parse(s, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-                if (s.matches("\\d{4}-\\d{2}-\\d{2}"))
-                    return LocalDate.parse(s);
-            }
-        } catch (Exception e) { log.warn("Не вдалось розпарсити дату: {}", cell); }
-        return null;
-    }
-
-    private LocalTime getTime(Cell cell) {
-        if (cell == null) return null;
-        try {
-            if (cell.getCellType() == CellType.NUMERIC) {
-                // Excel зберігає час як дробову частину дня
-                double val = cell.getNumericCellValue();
-                int totalSeconds = (int) Math.round(val * 86400);
-                return LocalTime.ofSecondOfDay(totalSeconds % 86400);
-            }
-            if (cell.getCellType() == CellType.STRING) {
-                String s = cell.getStringCellValue().trim();
-                if (s.matches("\\d{1,2}:\\d{2}")) return LocalTime.parse(s.length() == 4 ? "0" + s : s);
-                if (s.matches("\\d{1,2}:\\d{2}:\\d{2}")) return LocalTime.parse(s.length() == 7 ? "0" + s : s);
-            }
-        } catch (Exception e) { log.warn("Не вдалось розпарсити час: {}", cell); }
-        return null;
     }
 
     // ========== ХЕЛПЕРИ ДЛЯ ЗАПИСУ КЛІТИНОК ==========
@@ -349,6 +242,14 @@ public class FlightRecordService {
     private XSSFCellStyle createDateStyle(XSSFWorkbook wb) {
         XSSFCellStyle style = createDataStyle(wb);
         style.setAlignment(HorizontalAlignment.CENTER);
+        return style;
+    }
+
+    private XSSFCellStyle createGreenStyle(XSSFWorkbook wb) {
+        XSSFCellStyle style = createDataStyle(wb);
+        // Світло-зелений фон як на веб-сторінці (#e8f5e9)
+        style.setFillForegroundColor(new XSSFColor(new byte[]{(byte)232, (byte)245, (byte)233}, null));
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         return style;
     }
 

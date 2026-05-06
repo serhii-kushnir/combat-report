@@ -37,6 +37,11 @@ public interface FlightRecordRepository extends JpaRepository<FlightRecord, Long
      */
     boolean existsByMonth(String month);
 
+    /** Унікальні роки відсортовані за зростанням */
+    @Query("SELECT DISTINCT YEAR(f.flightDate) FROM FlightRecord f " +
+            "WHERE f.flightDate IS NOT NULL ORDER BY 1 ASC")
+    List<Integer> findDistinctYears();
+
     /** Максимальний порядковий номер у журналі */
     @Query("SELECT MAX(f.recordNumber) FROM FlightRecord f")
     Optional<Integer> findMaxRecordNumber();

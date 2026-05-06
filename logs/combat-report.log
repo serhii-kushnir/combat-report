@@ -56,3 +56,57 @@
 2026-05-06 10:10:15 INFO  [o.e.CombatReportApplication] Started CombatReportApplication in 8.253 seconds (process running for 11.317)
 2026-05-06 10:16:55 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
 2026-05-06 10:16:55 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-06 10:20:44 INFO  [o.e.CombatReportApplication] Starting CombatReportApplication using Java 17.0.18 with PID 17388 (D:\java\WEB CombatReportFormatter\target\classes started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-06 10:20:44 INFO  [o.e.CombatReportApplication] No active profile set, falling back to 1 default profile: "default"
+2026-05-06 10:20:48 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-06 10:20:48 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-06 10:20:48 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-06 10:20:48 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-06 10:20:48 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-06 10:20:48 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-06 10:20:49 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-06 10:20:50 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-06 10:20:51 INFO  [o.e.CombatReportApplication] Started CombatReportApplication in 8.269 seconds (process running for 9.874)
+2026-05-06 10:22:21 INFO  [o.e.s.FlightRecordService] Імпорт файлу: Звіт_БпАК(1).xlsx
+2026-05-06 10:22:21 INFO  [o.e.s.FlightRecordService] Обробляємо лист: Квітень
+2026-05-06 10:22:21 INFO  [o.e.s.FlightRecordService] Обробляємо лист: Травень
+2026-05-06 10:22:21 INFO  [o.e.s.FlightRecordService] Імпортовано 0 записів
+2026-05-06 10:22:26 INFO  [o.e.s.FlightRecordService] Імпорт файлу: Звіт_БпАК.xlsx
+2026-05-06 10:22:26 INFO  [o.e.s.FlightRecordService] Обробляємо лист: Квітень
+2026-05-06 10:22:26 INFO  [o.e.s.FlightRecordService] Обробляємо лист: Травень
+2026-05-06 10:22:26 INFO  [o.e.s.FlightRecordService] Імпортовано 0 записів
+2026-05-06 10:22:31 INFO  [o.e.s.FlightRecordService] Імпорт файлу: Звіт_БпАК_Квітень.xlsx
+2026-05-06 10:22:31 INFO  [o.e.s.FlightRecordService] Обробляємо лист: Квітень
+2026-05-06 10:22:31 INFO  [o.e.s.FlightRecordService] Імпортовано 0 записів
+2026-05-06 10:24:43 INFO  [o.e.c.ReportController] Конвертація: формат=1, пілот=Костянтин БИТКА, відстань=17900м, швидкість=160км/год, курс=50°, висота(ручна)=2042м, висота(з JSON)=2042м
+2026-05-06 10:24:43 INFO  [o.e.c.ReportController] Звіт сформовано: 14 рядків
+2026-05-06 10:24:45 INFO  [o.e.c.ReportController] Виліт збережено в журнал БпАК: id=14, дата=2026-04-11
+2026-05-06 10:27:50 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-06 10:27:50 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
+2026-05-06 10:28:01 INFO  [o.e.CombatReportApplication] Starting CombatReportApplication using Java 17.0.18 with PID 11876 (D:\java\WEB CombatReportFormatter\target\classes started by admin in D:\java\WEB CombatReportFormatter)
+2026-05-06 10:28:01 INFO  [o.e.CombatReportApplication] No active profile set, falling back to 1 default profile: "default"
+2026-05-06 10:28:04 INFO  [o.h.j.internal.util.LogHelper] HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-06 10:28:04 INFO  [org.hibernate.Version] HHH000412: Hibernate ORM core version 6.6.49.Final
+2026-05-06 10:28:04 INFO  [o.h.c.i.RegionFactoryInitiator] HHH000026: Second-level cache disabled
+2026-05-06 10:28:04 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Starting...
+2026-05-06 10:28:05 INFO  [c.z.hikari.pool.HikariPool] HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/combat-db user=SA
+2026-05-06 10:28:05 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Start completed.
+2026-05-06 10:28:05 INFO  [o.h.orm.connections.pooling] HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-05-06 10:28:06 INFO  [o.h.e.t.j.p.i.JtaPlatformInitiator] HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-06 10:28:07 INFO  [o.e.CombatReportApplication] Started CombatReportApplication in 7.407 seconds (process running for 9.69)
+2026-05-06 10:36:14 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown initiated...
+2026-05-06 10:36:14 INFO  [c.z.hikari.HikariDataSource] HikariPool-1 - Shutdown completed.
