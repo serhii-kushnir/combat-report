@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+
+<!--
+    ====================================================
+    FRAGMENTS — спільні компоненти для всіх сторінок
+    ====================================================
+    Використання на сторінці:
+
+    1. Підключи CSS у <head>:
+       <link th:replace="~{fragments :: sidebar-css}">
+
+    2. Вав sidebar у <body> перед .main-content:
+       <div th:replace="~{fragments :: sidebar}"></div>
+
+    Щоб додати новий розділ — редагуй тільки цей файл.
+    ====================================================
+-->
+
+<!-- ===== SIDEBAR CSS FRAGMENT ===== -->
+<th:block th:fragment="sidebar-css">
+    <style>
+        /* ========== LAYOUT ========== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        .layout { display: flex; min-height: 100vh; }
+
+        /* ========== SIDEBAR ========== */
+        .sidebar {
+            width: 220px;
+            background: #1a237e;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0; left: 0;
+            height: 100vh;
+            z-index: 100;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+            overflow: hidden;
+            transition: width 0.25s ease;
+        }
+        .sidebar.collapsed { width: 52px; min-width: 52px; }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 14px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            white-space: nowrap;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .sidebar-logo .logo-text { transition: opacity 0.2s; overflow: hidden; }
+        .sidebar-logo .unit { font-size: 15px; font-weight: bold; color: white; }
+        .sidebar-logo .sub  { font-size: 11px; color: #90caf9; margin-top: 2px; }
+        .sidebar.collapsed .logo-text { opacity: 0; width: 0; pointer-events: none; }
+
+        .toggle-btn {
+            background: none; border: none; color: #90caf9;
+            cursor: pointer; font-size: 18px; padding: 0;
+            flex-shrink: 0; line-height: 1;
+            margin-left: auto;
+        }
+        .toggle-btn:hover { color: white; }
+        .sidebar.collapsed .toggle-btn { margin-left: 0; }
+
+        .sidebar-nav { flex: 1; padding: 8px 0; overflow-y: auto; overflow-x: hidden; }
+
+        .nav-section-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #5c6bc0;
+            padding: 10px 16px 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: opacity 0.2s, height 0.2s, padding 0.2s;
+            height: 28px;
+        }
+        .sidebar.collapsed .nav-section-title { opacity: 0; height: 0; padding: 0; }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 16px;
+            color: #c5cae9;
+            text-decoration: none;
+            font-size: 13px;
+            border-left: 3px solid transparent;
+            transition: background 0.15s, color 0.15s;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
+        .nav-item.active {
+            background: rgba(255,255,255,0.12);
+            color: white;
+            border-left-color: #90caf9;
+            font-weight: 600;
+        }
+        .nav-item .icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+        .nav-item .label { transition: opacity 0.2s; }
+        .sidebar.collapsed .nav-item .label { opacity: 0; width: 0; overflow: hidden; }
+        .sidebar.collapsed .nav-item { justify-content: center; padding: 10px 0; }
+        .sidebar.collapsed .nav-item.active { border-left-color: transparent; border-right: 3px solid #90caf9; }
+
+        .sidebar-footer {
+            padding: 12px 16px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 11px;
+            color: #5c6bc0;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: opacity 0.2s;
+            flex-shrink: 0;
+        }
+        .sidebar.collapsed .sidebar-footer { opacity: 0; }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            margin-left: 220px;
+            flex: 1;
+            min-width: 0;
+            background: #f0f2f5;
+            min-height: 100vh;
+            transition: margin-left 0.25s ease;
+        }
+        .main-content.collapsed { margin-left: 52px; }
+    </style>
+</th:block>
+
+
+<!-- ===== SIDEBAR HTML FRAGMENT ===== -->
+<!--
+    Активне посилання визначається автоматично по поточному URL.
+    Щоб додати новий розділ — додай рядок .nav-item у потрібну секцію.
+-->
+<div th:fragment="sidebar(activePage)" id="sidebar" class="sidebar">
+    <div class="sidebar-logo">
+        <span class="logo-text">
+            <div class="unit">⚔️ В/Ч А0826</div>
+            <div class="sub">Система управління</div>
+        </span>
+        <button class="toggle-btn" id="toggleBtn" title="Згорнути меню">☰</button>
+    </div>
+
+    <nav class="sidebar-nav">
+
+        <!-- ===== ОСОБОВИЙ СКЛАД ===== -->
+        <div class="nav-section-title">Особовий склад</div>
+
+        <a href="/personnel" class="nav-item"
+           th:classappend="${activePage == 'personnel' ? 'active' : ''}"
+           title="Особовий склад">
+            <span class="icon">👥</span>
+            <span class="label">Особовий склад</span>
+        </a>
+
+        <a href="/schedule" class="nav-item"
+           th:classappend="${activePage == 'schedule' ? 'active' : ''}"
+           title="Графік чергувань">
+            <span class="icon">📅</span>
+            <span class="label">Графік чергувань</span>
+        </a>
+
+        <!-- ===== БОЙОВА РОБОТА ===== -->
+        <div class="nav-section-title">Бойова робота</div>
+
+        <a href="/" class="nav-item"
+           th:classappend="${activePage == 'index' ? 'active' : ''}"
+           title="Конвертер звітів">
+            <span class="icon">📋</span>
+            <span class="label">Конвертер звітів</span>
+        </a>
+
+        <a href="/flights" class="nav-item"
+           th:classappend="${activePage == 'flights' ? 'active' : ''}"
+           title="Журнал БпАК">
+            <span class="icon">✈️</span>
+            <span class="label">Журнал БпАК</span>
+        </a>
+
+        <!-- ===== МАЙБУТНІ РОЗДІЛИ (раскоментуй коли додаси) =====
+        <div class="nav-section-title">Звітність</div>
+
+        <a href="/stats" class="nav-item"
+           th:classappend="${activePage == 'stats' ? 'active' : ''}"
+           title="Статистика">
+            <span class="icon">📊</span>
+            <span class="label">Статистика</span>
+        </a>
+        ===== -->
+
+    </nav>
+
+    <div class="sidebar-footer">А0826 · БпАК система v1.0</div>
+</div>
+
+
+<!-- ===== SIDEBAR JS FRAGMENT ===== -->
+<th:block th:fragment="sidebar-js">
+    <script>
+        (function() {
+            var sidebar = document.getElementById('sidebar');
+            var btn     = document.getElementById('toggleBtn');
+            var main    = document.querySelector('.main-content');
+            var KEY     = 'sidebar_collapsed';
+
+            function applyState(collapsed) {
+                if (collapsed) {
+                    sidebar.classList.add('collapsed');
+                    sidebar.style.width = '52px';
+                    sidebar.style.minWidth = '52px';
+                    if (main) { main.classList.add('collapsed'); main.style.marginLeft = '52px'; }
+                    btn.title = 'Розгорнути меню';
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    sidebar.style.width = '220px';
+                    sidebar.style.minWidth = '';
+                    if (main) { main.classList.remove('collapsed'); main.style.marginLeft = '220px'; }
+                    btn.title = 'Згорнути меню';
+                }
+            }
+
+            // Відновлюємо збережений стан без анімації
+            sidebar.style.transition = 'none';
+            if (main) main.style.transition = 'none';
+            applyState(localStorage.getItem(KEY) === '1');
+            setTimeout(function() {
+                sidebar.style.transition = '';
+                if (main) main.style.transition = '';
+            }, 50);
+
+            // Перемикач
+            btn.addEventListener('click', function() {
+                var collapsed = !sidebar.classList.contains('collapsed');
+                localStorage.setItem(KEY, collapsed ? '1' : '0');
+                applyState(collapsed);
+            });
+        })();
+    </script>
+</th:block>
+
+</html>

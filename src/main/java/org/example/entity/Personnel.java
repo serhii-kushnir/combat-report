@@ -1,5 +1,6 @@
 package org.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,7 +32,10 @@ public class Personnel {
     @Column(length = 500)
     private String note;
 
-    private boolean active = true;
+    // [ВИПРАВЛЕННЯ #5] Boolean замість boolean — Jackson серіалізує через getActive(),
+    // а не isActive(), що уникає проблем з JSON відповіддю
+    @JsonProperty("active")
+    private Boolean active = true;
 
     public Personnel(String lastName, String firstName, String middleName,
                      String rank, String position) {

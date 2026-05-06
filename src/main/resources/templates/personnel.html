@@ -4,20 +4,23 @@
     <meta charset="UTF-8">
     <title>Особовий склад</title>
     <style>
+
+        /* Зсув контенту при згортанні */
+
+        /* Основний контент */
+
+        /* Топбар всередині контенту */
+        .topbar {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a237e;
+        }
+
         * { box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f0f2f5; }
-
-        .navbar {
-            background: #1a237e;
-            color: white;
-            padding: 12px 24px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .navbar a { color: #90caf9; text-decoration: none; font-size: 14px; }
-        .navbar a:hover { color: white; }
-        .navbar .title { font-size: 18px; font-weight: bold; margin-right: auto; }
 
         .container { max-width: 1300px; margin: 24px auto; padding: 0 16px; }
 
@@ -162,14 +165,13 @@
 
         .empty-state { text-align: center; padding: 48px; color: #999; }
     </style>
+    <link th:replace="~{fragments :: sidebar-css}">
 </head>
 <body>
+<div class="layout">
+<div th:replace="~{fragments :: sidebar('personnel')}"></div>
+<div class="main-content">
 
-<div class="navbar">
-    <span class="title">⚔️ Бойова частина А0826</span>
-    <a href="/">📋 Конвертер звітів</a>
-    <a href="/personnel">👥 Особовий склад</a>
-</div>
 
 <div class="container">
     <div class="toolbar">
@@ -480,5 +482,8 @@
     // Старт
     loadPersonnel();
 </script>
+</div>
+</div>
+<div th:replace="~{fragments :: sidebar-js}"></div>
 </body>
 </html>

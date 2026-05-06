@@ -5,7 +5,9 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.example.dto.ConvertRequest;
+import org.example.entity.FlightRecord;
 import org.example.model.CombatReport;
+import org.example.service.FlightRecordService;
 import org.example.service.ReportService;
 import org.example.validation.ReportRequestValidator;
 import org.slf4j.Logger;
@@ -19,7 +21,11 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 public class ReportController {
@@ -28,10 +34,14 @@ public class ReportController {
 
     private final ReportService reportService;
     private final ReportRequestValidator validator;
+    private final FlightRecordService flightRecordService;
 
-    public ReportController(ReportService reportService, ReportRequestValidator validator) {
+    public ReportController(ReportService reportService,
+                            ReportRequestValidator validator,
+                            FlightRecordService flightRecordService) {
         this.reportService = reportService;
         this.validator = validator;
+        this.flightRecordService = flightRecordService;
     }
 
     @GetMapping("/")
@@ -53,7 +63,10 @@ public class ReportController {
                 request.getFormat(),
                 request.getPilot(),
                 request.getDistance(),
-                request.getSpeed()
+                request.getSpeed(),
+                request.getCourse(),
+                request.getManualAltitude(),
+                request.getTargetAltitude()
         );
         if (!errors.isEmpty()) {
             String message = String.join("\n", errors);
@@ -76,12 +89,12 @@ public class ReportController {
                         request.getSpeed(),
                         request.getCourse(),
                         request.getManualAltitude(),
-                        request.getTargetAltitude());  // Додано
+                        request.getTargetAltitude());
                 case 2 -> reportService.formatShortReport(report,
                         request.getDistance(),
                         request.getCourse(),
                         request.getManualAltitude(),
-                        request.getTargetAltitude());  // Додано
+                        request.getTargetAltitude());
                 case 3 -> reportService.formatDetailedReport(report, request.getPilot());
                 default -> throw new IllegalArgumentException("Невідомий формат: " + request.getFormat());
             };
@@ -98,6 +111,111 @@ public class ReportController {
                     .contentType(new MediaType("text", "plain", StandardCharsets.UTF_8))
                     .body("Помилка обробки звіту: " + e.getMessage());
         }
+    }
+
+    /**
+     * Зберегти виліт з JSON у журнал БпАК.
+     * Викликається з кнопки "💾 В журнал" після конвертації.
+     */
+    @PostMapping("/save/flight")
+    @ResponseBody
+    public ResponseEntity<?> saveToJournal(@RequestBody ConvertRequest request) {
+        if (request == null || request.getReport() == null) {
+            return ResponseEntity.badRequest().body("Дані відсутні");
+        }
+        try {
+            CombatReport report = reportService.parseJson(request.getReport().toString());
+            FlightRecord record = mapToFlightRecord(report, request);
+            FlightRecord saved = flightRecordService.save(record);
+            log.info("Виліт збережено в журнал БпАК: id={}, дата={}", saved.getId(), saved.getFlightDate());
+            return ResponseEntity.ok(Map.of(
+                    "id", saved.getId(),
+                    "message", "Виліт збережено в журнал БпАК"
+            ));
+        } catch (Exception e) {
+            log.error("Помилка збереження вильоту в журнал", e);
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", "Помилка: " + e.getMessage()));
+        }
+    }
+
+    /** Маппінг CombatReport → FlightRecord */
+    private FlightRecord mapToFlightRecord(CombatReport report, ConvertRequest request) {
+        FlightRecord r = new FlightRecord();
+
+        // Дата і час
+        if (report.getContactTime() != null) {
+            r.setFlightDate(report.getContactTime().toLocalDate());
+            r.setLossTime(report.getContactTime().toLocalTime());
+        } else {
+            r.setFlightDate(LocalDate.now());
+        }
+        if (report.getTakeoffTime() != null) {
+            r.setTakeoffTime(report.getTakeoffTime().toLocalTime());
+        }
+
+        // Місяць (назва листа для групування)
+        if (r.getFlightDate() != null) {
+            String[] UA_MONTHS = {"Січень","Лютий","Березень","Квітень","Травень","Червень",
+                    "Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"};
+            r.setMonth(UA_MONTHS[r.getFlightDate().getMonthValue() - 1]);
+        }
+
+        r.setCrew(report.getUnitName());
+        r.setEvent(report.getEffectorStatus());
+        r.setCoordinates(report.getCoordinates());
+        r.setDistance(request.getDistance());
+        r.setAzimuth(request.getCourse());
+        r.setTargetType(report.getTargetSubType() != null ? report.getTargetSubType() : report.getTargetType());
+        r.setIdentification("Дружній");
+
+        // Зброя — витягуємо назву з weaponId
+        String weaponId = report.getWeaponId();
+        if (weaponId != null) {
+            Matcher m = Pattern.compile("\\(([^)]+)\\)").matcher(weaponId);
+            r.setWeapon(m.find() ? m.group(1) : weaponId);
+        }
+        if (report.getWeaponNumber() != null) {
+            r.setWeapon((r.getWeapon() != null ? r.getWeapon() : "") +
+                    " (нічний) \"" + report.getWeaponNumber().toUpperCase() + "\"");
+        }
+
+        r.setExplosive("ШИФР «3-1.2 КУФ» 1,2 кг");
+        r.setDetonator("Вбудована розумна плата ініціації");
+
+        // Висота
+        if (report.getAltitude() != null) {
+            r.setAltitude(String.valueOf(report.getAltitude()));
+        }
+
+        // Ціль - використовуємо різні назви змінних
+        String targetNumValue = report.getTargetNumberVirazh() != null
+                ? String.valueOf(report.getTargetNumberVirazh()) : "";
+        String targetTypeValue = report.getTargetSubType() != null
+                ? report.getTargetSubType() : "";
+        r.setTarget(targetTypeValue + (targetNumValue.isEmpty() ? "" : " №" + targetNumValue));
+        r.setTargetSpeed(request.getSpeed());
+        r.setLossReason(report.getEffectorLossReason());
+
+        // Формуємо примітку автоматично
+        String weaponName = r.getWeapon() != null ? r.getWeapon() : "";
+        String targetNumForNote = report.getTargetNumberVirazh() != null
+                ? String.valueOf(report.getTargetNumberVirazh()) : "";
+        String targetTypeForNote = report.getTargetSubType() != null
+                ? report.getTargetSubType() : (report.getTargetType() != null ? report.getTargetType() : "");
+        String unitNameVal = report.getUnitName() != null ? report.getUnitName() : "";
+        String militaryUnitVal = report.getMilitaryUnit() != null ? report.getMilitaryUnit() : "";
+        String effLossReason = report.getEffectorLossReason() != null ? report.getEffectorLossReason() : "";
+
+        String generatedNote = "Екіпажем \"" + unitNameVal + "\" в/ч " + militaryUnitVal +
+                ", який виконує завдання ведення повітряної розвідки та ураження противника" +
+                " в смузі відповідальності ОТУ м. Одеса здійснено виліт дроном-камікадзе" +
+                " \"" + weaponName + "\" з метою ураження ворожого ударного дрона №" + targetNumForNote +
+                (targetTypeForNote.isEmpty() ? "" : " (" + targetTypeForNote + ")") + ". " +
+                effLossReason;
+        r.setNote(generatedNote);
+
+        return r;
     }
 
     @PostMapping("/save/txt")

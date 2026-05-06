@@ -49,7 +49,10 @@ class ReportControllerTest {
                 "format", 1,
                 "pilot", "Олександр ШЕПРУК",
                 "distance", 5000,
-                "speed", 160
+                "speed", 160,
+                "course", 0,
+                "manualAltitude", 0,
+                "targetAltitude", 300
         ));
 
         mockMvc.perform(post("/convert")
@@ -68,7 +71,10 @@ class ReportControllerTest {
                 "format", 2,
                 "pilot", "Олександр ШЕПРУК",
                 "distance", 5000,
-                "speed", 160
+                "speed", 160,
+                "course", 0,
+                "manualAltitude", 0,
+                "targetAltitude", 300
         ));
 
         mockMvc.perform(post("/convert")
@@ -87,7 +93,10 @@ class ReportControllerTest {
                 "format", 3,
                 "pilot", "Костянтин БИТКА",
                 "distance", 5000,
-                "speed", 160
+                "speed", 160,
+                "course", 0,
+                "manualAltitude", 0,
+                "targetAltitude", 300
         ));
 
         mockMvc.perform(post("/convert")
@@ -106,7 +115,10 @@ class ReportControllerTest {
                 "format", 99,
                 "pilot", "Олександр ШЕПРУК",
                 "distance", 5000,
-                "speed", 160
+                "speed", 160,
+                "course", 0,
+                "manualAltitude", 0,
+                "targetAltitude", 0
         ));
 
         mockMvc.perform(post("/convert")
@@ -124,7 +136,10 @@ class ReportControllerTest {
                 "format", 1,
                 "pilot", "Невідомий ПІЛОТ",
                 "distance", 5000,
-                "speed", 160
+                "speed", 160,
+                "course", 0,
+                "manualAltitude", 0,
+                "targetAltitude", 0
         ));
 
         mockMvc.perform(post("/convert")
@@ -142,7 +157,10 @@ class ReportControllerTest {
                 "format", 1,
                 "pilot", "Олександр ШЕПРУК",
                 "distance", -1,
-                "speed", 160
+                "speed", 160,
+                "course", 0,
+                "manualAltitude", 0,
+                "targetAltitude", 0
         ));
 
         mockMvc.perform(post("/convert")
@@ -169,7 +187,10 @@ class ReportControllerTest {
                 "format", 99,
                 "pilot", "Невідомий ПІЛОТ",
                 "distance", -1,
-                "speed", -1
+                "speed", -1,
+                "course", 0,
+                "manualAltitude", 0,
+                "targetAltitude", 0
         ));
 
         mockMvc.perform(post("/convert")

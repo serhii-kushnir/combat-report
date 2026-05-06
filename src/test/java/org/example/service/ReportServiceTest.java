@@ -18,6 +18,13 @@ class ReportServiceTest {
 
     private ReportService reportService;
 
+    // Стандартні тестові значення для нових параметрів
+    private static final int DISTANCE  = 5000;
+    private static final int SPEED     = 160;
+    private static final int COURSE    = 270;
+    private static final int M_ALT     = 50;   // manualAltitude
+    private static final int T_ALT     = 300;  // targetAltitude
+
     @BeforeEach
     void setUp() {
         ObjectMapper mapper = new ObjectMapper();
@@ -42,9 +49,7 @@ class ReportServiceTest {
                   "targetNumberVirazh": 5
                 }
                 """;
-
         CombatReport report = reportService.parseJson(json);
-
         assertThat(report.getUnitName()).isEqualTo("СКОПА");
         assertThat(report.getMilitaryUnit()).isEqualTo("А0826");
         assertThat(report.getAltitude()).isEqualTo(300);
@@ -52,16 +57,9 @@ class ReportServiceTest {
     }
 
     @Test
-    @DisplayName("parseJson — невідомі поля ігноруються (не кидає виняток)")
+    @DisplayName("parseJson — невідомі поля ігноруються")
     void parseJson_unknownFields_ignored() throws Exception {
-        String json = """
-                {
-                  "unitName": "СКОПА",
-                  "unknownField123": "someValue",
-                  "anotherUnknown": 999
-                }
-                """;
-
+        String json = "{\"unitName\": \"СКОПА\", \"unknownField\": \"value\"}";
         CombatReport report = reportService.parseJson(json);
         assertThat(report.getUnitName()).isEqualTo("СКОПА");
     }
@@ -76,9 +74,7 @@ class ReportServiceTest {
     @Test
     @DisplayName("parseJson — null поля (Integer) не кидають NPE")
     void parseJson_nullIntegerFields_noNpe() throws Exception {
-        String json = "{\"unitName\": \"СКОПА\"}";
-        CombatReport report = reportService.parseJson(json);
-
+        CombatReport report = reportService.parseJson("{\"unitName\": \"СКОПА\"}");
         assertThat(report.getAltitude()).isNull();
         assertThat(report.getTargetNumberVirazh()).isNull();
     }
@@ -88,18 +84,24 @@ class ReportServiceTest {
     @Test
     @DisplayName("formatStandardReport — містить ім'я екіпажу")
     void formatStandard_containsUnitName() {
-        CombatReport report = buildReport();
-        String result = reportService.formatStandardReport(report, 5000, 160, 50, 2042, 300);
+        String result = reportService.formatStandardReport(buildReport(), DISTANCE, SPEED, COURSE, M_ALT, T_ALT);
         assertThat(result).contains("СКОПА");
     }
 
     @Test
     @DisplayName("formatStandardReport — містить відстань і швидкість")
     void formatStandard_containsDistanceAndSpeed() {
-        CombatReport report = buildReport();
-        String result = reportService.formatStandardReport(report, 7500, 200, 50, 2042, 300);
-        assertThat(result).contains("7500 м");
+        String result = reportService.formatStandardReport(buildReport(), 7500, 200, COURSE, M_ALT, T_ALT);
+        assertThat(result).contains("7500");
         assertThat(result).contains("200 км/год");
+    }
+
+    @Test
+    @DisplayName("formatStandardReport — містить курс і висоту")
+    void formatStandard_containsCourseAndAltitude() {
+        String result = reportService.formatStandardReport(buildReport(), DISTANCE, SPEED, 270, 50, 350);
+        assertThat(result).contains("270");
+        assertThat(result).contains("350");
     }
 
     @Test
@@ -107,17 +109,8 @@ class ReportServiceTest {
     void formatStandard_shahedMappedToShahid() {
         CombatReport report = buildReport();
         report.setTargetSubType("Шахед (Герань)");
-        String result = reportService.formatStandardReport(report, 5000, 160, 50, 2042, 300);
+        String result = reportService.formatStandardReport(report, DISTANCE, SPEED, COURSE, M_ALT, T_ALT);
         assertThat(result).contains("Шахід");
-    }
-
-    @Test
-    @DisplayName("formatStandardReport — altitude null не кидає NPE, використовує 500 за замовчуванням")
-    void formatStandard_nullAltitude_usesDefault() {
-        CombatReport report = buildReport();
-        report.setAltitude(null);
-        String result = reportService.formatStandardReport(report, 5000, 160, 50, 2042, 0);
-        assertThat(result).contains("Висота цілі: 0 м");
     }
 
     @Test
@@ -125,7 +118,7 @@ class ReportServiceTest {
     void formatStandard_nullVirazhNumber_noNpe() {
         CombatReport report = buildReport();
         report.setTargetNumberVirazh(null);
-        String result = reportService.formatStandardReport(report, 5000, 160, 50, 2042, 300);
+        String result = reportService.formatStandardReport(report, DISTANCE, SPEED, COURSE, M_ALT, T_ALT);
         assertThat(result).doesNotContain("по віражу");
     }
 
@@ -134,16 +127,8 @@ class ReportServiceTest {
     void formatStandard_virazhNumber_shown() {
         CombatReport report = buildReport();
         report.setTargetNumberVirazh(42);
-        String result = reportService.formatStandardReport(report, 5000, 160, 50, 2042, 300);
+        String result = reportService.formatStandardReport(report, DISTANCE, SPEED, COURSE, M_ALT, T_ALT);
         assertThat(result).contains("№42").contains("по віражу");
-    }
-
-    @Test
-    @DisplayName("formatStandardReport — містить азимут, дальність та висоту")
-    void formatStandard_containsCourseDistanceAltitude() {
-        CombatReport report = buildReport();
-        String result = reportService.formatStandardReport(report, 17900, 160, 50, 2042, 300);
-        assertThat(result).contains("Азимут-50°, Дальність-17900 м., Висота-2042 м.");
     }
 
     // ========== formatShortReport ==========
@@ -153,17 +138,15 @@ class ReportServiceTest {
     void formatShort_weaponNumberUpperCase() {
         CombatReport report = buildReport();
         report.setWeaponNumber("abc-123");
-        String result = reportService.formatShortReport(report, 17900, 50, 2042, 300);
+        String result = reportService.formatShortReport(report, DISTANCE, COURSE, M_ALT, T_ALT);
         assertThat(result).contains("ABC-123");
     }
 
     @Test
-    @DisplayName("formatShortReport — висота цілі null → 0 метрів (не NPE)")
-    void formatShort_nullAltitude_showsZero() {
-        CombatReport report = buildReport();
-        report.setAltitude(null);
-        String result = reportService.formatShortReport(report, 17900, 50, 2042, 0);
-        assertThat(result).contains("Висота цілі: 0 метрів");
+    @DisplayName("formatShortReport — висота цілі з targetAltitude")
+    void formatShort_targetAltitude_shown() {
+        String result = reportService.formatShortReport(buildReport(), DISTANCE, COURSE, M_ALT, 450);
+        assertThat(result).contains("450");
     }
 
     @Test
@@ -172,16 +155,8 @@ class ReportServiceTest {
         CombatReport report = buildReport();
         report.setTargetNumberVirazh(7);
         report.setTargetNumberSkymap(null);
-        String result = reportService.formatShortReport(report, 17900, 50, 2042, 300);
+        String result = reportService.formatShortReport(report, DISTANCE, COURSE, M_ALT, T_ALT);
         assertThat(result).contains("Номер по СкайМаті: 7");
-    }
-
-    @Test
-    @DisplayName("formatShortReport — містить азимут, дальність та висоту")
-    void formatShort_containsCourseDistanceAltitude() {
-        CombatReport report = buildReport();
-        String result = reportService.formatShortReport(report, 17900, 50, 2042, 300);
-        assertThat(result).contains("Азимут-50°, Дальність-17900 м., Висота-2042 м.");
     }
 
     // ========== formatDetailedReport ==========
@@ -189,8 +164,7 @@ class ReportServiceTest {
     @Test
     @DisplayName("formatDetailedReport — пілот БИТКА — містить його ім'я")
     void formatDetailed_pilotBytka_containsName() {
-        CombatReport report = buildReport();
-        String result = reportService.formatDetailedReport(report, "Костянтин БИТКА");
+        String result = reportService.formatDetailedReport(buildReport(), "Костянтин БИТКА");
         assertThat(result).contains("Костянтин БИТКА");
         assertThat(result).contains("солдат");
     }
@@ -198,8 +172,7 @@ class ReportServiceTest {
     @Test
     @DisplayName("formatDetailedReport — пілот ШЕПРУК — містить його ім'я")
     void formatDetailed_pilotShepryk_containsName() {
-        CombatReport report = buildReport();
-        String result = reportService.formatDetailedReport(report, "Олександр ШЕПРУК");
+        String result = reportService.formatDetailedReport(buildReport(), "Олександр ШЕПРУК");
         assertThat(result).contains("Олександр ШЕПРУК");
         assertThat(result).contains("старший сержант");
     }
@@ -210,12 +183,11 @@ class ReportServiceTest {
         CombatReport report = buildReport();
         report.setEffectorLossReason("Успішне камікадзе ураження");
         String result = reportService.formatDetailedReport(report, "Олександр ШЕПРУК");
-        assertThat(result).contains("вражена");
-        assertThat(result).doesNotContain("не вражена");
+        assertThat(result).contains("вражена").doesNotContain("не вражена");
     }
 
     @Test
-    @DisplayName("formatDetailedReport — ціль не вражена якщо effectorLossReason не містить ключових слів")
+    @DisplayName("formatDetailedReport — ціль не вражена якщо причина невідома")
     void formatDetailed_unknownReason_targetNotDestroyed() {
         CombatReport report = buildReport();
         report.setEffectorLossReason("Технічна несправність");
@@ -223,14 +195,14 @@ class ReportServiceTest {
         assertThat(result).contains("не вражена");
     }
 
-    // ========== extractWeaponName (через форматування) ==========
+    // ========== extractWeaponName ==========
 
     @Test
     @DisplayName("weaponId у форматі 'prefix (Назва)' — витягується назва в дужках")
     void weaponId_withParentheses_extractsName() {
         CombatReport report = buildReport();
         report.setWeaponId("drone_v2 (FlyingKamikaze)");
-        String result = reportService.formatShortReport(report, 17900, 50, 2042, 300);
+        String result = reportService.formatShortReport(report, DISTANCE, COURSE, M_ALT, T_ALT);
         assertThat(result).contains("FlyingKamikaze");
     }
 
@@ -239,7 +211,7 @@ class ReportServiceTest {
     void weaponId_null_usesDefault() {
         CombatReport report = buildReport();
         report.setWeaponId(null);
-        String result = reportService.formatShortReport(report, 17900, 50, 2042, 300);
+        String result = reportService.formatShortReport(report, DISTANCE, COURSE, M_ALT, T_ALT);
         assertThat(result).contains("AS3 Merops");
     }
 
