@@ -42,7 +42,9 @@ public class FlightRecord {
     private String detonator;         // Детонатор
 
     @Column(length = 100)
-    private String altitude;          // Висота (може бути "600-4000")
+    private String altitude;        // Висота польоту борту (м)
+
+    private Integer targetAltitude; // Висота цілі (м)          // Висота (може бути "600-4000")
 
     private String target;            // Ціль (Шахід 8241)
     private Integer targetSpeed;      // Швидкість цілі (км/год)

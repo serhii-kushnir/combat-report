@@ -131,13 +131,23 @@ public class FlightRecordService {
             XSSFCellStyle dateStyle   = createDateStyle(wb);
             // [1] Зелений стиль для рядків "Знищення цілі"
             XSSFCellStyle greenStyle  = createGreenStyle(wb);
+            XSSFCellStyle leftStyle   = createLeftStyle(wb);
+            XSSFCellStyle greenLeftStyle = createGreenStyle(wb); { greenLeftStyle.setAlignment(HorizontalAlignment.LEFT); }
 
-            String[] HEADERS = {"№", "Дата", "Екіпаж", "Подія", "Час взльоту",
-                    "Час втрати", "Координати", "Відстань (м)", "Тип",
-                    "Ідентифікація", "Засіб ураження", "Вибухівка", "Детонатор",
-                    "Висота (м)", "Ціль", "Швидкість цілі (км/год)", "Примітка"};
-            int[] COL_WIDTHS = {8, 14, 12, 24, 14, 14, 20, 14, 14,
-                    14, 22, 26, 28, 12, 20, 22, 50};
+            String[] HEADERS = {
+                    "№", "Дата", "Екіпаж", "Подія", "Час взльоту", "Час втрати",
+                    "Координати", "Азимут (°)", "Відстань (м)", "Вис. польоту (м)",
+                    "Тип", "Ідентифікація", "Засіб ураження", "Вибухівка", "Детонатор",
+                    "Висота цілі (м)", "Ціль", "Швидкість цілі (км/год)",
+                    "Причина втрати", "Примітка"
+            };
+            int[] COL_WIDTHS = {
+                    8, 14, 12, 24, 12, 12,
+                    22, 10, 14, 14,
+                    14, 14, 22, 26, 28,
+                    14, 20, 20,
+                    22, 50
+            };
 
             for (Map.Entry<String, List<FlightRecord>> entry : byMonth.entrySet()) {
                 XSSFSheet sheet = wb.createSheet(entry.getKey());
@@ -171,26 +181,30 @@ public class FlightRecordService {
                                     r.getEvent().toLowerCase().contains("підрив"));
                     XSSFCellStyle rowStyle = isDestroyed ? greenStyle : dataStyle;
 
-                    setCell(row, 0, r.getRecordNumber(), rowStyle);
-                    setCell(row, 1, r.getFlightDate() != null
-                            ? r.getFlightDate().format(dateFmt) : "", rowStyle);
-                    setCell(row, 2, r.getCrew(), rowStyle);
-                    setCell(row, 3, r.getEvent(), rowStyle);
-                    setCell(row, 4, r.getTakeoffTime() != null
-                            ? r.getTakeoffTime().format(timeFmt) : "", rowStyle);
-                    setCell(row, 5, r.getLossTime() != null
-                            ? r.getLossTime().format(timeFmt) : "", rowStyle);
-                    setCell(row, 6, r.getCoordinates(), rowStyle);
-                    setCell(row, 7, r.getDistance(), rowStyle);
-                    setCell(row, 8, r.getTargetType(), rowStyle);
-                    setCell(row, 9, r.getIdentification(), rowStyle);
-                    setCell(row, 10, r.getWeapon(), rowStyle);
-                    setCell(row, 11, r.getExplosive(), rowStyle);
-                    setCell(row, 12, r.getDetonator(), rowStyle);
-                    setCell(row, 13, r.getAltitude(), rowStyle);
-                    setCell(row, 14, r.getTarget(), rowStyle);
-                    setCell(row, 15, r.getTargetSpeed(), rowStyle);
-                    setCell(row, 16, r.getNote(), rowStyle);
+                    // CENTER колонки (0-11, 15-17), LEFT — 12,13,14,18,19
+                    XSSFCellStyle ctr  = isDestroyed ? greenStyle    : dataStyle;
+                    XSSFCellStyle lft  = isDestroyed ? greenLeftStyle : leftStyle;
+
+                    setCell(row, 0,  r.getRecordNumber(), ctr);
+                    setCell(row, 1,  r.getFlightDate() != null ? r.getFlightDate().format(dateFmt) : "", ctr);
+                    setCell(row, 2,  r.getCrew(), ctr);
+                    setCell(row, 3,  r.getEvent(), ctr);
+                    setCell(row, 4,  r.getTakeoffTime() != null ? r.getTakeoffTime().format(timeFmt) : "", ctr);
+                    setCell(row, 5,  r.getLossTime() != null ? r.getLossTime().format(timeFmt) : "", ctr);
+                    setCell(row, 6,  r.getCoordinates(), ctr);
+                    setCell(row, 7,  r.getAzimuth() != null ? r.getAzimuth() + "°" : "", ctr);
+                    setCell(row, 8,  r.getDistance(), ctr);
+                    setCell(row, 9,  r.getAltitude(), ctr);
+                    setCell(row, 10, r.getTargetType(), ctr);
+                    setCell(row, 11, r.getIdentification(), ctr);
+                    setCell(row, 12, r.getWeapon(), lft);
+                    setCell(row, 13, r.getExplosive(), lft);
+                    setCell(row, 14, r.getDetonator(), lft);
+                    setCell(row, 15, r.getTargetAltitude(), ctr);
+                    setCell(row, 16, r.getTarget(), ctr);
+                    setCell(row, 17, r.getTargetSpeed(), ctr);
+                    setCell(row, 18, r.getLossReason(), lft);
+                    setCell(row, 19, r.getNote(), lft);
                 }
             }
 
@@ -232,10 +246,16 @@ public class FlightRecordService {
         font.setFontHeightInPoints((short) 10);
         font.setFontName("Arial");
         style.setFont(font);
-        style.setAlignment(HorizontalAlignment.LEFT);
+        style.setAlignment(HorizontalAlignment.CENTER);
         style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
         setBorders(style);
+        return style;
+    }
+
+    private XSSFCellStyle createLeftStyle(XSSFWorkbook wb) {
+        XSSFCellStyle style = createDataStyle(wb);
+        style.setAlignment(HorizontalAlignment.LEFT);
         return style;
     }
 

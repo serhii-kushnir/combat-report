@@ -19,13 +19,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Controller
 public class ReportController {
@@ -58,6 +58,7 @@ public class ReportController {
 
         String reportJson = request.getReport().toString();
 
+        // [ВИПРАВЛЕННЯ #4] Передаємо всі поля включно з новими course/altitude
         List<String> errors = validator.validate(
                 reportJson,
                 request.getFormat(),
@@ -89,12 +90,12 @@ public class ReportController {
                         request.getSpeed(),
                         request.getCourse(),
                         request.getManualAltitude(),
-                        request.getTargetAltitude());
+                        request.getTargetAltitude());  // Додано
                 case 2 -> reportService.formatShortReport(report,
                         request.getDistance(),
                         request.getCourse(),
                         request.getManualAltitude(),
-                        request.getTargetAltitude());
+                        request.getTargetAltitude());  // Додано
                 case 3 -> reportService.formatDetailedReport(report, request.getPilot());
                 default -> throw new IllegalArgumentException("Невідомий формат: " + request.getFormat());
             };
@@ -113,6 +114,7 @@ public class ReportController {
         }
     }
 
+
     /**
      * Зберегти виліт з JSON у журнал БпАК.
      * Викликається з кнопки "💾 В журнал" після конвертації.
@@ -125,6 +127,9 @@ public class ReportController {
         }
         try {
             CombatReport report = reportService.parseJson(request.getReport().toString());
+            log.info("saveToJournal: course={}, manualAltitude={}, distance={}, speed={}",
+                    request.getCourse(), request.getManualAltitude(),
+                    request.getDistance(), request.getSpeed());
             FlightRecord record = mapToFlightRecord(report, request);
             FlightRecord saved = flightRecordService.save(record);
             log.info("Виліт збережено в журнал БпАК: id={}, дата={}", saved.getId(), saved.getFlightDate());
@@ -165,6 +170,7 @@ public class ReportController {
         r.setEvent(report.getEffectorStatus());
         r.setCoordinates(report.getCoordinates());
         r.setDistance(request.getDistance());
+        // [НОВІ ПОЛЯ] Азимут з параметрів конвертера
         r.setAzimuth(request.getCourse());
         r.setTargetType(report.getTargetSubType() != null ? report.getTargetSubType() : report.getTargetType());
         r.setIdentification("Дружній");
@@ -172,7 +178,8 @@ public class ReportController {
         // Зброя — витягуємо назву з weaponId
         String weaponId = report.getWeaponId();
         if (weaponId != null) {
-            Matcher m = Pattern.compile("\\(([^)]+)\\)").matcher(weaponId);
+            java.util.regex.Matcher m = java.util.regex.Pattern
+                    .compile("\\(([^)]+)\\)").matcher(weaponId);
             r.setWeapon(m.find() ? m.group(1) : weaponId);
         }
         if (report.getWeaponNumber() != null) {
@@ -183,25 +190,31 @@ public class ReportController {
         r.setExplosive("ШИФР «3-1.2 КУФ» 1,2 кг");
         r.setDetonator("Вбудована розумна плата ініціації");
 
-        // Висота
-        if (report.getAltitude() != null) {
+        // Висота польоту борту — з поля "Висота (В)" конвертера
+        if (request.getManualAltitude() > 0) {
+            r.setAltitude(String.valueOf(request.getManualAltitude()));
+        } else if (report.getAltitude() != null) {
             r.setAltitude(String.valueOf(report.getAltitude()));
         }
 
-        // Ціль - використовуємо різні назви змінних
-        String targetNumValue = report.getTargetNumberVirazh() != null
+        // Висота цілі — з JSON звіту (поле altitude в CombatReport)
+        if (report.getAltitude() != null) {
+            r.setTargetAltitude(report.getAltitude());
+        }
+
+        // Ціль
+        String targetNum = report.getTargetNumberVirazh() != null
                 ? String.valueOf(report.getTargetNumberVirazh()) : "";
-        String targetTypeValue = report.getTargetSubType() != null
+        String targetType = report.getTargetSubType() != null
                 ? report.getTargetSubType() : "";
-        r.setTarget(targetTypeValue + (targetNumValue.isEmpty() ? "" : " №" + targetNumValue));
+        r.setTarget(targetType + (targetNum.isEmpty() ? "" : " №" + targetNum));
         r.setTargetSpeed(request.getSpeed());
+        // Причина втрати
         r.setLossReason(report.getEffectorLossReason());
 
         // Формуємо примітку автоматично
         String weaponName = r.getWeapon() != null ? r.getWeapon() : "";
-        String targetNumForNote = report.getTargetNumberVirazh() != null
-                ? String.valueOf(report.getTargetNumberVirazh()) : "";
-        String targetTypeForNote = report.getTargetSubType() != null
+        String targetTypeFull = report.getTargetSubType() != null
                 ? report.getTargetSubType() : (report.getTargetType() != null ? report.getTargetType() : "");
         String unitNameVal = report.getUnitName() != null ? report.getUnitName() : "";
         String militaryUnitVal = report.getMilitaryUnit() != null ? report.getMilitaryUnit() : "";
@@ -210,8 +223,8 @@ public class ReportController {
         String generatedNote = "Екіпажем \"" + unitNameVal + "\" в/ч " + militaryUnitVal +
                 ", який виконує завдання ведення повітряної розвідки та ураження противника" +
                 " в смузі відповідальності ОТУ м. Одеса здійснено виліт дроном-камікадзе" +
-                " \"" + weaponName + "\" з метою ураження ворожого ударного дрона №" + targetNumForNote +
-                (targetTypeForNote.isEmpty() ? "" : " (" + targetTypeForNote + ")") + ". " +
+                " \"" + weaponName + "\" з метою ураження ворожого ударного дрона №" + targetNum +
+                (targetTypeFull.isEmpty() ? "" : " (" + targetTypeFull + ")") + ". " +
                 effLossReason;
         r.setNote(generatedNote);
 

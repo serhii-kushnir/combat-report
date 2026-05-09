@@ -259,8 +259,12 @@
                         <input type="text" id="fDetonator" placeholder="Розумна плата ініціації">
                     </div>
                     <div class="form-group">
-                        <label>Висота (м)</label>
-                        <input type="text" id="fAltitude" placeholder="600-4000">
+                        <label>Висота польоту (м)</label>
+                        <input type="text" id="fAltitude" placeholder="2042">
+                    </div>
+                    <div class="form-group">
+                        <label>Висота цілі (м)</label>
+                        <input type="number" id="fTargetAlt" placeholder="600">
                     </div>
                     <div class="form-group">
                         <label>Ціль</label>
@@ -368,11 +372,11 @@
 
             function renderStats() {
                 const total = allRecords.length;
-                const hits  = allRecords.filter(r => r.event && r.event.toLowerCase().includes('підрив')).length;
+                const hits  = allRecords.filter(r => r.event && (r.event.toLowerCase().includes('знищен') || r.event.toLowerCase().includes('підрив'))).length;
                 const loss  = allRecords.filter(r => r.event && r.event.toLowerCase().includes('втрат')).length;
                 document.getElementById('statsBar').innerHTML = `
         <div class="stat-card"><div class="num">${total}</div><div class="lbl">Всього вильотів</div></div>
-        <div class="stat-card"><div class="num" style="color:#2e7d32">${hits}</div><div class="lbl">Підривів</div></div>
+        <div class="stat-card"><div class="num" style="color:#2e7d32">${hits}</div><div class="lbl">Знищення цілі</div></div>
         <div class="stat-card"><div class="num" style="color:#d32f2f">${loss}</div><div class="lbl">Втрат бортів</div></div>
     `;
             }
@@ -388,26 +392,26 @@
                     const badgeCls = isDestroyed ? 'badge-success' : 'badge-warning';
                     const rowCls = isDestroyed ? 'row-success' : '';
                     return `<tr class="${rowCls}">
-            <td>${r.recordNumber ?? ''}</td>
-            <td>${fmtDate(r.flightDate)}</td>
-            <td>${r.crew ?? ''}</td>
-            <td><span class="${badgeCls}">${r.event ?? ''}</span></td>
-            <td>${fmtTime(r.takeoffTime)}</td>
-            <td>${fmtTime(r.lossTime)}</td>
-            <td style="font-size:11px">${r.coordinates ?? ''}</td>
-            <td>${r.azimuth != null ? r.azimuth + '°' : ''}</td>
-            <td>${r.distance ?? ''}</td>
-            <td>${r.flightAltitude ?? ''}</td>
-            <td>${r.targetType ?? ''}</td>
-            <td>${r.identification ?? ''}</td>
-            <td style="font-size:11px">${r.weapon ?? ''}</td>
-            <td style="font-size:11px">${r.explosive ?? ''}</td>
-            <td style="font-size:11px">${r.detonator ?? ''}</td>
-            <td>${r.altitude ?? ''}</td>
-            <td>${r.target ?? ''}</td>
-            <td>${r.targetSpeed ?? ''}</td>
-            <td style="font-size:11px;color:#c62828">${r.lossReason ?? ''}</td>
-            <td style="font-size:11px;color:#666;max-width:280px">
+            <td style="text-align:center">${r.recordNumber ?? ''}</td>
+            <td style="text-align:center">${fmtDate(r.flightDate)}</td>
+            <td style="text-align:center">${r.crew ?? ''}</td>
+            <td style="text-align:center"><span class="${badgeCls}">${r.event ?? ''}</span></td>
+            <td style="text-align:center">${fmtTime(r.takeoffTime)}</td>
+            <td style="text-align:center">${fmtTime(r.lossTime)}</td>
+            <td style="text-align:center;font-size:11px">${r.coordinates ?? ''}</td>
+            <td style="text-align:center">${r.azimuth != null ? r.azimuth + '°' : ''}</td>
+            <td style="text-align:center">${r.distance ?? ''}</td>
+            <td style="text-align:center">${r.altitude ?? ''}</td>
+            <td style="text-align:center">${r.targetType ?? ''}</td>
+            <td style="text-align:center">${r.identification ?? ''}</td>
+            <td style="text-align:left;font-size:11px">${r.weapon ?? ''}</td>
+            <td style="text-align:left;font-size:11px">${r.explosive ?? ''}</td>
+            <td style="text-align:left;font-size:11px">${r.detonator ?? ''}</td>
+            <td style="text-align:center">${r.targetAltitude ?? ''}</td>
+            <td style="text-align:center">${r.target ?? ''}</td>
+            <td style="text-align:center">${r.targetSpeed ?? ''}</td>
+            <td style="text-align:left;font-size:11px;color:#c62828">${r.lossReason ?? ''}</td>
+            <td style="text-align:left;font-size:11px;color:#666;max-width:280px">
                 <div class="note-cell" onclick="this.classList.toggle('expanded')"
                      title="Натисни щоб розгорнути">
                     ${r.note ?? ''}
@@ -448,13 +452,14 @@
                 document.getElementById('fCoords').value      = r.coordinates ?? '';
                 document.getElementById('fAzimuth').value   = r.azimuth ?? '';
                 document.getElementById('fDist').value      = r.distance ?? '';
-                document.getElementById('fFlightAlt').value = r.flightAltitude ?? '';
+                document.getElementById('fFlightAlt').value = r.altitude ?? '';
                 document.getElementById('fType').value     = r.targetType ?? '';
                 document.getElementById('fIdent').value    = r.identification ?? '';
                 document.getElementById('fWeapon').value   = r.weapon ?? '';
                 document.getElementById('fExplosive').value = r.explosive ?? '';
                 document.getElementById('fDetonator').value = r.detonator ?? '';
-                document.getElementById('fAltitude').value = r.altitude ?? '';
+                document.getElementById('fAltitude').value     = r.altitude ?? '';
+                document.getElementById('fTargetAlt').value  = r.targetAltitude ?? '';
                 document.getElementById('fTarget').value   = r.target ?? '';
                 document.getElementById('fSpeed').value      = r.targetSpeed ?? '';
                 document.getElementById('fLossReason').value = r.lossReason ?? '';
@@ -482,6 +487,7 @@
                     explosive:      document.getElementById('fExplosive').value.trim(),
                     detonator:      document.getElementById('fDetonator').value.trim(),
                     altitude:       document.getElementById('fAltitude').value.trim(),
+                    targetAltitude: parseInt(document.getElementById('fTargetAlt').value) || null,
                     target:         document.getElementById('fTarget').value.trim(),
                     targetSpeed:    parseInt(document.getElementById('fSpeed').value) || null,
                     lossReason:     document.getElementById('fLossReason').value,
