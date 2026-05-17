@@ -105,15 +105,18 @@ public class Personnel {
     private String educationInstitution; // Заклад освіти
     
     @Column(length = 200)
+    @JsonProperty("speciality")
     private String educationSpeciality;  // Спеціальність за дипломом (alias: speciality)
     
     @Column(length = 50)
     private String educationForm;        // Форма навчання (денна/заочна)
     
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonProperty("educationStartDate")
     private LocalDate educationStart;    // Дата вступу (alias: educationStartDate)
     
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonProperty("educationEndDate")
     private LocalDate educationEnd;      // Дата закінчення (alias: educationEndDate)
     
     @Column(length = 50)
