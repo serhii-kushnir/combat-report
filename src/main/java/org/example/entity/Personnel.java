@@ -105,31 +105,31 @@ public class Personnel {
     private String educationInstitution; // Заклад освіти
     
     @Column(length = 200)
-    private String educationSpeciality;  // Спеціальність за дипломом
+    private String educationSpeciality;  // Спеціальність за дипломом (alias: speciality)
     
     @Column(length = 50)
     private String educationForm;        // Форма навчання (денна/заочна)
     
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate educationStart;    // Дата вступу
+    private LocalDate educationStart;    // Дата вступу (alias: educationStartDate)
     
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate educationEnd;      // Дата закінчення
+    private LocalDate educationEnd;      // Дата закінчення (alias: educationEndDate)
     
     @Column(length = 50)
     private String diplomaNumber;        // Номер диплома
     
     @Column(length = 100)
-    private String admissionDate;        // Дата зарахування на службу
+    private String admissionDate;        // Дата зарахування на службу (alias: enlistmentDate)
     
     @Column(length = 100)
     private String dismissalDate;        // Дата звільнення
     
     @Column(length = 100)
-    private String accessForm;           // Форма допуску до держтаємниці
+    private String accessForm;           // Форма допуску до держтаємниці (alias: securityClearanceForm)
     
     @Column(length = 100)
-    private String accessNumber;         // Номер допуску
+    private String accessNumber;         // Номер допуску (alias: securityClearanceOrderNumber)
     
     @Column(length = 200)
     private String militaryUnitPrevious; // Попередня в/ч
@@ -172,6 +172,62 @@ public class Personnel {
     
     @Column(length = 500)
     private String additionalInfo;       // Додаткова інформація
+    
+    // ===== ALIAS ПОЛЯ ДЛЯ СУМІСНОСТІ З FRONTEND =====
+    @Transient
+    public String getSpeciality() {
+        return educationSpeciality;
+    }
+    
+    @Transient
+    public LocalDate getEducationStartDate() {
+        return educationStart;
+    }
+    
+    @Transient
+    public LocalDate getEducationEndDate() {
+        return educationEnd;
+    }
+    
+    @Transient
+    public String getResidenceAddress() {
+        return livingAddress;
+    }
+    
+    @Transient
+    public String getPositionShort() {
+        return rank != null ? rank : position;
+    }
+    
+    @Transient
+    public String getRecruitedBy() {
+        return draftOrganization;
+    }
+    
+    @Transient
+    public String getUbdDocumentNumber() {
+        return ubdNumber;
+    }
+    
+    @Transient
+    public String getSecurityClearanceForm() {
+        return accessForm;
+    }
+    
+    @Transient
+    public String getSecurityClearanceOrderNumber() {
+        return accessNumber;
+    }
+    
+    @Transient
+    public String getEnlistmentDate() {
+        return admissionDate;
+    }
+    
+    @Transient
+    public String getEnlistmentOrderNumber() {
+        return admissionDate;
+    }
 
     public Personnel(String lastName, String firstName, String middleName,
                      String rank, String position) {
