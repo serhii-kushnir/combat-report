@@ -835,9 +835,13 @@
                 ['fLastName','fFirstName','fMiddleName','fPosition','fFullPosition','fPhone','fNote',
                     'fTaxId','fPassportSeries','fPassportNumber','fDriverLicense',
                     'fRegAddress','fLiveAddress','fSpouseName',
-                    'fDraftOrg','fUbdNumber','fBirthDate','fDraftDate']
+                    'fDraftOrg','fUbdNumber','fBirthDate','fDraftDate',
+                    'fEducationInstitution','fEducationSpeciality']
                     .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
                 document.getElementById('fRank').value = '';
+                document.getElementById('fEducation').value = '';
+                document.getElementById('fEducationStart').value = '';
+                document.getElementById('fEducationEnd').value = '';
                 document.getElementById('eduRows').innerHTML = '';
                 document.getElementById('childRows').innerHTML = '';
                 document.getElementById('weaponRows').innerHTML = '';
@@ -874,34 +878,46 @@
                 document.getElementById('fServiceType').value     = p.serviceType || '';
                 document.getElementById('fUbdNumber').value       = p.ubdNumber || '';
                 document.getElementById('fNote').value            = p.note || '';
+                // Освіта
+                document.getElementById('fEducation').value = p.educationLevel || '';
+                document.getElementById('fEducationInstitution').value = p.educationInstitution || '';
+                document.getElementById('fEducationSpeciality').value = p.educationSpeciality || p.speciality || '';
+                document.getElementById('fEducationStart').value = p.educationStart ? p.educationStart.substring(0,10) : (p.educationStartDate ? p.educationStartDate.substring(0,10) : '');
+                document.getElementById('fEducationEnd').value = p.educationEnd ? p.educationEnd.substring(0,10) : (p.educationEndDate ? p.educationEndDate.substring(0,10) : '');
                 openModal('formModal');
             }
 
             async function savePerson() {
                 const id = document.getElementById('editId').value;
                 const body = {
-                    lastName:     document.getElementById('fLastName').value.trim(),
-                    firstName:    document.getElementById('fFirstName').value.trim(),
-                    middleName:   document.getElementById('fMiddleName').value.trim(),
-                    rank:         document.getElementById('fRank').value,
-                    position:     document.getElementById('fPosition').value.trim(),
-                    fullPosition: document.getElementById('fFullPosition').value.trim(),
-                    phone:                document.getElementById('fPhone').value.trim(),
-                    birthDate:            document.getElementById('fBirthDate').value || null,
-                    taxId:                document.getElementById('fTaxId').value.trim(),
-                    passportSeries:       document.getElementById('fPassportSeries').value.trim(),
-                    passportNumber:       document.getElementById('fPassportNumber').value.trim(),
-                    bloodGroup:           document.getElementById('fBloodGroup').value,
-                    driverLicense:        document.getElementById('fDriverLicense').value.trim(),
-                    registrationAddress:  document.getElementById('fRegAddress').value.trim(),
-                    livingAddress:        document.getElementById('fLiveAddress').value.trim(),
-                    maritalStatus:        document.getElementById('fMaritalStatus').value,
-                    spouseName:           document.getElementById('fSpouseName').value.trim(),
-                    draftDate:            document.getElementById('fDraftDate').value || null,
-                    draftOrganization:    document.getElementById('fDraftOrg').value.trim(),
-                    serviceType:          document.getElementById('fServiceType').value,
-                    ubdNumber:            document.getElementById('fUbdNumber').value.trim(),
-                    note:                 document.getElementById('fNote').value.trim(),
+                    lastName:              document.getElementById('fLastName').value.trim(),
+                    firstName:             document.getElementById('fFirstName').value.trim(),
+                    middleName:            document.getElementById('fMiddleName').value.trim(),
+                    rank:                  document.getElementById('fRank').value,
+                    position:              document.getElementById('fPosition').value.trim(),
+                    fullPosition:          document.getElementById('fFullPosition').value.trim(),
+                    phone:                 document.getElementById('fPhone').value.trim(),
+                    birthDate:             document.getElementById('fBirthDate').value || null,
+                    taxId:                 document.getElementById('fTaxId').value.trim(),
+                    passportSeries:        document.getElementById('fPassportSeries').value.trim(),
+                    passportNumber:        document.getElementById('fPassportNumber').value.trim(),
+                    bloodGroup:            document.getElementById('fBloodGroup').value,
+                    driverLicense:         document.getElementById('fDriverLicense').value.trim(),
+                    registrationAddress:   document.getElementById('fRegAddress').value.trim(),
+                    livingAddress:         document.getElementById('fLiveAddress').value.trim(),
+                    maritalStatus:         document.getElementById('fMaritalStatus').value,
+                    spouseName:            document.getElementById('fSpouseName').value.trim(),
+                    draftDate:             document.getElementById('fDraftDate').value || null,
+                    draftOrganization:     document.getElementById('fDraftOrg').value.trim(),
+                    serviceType:           document.getElementById('fServiceType').value,
+                    ubdNumber:             document.getElementById('fUbdNumber').value.trim(),
+                    note:                  document.getElementById('fNote').value.trim(),
+                    // Освіта
+                    educationLevel:        document.getElementById('fEducation').value,
+                    educationInstitution:  document.getElementById('fEducationInstitution').value.trim(),
+                    educationSpeciality:   document.getElementById('fEducationSpeciality').value.trim(),
+                    educationStart:        document.getElementById('fEducationStart').value || null,
+                    educationEnd:          document.getElementById('fEducationEnd').value || null,
                 };
                 if (!body.lastName)  { showToast('Прізвище обов\'язкове', 'error'); return; }
                 if (!body.firstName) { showToast('Ім\'я обов\'язкове', 'error'); return; }
