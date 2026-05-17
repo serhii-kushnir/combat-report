@@ -2,6 +2,11 @@ package org.example.controller;
 
 import org.example.entity.Personnel;
 import org.example.service.PersonnelService;
+import org.example.service.PersonnelExportService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/personnel")
@@ -17,9 +21,11 @@ public class PersonnelController {
 
     private static final Logger log = LoggerFactory.getLogger(PersonnelController.class);
     private final PersonnelService service;
+    private final PersonnelExportService exportService;
 
-    public PersonnelController(PersonnelService service) {
+    public PersonnelController(PersonnelService service, PersonnelExportService exportService) {
         this.service = service;
+        this.exportService = exportService;
     }
 
     @GetMapping
@@ -43,15 +49,22 @@ public class PersonnelController {
 
     @PostMapping("/api")
     @ResponseBody
-    public ResponseEntity<?> create(@RequestBody Personnel personnel) {
+    public ResponseEntity<?> create(@RequestBody(required = false) Personnel personnel) {
         try {
+            if (personnel == null) {
+                log.error("Тіло запиту порожнє або не вдалось десеріалізувати");
+                return ResponseEntity.badRequest().body("Тіло запиту порожнє");
+            }
+            log.info("Отримано запит на додавання: lastName={}, firstName={}, birthDate={}, draftDate={}",
+                    personnel.getLastName(), personnel.getFirstName(),
+                    personnel.getBirthDate(), personnel.getDraftDate());
             if (personnel.getLastName() == null || personnel.getLastName().isBlank())
                 return ResponseEntity.badRequest().body("Прізвище обов'язкове");
             if (personnel.getFirstName() == null || personnel.getFirstName().isBlank())
                 return ResponseEntity.badRequest().body("Ім'я обов'язкове");
             return ResponseEntity.ok(service.create(personnel));
         } catch (Exception e) {
-            log.error("Помилка додавання бійця", e);
+            log.error("Помилка додавання особи: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
         }
     }
@@ -64,22 +77,11 @@ public class PersonnelController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            log.error("Помилка оновлення бійця id={}", id, e);
+            log.error("Помилка оновлення особу id={}", id, e);
             return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
         }
     }
 
-    @PatchMapping("/api/{id}/status")
-    @ResponseBody
-    public ResponseEntity<?> updateStatus(@PathVariable Long id,
-                                          @RequestBody Map<String, String> body) {
-        try {
-            return ResponseEntity.ok(service.updateStatus(id,
-                    body.get("status"), body.getOrDefault("note", "")));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
 
     @DeleteMapping("/api/{id}")
     @ResponseBody
@@ -96,5 +98,21 @@ public class PersonnelController {
     @ResponseBody
     public List<Personnel> search(@RequestParam String q) {
         return service.search(q);
+    }
+
+    @GetMapping("/api/export")
+    public ResponseEntity<byte[]> exportXlsx() {
+        try {
+            byte[] data = exportService.exportToXlsx();
+            String filename = URLEncoder.encode("Відомість_ОС.xlsx", StandardCharsets.UTF_8).replace("+", "%20");
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + filename + "\"; filename*=UTF-8\'\'" + filename)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(data);
+        } catch (Exception e) {
+            log.error("Помилка експорту ОС", e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

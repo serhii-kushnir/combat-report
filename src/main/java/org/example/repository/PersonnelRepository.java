@@ -10,5 +10,4 @@ import java.util.List;
 public interface PersonnelRepository extends JpaRepository<Personnel, Long> {
     List<Personnel> findByActiveTrueOrderByLastNameAsc();
     List<Personnel> findByLastNameContainingIgnoreCaseAndActiveTrue(String lastName);
-    List<Personnel> findByStatusAndActiveTrue(String status);
 }
