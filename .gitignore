@@ -1,1 +1,1 @@
-Nothing should be ignored based on the provided file changes. The only modified file is a source template file (`src/main/resources/templates/personnel.html`), which should not be added to .gitignore.
+Nothing should be ignored in this case, as the only change is a modification to a source file (.html template) without any build artifacts, dependencies, or temporary files present in the change list.
