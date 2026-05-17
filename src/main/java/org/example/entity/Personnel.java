@@ -151,12 +151,6 @@ public class Personnel {
     @Column(length = 100)
     private String dismissalDate;        // Дата звільнення
     
-    @Column(length = 100)
-    private String accessForm;           // Форма допуску до держтаємниці (alias: securityClearanceForm)
-    
-    @Column(length = 100)
-    private String accessNumber;         // Номер допуску (alias: securityClearanceOrderNumber)
-    
     @Column(length = 200)
     private String militaryUnitPrevious; // Попередня в/ч
     
