@@ -94,7 +94,84 @@ public class Personnel {
     @Column(length = 100)
     private String driverLicense;        // Водійське посвідчення (категорії)
 
-    // ===== ОЗБРОЄННЯ =====
+    // ===== ДОДАТКОВІ ПОЛЯ З ВІДОМОСТІ =====
+    @Column(length = 100)
+    private String militaryRankShort;    // Військове звання (коротке)
+    
+    @Column(length = 200)
+    private String educationLevel;       // Рівень освіти
+    
+    @Column(length = 300)
+    private String educationInstitution; // Заклад освіти
+    
+    @Column(length = 200)
+    private String educationSpeciality;  // Спеціальність за дипломом
+    
+    @Column(length = 50)
+    private String educationForm;        // Форма навчання (денна/заочна)
+    
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate educationStart;    // Дата вступу
+    
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate educationEnd;      // Дата закінчення
+    
+    @Column(length = 50)
+    private String diplomaNumber;        // Номер диплома
+    
+    @Column(length = 100)
+    private String admissionDate;        // Дата зарахування на службу
+    
+    @Column(length = 100)
+    private String dismissalDate;        // Дата звільнення
+    
+    @Column(length = 100)
+    private String accessForm;           // Форма допуску до держтаємниці
+    
+    @Column(length = 100)
+    private String accessNumber;         // Номер допуску
+    
+    @Column(length = 200)
+    private String militaryUnitPrevious; // Попередня в/ч
+    
+    @Column(length = 200)
+    private String combatExperience;     // Бойовий досвід
+    
+    @Column(length = 50)
+    private String awardStatus;          // Наявність нагород
+    
+    @Column(length = 300)
+    private String awardsList;           // Перелік нагород
+    
+    @Column(length = 50)
+    private String disabilityGroup;      // Група інвалідності
+    
+    @Column(length = 200)
+    private String disabilityCause;      // Причина інвалідності
+    
+    @Column(length = 50)
+    private String mobilizationType;     // Вид мобілізації
+    
+    @Column(length = 100)
+    private String contractStartDate;    // Початок контракту
+    
+    @Column(length = 100)
+    private String contractEndDate;      // Кінець контракту
+    
+    @Column(length = 100)
+    private String salaryCard;           // Зарплатна картка (банк)
+    
+    @Column(length = 50)
+    private String uniformSize;          // Розмір форми
+    
+    @Column(length = 50)
+    private String shoeSize;             // Розмір взуття
+    
+    @Column(length = 500)
+    private String emergencyContact;     // Контактна особа (ПІБ, телефон)
+    
+    @Column(length = 500)
+    private String additionalInfo;       // Додаткова інформація
 
     public Personnel(String lastName, String firstName, String middleName,
                      String rank, String position) {

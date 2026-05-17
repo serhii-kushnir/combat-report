@@ -141,7 +141,12 @@
             <div class="toolbar">
                 <input type="text" id="searchInput" placeholder="🔍 Пошук за прізвищем...">
                 <button class="btn btn-success" onclick="openAddModal()">+ Додати особу</button>
-                <button class="btn" style="background:#1976d2;color:white" onclick="exportXlsx()">📤 Експорт xlsx</button>
+                <button class="btn" style="background:#1976d2;color:white" onclick="exportXlsx()">📤 Експорт (коротка)</button>
+                <button class="btn" style="background:#1a237e;color:white" onclick="exportFullVedomist()">📤 Експорт (повна)</button>
+                <label class="btn" style="background:#f57c00;color:white;cursor:pointer;display:inline-block">
+                    📥 Імпорт з Excel
+                    <input type="file" id="importFile" accept=".xlsx,.xls" style="display:none" onchange="importVedomist(this)">
+                </label>
             </div>
 
             <div class="stats" id="statsBar"></div>
@@ -1044,6 +1049,31 @@
 
             function exportXlsx() {
                 window.location.href = '/personnel/api/export';
+            }
+            
+            function exportFullVedomist() {
+                window.location.href = '/personnel/api/export/full';
+            }
+            
+            function importVedomist(input) {
+                const file = input.files[0];
+                if (!file) return;
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                fetch('/personnel/api/import', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.text())
+                .then(msg => {
+                    alert(msg);
+                    loadPersonnel();
+                })
+                .catch(e => {
+                    alert('Помилка імпорту: ' + e);
+                });
             }
 
             loadPersonnel();
