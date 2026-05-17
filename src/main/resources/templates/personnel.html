@@ -171,30 +171,50 @@
             <div class="table-section" id="fullTable">
                 <div class="table-wrap"><table style="min-width:1800px">
                     <thead><tr>
-                        <th style="width:36px">#</th>
-                        <th style="width:180px">ПІБ</th>
-                        <th style="width:140px">Звання</th>
-                        <th style="width:130px">Посада</th>
-                        <th style="width:200px">Повна посада</th>
+                        <th style="width:36px">№ з/п</th>
+                        <th style="width:140px">Прізвище</th>
+                        <th style="width:120px">Ім'я</th>
+                        <th style="width:120px">По батькові</th>
+                        <th style="width:90px">Дата народження</th>
+                        <th style="width:110px">РНОКПП (ІПН)</th>
+                        <th style="width:80px">Номер паспорта</th>
+                        <th style="width:70px">Група крові</th>
+                        <th style="width:70px">Резус-фактор</th>
+                        <th style="width:180px">Адреса реєстрації</th>
                         <th style="width:110px">Телефон</th>
-                        <th style="width:90px">Дата нар.</th>
-                        <th style="width:90px">ІПН</th>
-                        <th style="width:70px">Пас. серія</th>
-                        <th style="width:80px">Пас. номер</th>
-                        <th style="width:80px">Гр. крові</th>
-                        <th style="width:80px">Вод. посв.</th>
-                        <th style="width:140px">Адреса реєстрації</th>
-                        <th style="width:140px">Адреса проживання</th>
-                        <th style="width:100px">Сім. стан</th>
-                        <th style="width:140px">Дружина/Чоловік</th>
-                        <th style="width:90px">Дата призову</th>
-                        <th style="width:100px">Вид служби</th>
-                        <th style="width:130px">Ким призваний</th>
-                        <th style="width:90px">УБД №</th>
-                        <th style="width:70px">Освіта</th>
-                        <th style="width:70px">Діти</th>
-                        <th style="width:70px">Зброя</th>
-                        <th style="width:160px">Примітка</th>
+                        <th style="width:140px">Електронна пошта</th>
+                        <th style="width:120px">Військове звання</th>
+                        <th style="width:130px">Посада</th>
+                        <th style="width:110px">Дата зарахування до списків в/ч</th>
+                        <th style="width:110px">Вид мобілізації</th>
+                        <th style="width:110px">Дата початку контракту</th>
+                        <th style="width:110px">Дата закінчення контракту</th>
+                        <th style="width:100px">Попередня в/ч</th>
+                        <th style="width:100px">Бойовий досвід</th>
+                        <th style="width:100px">Нагороди</th>
+                        <th style="width:100px">Інвалідність</th>
+                        <th style="width:100px">Сімейний стан</th>
+                        <th style="width:70px">Кількість дітей</th>
+                        <th style="width:160px">Діти (ПІБ, ДН)</th>
+                        <th style="width:100px">Рівень освіти</th>
+                        <th style="width:160px">Навчальний заклад</th>
+                        <th style="width:140px">Спеціальність</th>
+                        <th style="width:100px">Форма навчання</th>
+                        <th style="width:80px">Рік вступу</th>
+                        <th style="width:80px">Рік закінчення</th>
+                        <th style="width:100px">Номер диплома</th>
+                        <th style="width:100px">Форма допуску</th>
+                        <th style="width:100px">Номер допуску</th>
+                        <th style="width:100px">Водійські категорії</th>
+                        <th style="width:140px">Зброя (Тип/№)</th>
+                        <th style="width:80px">Калібр зброї</th>
+                        <th style="width:140px">Зарплатна картка (Банк/№)</th>
+                        <th style="width:80px">Розмір форми</th>
+                        <th style="width:80px">Розмір взуття</th>
+                        <th style="width:140px">Контактна особа (ПІБ)</th>
+                        <th style="width:110px">Контактна особа (Телефон)</th>
+                        <th style="width:100px">Контактна особа (Зв'язок)</th>
+                        <th style="width:160px">Примітки</th>
                         <th style="width:70px">Дії</th>
                     </tr></thead>
                     <tbody id="fullBody">
@@ -585,40 +605,65 @@
 
             function renderFullTable(data) {
                 const body = document.getElementById('fullBody');
-                if (!data.length) { body.innerHTML = '<tr><td colspan="22" class="empty-state">Особовий склад порожній</td></tr>'; return; }
+                if (!data.length) { body.innerHTML = '<tr><td colspan="45" class="empty-state">Особовий склад порожній</td></tr>'; return; }
                 const fmtDate = d => d ? d.substring(0,10).split('-').reverse().join('.') : '—';
                 const val = v => v || '—';
                 body.innerHTML = data.map((p, i) => {
-                    const fullName = `${p.lastName} ${p.firstName || ''} ${p.middleName || ''}`.trim();
+                    const childrenList = p.children && p.children.length > 0 
+                        ? p.children.map(c => `${c.fullName || c.lastName || ''} (${fmtDate(c.birthDate)})`).join(', ') 
+                        : '—';
+                    const weaponsList = p.weapons && p.weapons.length > 0 
+                        ? p.weapons.map(w => `${w.type || ''} №${w.serialNumber || ''}`.trim()).join(', ') 
+                        : '—';
                     return `<tr>
                         <td style="text-align:center">${i + 1}</td>
-                        <td><strong>${fullName}</strong></td>
-                        <td>${val(p.rank)}</td>
-                        <td>${val(p.position)}</td>
-                        <td style="font-size:11px">${val(p.fullPosition)}</td>
-                        <td>${val(p.phone)}</td>
+                        <td><strong>${val(p.lastName)}</strong></td>
+                        <td>${val(p.firstName)}</td>
+                        <td>${val(p.middleName)}</td>
                         <td style="text-align:center">${fmtDate(p.birthDate)}</td>
                         <td>${val(p.taxId)}</td>
-                        <td style="text-align:center">${val(p.passportSeries)}</td>
                         <td style="text-align:center">${val(p.passportNumber)}</td>
                         <td style="text-align:center">${val(p.bloodGroup)}</td>
-                        <td style="text-align:center">${val(p.driverLicense)}</td>
+                        <td style="text-align:center">${val(p.resusFactor)}</td>
                         <td style="font-size:11px">${val(p.registrationAddress)}</td>
-                        <td style="font-size:11px">${val(p.livingAddress)}</td>
+                        <td>${val(p.phone)}</td>
+                        <td style="font-size:11px">${val(p.email)}</td>
+                        <td>${val(p.rank)}</td>
+                        <td>${val(p.position)}</td>
+                        <td style="text-align:center">${fmtDate(p.enlistmentDate)}</td>
+                        <td>${val(p.mobilizationType)}</td>
+                        <td style="text-align:center">${fmtDate(p.contractStartDate)}</td>
+                        <td style="text-align:center">${fmtDate(p.contractEndDate)}</td>
+                        <td>${val(p.previousUnit)}</td>
+                        <td>${val(p.combatExperience)}</td>
+                        <td>${val(p.awards)}</td>
+                        <td>${val(p.disability)}</td>
                         <td>${val(p.maritalStatus)}</td>
-                        <td>${val(p.spouseName)}</td>
-                        <td style="text-align:center">${fmtDate(p.draftDate)}</td>
-                        <td>${val(p.serviceType)}</td>
-                        <td style="font-size:11px">${val(p.draftOrganization)}</td>
-                        <td style="text-align:center">${val(p.ubdNumber)}</td>
-                        <td style="text-align:center">${educationCounts[p.id] > 0 ? '📚 ' + educationCounts[p.id] : '—'}</td>
-                        <td style="text-align:center">${childCounts[p.id] > 0 ? '👶 ' + childCounts[p.id] : '—'}</td>
-                        <td style="text-align:center">${weaponCounts[p.id] > 0 ? '🔫 ' + weaponCounts[p.id] : '—'}</td>
+                        <td style="text-align:center">${p.children ? p.children.length : 0}</td>
+                        <td style="font-size:11px">${childrenList}</td>
+                        <td>${val(p.educationLevel)}</td>
+                        <td style="font-size:11px">${val(p.educationInstitution)}</td>
+                        <td style="font-size:11px">${val(p.speciality)}</td>
+                        <td>${val(p.educationForm)}</td>
+                        <td style="text-align:center">${val(p.educationStartYear)}</td>
+                        <td style="text-align:center">${val(p.educationEndYear)}</td>
+                        <td>${val(p.diplomaNumber)}</td>
+                        <td>${val(p.securityClearanceForm)}</td>
+                        <td>${val(p.securityClearanceNumber)}</td>
+                        <td>${val(p.driverCategories)}</td>
+                        <td style="font-size:11px">${weaponsList}</td>
+                        <td>${val(p.weaponCaliber)}</td>
+                        <td style="font-size:11px">${val(p.salaryCard)}</td>
+                        <td style="text-align:center">${val(p.uniformSize)}</td>
+                        <td style="text-align:center">${val(p.shoeSize)}</td>
+                        <td>${val(p.contactPersonName)}</td>
+                        <td>${val(p.contactPersonPhone)}</td>
+                        <td>${val(p.contactPersonRelation)}</td>
                         <td style="font-size:11px;color:#777">${val(p.note)}</td>
                         <td style="white-space:nowrap">
                             <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="openDetailModal(${p.id})">👁</button>
                             <button class="btn btn-warning btn-sm" onclick="openEditModal(${p.id})">✏️</button>
-                            <button class="btn btn-danger btn-sm" onclick="confirmDelete(${p.id}, '${fullName}')">🗑</button>
+                            <button class="btn btn-danger btn-sm" onclick="confirmDelete(${p.id}, '${val(p.lastName)}')">🗑</button>
                         </td>
                     </tr>`;
                 }).join('');
