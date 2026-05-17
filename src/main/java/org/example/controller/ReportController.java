@@ -5,7 +5,9 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.example.dto.ConvertRequest;
+import org.example.entity.FlightRecord;
 import org.example.model.CombatReport;
+import org.example.service.FlightRecordService;
 import org.example.service.ReportService;
 import org.example.validation.ReportRequestValidator;
 import org.slf4j.Logger;
@@ -17,9 +19,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class ReportController {
@@ -28,10 +34,14 @@ public class ReportController {
 
     private final ReportService reportService;
     private final ReportRequestValidator validator;
+    private final FlightRecordService flightRecordService;
 
-    public ReportController(ReportService reportService, ReportRequestValidator validator) {
+    public ReportController(ReportService reportService,
+                            ReportRequestValidator validator,
+                            FlightRecordService flightRecordService) {
         this.reportService = reportService;
         this.validator = validator;
+        this.flightRecordService = flightRecordService;
     }
 
     @GetMapping("/")
@@ -48,12 +58,16 @@ public class ReportController {
 
         String reportJson = request.getReport().toString();
 
+        // [ВИПРАВЛЕННЯ #4] Передаємо всі поля включно з новими course/altitude
         List<String> errors = validator.validate(
                 reportJson,
                 request.getFormat(),
                 request.getPilot(),
                 request.getDistance(),
-                request.getSpeed()
+                request.getSpeed(),
+                request.getCourse(),
+                request.getManualAltitude(),
+                request.getTargetAltitude()
         );
         if (!errors.isEmpty()) {
             String message = String.join("\n", errors);
@@ -98,6 +112,123 @@ public class ReportController {
                     .contentType(new MediaType("text", "plain", StandardCharsets.UTF_8))
                     .body("Помилка обробки звіту: " + e.getMessage());
         }
+    }
+
+
+    /**
+     * Зберегти виліт з JSON у журнал БпАК.
+     * Викликається з кнопки "💾 В журнал" після конвертації.
+     */
+    @PostMapping("/save/flight")
+    @ResponseBody
+    public ResponseEntity<?> saveToJournal(@RequestBody ConvertRequest request) {
+        if (request == null || request.getReport() == null) {
+            return ResponseEntity.badRequest().body("Дані відсутні");
+        }
+        try {
+            CombatReport report = reportService.parseJson(request.getReport().toString());
+            log.info("saveToJournal: course={}, manualAltitude={}, distance={}, speed={}",
+                    request.getCourse(), request.getManualAltitude(),
+                    request.getDistance(), request.getSpeed());
+            FlightRecord record = mapToFlightRecord(report, request);
+            FlightRecord saved = flightRecordService.save(record);
+            log.info("Виліт збережено в журнал БпАК: id={}, дата={}", saved.getId(), saved.getFlightDate());
+            return ResponseEntity.ok(Map.of(
+                    "id", saved.getId(),
+                    "message", "Виліт збережено в журнал БпАК"
+            ));
+        } catch (Exception e) {
+            log.error("Помилка збереження вильоту в журнал", e);
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", "Помилка: " + e.getMessage()));
+        }
+    }
+
+    /** Маппінг CombatReport → FlightRecord */
+    private FlightRecord mapToFlightRecord(CombatReport report, ConvertRequest request) {
+        FlightRecord r = new FlightRecord();
+
+        // Дата і час
+        if (report.getContactTime() != null) {
+            r.setFlightDate(report.getContactTime().toLocalDate());
+            r.setLossTime(report.getContactTime().toLocalTime());
+        } else {
+            r.setFlightDate(LocalDate.now());
+        }
+        if (report.getTakeoffTime() != null) {
+            r.setTakeoffTime(report.getTakeoffTime().toLocalTime());
+        }
+
+        // Місяць (назва листа для групування)
+        if (r.getFlightDate() != null) {
+            String[] UA_MONTHS = {"Січень","Лютий","Березень","Квітень","Травень","Червень",
+                    "Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"};
+            r.setMonth(UA_MONTHS[r.getFlightDate().getMonthValue() - 1]);
+        }
+
+        r.setCrew(report.getUnitName());
+        r.setEvent(report.getEffectorStatus());
+        r.setCoordinates(report.getCoordinates());
+        r.setDistance(request.getDistance());
+        // [НОВІ ПОЛЯ] Азимут з параметрів конвертера
+        r.setAzimuth(request.getCourse());
+        r.setTargetType(report.getTargetSubType() != null ? report.getTargetSubType() : report.getTargetType());
+        r.setIdentification("Дружній");
+
+        // Зброя — витягуємо назву з weaponId
+        String weaponId = report.getWeaponId();
+        if (weaponId != null) {
+            java.util.regex.Matcher m = java.util.regex.Pattern
+                    .compile("\\(([^)]+)\\)").matcher(weaponId);
+            r.setWeapon(m.find() ? m.group(1) : weaponId);
+        }
+        if (report.getWeaponNumber() != null) {
+            r.setWeapon((r.getWeapon() != null ? r.getWeapon() : "") +
+                    " (нічний) \"" + report.getWeaponNumber().toUpperCase() + "\"");
+        }
+
+        r.setExplosive("ШИФР «3-1.2 КУФ» 1,2 кг");
+        r.setDetonator("Вбудована розумна плата ініціації");
+
+        // Висота польоту борту — з поля "Висота (В)" конвертера
+        if (request.getManualAltitude() > 0) {
+            r.setAltitude(String.valueOf(request.getManualAltitude()));
+        } else if (report.getAltitude() != null) {
+            r.setAltitude(String.valueOf(report.getAltitude()));
+        }
+
+        // Висота цілі — з JSON звіту (поле altitude в CombatReport)
+        if (report.getAltitude() != null) {
+            r.setTargetAltitude(report.getAltitude());
+        }
+
+        // Ціль
+        String targetNum = report.getTargetNumberVirazh() != null
+                ? String.valueOf(report.getTargetNumberVirazh()) : "";
+        String targetType = report.getTargetSubType() != null
+                ? report.getTargetSubType() : "";
+        r.setTarget(targetType + (targetNum.isEmpty() ? "" : " №" + targetNum));
+        r.setTargetSpeed(request.getSpeed());
+        // Причина втрати
+        r.setLossReason(report.getEffectorLossReason());
+
+        // Формуємо примітку автоматично
+        String weaponName = r.getWeapon() != null ? r.getWeapon() : "";
+        String targetTypeFull = report.getTargetSubType() != null
+                ? report.getTargetSubType() : (report.getTargetType() != null ? report.getTargetType() : "");
+        String unitNameVal = report.getUnitName() != null ? report.getUnitName() : "";
+        String militaryUnitVal = report.getMilitaryUnit() != null ? report.getMilitaryUnit() : "";
+        String effLossReason = report.getEffectorLossReason() != null ? report.getEffectorLossReason() : "";
+
+        String generatedNote = "Екіпажем \"" + unitNameVal + "\" в/ч " + militaryUnitVal +
+                ", який виконує завдання ведення повітряної розвідки та ураження противника" +
+                " в смузі відповідальності ОТУ м. Одеса здійснено виліт дроном-камікадзе" +
+                " \"" + weaponName + "\" з метою ураження ворожого ударного дрона №" + targetNum +
+                (targetTypeFull.isEmpty() ? "" : " (" + targetTypeFull + ")") + ". " +
+                effLossReason;
+        r.setNote(generatedNote);
+
+        return r;
     }
 
     @PostMapping("/save/txt")

@@ -22,11 +22,9 @@ public class AppConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                // [ВИПРАВЛЕННЯ #4] Обмежено до localhost — додаток не є публічним API
-                // Якщо деплоїш на сервер — додай його адресу сюди через кому
                 .allowedOrigins("http://localhost:8080", "http://127.0.0.1:8080")
-                .allowedMethods("GET", "POST", "OPTIONS")
-                // Замість * — тільки потрібні заголовки
+                // [ВИПРАВЛЕННЯ #1] Додано PUT, DELETE, PATCH — потрібні для PersonnelController
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("Content-Type")
                 .allowCredentials(false);
     }

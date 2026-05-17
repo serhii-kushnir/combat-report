@@ -29,44 +29,58 @@ public class PersonnelService {
 
     public Personnel create(Personnel p) {
         p.setActive(true);
-        if (p.getStatus() == null || p.getStatus().isBlank()) p.setStatus("PRESENT");
         Personnel saved = repository.save(p);
-        log.info("Додано бійця: {} (id={})", saved.getFullName(), saved.getId());
+        log.info("Додано особу: {} (id={})", saved.getFullName(), saved.getId());
         return saved;
     }
 
     public Personnel update(Long id, Personnel updated) {
-        Personnel existing = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Боєць не знайдений: " + id));
-        existing.setLastName(updated.getLastName());
-        existing.setFirstName(updated.getFirstName());
-        existing.setMiddleName(updated.getMiddleName());
-        existing.setRank(updated.getRank());
-        existing.setPosition(updated.getPosition());
-        existing.setPhone(updated.getPhone());
-        existing.setStatus(updated.getStatus());
-        existing.setNote(updated.getNote());
-        Personnel saved = repository.save(existing);
-        log.info("Оновлено бійця: {} (id={})", saved.getFullName(), saved.getId());
+        Personnel e = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Особу не знайдено: " + id));
+
+        // Основні
+        e.setLastName(updated.getLastName());
+        e.setFirstName(updated.getFirstName());
+        e.setMiddleName(updated.getMiddleName());
+        e.setRank(updated.getRank());
+        e.setPosition(updated.getPosition());
+        e.setFullPosition(updated.getFullPosition());
+        e.setPhone(updated.getPhone());
+        e.setNote(updated.getNote());
+
+        // Особові дані
+        e.setBirthDate(updated.getBirthDate());
+        e.setTaxId(updated.getTaxId());
+        e.setPassportSeries(updated.getPassportSeries());
+        e.setPassportNumber(updated.getPassportNumber());
+        e.setBloodGroup(updated.getBloodGroup());
+
+        // Адреса
+        e.setRegistrationAddress(updated.getRegistrationAddress());
+        e.setLivingAddress(updated.getLivingAddress());
+
+        // Сімейний стан
+        e.setMaritalStatus(updated.getMaritalStatus());
+        e.setSpouseName(updated.getSpouseName());
+
+        // Військові дані
+        e.setDraftDate(updated.getDraftDate());
+        e.setDraftOrganization(updated.getDraftOrganization());
+        e.setServiceType(updated.getServiceType());
+        e.setUbdNumber(updated.getUbdNumber());
+        e.setDriverLicense(updated.getDriverLicense());
+
+        Personnel saved = repository.save(e);
+        log.info("Оновлено особу: {} (id={})", saved.getFullName(), saved.getId());
         return saved;
     }
 
     public void deactivate(Long id) {
         Personnel p = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Боєць не знайдений: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Особу не знайдено: " + id));
         p.setActive(false);
         repository.save(p);
-        log.info("Деактивовано бійця: {} (id={})", p.getFullName(), id);
-    }
-
-    public Personnel updateStatus(Long id, String status, String note) {
-        Personnel p = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Боєць не знайдений: " + id));
-        p.setStatus(status);
-        p.setNote(note);
-        Personnel saved = repository.save(p);
-        log.info("Статус бійця {} змінено на: {}", saved.getFullName(), status);
-        return saved;
+        log.info("Деактивовано особу: {} (id={})", p.getFullName(), id);
     }
 
     public List<Personnel> search(String query) {

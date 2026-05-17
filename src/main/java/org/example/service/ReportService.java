@@ -141,7 +141,6 @@ public class ReportService {
         sb.append("Координати: ").append(coordinates).append("\n");
 
         // Рядок з курсом, відстанню та висотою (ручні поля)
-        //sb.append("А-").append(course).append("°, Д-").append(manualDistance).append(" м., В-").append(manualAltitude).append(" м.\n");
         sb.append("Азимут-").append(course).append("°, Дальність-").append(manualDistance).append(" м., Висота-").append(manualAltitude).append(" м.\n");
 
         sb.append("Тип: ").append(getTargetTypeDisplay(report)).append("\n");
@@ -206,7 +205,6 @@ public class ReportService {
         sb.append("Приблизні координати підриву: ").append(coordinates).append("\n");
 
         // Рядок з курсом, відстанню та висотою (ручні поля)
-        //sb.append("А-").append(course).append("°, Д-").append(manualDistance).append(" м., В-").append(manualAltitude).append(" м.\n");
         sb.append("Азимут-").append(course).append("°, Дальність-").append(manualDistance).append(" м., Висота-").append(manualAltitude).append(" м.\n");
 
         sb.append("Тип цілі: ").append(getTargetTypeDisplay(report)).append("\n");

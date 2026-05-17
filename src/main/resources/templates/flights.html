@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Журнал БпАК</title>
+    <style>
+
+        /* Зсув контенту при згортанні */
+
+        /* Основний контент */
+
+        /* Топбар всередині контенту */
+        .topbar {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a237e;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
+
+        .container { padding: 16px 20px; }
+
+        .toolbar {
+            background: white; padding: 12px 16px; border-radius: 8px;
+            margin-bottom: 14px; display: flex; align-items: center;
+            gap: 10px; flex-wrap: wrap;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        .btn { padding: 7px 14px; border: none; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .btn-primary { background: #1976d2; color: white; }
+        .btn-primary:hover { background: #1565c0; }
+        .btn-success { background: #388e3c; color: white; }
+        .btn-success:hover { background: #2e7d32; }
+        .btn-warning { background: #f57c00; color: white; }
+        .btn-warning:hover { background: #e65100; }
+        .btn-danger  { background: #d32f2f; color: white; }
+        .btn-danger:hover  { background: #b71c1c; }
+        .btn-sm { padding: 4px 9px; font-size: 11px; }
+        select, input[type=text] {
+            padding: 7px 10px; border: 1px solid #ccc; border-radius: 5px;
+            font-size: 13px; font-family: inherit;
+        }
+
+        .stats {
+            display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap;
+        }
+        .stat-card {
+            background: white; border-radius: 8px; padding: 10px 16px;
+            text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.1); min-width: 100px;
+        }
+        .stat-card .num { font-size: 26px; font-weight: bold; color: #1976d2; }
+        .stat-card .lbl { font-size: 11px; color: #666; }
+
+        .table-wrap { overflow-x: auto; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; background: white; min-width: 1200px; }
+        thead { background: #1a237e; color: white; }
+        th { padding: 9px 8px; font-size: 12px; font-weight: 600; text-align: left; white-space: nowrap; }
+        td { padding: 7px 8px; font-size: 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+        tr:hover td { background: #f5f9ff; }
+        .actions-col { white-space: nowrap; }
+
+        .badge-success  { background: #e8f5e9; color: #2e7d32; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+        .badge-warning  { background: #fff3e0; color: #e65100; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+
+        /* Модальне вікно */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 1000;
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: white; border-radius: 10px; padding: 24px;
+            width: 700px; max-width: 96vw; max-height: 90vh;
+            overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .modal h2 { margin: 0 0 18px; font-size: 17px; color: #1a237e; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-group { display: flex; flex-direction: column; gap: 4px; }
+        .form-group.full { grid-column: 1 / -1; }
+        label { font-size: 12px; font-weight: 600; color: #555; }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 7px 9px; border: 1px solid #ccc; border-radius: 5px;
+            font-size: 13px; font-family: inherit;
+        }
+        .form-group textarea { height: 80px; resize: vertical; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+
+        .toast {
+            position: fixed; bottom: 20px; right: 20px;
+            padding: 10px 18px; border-radius: 6px; color: white;
+            font-size: 13px; font-weight: 600;
+            opacity: 0; transition: opacity 0.3s; z-index: 9999;
+        }
+        .toast.show { opacity: 1; }
+        .toast.ok  { background: #2e7d32; }
+        .toast.err { background: #c62828; }
+
+        .confirm-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 1100;
+            align-items: center; justify-content: center;
+        }
+        .confirm-overlay.open { display: flex; }
+        .confirm-box {
+            background: white; border-radius: 10px; padding: 24px;
+            width: 340px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .confirm-box p { margin: 0 0 16px; }
+        .confirm-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+        .empty-state { text-align: center; padding: 40px; color: #999; }
+        .note-cell {
+            max-height: 60px;
+            overflow: hidden;
+            cursor: pointer;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            transition: max-height 0.2s ease;
+        }
+        .note-cell.expanded {
+            max-height: 500px;
+            -webkit-line-clamp: unset;
+            display: block;
+        }
+        .note-cell:hover { color: #1565c0; }
+        .row-success td { background: #e8f5e9 !important; }
+        .row-success td span { background: #c8e6c9 !important; color: #1b5e20 !important; }
+    </style>
+    <link th:replace="~{fragments :: sidebar-css}">
+</head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments :: sidebar('flights')}"></div>
+    <div class="main-content">
+
+
+        <div class="container">
+            <div class="toolbar">
+                <select id="yearFilter">
+                    <option value="">— Всі роки —</option>
+                </select>
+                <select id="monthFilter">
+                    <option value="">— Всі місяці —</option>
+                </select>
+                <input type="text" id="searchInput" placeholder="🔍 Пошук..." style="width:180px">
+                <button class="btn btn-success" onclick="openAddModal()">+ Додати запис</button>
+                <button class="btn btn-warning" onclick="exportXlsx()">📤 Експорт xlsx</button>
+            </div>
+
+            <div class="stats" id="statsBar"></div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th style="width:36px">№</th>
+                        <th style="width:86px">Дата</th>
+                        <th style="width:75px">Екіпаж</th>
+                        <th style="width:130px">Подія</th>
+                        <th style="width:62px">Час взльоту</th>
+                        <th style="width:62px">Час втрати</th>
+                        <th style="width:120px">Координати</th>
+                        <th style="width:55px">Азимут (°)</th>
+                        <th style="width:75px">Відстань (м)</th>
+                        <th style="width:70px">Вис. польоту (м)</th>
+                        <th style="width:90px">Тип</th>
+                        <th style="width:80px">Ідентифікація</th>
+                        <th style="width:120px">Засіб ураження</th>
+                        <th style="width:130px">Вибухівка</th>
+                        <th style="width:130px">Детонатор</th>
+                        <th style="width:70px">Висота цілі (м)</th>
+                        <th style="width:120px">Ціль</th>
+                        <th style="width:80px">Швидкість цілі (км/год)</th>
+                        <th style="width:130px">Причина втрати</th>
+                        <th style="width:280px">Примітка</th>
+                        <th style="width:55px">Дії</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                    <tr><td colspan="14" class="empty-state">Завантаження...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Форма додавання/редагування -->
+        <div class="modal-overlay" id="formModal">
+            <div class="modal">
+                <h2 id="modalTitle">Додати запис</h2>
+                <input type="hidden" id="editId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Порядковий №</label>
+                        <input type="number" id="fNum" placeholder="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Дата</label>
+                        <input type="date" id="fDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Екіпаж</label>
+                        <input type="text" id="fCrew" placeholder="СКОПА">
+                    </div>
+                    <div class="form-group">
+                        <label>Місяць (лист)</label>
+                        <input type="text" id="fMonth" placeholder="Травень">
+                    </div>
+                    <div class="form-group full">
+                        <label>Подія</label>
+                        <input type="text" id="fEvent" placeholder="Підрив по цілі">
+                    </div>
+                    <div class="form-group">
+                        <label>Час взльоту</label>
+                        <input type="time" id="fTakeoff">
+                    </div>
+                    <div class="form-group">
+                        <label>Час втрати/підриву</label>
+                        <input type="time" id="fLoss">
+                    </div>
+                    <div class="form-group full">
+                        <label>Координати</label>
+                        <input type="text" id="fCoords" placeholder="46.482 N, 30.723 E">
+                    </div>
+                    <div class="form-group">
+                        <label>Азимут (°)</label>
+                        <input type="number" id="fAzimuth" placeholder="50" min="0" max="360">
+                    </div>
+                    <div class="form-group">
+                        <label>Відстань (м)</label>
+                        <input type="number" id="fDist" placeholder="10000">
+                    </div>
+                    <div class="form-group">
+                        <label>Висота польоту (м)</label>
+                        <input type="number" id="fFlightAlt" placeholder="2042">
+                    </div>
+                    <div class="form-group">
+                        <label>Тип цілі</label>
+                        <input type="text" id="fType" placeholder="БпЛА крило">
+                    </div>
+                    <div class="form-group">
+                        <label>Ідентифікація</label>
+                        <input type="text" id="fIdent" placeholder="Дружній">
+                    </div>
+                    <div class="form-group">
+                        <label>Засіб ураження</label>
+                        <input type="text" id="fWeapon" placeholder="AS3 Merops (нічний)">
+                    </div>
+                    <div class="form-group">
+                        <label>Вибухівка</label>
+                        <input type="text" id="fExplosive" placeholder="3-1.2 КУФ 1,2 кг">
+                    </div>
+                    <div class="form-group">
+                        <label>Детонатор</label>
+                        <input type="text" id="fDetonator" placeholder="Розумна плата ініціації">
+                    </div>
+                    <div class="form-group">
+                        <label>Висота польоту (м)</label>
+                        <input type="text" id="fAltitude" placeholder="2042">
+                    </div>
+                    <div class="form-group">
+                        <label>Висота цілі (м)</label>
+                        <input type="number" id="fTargetAlt" placeholder="600">
+                    </div>
+                    <div class="form-group">
+                        <label>Ціль</label>
+                        <input type="text" id="fTarget" placeholder="Шахід 8241">
+                    </div>
+                    <div class="form-group">
+                        <label>Швидкість цілі (км/год)</label>
+                        <input type="number" id="fSpeed" placeholder="160">
+                    </div>
+                    <div class="form-group">
+                        <label>Причина втрати</label>
+                        <select id="fLossReason">
+                            <option value="">— не вказано —</option>
+                            <option>Відмова батареї</option>
+                            <option>Втрата сигналу відео</option>
+                            <option>Втрата керування</option>
+                            <option>Знищення цілі, успішне застосування (камікадзе)</option>
+                            <option>Збитий ціллю</option>
+                            <option>Технічна несправність</option>
+                            <option>РЕБ противника</option>
+                            <option>Інше</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <label>Примітка</label>
+                        <textarea id="fNote"></textarea>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn" onclick="closeModal('formModal')" style="background:#eee">Скасувати</button>
+                    <button class="btn btn-primary" onclick="saveRecord()">Зберегти</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Підтвердження видалення -->
+        <div class="confirm-overlay" id="confirmModal">
+            <div class="confirm-box">
+                <p>Видалити цей запис?</p>
+                <div class="confirm-actions">
+                    <button class="btn" onclick="closeModal('confirmModal')" style="background:#eee">Скасувати</button>
+                    <button class="btn btn-danger" id="confirmBtn">Видалити</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+
+        <script>
+            let allRecords = [];
+            let deleteTargetId = null;
+
+            // ===== ІНІЦІАЛІЗАЦІЯ =====
+            loadYears();
+            loadMonths();
+            loadRecords();
+
+            async function loadYears() {
+                const res = await fetch('/flights/api/years');
+                const years = await res.json();
+                const sel = document.getElementById('yearFilter');
+                years.forEach(y => {
+                    const opt = document.createElement('option');
+                    opt.value = y; opt.textContent = y;
+                    sel.appendChild(opt);
+                });
+            }
+
+            async function loadMonths() {
+                const res = await fetch('/flights/api/months');
+                const months = await res.json();
+                const sel = document.getElementById('monthFilter');
+                months.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m; opt.textContent = m;
+                    sel.appendChild(opt);
+                });
+            }
+
+            async function loadRecords() {
+                const month = document.getElementById('monthFilter').value;
+                const year  = document.getElementById('yearFilter').value;
+                let url = '/flights/api';
+                if (month) url += `?month=${encodeURIComponent(month)}`;
+                else if (year) url += `?year=${year}`;
+                const res = await fetch(url);
+                if (!res.ok) { showToast('Помилка завантаження', 'err'); return; }
+                allRecords = await res.json();
+                applyFilter();
+                renderStats();
+            }
+
+            document.getElementById('yearFilter').onchange = () => { document.getElementById('monthFilter').value = ''; loadRecords(); };
+            document.getElementById('monthFilter').onchange = () => { document.getElementById('yearFilter').value = ''; loadRecords(); };
+            document.getElementById('searchInput').oninput = applyFilter;
+
+            function applyFilter() {
+                const q = document.getElementById('searchInput').value.toLowerCase();
+                const filtered = !q ? allRecords : allRecords.filter(r =>
+                    [r.crew, r.event, r.target, r.targetType, r.weapon, r.note, r.coordinates]
+                        .some(v => v && v.toLowerCase().includes(q))
+                );
+                renderTable(filtered);
+            }
+
+            function renderStats() {
+                const total = allRecords.length;
+                const hits  = allRecords.filter(r => r.event && (r.event.toLowerCase().includes('знищен') || r.event.toLowerCase().includes('підрив'))).length;
+                const loss  = allRecords.filter(r => r.event && r.event.toLowerCase().includes('втрат')).length;
+                document.getElementById('statsBar').innerHTML = `
+        <div class="stat-card"><div class="num">${total}</div><div class="lbl">Всього вильотів</div></div>
+        <div class="stat-card"><div class="num" style="color:#2e7d32">${hits}</div><div class="lbl">Знищення цілі</div></div>
+        <div class="stat-card"><div class="num" style="color:#d32f2f">${loss}</div><div class="lbl">Втрат бортів</div></div>
+    `;
+            }
+
+            function renderTable(records) {
+                const body = document.getElementById('tableBody');
+                if (!records.length) {
+                    body.innerHTML = '<tr><td colspan="21" class="empty-state">Записів немає</td></tr>';
+                    return;
+                }
+                body.innerHTML = records.map(r => {
+                    const isDestroyed = r.event && (r.event.toLowerCase().includes('знищен') || r.event.toLowerCase().includes('підрив'));
+                    const badgeCls = isDestroyed ? 'badge-success' : 'badge-warning';
+                    const rowCls = isDestroyed ? 'row-success' : '';
+                    return `<tr class="${rowCls}">
+            <td style="text-align:center">${r.recordNumber ?? ''}</td>
+            <td style="text-align:center">${fmtDate(r.flightDate)}</td>
+            <td style="text-align:center">${r.crew ?? ''}</td>
+            <td style="text-align:center"><span class="${badgeCls}">${r.event ?? ''}</span></td>
+            <td style="text-align:center">${fmtTime(r.takeoffTime)}</td>
+            <td style="text-align:center">${fmtTime(r.lossTime)}</td>
+            <td style="text-align:center;font-size:11px">${r.coordinates ?? ''}</td>
+            <td style="text-align:center">${r.azimuth != null ? r.azimuth + '°' : ''}</td>
+            <td style="text-align:center">${r.distance ?? ''}</td>
+            <td style="text-align:center">${r.altitude ?? ''}</td>
+            <td style="text-align:center">${r.targetType ?? ''}</td>
+            <td style="text-align:center">${r.identification ?? ''}</td>
+            <td style="text-align:left;font-size:11px">${r.weapon ?? ''}</td>
+            <td style="text-align:left;font-size:11px">${r.explosive ?? ''}</td>
+            <td style="text-align:left;font-size:11px">${r.detonator ?? ''}</td>
+            <td style="text-align:center">${r.targetAltitude ?? ''}</td>
+            <td style="text-align:center">${r.target ?? ''}</td>
+            <td style="text-align:center">${r.targetSpeed ?? ''}</td>
+            <td style="text-align:left;font-size:11px;color:#c62828">${r.lossReason ?? ''}</td>
+            <td style="text-align:left;font-size:11px;color:#666;max-width:280px">
+                <div class="note-cell" onclick="this.classList.toggle('expanded')"
+                     title="Натисни щоб розгорнути">
+                    ${r.note ?? ''}
+                </div>
+            </td>
+            <td class="actions-col">
+                <button class="btn btn-warning btn-sm" onclick="openEditModal(${r.id})">✏️</button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete(${r.id})">🗑</button>
+            </td>
+        </tr>`;
+                }).join('');
+            }
+
+            // ===== ФОРМА =====
+            function openAddModal() {
+                document.getElementById('modalTitle').textContent = 'Додати запис';
+                document.getElementById('editId').value = '';
+                const fields = ['fNum','fDate','fCrew','fMonth','fEvent','fTakeoff','fLoss',
+                    'fCoords','fAzimuth','fDist','fFlightAlt','fType','fIdent','fWeapon','fExplosive',
+                    'fDetonator','fAltitude','fTarget','fSpeed','fNote'];
+                document.getElementById('fLossReason').value = '';
+                fields.forEach(id => document.getElementById(id).value = '');
+                document.getElementById('formModal').classList.add('open');
+            }
+
+            function openEditModal(id) {
+                const r = allRecords.find(x => x.id === id);
+                if (!r) return;
+                document.getElementById('modalTitle').textContent = 'Редагувати запис';
+                document.getElementById('editId').value = id;
+                document.getElementById('fNum').value      = r.recordNumber ?? '';
+                document.getElementById('fDate').value     = r.flightDate ? r.flightDate.substring(0,10) : '';
+                document.getElementById('fCrew').value     = r.crew ?? '';
+                document.getElementById('fMonth').value    = r.month ?? '';
+                document.getElementById('fEvent').value    = r.event ?? '';
+                document.getElementById('fTakeoff').value  = r.takeoffTime ? r.takeoffTime.substring(0,5) : '';
+                document.getElementById('fLoss').value     = r.lossTime ? r.lossTime.substring(0,5) : '';
+                document.getElementById('fCoords').value      = r.coordinates ?? '';
+                document.getElementById('fAzimuth').value   = r.azimuth ?? '';
+                document.getElementById('fDist').value      = r.distance ?? '';
+                document.getElementById('fFlightAlt').value = r.altitude ?? '';
+                document.getElementById('fType').value     = r.targetType ?? '';
+                document.getElementById('fIdent').value    = r.identification ?? '';
+                document.getElementById('fWeapon').value   = r.weapon ?? '';
+                document.getElementById('fExplosive').value = r.explosive ?? '';
+                document.getElementById('fDetonator').value = r.detonator ?? '';
+                document.getElementById('fAltitude').value     = r.altitude ?? '';
+                document.getElementById('fTargetAlt').value  = r.targetAltitude ?? '';
+                document.getElementById('fTarget').value   = r.target ?? '';
+                document.getElementById('fSpeed').value      = r.targetSpeed ?? '';
+                document.getElementById('fLossReason').value = r.lossReason ?? '';
+                document.getElementById('fNote').value       = r.note ?? '';
+                document.getElementById('formModal').classList.add('open');
+            }
+
+            async function saveRecord() {
+                const id = document.getElementById('editId').value;
+                const body = {
+                    recordNumber:   parseInt(document.getElementById('fNum').value) || null,
+                    flightDate:     document.getElementById('fDate').value || null,
+                    crew:           document.getElementById('fCrew').value.trim(),
+                    month:          document.getElementById('fMonth').value.trim(),
+                    event:          document.getElementById('fEvent').value.trim(),
+                    takeoffTime:    document.getElementById('fTakeoff').value || null,
+                    lossTime:       document.getElementById('fLoss').value || null,
+                    coordinates:    document.getElementById('fCoords').value.trim(),
+                    azimuth:        parseInt(document.getElementById('fAzimuth').value) || null,
+                    distance:       parseInt(document.getElementById('fDist').value) || null,
+                    flightAltitude: parseInt(document.getElementById('fFlightAlt').value) || null,
+                    targetType:     document.getElementById('fType').value.trim(),
+                    identification: document.getElementById('fIdent').value.trim(),
+                    weapon:         document.getElementById('fWeapon').value.trim(),
+                    explosive:      document.getElementById('fExplosive').value.trim(),
+                    detonator:      document.getElementById('fDetonator').value.trim(),
+                    altitude:       document.getElementById('fAltitude').value.trim(),
+                    targetAltitude: parseInt(document.getElementById('fTargetAlt').value) || null,
+                    target:         document.getElementById('fTarget').value.trim(),
+                    targetSpeed:    parseInt(document.getElementById('fSpeed').value) || null,
+                    lossReason:     document.getElementById('fLossReason').value,
+                    lossReason:     document.getElementById('fLossReason').value.trim(),
+                    note:           document.getElementById('fNote').value.trim(),
+                };
+
+                const url    = id ? `/flights/api/${id}` : '/flights/api';
+                const method = id ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+                });
+                if (res.ok) {
+                    closeModal('formModal');
+                    await loadRecords();
+                    showToast(id ? 'Запис оновлено' : 'Запис додано', 'ok');
+                } else {
+                    const msg = await res.text();
+                    showToast('Помилка: ' + msg, 'err');
+                }
+            }
+
+            // ===== ВИДАЛЕННЯ =====
+            function confirmDelete(id) {
+                deleteTargetId = id;
+                document.getElementById('confirmBtn').onclick = async () => {
+                    const res = await fetch(`/flights/api/${deleteTargetId}`, {method:'DELETE'});
+                    closeModal('confirmModal');
+                    if (res.ok) { await loadRecords(); showToast('Запис видалено', 'ok'); }
+                    else showToast('Помилка видалення', 'err');
+                };
+                document.getElementById('confirmModal').classList.add('open');
+            }
+
+            // ===== ІМПОРТ =====
+
+            // ===== ЕКСПОРТ =====
+            function exportXlsx() {
+                const month = document.getElementById('monthFilter').value;
+                const year  = document.getElementById('yearFilter').value;
+                let url = '/flights/api/export';
+                if (month) url += `?month=${encodeURIComponent(month)}`;
+                else if (year) url += `?year=${year}`;
+                window.location.href = url;
+            }
+
+            // ===== УТИЛІТИ =====
+            function fmtDate(d) {
+                if (!d) return '';
+                const [y, m, day] = d.substring(0,10).split('-');
+                return `${day}.${m}.${y}`;
+            }
+            function fmtTime(t) {
+                if (!t) return '';
+                return t.substring(0,5);
+            }
+            function openModal(id)  { document.getElementById(id).classList.add('open'); }
+            function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+            document.querySelectorAll('.modal-overlay').forEach(el =>
+                el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
+            );
+            function showToast(msg, type) {
+                const t = document.getElementById('toast');
+                t.textContent = msg; t.className = `toast ${type} show`;
+                setTimeout(() => t.classList.remove('show'), 2500);
+            }
+        </script>
+    </div>
+</div>
+<div th:replace="~{fragments :: sidebar-js}"></div>
+</body>
+</html>

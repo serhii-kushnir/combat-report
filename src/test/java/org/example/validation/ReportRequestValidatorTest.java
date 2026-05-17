@@ -166,4 +166,50 @@ class ReportRequestValidatorTest {
     void isValid_invalidRequest_returnsFalse() {
         assertThat(validator.isValid(null, 0, null, -1, -1)).isFalse();
     }
+    // ========== КУРС ==========
+
+    @Test
+    @DisplayName("Курс від'ємний → помилка")
+    void negativeCourse_hasError() {
+        List<String> errors = validator.validate(VALID_JSON, VALID_FORMAT, VALID_PILOT, VALID_DISTANCE, VALID_SPEED, -1, 0, 0);
+        assertThat(errors).anyMatch(e -> e.contains("Курс"));
+    }
+
+    @Test
+    @DisplayName("Курс більше 360° → помилка")
+    void tooLargeCourse_hasError() {
+        List<String> errors = validator.validate(VALID_JSON, VALID_FORMAT, VALID_PILOT, VALID_DISTANCE, VALID_SPEED, 361, 0, 0);
+        assertThat(errors).anyMatch(e -> e.contains("Курс"));
+    }
+
+    @Test
+    @DisplayName("Курс 0-360 → валідний")
+    void validCourse_noError() {
+        List<String> errors = validator.validate(VALID_JSON, VALID_FORMAT, VALID_PILOT, VALID_DISTANCE, VALID_SPEED, 270, 0, 0);
+        assertThat(errors).noneMatch(e -> e.contains("Курс"));
+    }
+
+    // ========== ВИСОТА ==========
+
+    @Test
+    @DisplayName("Висота від'ємна → помилка")
+    void negativeAltitude_hasError() {
+        List<String> errors = validator.validate(VALID_JSON, VALID_FORMAT, VALID_PILOT, VALID_DISTANCE, VALID_SPEED, 0, -1, 0);
+        assertThat(errors).anyMatch(e -> e.contains("Висота"));
+    }
+
+    @Test
+    @DisplayName("Висота цілі від'ємна → помилка")
+    void negativeTargetAltitude_hasError() {
+        List<String> errors = validator.validate(VALID_JSON, VALID_FORMAT, VALID_PILOT, VALID_DISTANCE, VALID_SPEED, 0, 0, -1);
+        assertThat(errors).anyMatch(e -> e.contains("Висота цілі"));
+    }
+
+    @Test
+    @DisplayName("Висота понад 20км → помилка")
+    void tooHighAltitude_hasError() {
+        List<String> errors = validator.validate(VALID_JSON, VALID_FORMAT, VALID_PILOT, VALID_DISTANCE, VALID_SPEED, 0, 20_001, 0);
+        assertThat(errors).anyMatch(e -> e.contains("занадто велика"));
+    }
+
 }
