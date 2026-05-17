@@ -169,55 +169,88 @@
 
             <!-- ПОВНА ТАБЛИЦЯ -->
             <div class="table-section" id="fullTable">
-                <div class="table-wrap"><table style="min-width:1800px">
-                    <thead><tr>
-                        <th style="width:36px">№ з/п</th>
-                        <th style="width:140px">Прізвище</th>
-                        <th style="width:120px">Ім'я</th>
-                        <th style="width:120px">По батькові</th>
-                        <th style="width:90px">Дата народження</th>
-                        <th style="width:110px">РНОКПП (ІПН)</th>
-                        <th style="width:80px">Номер паспорта</th>
-                        <th style="width:70px">Група крові</th>
-                        <th style="width:70px">Резус-фактор</th>
-                        <th style="width:180px">Адреса реєстрації</th>
-                        <th style="width:110px">Телефон</th>
-                        <th style="width:140px">Електронна пошта</th>
-                        <th style="width:120px">Військове звання</th>
-                        <th style="width:130px">Посада</th>
-                        <th style="width:110px">Дата зарахування до списків в/ч</th>
-                        <th style="width:110px">Вид мобілізації</th>
-                        <th style="width:110px">Дата початку контракту</th>
-                        <th style="width:110px">Дата закінчення контракту</th>
-                        <th style="width:100px">Попередня в/ч</th>
-                        <th style="width:100px">Бойовий досвід</th>
-                        <th style="width:100px">Нагороди</th>
-                        <th style="width:100px">Інвалідність</th>
-                        <th style="width:100px">Сімейний стан</th>
-                        <th style="width:70px">Кількість дітей</th>
-                        <th style="width:160px">Діти (ПІБ, ДН)</th>
-                        <th style="width:100px">Рівень освіти</th>
-                        <th style="width:160px">Навчальний заклад</th>
-                        <th style="width:140px">Спеціальність</th>
-                        <th style="width:100px">Форма навчання</th>
-                        <th style="width:80px">Рік вступу</th>
-                        <th style="width:80px">Рік закінчення</th>
-                        <th style="width:100px">Номер диплома</th>
-                        <th style="width:100px">Форма допуску</th>
-                        <th style="width:100px">Номер допуску</th>
-                        <th style="width:100px">Водійські категорії</th>
-                        <th style="width:140px">Зброя (Тип/№)</th>
-                        <th style="width:80px">Калібр зброї</th>
-                        <th style="width:140px">Зарплатна картка (Банк/№)</th>
-                        <th style="width:80px">Розмір форми</th>
-                        <th style="width:80px">Розмір взуття</th>
-                        <th style="width:140px">Контактна особа (ПІБ)</th>
-                        <th style="width:110px">Контактна особа (Телефон)</th>
-                        <th style="width:100px">Контактна особа (Зв'язок)</th>
-                        <th style="width:160px">Примітки</th>
-                        <th style="width:70px">Дії</th>
-                    </tr></thead>
-                    <tbody id="fullBody">
+                <div class="table-wrap">
+                    <table class="table table-bordered table-hover table-sm" style="min-width: 3500px; font-size: 0.8rem; white-space: nowrap;">
+                        <thead class="table-light">
+                            <!-- Рівень 1: Головні розділи -->
+                            <tr>
+                                <th rowspan="3" class="align-middle text-center" style="width: 40px;">№</th>
+                                <th rowspan="3" class="align-middle text-center" style="min-width: 200px;">ПІБ</th>
+                                <th colspan="13" class="text-center bg-primary text-white">3. Особові дані</th>
+                                <th colspan="4" class="text-center bg-success text-white">4. Сімейні дані</th>
+                                <th colspan="10" class="text-center bg-danger text-white">5. Військові дані</th>
+                                <th rowspan="3" class="align-middle text-center" style="width: 80px;">Дії</th>
+                            </tr>
+                            <!-- Рівень 2: Підрозділи -->
+                            <tr>
+                                <!-- Особові дані -->
+                                <th rowspan="2" class="align-middle text-center">3.1 Моб. телефон</th>
+                                <th rowspan="2" class="align-middle text-center">3.2 Дата народження</th>
+                                <th rowspan="2" class="align-middle text-center">3.3 Повних років</th>
+                                <th rowspan="2" class="align-middle text-center">3.4 ІПН</th>
+                                <th colspan="2" class="text-center">3.5 Паспорт</th>
+                                <th colspan="3" class="text-center">3.6 Водійське посвідчення</th>
+                                <th colspan="5" class="text-center">3.7 Освіта</th>
+                                <th rowspan="2" class="align-middle text-center">3.8 Група крові</th>
+                                <th rowspan="2" class="align-middle text-center">3.9 Адреса реєстрації</th>
+                                <th rowspan="2" class="align-middle text-center">3.10 Адреса проживання</th>
+                                
+                                <!-- Сімейні дані -->
+                                <th rowspan="2" class="align-middle text-center">4.1 Сімейний стан</th>
+                                <th rowspan="2" class="align-middle text-center">4.2 Дружина</th>
+                                <th rowspan="2" class="align-middle text-center">4.3 Діти</th>
+                                <th rowspan="2" class="align-middle text-center">4.4 Адреса проживання</th>
+
+                                <!-- Військові дані -->
+                                <th rowspan="2" class="align-middle text-center">5.1 Звання</th>
+                                <th rowspan="2" class="align-middle text-center">5.2 Посада (коротка)</th>
+                                <th rowspan="2" class="align-middle text-center">5.3 Посада (повна)</th>
+                                <th rowspan="2" class="align-middle text-center">5.4 Ким призваний</th>
+                                <th rowspan="2" class="align-middle text-center">5.5 Учасник БД</th>
+                                <th colspan="2" class="text-center">5.6 УБД Документ</th>
+                                <th colspan="3" class="text-center">5.7 Форма допуску</th>
+                                <th colspan="2" class="text-center">5.8 Зарахування в частину</th>
+                                <th rowspan="2" class="align-middle text-center">5.9 Служба за</th>
+                                <th colspan="3" class="text-center">5.10 Зброя</th>
+                            </tr>
+                            <!-- Рівень 3: Деталі -->
+                            <tr>
+                                <!-- Паспорт -->
+                                <th class="text-center" style="width: 70px;">3.5.1 Серія</th>
+                                <th class="text-center" style="width: 90px;">3.5.2 Номер</th>
+                                
+                                <!-- Права -->
+                                <th class="text-center" style="width: 60px;">3.6.1 Серія</th>
+                                <th class="text-center" style="width: 80px;">3.6.2 Номер</th>
+                                <th class="text-center">3.6.3 Категорія</th>
+
+                                <!-- Освіта -->
+                                <th class="text-center">3.7.1 Рівень</th>
+                                <th class="text-center">3.7.2 Заклад</th>
+                                <th class="text-center" style="width: 90px;">3.7.3 Початок</th>
+                                <th class="text-center" style="width: 90px;">3.7.4 Кінець</th>
+                                <th class="text-center">3.7.5 Спеціальність</th>
+
+                                <!-- УБД Документ -->
+                                <th class="text-center" style="width: 80px;">5.6.1 Номер</th>
+                                <th class="text-center" style="width: 90px;">5.6.2 Дата</th>
+
+                                <!-- Допуск -->
+                                <th class="text-center">5.7.1 Ф-№</th>
+                                <th class="text-center">5.7.2 Наказ №</th>
+                                <th class="text-center" style="width: 90px;">5.7.3 Дата</th>
+
+                                <!-- Зарахування -->
+                                <th class="text-center" style="width: 90px;">5.8.1 Дата</th>
+                                <th class="text-center">5.8.2 Наказ №</th>
+
+                                <!-- Зброя -->
+                                <th class="text-center">5.10.1 Модель</th>
+                                <th class="text-center">5.10.2 Номер</th>
+                                <th class="text-center" style="width: 90px;">5.10.3 Дата видачі</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fullBody">
                     <tr><td colspan="22" class="empty-state">Завантаження...</td></tr>
                     </tbody>
                 </table></div>
@@ -608,58 +641,133 @@
                 if (!data.length) { body.innerHTML = '<tr><td colspan="45" class="empty-state">Особовий склад порожній</td></tr>'; return; }
                 const fmtDate = d => d ? d.substring(0,10).split('-').reverse().join('.') : '—';
                 const val = v => v || '—';
+                const calcAge = birthDate => {
+                    if (!birthDate) return '—';
+                    const today = new Date();
+                    const birth = new Date(birthDate);
+                    let age = today.getFullYear() - birth.getFullYear();
+                    const m = today.getMonth() - birth.getMonth();
+                    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+                    return age;
+                };
+                
                 body.innerHTML = data.map((p, i) => {
-                    const childrenList = p.children && p.children.length > 0 
+                    // Особові дані
+                    const phone = val(p.phone);
+                    const birthDate = fmtDate(p.birthDate);
+                    const age = calcAge(p.birthDate);
+                    const taxId = val(p.taxId);
+                    
+                    // Паспорт
+                    const passportSeries = p.passportSeries || '—';
+                    const passportNumber = p.passportNumber || '—';
+                    
+                    // Водійське посвідчення
+                    const driverSeries = p.driverLicenseSeries || '—';
+                    const driverNumber = p.driverLicenseNumber || '—';
+                    const driverCategories = val(p.driverCategories);
+                    
+                    // Освіта
+                    const eduLevel = val(p.educationLevel);
+                    const eduInst = val(p.educationInstitution);
+                    const eduStart = p.educationStartDate ? fmtDate(p.educationStartDate) : '—';
+                    const eduEnd = p.educationEndDate ? fmtDate(p.educationEndDate) : '—';
+                    const eduSpec = val(p.speciality);
+                    
+                    // Група крові та адреси
+                    const bloodGroup = val(p.bloodGroup);
+                    const regAddress = val(p.registrationAddress);
+                    const residenceAddress = val(p.residenceAddress) || regAddress;
+                    
+                    // Сімейні дані
+                    const maritalStatus = val(p.maritalStatus);
+                    const spouse = val(p.spouseName);
+                    const childrenCount = p.children ? p.children.length : 0;
+                    const childrenList = childrenCount > 0 
                         ? p.children.map(c => `${c.fullName || c.lastName || ''} (${fmtDate(c.birthDate)})`).join(', ') 
                         : '—';
-                    const weaponsList = p.weapons && p.weapons.length > 0 
-                        ? p.weapons.map(w => `${w.type || ''} №${w.serialNumber || ''}`.trim()).join(', ') 
-                        : '—';
+                    const familyAddress = val(p.familyAddress) || residenceAddress;
+                    
+                    // Військові дані
+                    const rank = val(p.rank);
+                    const positionShort = val(p.positionShort) || val(p.position);
+                    const positionFull = val(p.position);
+                    const recruitedBy = val(p.recruitedBy);
+                    const combatExp = p.combatExperience ? 'Так' : 'Ні';
+                    
+                    // УБД документ
+                    const ubdNumber = val(p.ubdDocumentNumber);
+                    const ubdDate = p.ubdDocumentDate ? fmtDate(p.ubdDocumentDate) : '—';
+                    
+                    // Допуск
+                    const clearanceForm = val(p.securityClearanceForm);
+                    const clearanceOrder = val(p.securityClearanceOrderNumber);
+                    const clearanceDate = p.securityClearanceDate ? fmtDate(p.securityClearanceDate) : '—';
+                    
+                    // Зарахування
+                    const enlistmentDate = p.enlistmentDate ? fmtDate(p.enlistmentDate) : '—';
+                    const enlistmentOrder = val(p.enlistmentOrderNumber);
+                    
+                    // Служба за
+                    const serviceType = val(p.serviceType) || val(p.mobilizationType);
+                    
+                    // Зброя (беремо першу з списку або основну)
+                    let weaponModel = '—', weaponNumber = '—', weaponDate = '—';
+                    if (p.weapons && p.weapons.length > 0) {
+                        const w = p.weapons[0];
+                        weaponModel = w.type || '—';
+                        weaponNumber = w.serialNumber || '—';
+                        weaponDate = w.issueDate ? fmtDate(w.issueDate) : '—';
+                    }
+                    
                     return `<tr>
                         <td style="text-align:center">${i + 1}</td>
-                        <td><strong>${val(p.lastName)}</strong></td>
-                        <td>${val(p.firstName)}</td>
-                        <td>${val(p.middleName)}</td>
-                        <td style="text-align:center">${fmtDate(p.birthDate)}</td>
-                        <td>${val(p.taxId)}</td>
-                        <td style="text-align:center">${val(p.passportNumber)}</td>
-                        <td style="text-align:center">${val(p.bloodGroup)}</td>
-                        <td style="text-align:center">${val(p.resusFactor)}</td>
-                        <td style="font-size:11px">${val(p.registrationAddress)}</td>
-                        <td>${val(p.phone)}</td>
-                        <td style="font-size:11px">${val(p.email)}</td>
-                        <td>${val(p.rank)}</td>
-                        <td>${val(p.position)}</td>
-                        <td style="text-align:center">${fmtDate(p.enlistmentDate)}</td>
-                        <td>${val(p.mobilizationType)}</td>
-                        <td style="text-align:center">${fmtDate(p.contractStartDate)}</td>
-                        <td style="text-align:center">${fmtDate(p.contractEndDate)}</td>
-                        <td>${val(p.previousUnit)}</td>
-                        <td>${val(p.combatExperience)}</td>
-                        <td>${val(p.awards)}</td>
-                        <td>${val(p.disability)}</td>
-                        <td>${val(p.maritalStatus)}</td>
-                        <td style="text-align:center">${p.children ? p.children.length : 0}</td>
-                        <td style="font-size:11px">${childrenList}</td>
-                        <td>${val(p.educationLevel)}</td>
-                        <td style="font-size:11px">${val(p.educationInstitution)}</td>
-                        <td style="font-size:11px">${val(p.speciality)}</td>
-                        <td>${val(p.educationForm)}</td>
-                        <td style="text-align:center">${val(p.educationStartYear)}</td>
-                        <td style="text-align:center">${val(p.educationEndYear)}</td>
-                        <td>${val(p.diplomaNumber)}</td>
-                        <td>${val(p.securityClearanceForm)}</td>
-                        <td>${val(p.securityClearanceNumber)}</td>
-                        <td>${val(p.driverCategories)}</td>
-                        <td style="font-size:11px">${weaponsList}</td>
-                        <td>${val(p.weaponCaliber)}</td>
-                        <td style="font-size:11px">${val(p.salaryCard)}</td>
-                        <td style="text-align:center">${val(p.uniformSize)}</td>
-                        <td style="text-align:center">${val(p.shoeSize)}</td>
-                        <td>${val(p.contactPersonName)}</td>
-                        <td>${val(p.contactPersonPhone)}</td>
-                        <td>${val(p.contactPersonRelation)}</td>
-                        <td style="font-size:11px;color:#777">${val(p.note)}</td>
+                        <td><strong>${val(p.lastName)} ${val(p.firstName)} ${val(p.middleName)}</strong></td>
+                        
+                        <!-- Особові дані -->
+                        <td>${phone}</td>
+                        <td style="text-align:center">${birthDate}</td>
+                        <td style="text-align:center">${age}</td>
+                        <td style="text-align:center">${taxId}</td>
+                        <td style="text-align:center">${passportSeries}</td>
+                        <td style="text-align:center">${passportNumber}</td>
+                        <td style="text-align:center">${driverSeries}</td>
+                        <td style="text-align:center">${driverNumber}</td>
+                        <td>${driverCategories}</td>
+                        <td>${eduLevel}</td>
+                        <td style="font-size:11px">${eduInst}</td>
+                        <td style="text-align:center">${eduStart}</td>
+                        <td style="text-align:center">${eduEnd}</td>
+                        <td style="font-size:11px">${eduSpec}</td>
+                        <td style="text-align:center">${bloodGroup}</td>
+                        <td style="font-size:11px">${regAddress}</td>
+                        <td style="font-size:11px">${residenceAddress}</td>
+                        
+                        <!-- Сімейні дані -->
+                        <td>${maritalStatus}</td>
+                        <td>${spouse}</td>
+                        <td style="text-align:center">${childrenCount}</td>
+                        <td style="font-size:11px">${familyAddress}</td>
+                        
+                        <!-- Військові дані -->
+                        <td>${rank}</td>
+                        <td>${positionShort}</td>
+                        <td style="font-size:11px">${positionFull}</td>
+                        <td>${recruitedBy}</td>
+                        <td style="text-align:center">${combatExp}</td>
+                        <td style="text-align:center">${ubdNumber}</td>
+                        <td style="text-align:center">${ubdDate}</td>
+                        <td>${clearanceForm}</td>
+                        <td>${clearanceOrder}</td>
+                        <td style="text-align:center">${clearanceDate}</td>
+                        <td style="text-align:center">${enlistmentDate}</td>
+                        <td>${enlistmentOrder}</td>
+                        <td>${serviceType}</td>
+                        <td>${weaponModel}</td>
+                        <td style="text-align:center">${weaponNumber}</td>
+                        <td style="text-align:center">${weaponDate}</td>
+                        
+                        <!-- Дії -->
                         <td style="white-space:nowrap">
                             <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="openDetailModal(${p.id})">👁</button>
                             <button class="btn btn-warning btn-sm" onclick="openEditModal(${p.id})">✏️</button>
