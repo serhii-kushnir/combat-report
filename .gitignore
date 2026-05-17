@@ -1,7 +1,1 @@
-```
-# Excel files
-*.xlsx
-
-# Temporary directories/files
-temp_repo/
-```
+Nothing should be ignored based on the provided file changes. The only modified file is a source template file (.html), which should not be added to .gitignore.
