@@ -172,51 +172,39 @@
                 <div class="table-wrap">
                     <table class="table table-bordered table-hover table-sm" style="min-width: 4200px; font-size: 0.75rem; white-space: nowrap;">
                         <thead class="table-light">
-                            <!-- Рівень 1: Головні розділи -->
                             <tr>
-                                <th rowspan="2" class="align-middle text-center" style="width: 40px;">№</th>
-                                <th rowspan="2" class="align-middle text-center" style="min-width: 180px;">ПІБ</th>
-                                <th colspan="14" class="text-center bg-primary text-white">3. Особові дані</th>
-                                <th colspan="6" class="text-center bg-success text-white">4. Сімейні дані</th>
-                                <th colspan="11" class="text-center bg-danger text-white">5. Військові дані</th>
-                                <th rowspan="2" class="align-middle text-center" style="width: 90px;">Дії</th>
-                            </tr>
-                            <!-- Рівень 2: Всі стовпці -->
-                            <tr>
-                                <!-- Особові дані (14 стовпців) -->
-                                <th class="text-center" style="width: 100px;">3.1 Моб. телефон</th>
-                                <th class="text-center" style="width: 90px;">3.2 Дата народження</th>
-                                <th class="text-center" style="width: 50px;">3.3 Повних років</th>
-                                <th class="text-center" style="width: 100px;">3.4 ІПН</th>
-                                <th class="text-center" style="width: 120px;">3.5 Паспорт (серія та номер)</th>
-                                <th class="text-center" style="width: 60px;">3.8 Група крові</th>
-                                <th class="text-center" style="width: 140px;">3.6 Водійське посвідчення (серія, номер, категорія)</th>
-                                <th class="text-center" style="width: 100px;">3.7.1 Здобута освіта</th>
-                                <th class="text-center" style="width: 180px;">3.7.2 Заклад освіти</th>
-                                <th class="text-center" style="width: 80px;">3.7.3 Дата початку</th>
-                                <th class="text-center" style="width: 80px;">3.7.4 Дата завершення</th>
-                                <th class="text-center" style="width: 120px;">3.7.5 Спеціальність</th>
-                                <th class="text-center" style="width: 180px;">3.9 Адреса реєстрації</th>
-                                <th class="text-center" style="width: 180px;">3.10 Адреса проживання</th>
-                                
-                                <!-- Сімейні дані (6 стовпців) -->
-                                <th class="text-center" style="width: 100px;">4.1 Сімейний стан</th>
-                                <th class="text-center" style="width: 140px;">4.2 Дружина/Чоловік</th>
-                                <th class="text-center" style="width: 140px;">4.3 Діти</th>
-                                <th class="text-center" style="width: 90px;">4.4 Дата народження</th>
-                                <th class="text-center" style="width: 60px;">4.5 Повних років</th>
-                                <th class="text-center" style="width: 180px;">4.6 Адреса проживання</th>
-                                
-                                <!-- Військові дані (11 стовпців) -->
-                                <th class="text-center" style="width: 120px;">5.1 Звання</th>
-                                <th class="text-center" style="width: 120px;">5.2 Посада коротка</th>
-                                <th class="text-center" style="width: 180px;">5.3 Посада повна</th>
-                                <th class="text-center" style="width: 140px;">5.4 Ким призваний</th>
-                                <th class="text-center" style="width: 160px;">5.5 Учасник БД (номер та дата)</th>
-                                <th class="text-center" style="width: 160px;">5.6 Форма допуску (Ф-№, наказ, дата)</th>
-                                <th class="text-center" style="width: 140px;">5.7 Зарахування (дата та наказ)</th>
-                                <th class="text-center" style="width: 100px;">5.8 Служба за</th>
-                                <th class="text-center" style="width: 180px;">5.9 Зброя (модель, номер, дата видачі)</th>
+                                <th class="text-center" style="width: 40px;">№</th>
+                                <th class="text-center" style="min-width: 180px;">ПІБ</th>
+                                <th class="text-center" style="width: 100px;">Моб. Телефон</th>
+                                <th class="text-center" style="width: 90px;">Дата народження</th>
+                                <th class="text-center" style="width: 50px;">Повних років</th>
+                                <th class="text-center" style="width: 100px;">Ідентифікаційний код</th>
+                                <th class="text-center" style="width: 120px;">Паспорт серія та номер</th>
+                                <th class="text-center" style="width: 60px;">Група Крові</th>
+                                <th class="text-center" style="width: 140px;">Водійське посвідчення (серія, номер, категорія)</th>
+                                <th class="text-center" style="width: 100px;">Здобута освіта</th>
+                                <th class="text-center" style="width: 180px;">Заклад освіти</th>
+                                <th class="text-center" style="width: 80px;">Дата початку</th>
+                                <th class="text-center" style="width: 80px;">Дата завершення</th>
+                                <th class="text-center" style="width: 120px;">Спеціальність</th>
+                                <th class="text-center" style="width: 180px;">Адреса місця реєстрації</th>
+                                <th class="text-center" style="width: 180px;">Адреса проживання</th>
+                                <th class="text-center" style="width: 100px;">Сімейний стан</th>
+                                <th class="text-center" style="width: 140px;">Дружина/Чоловік</th>
+                                <th class="text-center" style="width: 140px;">Діти</th>
+                                <th class="text-center" style="width: 90px;">Дата народження (дитини)</th>
+                                <th class="text-center" style="width: 60px;">Повних років (дитини)</th>
+                                <th class="text-center" style="width: 180px;">Адреса проживання (сім'я)</th>
+                                <th class="text-center" style="width: 120px;">Звання</th>
+                                <th class="text-center" style="width: 120px;">Посада коротка</th>
+                                <th class="text-center" style="width: 180px;">Посада повна</th>
+                                <th class="text-center" style="width: 140px;">Ким Призваний</th>
+                                <th class="text-center" style="width: 160px;">Учасник бойових дій (номер, дата)</th>
+                                <th class="text-center" style="width: 160px;">Форма допуску (Ф-№, наказ, дата)</th>
+                                <th class="text-center" style="width: 140px;">Зарахування (дата, наказ)</th>
+                                <th class="text-center" style="width: 100px;">Військова служба за</th>
+                                <th class="text-center" style="width: 180px;">Зброя (модель, номер, дата видачі)</th>
+                                <th class="text-center" style="width: 90px;">Дії</th>
                             </tr>
                         </thead>
                         <tbody id="fullBody">
@@ -607,7 +595,7 @@
 
             function renderFullTable(data) {
                 const body = document.getElementById('fullBody');
-                if (!data.length) { body.innerHTML = '<tr><td colspan="33" class="empty-state">Особовий склад порожній</td></tr>'; return; }
+                if (!data.length) { body.innerHTML = '<tr><td colspan="32" class="empty-state">Особовий склад порожній</td></tr>'; return; }
                 const fmtDate = d => d ? d.substring(0,10).split('-').reverse().join('.') : '—';
                 const val = v => v || '—';
                 const calcAge = birthDate => {
@@ -656,11 +644,15 @@
                     const maritalStatus = val(p.maritalStatus);
                     const spouse = val(p.spouseName);
                     const childrenCount = p.children ? p.children.length : 0;
-                    const childrenList = childrenCount > 0 
+                    const childrenNames = childrenCount > 0 
                         ? p.children.map(c => c.fullName || c.lastName || '').join(', ') 
                         : '—';
-                    const spouseBirthDate = p.spouseBirthDate ? fmtDate(p.spouseBirthDate) : '—';
-                    const spouseAge = p.spouseBirthDate ? calcAge(p.spouseBirthDate) : '—';
+                    // Дата народження першої дитини (або —)
+                    const childBirthDate = (p.children && p.children.length > 0 && p.children[0].birthDate) 
+                        ? fmtDate(p.children[0].birthDate) : '—';
+                    // Вік першої дитини (або —)
+                    const childAge = (p.children && p.children.length > 0 && p.children[0].birthDate) 
+                        ? calcAge(p.children[0].birthDate) : '—';
                     const familyAddress = val(p.familyAddress) || residenceAddress;
                     
                     // Військові дані
@@ -702,7 +694,7 @@
                         <td style="text-align:center">${i + 1}</td>
                         <td><strong>${val(p.lastName)} ${val(p.firstName)} ${val(p.middleName)}</strong></td>
                         
-                        <!-- Особові дані (14 стовпців) -->
+                        <!-- Особові дані -->
                         <td>${phone}</td>
                         <td style="text-align:center">${birthDate}</td>
                         <td style="text-align:center">${age}</td>
@@ -718,15 +710,15 @@
                         <td style="font-size:11px">${regAddress}</td>
                         <td style="font-size:11px">${residenceAddress}</td>
                         
-                        <!-- Сімейні дані (6 стовпців) -->
+                        <!-- Сімейні дані -->
                         <td>${maritalStatus}</td>
                         <td>${spouse}</td>
-                        <td style="font-size:11px">${childrenList}</td>
-                        <td style="text-align:center">${spouseBirthDate}</td>
-                        <td style="text-align:center">${spouseAge}</td>
+                        <td style="text-align:center">${childrenCount}</td>
+                        <td style="text-align:center">${childBirthDate}</td>
+                        <td style="text-align:center">${childAge}</td>
                         <td style="font-size:11px">${familyAddress}</td>
                         
-                        <!-- Військові дані (11 стовпців) -->
+                        <!-- Військові дані -->
                         <td>${rank}</td>
                         <td>${positionShort}</td>
                         <td style="font-size:11px">${positionFull}</td>
