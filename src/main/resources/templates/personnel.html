@@ -412,6 +412,46 @@
                         <input type="text" id="fUbdNumber" placeholder="УБД-12345">
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Дата УБД</label>
+                        <input type="date" id="fUbdDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Військова служба за</label>
+                        <input type="text" id="fMilitaryServiceFor" placeholder="контракт/мобілізація">
+                    </div>
+                </div>
+                
+                <!-- Форма допуску -->
+                <div style="font-size:12px;font-weight:700;color:#1a237e;margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid #e0e0e0;">🔐 Форма допуску</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Форма допуску (Ф-№)</label>
+                        <input type="text" id="fAccessForm" placeholder="Ф-1">
+                    </div>
+                    <div class="form-group">
+                        <label>Номер наказу про допуск</label>
+                        <input type="text" id="fAccessNumber" placeholder="наказ №...">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Дата допуску</label>
+                    <input type="date" id="fAccessDate">
+                </div>
+                
+                <!-- Зарахування -->
+                <div style="font-size:12px;font-weight:700;color:#1a237e;margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid #e0e0e0;">📋 Зарахування</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Дата зарахування</label>
+                        <input type="date" id="fEnlistmentDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Наказ про зарахування</label>
+                        <input type="text" id="fEnlistmentOrder" placeholder="наказ №...">
+                    </div>
+                </div>
 
                 <!-- Зброя -->
                 <div class="dynamic-section">
@@ -884,6 +924,14 @@
                 document.getElementById('fEducationSpeciality').value = p.educationSpeciality || p.speciality || '';
                 document.getElementById('fEducationStart').value = p.educationStart ? p.educationStart.substring(0,10) : (p.educationStartDate ? p.educationStartDate.substring(0,10) : '');
                 document.getElementById('fEducationEnd').value = p.educationEnd ? p.educationEnd.substring(0,10) : (p.educationEndDate ? p.educationEndDate.substring(0,10) : '');
+                // Додаткові поля
+                document.getElementById('fUbdDate').value = p.ubdDate ? p.ubdDate.substring(0,10) : '';
+                document.getElementById('fMilitaryServiceFor').value = p.militaryServiceFor || '';
+                document.getElementById('fAccessForm').value = p.accessForm || '';
+                document.getElementById('fAccessNumber').value = p.accessNumber || '';
+                document.getElementById('fAccessDate').value = p.accessDate ? p.accessDate.substring(0,10) : '';
+                document.getElementById('fEnlistmentDate').value = p.enlistmentDate ? p.enlistmentDate.substring(0,10) : '';
+                document.getElementById('fEnlistmentOrder').value = p.enlistmentOrder || '';
                 openModal('formModal');
             }
 
@@ -911,6 +959,13 @@
                     draftOrganization:     document.getElementById('fDraftOrg').value.trim(),
                     serviceType:           document.getElementById('fServiceType').value,
                     ubdNumber:             document.getElementById('fUbdNumber').value.trim(),
+                    ubdDate:               document.getElementById('fUbdDate').value || null,
+                    militaryServiceFor:    document.getElementById('fMilitaryServiceFor').value.trim(),
+                    accessForm:            document.getElementById('fAccessForm').value.trim(),
+                    accessNumber:          document.getElementById('fAccessNumber').value.trim(),
+                    accessDate:            document.getElementById('fAccessDate').value || null,
+                    enlistmentDate:        document.getElementById('fEnlistmentDate').value || null,
+                    enlistmentOrder:       document.getElementById('fEnlistmentOrder').value.trim(),
                     note:                  document.getElementById('fNote').value.trim(),
                     // Освіта
                     educationLevel:        document.getElementById('fEducation').value,

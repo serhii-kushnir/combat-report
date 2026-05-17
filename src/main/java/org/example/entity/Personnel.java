@@ -91,8 +91,31 @@ public class Personnel {
     @Column(length = 50)
     private String ubdNumber;            // Номер УБД
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate ubdDate;           // Дата УБД
+
+    @Column(length = 100)
+    private String militaryServiceFor;   // Військова служба за
+
     @Column(length = 100)
     private String driverLicense;        // Водійське посвідчення (категорії)
+
+    // ===== ФОРМА ДОПУСКУ =====
+    @Column(length = 50)
+    private String accessForm;           // Форма допуску (Ф-№)
+
+    @Column(length = 100)
+    private String accessNumber;         // Номер наказу про допуск
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate accessDate;        // Дата допуску
+
+    // ===== ЗАРАХУВАННЯ =====
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate enlistmentDate;    // Дата зарахування
+
+    @Column(length = 100)
+    private String enlistmentOrder;      // Наказ про зарахування
 
     // ===== ДОДАТКОВІ ПОЛЯ З ВІДОМОСТІ =====
     @Column(length = 100)

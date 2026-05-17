@@ -68,7 +68,18 @@ public class PersonnelService {
         e.setDraftOrganization(updated.getDraftOrganization());
         e.setServiceType(updated.getServiceType());
         e.setUbdNumber(updated.getUbdNumber());
+        e.setUbdDate(updated.getUbdDate());
+        e.setMilitaryServiceFor(updated.getMilitaryServiceFor());
         e.setDriverLicense(updated.getDriverLicense());
+
+        // Форма допуску
+        e.setAccessForm(updated.getAccessForm());
+        e.setAccessNumber(updated.getAccessNumber());
+        e.setAccessDate(updated.getAccessDate());
+
+        // Зарахування
+        e.setEnlistmentDate(updated.getEnlistmentDate());
+        e.setEnlistmentOrder(updated.getEnlistmentOrder());
 
         // Додаткові поля з відомості
         e.setMilitaryRankShort(updated.getMilitaryRankShort());

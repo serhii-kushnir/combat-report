@@ -3,14 +3,18 @@
 *.class
 *.o
 *.obj
+*.exe
+*.dll
+*.so
+*.a
 *.out
-build/
-target/
 
 # Dependencies
 lib/
-libs/
-dependency-reduced-pom.xml
+target/
+.mypy_cache/
+.pytest_cache/
+.gradle/
 
 # Logs and temp files
 *.log
@@ -28,7 +32,7 @@ dependency-reduced-pom.xml
 *.swp
 *.swo
 
-# OS
+# System
 .DS_Store
 Thumbs.db
 
@@ -37,10 +41,8 @@ coverage/
 htmlcov/
 .coverage
 
-# Gradle (if applicable)
-.gradle/
-build/
-
-# Maven (if applicable)
-target/
+# Java specific
+*.jar
+*.war
+*.ear
 ```
