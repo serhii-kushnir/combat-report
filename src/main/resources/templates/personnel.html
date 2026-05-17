@@ -179,7 +179,7 @@
                                 <th class="text-center" style="width: 90px;">Дата народження</th>
                                 <th class="text-center" style="width: 50px;">Повних років</th>
                                 <th class="text-center" style="width: 100px;">Ідентифікаційний код</th>
-                                <th class="text-center" style="width: 120px;">Паспорт серія та номер</th>
+                                <th class="text-center" style="width: 120px;">Паспорт (серія, номер)</th>
                                 <th class="text-center" style="width: 60px;">Група Крові</th>
                                 <th class="text-center" style="width: 140px;">Водійське посвідчення (серія, номер, категорія)</th>
                                 <th class="text-center" style="width: 100px;">Здобута освіта</th>
@@ -607,79 +607,79 @@
                     if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
                     return age;
                 };
-                
+
                 body.innerHTML = data.map((p, i) => {
                     // Особові дані
                     const phone = val(p.phone);
                     const birthDate = p.birthDate ? fmtDate(p.birthDate) : '—';
                     const age = p.birthDate ? calcAge(p.birthDate) : '—';
                     const taxId = val(p.taxId);
-                    
+
                     // Паспорт (об'єднано)
                     const passportSeries = p.passportSeries || '';
                     const passportNumber = p.passportNumber || '';
                     const passportFull = (passportSeries && passportNumber) ? `${passportSeries} ${passportNumber}` : (passportSeries || passportNumber || '—');
-                    
+
                     // Група крові
                     const bloodGroup = val(p.bloodGroup);
-                    
+
                     // Водійське посвідчення (об'єднано)
                     const driverSeries = p.driverLicenseSeries || '';
                     const driverNumber = p.driverLicenseNumber || '';
                     const driverCategories = p.driverCategories || '';
                     const driverFull = [driverSeries, driverNumber, driverCategories].filter(x => x).join(' ') || '—';
-                    
+
                     // Освіта
                     const eduLevel = val(p.educationLevel);
                     const eduInst = val(p.educationInstitution);
                     const eduStart = p.educationStartDate ? fmtDate(p.educationStartDate) : '—';
                     const eduEnd = p.educationEndDate ? fmtDate(p.educationEndDate) : '—';
                     const eduSpec = val(p.speciality);
-                    
+
                     // Адреси
                     const regAddress = val(p.registrationAddress);
                     const residenceAddress = val(p.residenceAddress) || regAddress;
-                    
+
                     // Сімейні дані
                     const maritalStatus = val(p.maritalStatus);
                     const spouse = val(p.spouseName);
                     const childrenCount = p.children ? p.children.length : 0;
-                    const childrenNames = childrenCount > 0 
-                        ? p.children.map(c => c.fullName || c.lastName || '').join(', ') 
+                    const childrenNames = childrenCount > 0
+                        ? p.children.map(c => c.fullName || c.lastName || '').join(', ')
                         : '—';
                     // Дата народження першої дитини (або —)
-                    const childBirthDate = (p.children && p.children.length > 0 && p.children[0].birthDate) 
+                    const childBirthDate = (p.children && p.children.length > 0 && p.children[0].birthDate)
                         ? fmtDate(p.children[0].birthDate) : '—';
                     // Вік першої дитини (або —)
-                    const childAge = (p.children && p.children.length > 0 && p.children[0].birthDate) 
+                    const childAge = (p.children && p.children.length > 0 && p.children[0].birthDate)
                         ? calcAge(p.children[0].birthDate) : '—';
                     const familyAddress = val(p.familyAddress) || residenceAddress;
-                    
+
                     // Військові дані
                     const rank = val(p.rank);
                     const positionShort = val(p.positionShort) || val(p.position);
                     const positionFull = val(p.position);
                     const recruitedBy = val(p.recruitedBy);
-                    
+
                     // Учасник БД (об'єднано)
                     const ubdNumber = p.ubdDocumentNumber || '';
                     const ubdDate = p.ubdDocumentDate ? fmtDate(p.ubdDocumentDate) : '';
                     const ubdFull = [ubdNumber, ubdDate].filter(x => x).join(', ') || '—';
-                    
+
                     // Форма допуску (об'єднано)
                     const clearanceForm = p.securityClearanceForm || '';
                     const clearanceOrder = p.securityClearanceOrderNumber || '';
                     const clearanceDate = p.securityClearanceDate ? fmtDate(p.securityClearanceDate) : '';
                     const clearanceFull = [clearanceForm, clearanceOrder, clearanceDate].filter(x => x).join(', ') || '—';
-                    
+
                     // Зарахування (об'єднано)
                     const enlistmentDate = p.enlistmentDate ? fmtDate(p.enlistmentDate) : '';
                     const enlistmentOrder = p.enlistmentOrderNumber || '';
                     const enlistmentFull = [enlistmentDate, enlistmentOrder].filter(x => x).join(', ') || '—';
-                    
+
                     // Служба за
                     const serviceType = val(p.serviceType) || val(p.mobilizationType);
-                    
+
                     // Зброя (об'єднано)
                     let weaponModel = '', weaponNumber = '', weaponDate = '';
                     if (p.weapons && p.weapons.length > 0) {
@@ -689,11 +689,11 @@
                         weaponDate = w.issueDate ? fmtDate(w.issueDate) : '';
                     }
                     const weaponFull = [weaponModel, weaponNumber, weaponDate].filter(x => x).join(', ') || '—';
-                    
+
                     return `<tr>
                         <td style="text-align:center">${i + 1}</td>
                         <td><strong>${val(p.lastName)} ${val(p.firstName)} ${val(p.middleName)}</strong></td>
-                        
+
                         <!-- Особові дані -->
                         <td>${phone}</td>
                         <td style="text-align:center">${birthDate}</td>
@@ -709,7 +709,7 @@
                         <td style="font-size:11px">${eduSpec}</td>
                         <td style="font-size:11px">${regAddress}</td>
                         <td style="font-size:11px">${residenceAddress}</td>
-                        
+
                         <!-- Сімейні дані -->
                         <td>${maritalStatus}</td>
                         <td>${spouse}</td>
@@ -717,7 +717,7 @@
                         <td style="text-align:center">${childBirthDate}</td>
                         <td style="text-align:center">${childAge}</td>
                         <td style="font-size:11px">${familyAddress}</td>
-                        
+
                         <!-- Військові дані -->
                         <td>${rank}</td>
                         <td>${positionShort}</td>
@@ -728,7 +728,7 @@
                         <td style="font-size:11px">${enlistmentFull}</td>
                         <td>${serviceType}</td>
                         <td style="font-size:11px">${weaponFull}</td>
-                        
+
                         <!-- Дії -->
                         <td style="white-space:nowrap">
                             <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="openDetailModal(${p.id})">👁</button>
@@ -1160,18 +1160,18 @@
             function exportXlsx() {
                 window.location.href = '/personnel/api/export';
             }
-            
+
             function exportFullVedomist() {
                 window.location.href = '/personnel/api/export/full';
             }
-            
+
             function importVedomist(input) {
                 const file = input.files[0];
                 if (!file) return;
-                
+
                 const formData = new FormData();
                 formData.append('file', file);
-                
+
                 fetch('/personnel/api/import', {
                     method: 'POST',
                     body: formData
