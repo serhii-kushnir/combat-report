@@ -70,6 +70,34 @@ public class PersonnelService {
         e.setUbdNumber(updated.getUbdNumber());
         e.setDriverLicense(updated.getDriverLicense());
 
+        // Додаткові поля з відомості
+        e.setMilitaryRankShort(updated.getMilitaryRankShort());
+        e.setEducationLevel(updated.getEducationLevel());
+        e.setEducationInstitution(updated.getEducationInstitution());
+        e.setEducationSpeciality(updated.getEducationSpeciality());
+        e.setEducationForm(updated.getEducationForm());
+        e.setEducationStart(updated.getEducationStart());
+        e.setEducationEnd(updated.getEducationEnd());
+        e.setDiplomaNumber(updated.getDiplomaNumber());
+        e.setAdmissionDate(updated.getAdmissionDate());
+        e.setDismissalDate(updated.getDismissalDate());
+        e.setAccessForm(updated.getAccessForm());
+        e.setAccessNumber(updated.getAccessNumber());
+        e.setMilitaryUnitPrevious(updated.getMilitaryUnitPrevious());
+        e.setCombatExperience(updated.getCombatExperience());
+        e.setAwardStatus(updated.getAwardStatus());
+        e.setAwardsList(updated.getAwardsList());
+        e.setDisabilityGroup(updated.getDisabilityGroup());
+        e.setDisabilityCause(updated.getDisabilityCause());
+        e.setMobilizationType(updated.getMobilizationType());
+        e.setContractStartDate(updated.getContractStartDate());
+        e.setContractEndDate(updated.getContractEndDate());
+        e.setSalaryCard(updated.getSalaryCard());
+        e.setUniformSize(updated.getUniformSize());
+        e.setShoeSize(updated.getShoeSize());
+        e.setEmergencyContact(updated.getEmergencyContact());
+        e.setAdditionalInfo(updated.getAdditionalInfo());
+
         Personnel saved = repository.save(e);
         log.info("Оновлено особу: {} (id={})", saved.getFullName(), saved.getId());
         return saved;
