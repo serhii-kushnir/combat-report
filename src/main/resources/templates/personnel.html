@@ -652,20 +652,35 @@
                 };
                 
                 body.innerHTML = data.map((p, i) => {
+                    // Допоміжні функції
+                    const fmtDate = d => d ? d.substring(0,10).split('-').reverse().join('.') : '—';
+                    const val = v => v || '—';
+                    const calcAge = birthDate => {
+                        if (!birthDate) return '—';
+                        const today = new Date();
+                        const birth = new Date(birthDate);
+                        let age = today.getFullYear() - birth.getFullYear();
+                        const m = today.getMonth() - birth.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+                        return age;
+                    };
+                    
                     // Особові дані
                     const phone = val(p.phone);
                     const birthDate = fmtDate(p.birthDate);
                     const age = calcAge(p.birthDate);
                     const taxId = val(p.taxId);
                     
-                    // Паспорт
-                    const passportSeries = p.passportSeries || '—';
-                    const passportNumber = p.passportNumber || '—';
+                    // Паспорт (об'єднано)
+                    const passportSeries = p.passportSeries || '';
+                    const passportNumber = p.passportNumber || '';
+                    const passportFull = (passportSeries && passportNumber) ? `${passportSeries} ${passportNumber}` : (passportSeries || passportNumber || '—');
                     
-                    // Водійське посвідчення
-                    const driverSeries = p.driverLicenseSeries || '—';
-                    const driverNumber = p.driverLicenseNumber || '—';
-                    const driverCategories = val(p.driverCategories);
+                    // Водійське посвідчення (об'єднано)
+                    const driverSeries = p.driverLicenseSeries || '';
+                    const driverNumber = p.driverLicenseNumber || '';
+                    const driverCategories = p.driverCategories || '';
+                    const driverFull = [driverSeries, driverNumber, driverCategories].filter(x => x).join(' ') || '—';
                     
                     // Освіта
                     const eduLevel = val(p.educationLevel);
@@ -688,6 +703,10 @@
                         : '—';
                     const familyAddress = val(p.familyAddress) || residenceAddress;
                     
+                    // Дружина/чоловік дата народження та вік
+                    const spouseBirthDate = p.spouseBirthDate ? fmtDate(p.spouseBirthDate) : '—';
+                    const spouseAge = p.spouseBirthDate ? calcAge(p.spouseBirthDate) : '—';
+                    
                     // Військові дані
                     const rank = val(p.rank);
                     const positionShort = val(p.positionShort) || val(p.position);
@@ -695,30 +714,34 @@
                     const recruitedBy = val(p.recruitedBy);
                     const combatExp = p.combatExperience ? 'Так' : 'Ні';
                     
-                    // УБД документ
-                    const ubdNumber = val(p.ubdDocumentNumber);
-                    const ubdDate = p.ubdDocumentDate ? fmtDate(p.ubdDocumentDate) : '—';
+                    // УБД документ (об'єднано)
+                    const ubdNumber = p.ubdDocumentNumber || '';
+                    const ubdDate = p.ubdDocumentDate ? fmtDate(p.ubdDocumentDate) : '';
+                    const ubdFull = [ubdNumber, ubdDate].filter(x => x).join(', ') || '—';
                     
-                    // Допуск
-                    const clearanceForm = val(p.securityClearanceForm);
-                    const clearanceOrder = val(p.securityClearanceOrderNumber);
-                    const clearanceDate = p.securityClearanceDate ? fmtDate(p.securityClearanceDate) : '—';
+                    // Допуск (об'єднано)
+                    const clearanceForm = p.securityClearanceForm || '';
+                    const clearanceOrder = p.securityClearanceOrderNumber || '';
+                    const clearanceDate = p.securityClearanceDate ? fmtDate(p.securityClearanceDate) : '';
+                    const clearanceFull = [clearanceForm, clearanceOrder, clearanceDate].filter(x => x).join(', ') || '—';
                     
-                    // Зарахування
-                    const enlistmentDate = p.enlistmentDate ? fmtDate(p.enlistmentDate) : '—';
-                    const enlistmentOrder = val(p.enlistmentOrderNumber);
+                    // Зарахування (об'єднано)
+                    const enlistmentDate = p.enlistmentDate ? fmtDate(p.enlistmentDate) : '';
+                    const enlistmentOrder = p.enlistmentOrderNumber || '';
+                    const enlistmentFull = [enlistmentDate, enlistmentOrder].filter(x => x).join(', ') || '—';
                     
                     // Служба за
                     const serviceType = val(p.serviceType) || val(p.mobilizationType);
                     
-                    // Зброя (беремо першу з списку або основну)
-                    let weaponModel = '—', weaponNumber = '—', weaponDate = '—';
+                    // Зброя (об'єднано, беремо першу з списку або основну)
+                    let weaponModel = '', weaponNumber = '', weaponDate = '';
                     if (p.weapons && p.weapons.length > 0) {
                         const w = p.weapons[0];
-                        weaponModel = w.type || '—';
-                        weaponNumber = w.serialNumber || '—';
-                        weaponDate = w.issueDate ? fmtDate(w.issueDate) : '—';
+                        weaponModel = w.type || '';
+                        weaponNumber = w.serialNumber || '';
+                        weaponDate = w.issueDate ? fmtDate(w.issueDate) : '';
                     }
+                    const weaponFull = [weaponModel, weaponNumber, weaponDate].filter(x => x).join(', ') || '—';
                     
                     return `<tr>
                         <td style="text-align:center">${i + 1}</td>
@@ -729,24 +752,23 @@
                         <td style="text-align:center">${birthDate}</td>
                         <td style="text-align:center">${age}</td>
                         <td style="text-align:center">${taxId}</td>
-                        <td style="text-align:center">${passportSeries}</td>
-                        <td style="text-align:center">${passportNumber}</td>
-                        <td style="text-align:center">${driverSeries}</td>
-                        <td style="text-align:center">${driverNumber}</td>
-                        <td>${driverCategories}</td>
+                        <td style="text-align:center">${passportFull}</td>
+                        <td style="text-align:center">${bloodGroup}</td>
+                        <td style="text-align:center">${driverFull}</td>
                         <td>${eduLevel}</td>
                         <td style="font-size:11px">${eduInst}</td>
                         <td style="text-align:center">${eduStart}</td>
                         <td style="text-align:center">${eduEnd}</td>
                         <td style="font-size:11px">${eduSpec}</td>
-                        <td style="text-align:center">${bloodGroup}</td>
-                        <td style="font-size:11px">${regAddress}</td>
+                        <td style="text-align:center">${regAddress}</td>
                         <td style="font-size:11px">${residenceAddress}</td>
                         
                         <!-- Сімейні дані -->
                         <td>${maritalStatus}</td>
                         <td>${spouse}</td>
-                        <td style="text-align:center">${childrenCount}</td>
+                        <td style="text-align:center">${childrenList}</td>
+                        <td style="text-align:center">${spouseBirthDate}</td>
+                        <td style="text-align:center">${spouseAge}</td>
                         <td style="font-size:11px">${familyAddress}</td>
                         
                         <!-- Військові дані -->
@@ -754,18 +776,11 @@
                         <td>${positionShort}</td>
                         <td style="font-size:11px">${positionFull}</td>
                         <td>${recruitedBy}</td>
-                        <td style="text-align:center">${combatExp}</td>
-                        <td style="text-align:center">${ubdNumber}</td>
-                        <td style="text-align:center">${ubdDate}</td>
-                        <td>${clearanceForm}</td>
-                        <td>${clearanceOrder}</td>
-                        <td style="text-align:center">${clearanceDate}</td>
-                        <td style="text-align:center">${enlistmentDate}</td>
-                        <td>${enlistmentOrder}</td>
+                        <td style="text-align:center">${ubdFull}</td>
+                        <td style="text-align:center">${clearanceFull}</td>
+                        <td style="text-align:center">${enlistmentFull}</td>
                         <td>${serviceType}</td>
-                        <td>${weaponModel}</td>
-                        <td style="text-align:center">${weaponNumber}</td>
-                        <td style="text-align:center">${weaponDate}</td>
+                        <td style="font-size:11px">${weaponFull}</td>
                         
                         <!-- Дії -->
                         <td style="white-space:nowrap">
