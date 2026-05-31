@@ -91,163 +91,29 @@ public class Personnel {
     @Column(length = 50)
     private String ubdNumber;            // Номер УБД
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate ubdDate;           // Дата УБД
+    // Водійське посвідчення
+    @Column(length = 20)
+    private String driverLicenseSeries;   // Серія
+    @Column(length = 20)
+    private String driverLicenseNumber;   // Номер
+    @Column(length = 20)
+    private String driverLicenseCategory; // Категорія (B, C тощо)
 
-    @Column(length = 100)
-    private String militaryServiceFor;   // Військова служба за
+    // ===== ОЗБРОЄННЯ =====
 
-    @Column(length = 100)
-    private String driverLicense;        // Водійське посвідчення (категорії)
-
-    // ===== ФОРМА ДОПУСКУ =====
-    @Column(length = 50)
-    private String accessForm;           // Форма допуску (Ф-№)
-
-    @Column(length = 100)
-    private String accessNumber;         // Номер наказу про допуск
-
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate accessDate;        // Дата допуску
-
-    // ===== ЗАРАХУВАННЯ =====
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate enlistmentDate;    // Дата зарахування
-
-    @Column(length = 100)
-    private String enlistmentOrder;      // Наказ про зарахування
-
-    // ===== ДОДАТКОВІ ПОЛЯ З ВІДОМОСТІ =====
-    @Column(length = 100)
-    private String militaryRankShort;    // Військове звання (коротке)
-    
-    @Column(length = 200)
-    private String educationLevel;       // Рівень освіти
-    
-    @Column(length = 300)
-    private String educationInstitution; // Заклад освіти
-    
-    @Column(length = 200)
-    @JsonProperty("speciality")
-    private String educationSpeciality;  // Спеціальність за дипломом (alias: speciality)
-    
-    @Column(length = 50)
-    private String educationForm;        // Форма навчання (денна/заочна)
-    
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @JsonProperty("educationStartDate")
-    private LocalDate educationStart;    // Дата вступу (alias: educationStartDate)
-    
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @JsonProperty("educationEndDate")
-    private LocalDate educationEnd;      // Дата закінчення (alias: educationEndDate)
-    
-    @Column(length = 50)
-    private String diplomaNumber;        // Номер диплома
-    
-    @Column(length = 100)
-    private String admissionDate;        // Дата зарахування на службу (alias: enlistmentDate)
-    
-    @Column(length = 100)
-    private String dismissalDate;        // Дата звільнення
-    
-    @Column(length = 200)
-    private String militaryUnitPrevious; // Попередня в/ч
-    
-    @Column(length = 200)
-    private String combatExperience;     // Бойовий досвід
-    
-    @Column(length = 50)
-    private String awardStatus;          // Наявність нагород
-    
-    @Column(length = 300)
-    private String awardsList;           // Перелік нагород
-    
-    @Column(length = 50)
-    private String disabilityGroup;      // Група інвалідності
-    
-    @Column(length = 200)
-    private String disabilityCause;      // Причина інвалідності
-    
-    @Column(length = 50)
-    private String mobilizationType;     // Вид мобілізації
-    
-    @Column(length = 100)
-    private String contractStartDate;    // Початок контракту
-    
-    @Column(length = 100)
-    private String contractEndDate;      // Кінець контракту
-    
-    @Column(length = 100)
-    private String salaryCard;           // Зарплатна картка (банк)
-    
-    @Column(length = 50)
-    private String uniformSize;          // Розмір форми
-    
-    @Column(length = 50)
-    private String shoeSize;             // Розмір взуття
-    
+    // ===== АДРЕСА СІМ'Ї =====
     @Column(length = 500)
-    private String emergencyContact;     // Контактна особа (ПІБ, телефон)
-    
-    @Column(length = 500)
-    private String additionalInfo;       // Додаткова інформація
-    
-    // ===== ALIAS ПОЛЯ ДЛЯ СУМІСНОСТІ З FRONTEND =====
-    @Transient
-    public String getSpeciality() {
-        return educationSpeciality;
-    }
-    
-    @Transient
-    public LocalDate getEducationStartDate() {
-        return educationStart;
-    }
-    
-    @Transient
-    public LocalDate getEducationEndDate() {
-        return educationEnd;
-    }
-    
-    @Transient
-    public String getResidenceAddress() {
-        return livingAddress;
-    }
-    
-    @Transient
-    public String getPositionShort() {
-        return rank != null ? rank : position;
-    }
-    
-    @Transient
-    public String getRecruitedBy() {
-        return draftOrganization;
-    }
-    
-    @Transient
-    public String getUbdDocumentNumber() {
-        return ubdNumber;
-    }
-    
-    @Transient
-    public String getSecurityClearanceForm() {
-        return accessForm;
-    }
-    
-    @Transient
-    public String getSecurityClearanceOrderNumber() {
-        return accessNumber;
-    }
-    
-    @Transient
-    public String getEnlistmentDate() {
-        return admissionDate;
-    }
-    
-    @Transient
-    public String getEnlistmentOrderNumber() {
-        return admissionDate;
-    }
+    private String familyAddress;         // Адреса проживання сім'ї
+
+    // ===== ВІЙСЬКОВІ (розширені) =====
+    @Column(length = 255)
+    private String admissionForm;         // Форма допуску (Ф-№, наказ, дата)
+
+    @Column(length = 255)
+    private String enrollmentInfo;        // Зарахування у в/ч (дата, наказ)
+
+    @Column(length = 100)
+    private String serviceFor;            // Військова служба за
 
     public Personnel(String lastName, String firstName, String middleName,
                      String rank, String position) {

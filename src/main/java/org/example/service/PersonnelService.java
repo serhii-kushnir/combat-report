@@ -68,46 +68,13 @@ public class PersonnelService {
         e.setDraftOrganization(updated.getDraftOrganization());
         e.setServiceType(updated.getServiceType());
         e.setUbdNumber(updated.getUbdNumber());
-        e.setUbdDate(updated.getUbdDate());
-        e.setMilitaryServiceFor(updated.getMilitaryServiceFor());
-        e.setDriverLicense(updated.getDriverLicense());
-
-        // Форма допуску
-        e.setAccessForm(updated.getAccessForm());
-        e.setAccessNumber(updated.getAccessNumber());
-        e.setAccessDate(updated.getAccessDate());
-
-        // Зарахування
-        e.setEnlistmentDate(updated.getEnlistmentDate());
-        e.setEnlistmentOrder(updated.getEnlistmentOrder());
-
-        // Додаткові поля з відомості
-        e.setMilitaryRankShort(updated.getMilitaryRankShort());
-        e.setEducationLevel(updated.getEducationLevel());
-        e.setEducationInstitution(updated.getEducationInstitution());
-        e.setEducationSpeciality(updated.getEducationSpeciality());
-        e.setEducationForm(updated.getEducationForm());
-        e.setEducationStart(updated.getEducationStart());
-        e.setEducationEnd(updated.getEducationEnd());
-        e.setDiplomaNumber(updated.getDiplomaNumber());
-        e.setAdmissionDate(updated.getAdmissionDate());
-        e.setDismissalDate(updated.getDismissalDate());
-        e.setAccessForm(updated.getAccessForm());
-        e.setAccessNumber(updated.getAccessNumber());
-        e.setMilitaryUnitPrevious(updated.getMilitaryUnitPrevious());
-        e.setCombatExperience(updated.getCombatExperience());
-        e.setAwardStatus(updated.getAwardStatus());
-        e.setAwardsList(updated.getAwardsList());
-        e.setDisabilityGroup(updated.getDisabilityGroup());
-        e.setDisabilityCause(updated.getDisabilityCause());
-        e.setMobilizationType(updated.getMobilizationType());
-        e.setContractStartDate(updated.getContractStartDate());
-        e.setContractEndDate(updated.getContractEndDate());
-        e.setSalaryCard(updated.getSalaryCard());
-        e.setUniformSize(updated.getUniformSize());
-        e.setShoeSize(updated.getShoeSize());
-        e.setEmergencyContact(updated.getEmergencyContact());
-        e.setAdditionalInfo(updated.getAdditionalInfo());
+        e.setDriverLicenseSeries(updated.getDriverLicenseSeries());
+        e.setDriverLicenseNumber(updated.getDriverLicenseNumber());
+        e.setDriverLicenseCategory(updated.getDriverLicenseCategory());
+        e.setFamilyAddress(updated.getFamilyAddress());
+        e.setAdmissionForm(updated.getAdmissionForm());
+        e.setEnrollmentInfo(updated.getEnrollmentInfo());
+        e.setServiceFor(updated.getServiceFor());
 
         Personnel saved = repository.save(e);
         log.info("Оновлено особу: {} (id={})", saved.getFullName(), saved.getId());

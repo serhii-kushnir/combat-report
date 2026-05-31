@@ -141,7 +141,7 @@
             <div class="toolbar">
                 <input type="text" id="searchInput" placeholder="🔍 Пошук за прізвищем...">
                 <button class="btn btn-success" onclick="openAddModal()">+ Додати особу</button>
-                <button class="btn" style="background:#1a237e;color:white" onclick="exportFullVedomist()">📤 Експорт в Excel</button>
+                <button class="btn" style="background:#1976d2;color:white" onclick="exportXlsx()">📤 Експорт xlsx</button>
             </div>
 
             <div class="stats" id="statsBar"></div>
@@ -169,46 +169,43 @@
 
             <!-- ПОВНА ТАБЛИЦЯ -->
             <div class="table-section" id="fullTable">
-                <div class="table-wrap">
-                    <table class="table table-bordered table-hover table-sm" style="min-width: 4200px; font-size: 0.75rem; white-space: nowrap;">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="text-center" style="width: 40px;">№</th>
-                                <th class="text-center" style="min-width: 180px;">ПІБ</th>
-                                <th class="text-center" style="width: 100px;">Моб. Телефон</th>
-                                <th class="text-center" style="width: 90px;">Дата народження</th>
-                                <th class="text-center" style="width: 50px;">Повних років</th>
-                                <th class="text-center" style="width: 100px;">Ідентифікаційний код</th>
-                                <th class="text-center" style="width: 120px;">Паспорт (серія, номер)</th>
-                                <th class="text-center" style="width: 60px;">Група Крові</th>
-                                <th class="text-center" style="width: 140px;">Водійське посвідчення (серія, номер, категорія)</th>
-                                <th class="text-center" style="width: 100px;">Здобута освіта</th>
-                                <th class="text-center" style="width: 180px;">Заклад освіти</th>
-                                <th class="text-center" style="width: 80px;">Дата початку</th>
-                                <th class="text-center" style="width: 80px;">Дата завершення</th>
-                                <th class="text-center" style="width: 120px;">Спеціальність</th>
-                                <th class="text-center" style="width: 180px;">Адреса місця реєстрації</th>
-                                <th class="text-center" style="width: 180px;">Адреса проживання</th>
-                                <th class="text-center" style="width: 100px;">Сімейний стан</th>
-                                <th class="text-center" style="width: 140px;">Дружина/Чоловік</th>
-                                <th class="text-center" style="width: 140px;">Діти</th>
-                                <th class="text-center" style="width: 90px;">Дата народження (дитини)</th>
-                                <th class="text-center" style="width: 60px;">Повних років (дитини)</th>
-                                <th class="text-center" style="width: 180px;">Адреса проживання (сім'я)</th>
-                                <th class="text-center" style="width: 120px;">Звання</th>
-                                <th class="text-center" style="width: 120px;">Посада коротка</th>
-                                <th class="text-center" style="width: 180px;">Посада повна</th>
-                                <th class="text-center" style="width: 140px;">Ким Призваний</th>
-                                <th class="text-center" style="width: 160px;">Учасник бойових дій (номер, дата)</th>
-                                <th class="text-center" style="width: 160px;">Форма допуску (Ф-№, наказ, дата)</th>
-                                <th class="text-center" style="width: 140px;">Зарахування (дата, наказ)</th>
-                                <th class="text-center" style="width: 100px;">Військова служба за</th>
-                                <th class="text-center" style="width: 180px;">Зброя (модель, номер, дата видачі)</th>
-                                <th class="text-center" style="width: 90px;">Дії</th>
-                            </tr>
-                        </thead>
-                        <tbody id="fullBody">
-                    <tr><td colspan="33" class="empty-state">Завантаження...</td></tr>
+                <div class="table-wrap"><table style="min-width:2800px">
+                    <thead><tr>
+                        <th style="width:36px">No</th>
+                        <th style="width:180px">ПІБ</th>
+                        <th style="width:110px">Моб. Телефон</th>
+                        <th style="width:100px">Дата народження</th>
+                        <th style="width:60px">Повних років</th>
+                        <th style="width:100px">Ідентифікаційний код</th>
+                        <th style="width:130px">Паспорт (серія, номер)</th>
+                        <th style="width:80px">Група Крові</th>
+                        <th style="width:160px">Водійське посвідчення (серія, номер, категорія)</th>
+                        <th style="width:80px">Здобута освіта</th>
+                        <th style="width:160px">Заклад освіти</th>
+                        <th style="width:100px">Дата початку</th>
+                        <th style="width:100px">Дата завершення</th>
+                        <th style="width:140px">Спеціальність</th>
+                        <th style="width:160px">Адреса місця реєстрації</th>
+                        <th style="width:160px">Адреса проживання</th>
+                        <th style="width:100px">Сімейний стан</th>
+                        <th style="width:150px">Дружина/Чоловік</th>
+                        <th style="width:160px">Діти</th>
+                        <th style="width:100px">Дата народження (дитини)</th>
+                        <th style="width:60px">Повних років (дитини)</th>
+                        <th style="width:160px">Адреса проживання (сім'я)</th>
+                        <th style="width:140px">Звання</th>
+                        <th style="width:130px">Посада коротка</th>
+                        <th style="width:200px">Посада повна</th>
+                        <th style="width:150px">Ким Призваний</th>
+                        <th style="width:140px">Учасник бойових дій (номер, дата)</th>
+                        <th style="width:160px">Форма допуску (Ф-No, наказ, дата)</th>
+                        <th style="width:150px">Зарахування (дата, наказ)</th>
+                        <th style="width:110px">Військова служба за</th>
+                        <th style="width:180px">Зброя (модель, номер, дата видачі)</th>
+                        <th style="width:70px">Дії</th>
+                    </tr></thead>
+                    <tbody id="fullBody">
+                    <tr><td colspan="22" class="empty-state">Завантаження...</td></tr>
                     </tbody>
                 </table></div>
             </div>
@@ -290,8 +287,18 @@
                         <input type="text" id="fTaxId" placeholder="1234567890">
                     </div>
                     <div class="form-group">
-                        <label>Водійське посвідчення</label>
-                        <input type="text" id="fDriverLicense" placeholder="B, C">
+                        <label>Вод. посв. серія</label>
+                        <input type="text" id="fDriverLicenseSeries" placeholder="АА">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Вод. посв. номер</label>
+                        <input type="text" id="fDriverLicenseNumber" placeholder="123456">
+                    </div>
+                    <div class="form-group">
+                        <label>Категорія</label>
+                        <input type="text" id="fDriverLicenseCategory" placeholder="B, C">
                     </div>
                 </div>
                 <div class="form-row">
@@ -322,7 +329,7 @@
                 </div>
                 <div class="form-group">
                     <label>Спеціальність</label>
-                    <input type="text" id="fEducationSpeciality" placeholder="Інженер-механік">
+                    <input type="text" id="fEduSpeciality" placeholder="Інженер-механік">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -410,46 +417,6 @@
                     <div class="form-group">
                         <label>УБД №</label>
                         <input type="text" id="fUbdNumber" placeholder="УБД-12345">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Дата УБД</label>
-                        <input type="date" id="fUbdDate">
-                    </div>
-                    <div class="form-group">
-                        <label>Військова служба за</label>
-                        <input type="text" id="fMilitaryServiceFor" placeholder="контракт/мобілізація">
-                    </div>
-                </div>
-                
-                <!-- Форма допуску -->
-                <div style="font-size:12px;font-weight:700;color:#1a237e;margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid #e0e0e0;">🔐 Форма допуску</div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Форма допуску (Ф-№)</label>
-                        <input type="text" id="fAccessForm" placeholder="Ф-1">
-                    </div>
-                    <div class="form-group">
-                        <label>Номер наказу про допуск</label>
-                        <input type="text" id="fAccessNumber" placeholder="наказ №...">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Дата допуску</label>
-                    <input type="date" id="fAccessDate">
-                </div>
-                
-                <!-- Зарахування -->
-                <div style="font-size:12px;font-weight:700;color:#1a237e;margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid #e0e0e0;">📋 Зарахування</div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Дата зарахування</label>
-                        <input type="date" id="fEnlistmentDate">
-                    </div>
-                    <div class="form-group">
-                        <label>Наказ про зарахування</label>
-                        <input type="text" id="fEnlistmentOrder" placeholder="наказ №...">
                     </div>
                 </div>
 
@@ -584,26 +551,57 @@
             let currentTab = 'short';
 
             let educationCounts = {};
-            let childCounts     = {};
-            let weaponCounts    = {};
+            let eduFirstLevel = {};
+            let eduFirstInst  = {};
+            let eduFirstSpec  = {};
+            let eduFirstStart = {};
+            let eduFirstEnd   = {};
+            let childCounts      = {};
+            let childFirstBirth  = {};
+            let weaponCounts     = {};
+            let weaponFirstInfo  = {};
+
 
             async function loadPersonnel() {
-                const res = await fetch('/personnel/api');
-                allPersonnel = await res.json();
+                try {
+                    const res = await fetch('/personnel/api');
+                    if (!res.ok) { showToast('Помилка завантаження: ' + res.status, 'error'); return; }
+                    allPersonnel = await res.json();
 
-                // Завантажуємо підрахунки для кожної особи паралельно
-                await Promise.all(allPersonnel.map(async p => {
-                    const [edus, childs, weapons] = await Promise.all([
-                        fetch(`/personnel/api/${p.id}/education`).then(r => r.json()),
-                        fetch(`/personnel/api/${p.id}/children`).then(r => r.json()),
-                        fetch(`/personnel/api/${p.id}/weapons`).then(r => r.json()),
-                    ]);
-                    educationCounts[p.id] = edus.length;
-                    childCounts[p.id]     = childs.length;
-                    weaponCounts[p.id]    = weapons.length;
-                }));
+                    await Promise.all(allPersonnel.map(async p => {
+                        try {
+                            const [edus, childs, weapons] = await Promise.all([
+                                fetch(`/personnel/api/${p.id}/education`).then(r => r.json()),
+                                fetch(`/personnel/api/${p.id}/children`).then(r => r.json()),
+                                fetch(`/personnel/api/${p.id}/weapons`).then(r => r.json()),
+                            ]);
+                            educationCounts[p.id] = edus.length;
+                            childCounts[p.id]     = childs.length;
+                            weaponCounts[p.id]    = weapons.length;
+                            if (edus.length > 0) {
+                                eduFirstLevel[p.id] = edus[0].level || '';
+                                eduFirstInst[p.id]  = edus[0].institution || '';
+                                eduFirstSpec[p.id]  = edus[0].speciality || '';
+                                eduFirstStart[p.id] = edus[0].startDate || '';
+                                eduFirstEnd[p.id]   = edus[0].endDate || '';
+                            }
+                            if (childs.length > 0) {
+                                childFirstBirth[p.id] = childs[0].birthDate || '';
+                            }
+                            if (weapons.length > 0) {
+                                const w = weapons[0];
+                                weaponFirstInfo[p.id] = [w.weaponType, w.serialNumber, w.issuedDate].filter(Boolean).join(', ');
+                            }
+                        } catch(err) {
+                            console.error('Помилка завантаження деталей особи id=' + p.id, err);
+                        }
+                    }));
 
-                applyFilters();
+                    applyFilters();
+                } catch(err) {
+                    console.error('Помилка loadPersonnel:', err);
+                    showToast('Помилка: ' + err.message, 'error');
+                }
             }
 
             function switchTab(tab) {
@@ -638,142 +636,47 @@
                 if (!data.length) { body.innerHTML = '<tr><td colspan="32" class="empty-state">Особовий склад порожній</td></tr>'; return; }
                 const fmtDate = d => d ? d.substring(0,10).split('-').reverse().join('.') : '—';
                 const val = v => v || '—';
-                const calcAge = birthDate => {
-                    if (!birthDate) return '—';
-                    const today = new Date();
-                    const birth = new Date(birthDate);
-                    let age = today.getFullYear() - birth.getFullYear();
-                    const m = today.getMonth() - birth.getMonth();
-                    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
-                    return age;
-                };
-
                 body.innerHTML = data.map((p, i) => {
-                    // Особові дані
-                    const phone = val(p.phone);
-                    const birthDate = p.birthDate ? fmtDate(p.birthDate) : '—';
-                    const age = p.birthDate ? calcAge(p.birthDate) : '—';
-                    const taxId = val(p.taxId);
-
-                    // Паспорт (об'єднано)
-                    const passportSeries = p.passportSeries || '';
-                    const passportNumber = p.passportNumber || '';
-                    const passportFull = (passportSeries && passportNumber) ? `${passportSeries} ${passportNumber}` : (passportSeries || passportNumber || '—');
-
-                    // Група крові
-                    const bloodGroup = val(p.bloodGroup);
-
-                    // Водійське посвідчення (об'єднано)
-                    const driverSeries = p.driverLicenseSeries || '';
-                    const driverNumber = p.driverLicenseNumber || '';
-                    const driverCategories = p.driverCategories || '';
-                    const driverFull = [driverSeries, driverNumber, driverCategories].filter(x => x).join(' ') || '—';
-
-                    // Освіта
-                    const eduLevel = val(p.educationLevel);
-                    const eduInst = val(p.educationInstitution);
-                    const eduStart = p.educationStartDate ? fmtDate(p.educationStartDate) : '—';
-                    const eduEnd = p.educationEndDate ? fmtDate(p.educationEndDate) : '—';
-                    const eduSpec = val(p.speciality);
-
-                    // Адреси
-                    const regAddress = val(p.registrationAddress);
-                    const residenceAddress = val(p.residenceAddress) || regAddress;
-
-                    // Сімейні дані
-                    const maritalStatus = val(p.maritalStatus);
-                    const spouse = val(p.spouseName);
-                    const childrenCount = p.children ? p.children.length : 0;
-                    const childrenNames = childrenCount > 0
-                        ? p.children.map(c => c.fullName || c.lastName || '').join(', ')
-                        : '—';
-                    // Дата народження першої дитини (або —)
-                    const childBirthDate = (p.children && p.children.length > 0 && p.children[0].birthDate)
-                        ? fmtDate(p.children[0].birthDate) : '—';
-                    // Вік першої дитини (або —)
-                    const childAge = (p.children && p.children.length > 0 && p.children[0].birthDate)
-                        ? calcAge(p.children[0].birthDate) : '—';
-                    const familyAddress = val(p.familyAddress) || residenceAddress;
-
-                    // Військові дані
-                    const rank = val(p.rank);
-                    const positionShort = val(p.positionShort) || val(p.position);
-                    const positionFull = val(p.position);
-                    const recruitedBy = val(p.recruitedBy);
-
-                    // Учасник БД (об'єднано)
-                    const ubdNumber = p.ubdDocumentNumber || '';
-                    const ubdDate = p.ubdDocumentDate ? fmtDate(p.ubdDocumentDate) : '';
-                    const ubdFull = [ubdNumber, ubdDate].filter(x => x).join(', ') || '—';
-
-                    // Форма допуску (об'єднано)
-                    const clearanceForm = p.securityClearanceForm || '';
-                    const clearanceOrder = p.securityClearanceOrderNumber || '';
-                    const clearanceDate = p.securityClearanceDate ? fmtDate(p.securityClearanceDate) : '';
-                    const clearanceFull = [clearanceForm, clearanceOrder, clearanceDate].filter(x => x).join(', ') || '—';
-
-                    // Зарахування (об'єднано)
-                    const enlistmentDate = p.enlistmentDate ? fmtDate(p.enlistmentDate) : '';
-                    const enlistmentOrder = p.enlistmentOrderNumber || '';
-                    const enlistmentFull = [enlistmentDate, enlistmentOrder].filter(x => x).join(', ') || '—';
-
-                    // Служба за
-                    const serviceType = val(p.serviceType) || val(p.mobilizationType);
-
-                    // Зброя (об'єднано)
-                    let weaponModel = '', weaponNumber = '', weaponDate = '';
-                    if (p.weapons && p.weapons.length > 0) {
-                        const w = p.weapons[0];
-                        weaponModel = w.type || '';
-                        weaponNumber = w.serialNumber || '';
-                        weaponDate = w.issueDate ? fmtDate(w.issueDate) : '';
-                    }
-                    const weaponFull = [weaponModel, weaponNumber, weaponDate].filter(x => x).join(', ') || '—';
-
+                    const fullName = `${p.lastName} ${p.firstName || ''} ${p.middleName || ''}`.trim();
+                    const passport = [p.passportSeries, p.passportNumber].filter(Boolean).join(' ') || '—';
+                    const driverLic = [p.driverLicenseSeries, p.driverLicenseNumber, p.driverLicenseCategory].filter(Boolean).join(' ') || '—';
+                    const edu = educationCounts[p.id] > 0;
                     return `<tr>
                         <td style="text-align:center">${i + 1}</td>
-                        <td><strong>${val(p.lastName)} ${val(p.firstName)} ${val(p.middleName)}</strong></td>
-
-                        <!-- Особові дані -->
-                        <td>${phone}</td>
-                        <td style="text-align:center">${birthDate}</td>
-                        <td style="text-align:center">${age}</td>
-                        <td style="text-align:center">${taxId}</td>
-                        <td style="text-align:center">${passportFull}</td>
-                        <td style="text-align:center">${bloodGroup}</td>
-                        <td style="text-align:center">${driverFull}</td>
-                        <td>${eduLevel}</td>
-                        <td style="font-size:11px">${eduInst}</td>
-                        <td style="text-align:center">${eduStart}</td>
-                        <td style="text-align:center">${eduEnd}</td>
-                        <td style="font-size:11px">${eduSpec}</td>
-                        <td style="font-size:11px">${regAddress}</td>
-                        <td style="font-size:11px">${residenceAddress}</td>
-
-                        <!-- Сімейні дані -->
-                        <td>${maritalStatus}</td>
-                        <td>${spouse}</td>
-                        <td style="text-align:center">${childrenCount}</td>
-                        <td style="text-align:center">${childBirthDate}</td>
-                        <td style="text-align:center">${childAge}</td>
-                        <td style="font-size:11px">${familyAddress}</td>
-
-                        <!-- Військові дані -->
-                        <td>${rank}</td>
-                        <td>${positionShort}</td>
-                        <td style="font-size:11px">${positionFull}</td>
-                        <td>${recruitedBy}</td>
-                        <td style="font-size:11px">${ubdFull}</td>
-                        <td style="font-size:11px">${clearanceFull}</td>
-                        <td style="font-size:11px">${enlistmentFull}</td>
-                        <td>${serviceType}</td>
-                        <td style="font-size:11px">${weaponFull}</td>
-
-                        <!-- Дії -->
+                        <td><strong>${fullName}</strong></td>
+                        <td>${val(p.phone)}</td>
+                        <td style="text-align:center">${fmtDate(p.birthDate)}</td>
+                        <td style="text-align:center">${p.birthDate ? calcAge(p.birthDate) : '—'}</td>
+                        <td style="text-align:center">${val(p.taxId)}</td>
+                        <td style="text-align:center">${passport}</td>
+                        <td style="text-align:center">${val(p.bloodGroup)}</td>
+                        <td style="font-size:11px">${driverLic}</td>
+                        <td>${edu ? eduFirstLevel[p.id] || '—' : '—'}</td>
+                        <td style="font-size:11px">${edu ? eduFirstInst[p.id] || '—' : '—'}</td>
+                        <td style="text-align:center">${edu ? eduFirstStart[p.id] || '—' : '—'}</td>
+                        <td style="text-align:center">${edu ? eduFirstEnd[p.id] || '—' : '—'}</td>
+                        <td style="font-size:11px">${edu ? eduFirstSpec[p.id] || '—' : '—'}</td>
+                        <td style="font-size:11px">${val(p.registrationAddress)}</td>
+                        <td style="font-size:11px">${val(p.livingAddress)}</td>
+                        <td>${val(p.maritalStatus)}</td>
+                        <td>${val(p.spouseName)}</td>
+                        <td style="text-align:center">${childCounts[p.id] > 0 ? childCounts[p.id] : '—'}</td>
+                        <td style="text-align:center">${childFirstBirth[p.id] ? fmtDate(childFirstBirth[p.id]) : '—'}</td>
+                        <td style="text-align:center">${childFirstBirth[p.id] ? calcAge(childFirstBirth[p.id]) : '—'}</td>
+                        <td style="font-size:11px">${val(p.familyAddress)}</td>
+                        <td>${val(p.rank)}</td>
+                        <td>${val(p.position)}</td>
+                        <td style="font-size:11px">${val(p.fullPosition)}</td>
+                        <td style="font-size:11px">${val(p.draftOrganization)}</td>
+                        <td>${val(p.ubdNumber)}</td>
+                        <td style="font-size:11px">${val(p.admissionForm)}</td>
+                        <td style="font-size:11px">${val(p.enrollmentInfo)}</td>
+                        <td>${val(p.serviceFor)}</td>
+                        <td style="font-size:11px">${weaponCounts[p.id] > 0 ? weaponFirstInfo[p.id] || weaponCounts[p.id] : '—'}</td>
                         <td style="white-space:nowrap">
                             <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="openDetailModal(${p.id})">👁</button>
                             <button class="btn btn-warning btn-sm" onclick="openEditModal(${p.id})">✏️</button>
-                            <button class="btn btn-danger btn-sm" onclick="confirmDelete(${p.id}, '${val(p.lastName)}')">🗑</button>
+                            <button class="btn btn-danger btn-sm" onclick="confirmDelete(${p.id}, '${fullName}')">🗑</button>
                         </td>
                     </tr>`;
                 }).join('');
@@ -874,20 +777,19 @@
                 document.getElementById('editId').value = '';
                 ['fLastName','fFirstName','fMiddleName','fPosition','fFullPosition','fPhone','fNote',
                     'fTaxId','fPassportSeries','fPassportNumber','fDriverLicense',
-                    'fRegAddress','fLiveAddress','fSpouseName',
-                    'fDraftOrg','fUbdNumber','fBirthDate','fDraftDate',
-                    'fEducationInstitution','fEducationSpeciality']
+                    'fRegAddress','fLiveAddress','fFamilyAddress','fSpouseName',
+                    'fDraftOrg','fUbdNumber','fAdmissionForm','fEnrollmentInfo',
+                    'fDriverLicenseSeries','fDriverLicenseNumber','fDriverLicenseCategory',
+                    'fBirthDate','fDraftDate']
                     .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
                 document.getElementById('fRank').value = '';
-                document.getElementById('fEducation').value = '';
-                document.getElementById('fEducationStart').value = '';
-                document.getElementById('fEducationEnd').value = '';
                 document.getElementById('eduRows').innerHTML = '';
                 document.getElementById('childRows').innerHTML = '';
                 document.getElementById('weaponRows').innerHTML = '';
                 document.getElementById('fBloodGroup').value = '';
                 document.getElementById('fMaritalStatus').value = '';
                 document.getElementById('fServiceType').value = '';
+                document.getElementById('fServiceFor').value = '';
                 openModal('formModal');
             }
 
@@ -908,7 +810,9 @@
                 document.getElementById('fPassportSeries').value  = p.passportSeries || '';
                 document.getElementById('fPassportNumber').value  = p.passportNumber || '';
                 document.getElementById('fBloodGroup').value      = p.bloodGroup || '';
-                document.getElementById('fDriverLicense').value   = p.driverLicense || '';
+                document.getElementById('fDriverLicenseSeries').value   = p.driverLicenseSeries || '';
+                document.getElementById('fDriverLicenseNumber').value   = p.driverLicenseNumber || '';
+                document.getElementById('fDriverLicenseCategory').value = p.driverLicenseCategory || '';
                 document.getElementById('fRegAddress').value      = p.registrationAddress || '';
                 document.getElementById('fLiveAddress').value     = p.livingAddress || '';
                 document.getElementById('fMaritalStatus').value   = p.maritalStatus || '';
@@ -917,62 +821,45 @@
                 document.getElementById('fDraftOrg').value        = p.draftOrganization || '';
                 document.getElementById('fServiceType').value     = p.serviceType || '';
                 document.getElementById('fUbdNumber').value       = p.ubdNumber || '';
+                document.getElementById('fAdmissionForm').value   = p.admissionForm || '';
+                document.getElementById('fEnrollmentInfo').value  = p.enrollmentInfo || '';
+                document.getElementById('fServiceFor').value      = p.serviceFor || '';
+                document.getElementById('fFamilyAddress').value   = p.familyAddress || '';
                 document.getElementById('fNote').value            = p.note || '';
-                // Освіта
-                document.getElementById('fEducation').value = p.educationLevel || '';
-                document.getElementById('fEducationInstitution').value = p.educationInstitution || '';
-                document.getElementById('fEducationSpeciality').value = p.educationSpeciality || p.speciality || '';
-                document.getElementById('fEducationStart').value = p.educationStart ? p.educationStart.substring(0,10) : (p.educationStartDate ? p.educationStartDate.substring(0,10) : '');
-                document.getElementById('fEducationEnd').value = p.educationEnd ? p.educationEnd.substring(0,10) : (p.educationEndDate ? p.educationEndDate.substring(0,10) : '');
-                // Додаткові поля
-                document.getElementById('fUbdDate').value = p.ubdDate ? p.ubdDate.substring(0,10) : '';
-                document.getElementById('fMilitaryServiceFor').value = p.militaryServiceFor || '';
-                document.getElementById('fAccessForm').value = p.accessForm || '';
-                document.getElementById('fAccessNumber').value = p.accessNumber || '';
-                document.getElementById('fAccessDate').value = p.accessDate ? p.accessDate.substring(0,10) : '';
-                document.getElementById('fEnlistmentDate').value = p.enlistmentDate ? p.enlistmentDate.substring(0,10) : '';
-                document.getElementById('fEnlistmentOrder').value = p.enlistmentOrder || '';
                 openModal('formModal');
             }
 
             async function savePerson() {
                 const id = document.getElementById('editId').value;
                 const body = {
-                    lastName:              document.getElementById('fLastName').value.trim(),
-                    firstName:             document.getElementById('fFirstName').value.trim(),
-                    middleName:            document.getElementById('fMiddleName').value.trim(),
-                    rank:                  document.getElementById('fRank').value,
-                    position:              document.getElementById('fPosition').value.trim(),
-                    fullPosition:          document.getElementById('fFullPosition').value.trim(),
-                    phone:                 document.getElementById('fPhone').value.trim(),
-                    birthDate:             document.getElementById('fBirthDate').value || null,
-                    taxId:                 document.getElementById('fTaxId').value.trim(),
-                    passportSeries:        document.getElementById('fPassportSeries').value.trim(),
-                    passportNumber:        document.getElementById('fPassportNumber').value.trim(),
-                    bloodGroup:            document.getElementById('fBloodGroup').value,
-                    driverLicense:         document.getElementById('fDriverLicense').value.trim(),
-                    registrationAddress:   document.getElementById('fRegAddress').value.trim(),
-                    livingAddress:         document.getElementById('fLiveAddress').value.trim(),
-                    maritalStatus:         document.getElementById('fMaritalStatus').value,
-                    spouseName:            document.getElementById('fSpouseName').value.trim(),
-                    draftDate:             document.getElementById('fDraftDate').value || null,
-                    draftOrganization:     document.getElementById('fDraftOrg').value.trim(),
-                    serviceType:           document.getElementById('fServiceType').value,
-                    ubdNumber:             document.getElementById('fUbdNumber').value.trim(),
-                    ubdDate:               document.getElementById('fUbdDate').value || null,
-                    militaryServiceFor:    document.getElementById('fMilitaryServiceFor').value.trim(),
-                    accessForm:            document.getElementById('fAccessForm').value.trim(),
-                    accessNumber:          document.getElementById('fAccessNumber').value.trim(),
-                    accessDate:            document.getElementById('fAccessDate').value || null,
-                    enlistmentDate:        document.getElementById('fEnlistmentDate').value || null,
-                    enlistmentOrder:       document.getElementById('fEnlistmentOrder').value.trim(),
-                    note:                  document.getElementById('fNote').value.trim(),
-                    // Освіта
-                    educationLevel:        document.getElementById('fEducation').value,
-                    educationInstitution:  document.getElementById('fEducationInstitution').value.trim(),
-                    educationSpeciality:   document.getElementById('fEducationSpeciality').value.trim(),
-                    educationStart:        document.getElementById('fEducationStart').value || null,
-                    educationEnd:          document.getElementById('fEducationEnd').value || null,
+                    lastName:     document.getElementById('fLastName').value.trim(),
+                    firstName:    document.getElementById('fFirstName').value.trim(),
+                    middleName:   document.getElementById('fMiddleName').value.trim(),
+                    rank:         document.getElementById('fRank').value,
+                    position:     document.getElementById('fPosition').value.trim(),
+                    fullPosition: document.getElementById('fFullPosition').value.trim(),
+                    phone:                document.getElementById('fPhone').value.trim(),
+                    birthDate:            document.getElementById('fBirthDate').value || null,
+                    taxId:                document.getElementById('fTaxId').value.trim(),
+                    passportSeries:       document.getElementById('fPassportSeries').value.trim(),
+                    passportNumber:       document.getElementById('fPassportNumber').value.trim(),
+                    bloodGroup:           document.getElementById('fBloodGroup').value,
+                    driverLicenseSeries:   document.getElementById('fDriverLicenseSeries').value.trim(),
+                    driverLicenseNumber:   document.getElementById('fDriverLicenseNumber').value.trim(),
+                    driverLicenseCategory: document.getElementById('fDriverLicenseCategory').value.trim(),
+                    registrationAddress:  document.getElementById('fRegAddress').value.trim(),
+                    livingAddress:        document.getElementById('fLiveAddress').value.trim(),
+                    maritalStatus:        document.getElementById('fMaritalStatus').value,
+                    spouseName:           document.getElementById('fSpouseName').value.trim(),
+                    draftDate:            document.getElementById('fDraftDate').value || null,
+                    draftOrganization:    document.getElementById('fDraftOrg').value.trim(),
+                    serviceType:          document.getElementById('fServiceType').value,
+                    ubdNumber:            document.getElementById('fUbdNumber').value.trim(),
+                    admissionForm:        document.getElementById('fAdmissionForm').value.trim(),
+                    enrollmentInfo:       document.getElementById('fEnrollmentInfo').value.trim(),
+                    serviceFor:           document.getElementById('fServiceFor').value,
+                    familyAddress:        document.getElementById('fFamilyAddress').value.trim(),
+                    note:                 document.getElementById('fNote').value.trim(),
                 };
                 if (!body.lastName)  { showToast('Прізвище обов\'язкове', 'error'); return; }
                 if (!body.firstName) { showToast('Ім\'я обов\'язкове', 'error'); return; }
@@ -1067,23 +954,16 @@
                 document.getElementById('d-passport-s').textContent       = val(p.passportSeries);
                 document.getElementById('d-passport-n').textContent       = val(p.passportNumber);
                 document.getElementById('d-blood').textContent            = val(p.bloodGroup);
-                document.getElementById('d-driver').textContent           = val(p.driverLicense);
-                document.getElementById('d-education').textContent        = val(p.education);
-                document.getElementById('d-education-institution').textContent = val(p.educationInstitution);
-                document.getElementById('d-education-speciality').textContent = val(p.educationSpeciality);
-                document.getElementById('d-edu-start').textContent = fmtDate(p.educationStartDate);
-                document.getElementById('d-edu-end').textContent   = fmtDate(p.educationEndDate);
+                document.getElementById('d-driver').textContent           = [p.driverLicenseSeries, p.driverLicenseNumber, p.driverLicenseCategory].filter(Boolean).join(' ') || '—';
                 document.getElementById('d-note').textContent             = val(p.note);
                 document.getElementById('d-reg-address').textContent      = val(p.registrationAddress);
                 document.getElementById('d-live-address').textContent     = val(p.livingAddress);
                 document.getElementById('d-marital').textContent          = val(p.maritalStatus);
                 document.getElementById('d-spouse').textContent           = val(p.spouseName);
-                document.getElementById('d-children').textContent         = val(p.children);
                 document.getElementById('d-draft-date').textContent       = fmtDate(p.draftDate);
                 document.getElementById('d-draft-org').textContent        = val(p.draftOrganization);
                 document.getElementById('d-service-type').textContent     = val(p.serviceType);
                 document.getElementById('d-ubd').textContent              = val(p.ubdNumber);
-                document.getElementById('d-weapon').textContent           = val(p.weapon);
 
                 switchDetailTab('main');
                 document.getElementById('detailModal').classList.add('open');
@@ -1228,33 +1108,216 @@
                 if (e.target === document.getElementById('detailModal')) closeDetail();
             });
 
+            function calcAge(dateStr) {
+                if (!dateStr) return '—';
+                const birth = new Date(dateStr);
+                const today = new Date();
+                let age = today.getFullYear() - birth.getFullYear();
+                const m = today.getMonth() - birth.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+                return age;
+            }
+
+            function openAddModal() {
+                document.getElementById('modalTitle').textContent = 'Додати особу';
+                document.getElementById('editId').value = '';
+                ['fLastName','fFirstName','fMiddleName','fPosition','fFullPosition','fPhone','fNote',
+                    'fRegAddress','fLiveAddress','fFamilyAddress','fSpouseName',
+                    'fDraftOrg','fUbdNumber','fAdmissionForm','fEnrollmentInfo',
+                    'fDriverLicenseSeries','fDriverLicenseNumber','fDriverLicenseCategory',
+                    'fBirthDate','fDraftDate','fTaxId','fPassportSeries','fPassportNumber']
+                    .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+                const rank = document.getElementById('fRank');
+                if (rank) rank.value = '';
+                const blood = document.getElementById('fBloodGroup');
+                if (blood) blood.value = '';
+                const edu = document.getElementById('fEducation');
+                if (edu) edu.value = '';
+                const marital = document.getElementById('fMaritalStatus');
+                if (marital) marital.value = '';
+                const service = document.getElementById('fServiceType');
+                if (service) service.value = '';
+                const serviceFor = document.getElementById('fServiceFor');
+                if (serviceFor) serviceFor.value = '';
+                document.getElementById('eduRows').innerHTML = '';
+                document.getElementById('childRows').innerHTML = '';
+                document.getElementById('weaponRows').innerHTML = '';
+                document.getElementById('formModal').classList.add('open');
+            }
+
+            function openEditModal(id) {
+                const p = allPersonnel.find(x => x.id === id);
+                if (!p) return;
+                document.getElementById('modalTitle').textContent = 'Редагувати особу';
+                document.getElementById('editId').value = id;
+                const s = (fid, val) => { const el = document.getElementById(fid); if(el) el.value = val || ''; };
+                s('fLastName',   p.lastName);
+                s('fFirstName',  p.firstName);
+                s('fMiddleName', p.middleName);
+                s('fPosition',   p.position);
+                s('fFullPosition', p.fullPosition);
+                s('fPhone',      p.phone);
+                s('fNote',       p.note);
+                s('fBirthDate',  p.birthDate ? p.birthDate.substring(0,10) : '');
+                s('fTaxId',      p.taxId);
+                s('fPassportSeries',  p.passportSeries);
+                s('fPassportNumber',  p.passportNumber);
+                s('fDriverLicenseSeries',   p.driverLicenseSeries);
+                s('fDriverLicenseNumber',   p.driverLicenseNumber);
+                s('fDriverLicenseCategory', p.driverLicenseCategory);
+                s('fRegAddress',   p.registrationAddress);
+                s('fLiveAddress',  p.livingAddress);
+                s('fFamilyAddress', p.familyAddress);
+                s('fSpouseName',   p.spouseName);
+                s('fDraftDate',    p.draftDate ? p.draftDate.substring(0,10) : '');
+                s('fDraftOrg',     p.draftOrganization);
+                s('fUbdNumber',    p.ubdNumber);
+                s('fAdmissionForm',  p.admissionForm);
+                s('fEnrollmentInfo', p.enrollmentInfo);
+                const sel = (fid, val) => { const el = document.getElementById(fid); if(el) el.value = val || ''; };
+                sel('fRank',        p.rank);
+                sel('fBloodGroup',  p.bloodGroup);
+                sel('fEducation',   p.education);
+                sel('fMaritalStatus', p.maritalStatus);
+                sel('fServiceType', p.serviceType);
+                sel('fServiceFor',  p.serviceFor);
+
+                // Завантажуємо підзаписи
+                document.getElementById('eduRows').innerHTML = '';
+                document.getElementById('childRows').innerHTML = '';
+                document.getElementById('weaponRows').innerHTML = '';
+
+                fetch(`/personnel/api/${id}/education`).then(r => r.json()).then(list => {
+                    list.forEach(e => {
+                        addEduRow();
+                        const row = document.getElementById('eduRows').lastElementChild;
+                        row.querySelector('.edu-level').value = e.level || '';
+                        row.querySelector('.edu-inst').value  = e.institution || '';
+                        row.querySelector('.edu-spec').value  = e.speciality || '';
+                        const dates = row.querySelectorAll('input[type=date]');
+                        if (dates[0]) dates[0].value = e.startDate ? e.startDate.substring(0,10) : '';
+                        if (dates[1]) dates[1].value = e.endDate   ? e.endDate.substring(0,10)   : '';
+                        row.dataset.eduId = e.id;
+                    });
+                });
+                fetch(`/personnel/api/${id}/children`).then(r => r.json()).then(list => {
+                    list.forEach(c => {
+                        addChildRow();
+                        const row = document.getElementById('childRows').lastElementChild;
+                        row.querySelector('.child-name').value  = c.fullName || '';
+                        row.querySelector('.child-birth').value = c.birthDate ? c.birthDate.substring(0,10) : '';
+                        row.dataset.childId = c.id;
+                    });
+                });
+                fetch(`/personnel/api/${id}/weapons`).then(r => r.json()).then(list => {
+                    list.forEach(w => {
+                        addWeaponRow();
+                        const row = document.getElementById('weaponRows').lastElementChild;
+                        row.querySelector('.weapon-type').value   = w.weaponType   || '';
+                        row.querySelector('.weapon-serial').value = w.serialNumber  || '';
+                        row.querySelector('.weapon-date').value   = w.issuedDate    || '';
+                        row.querySelector('.weapon-note').value   = w.note          || '';
+                        row.dataset.weaponId = w.id;
+                    });
+                });
+
+                document.getElementById('formModal').classList.add('open');
+            }
+
+            async function savePerson() {
+                const id = document.getElementById('editId').value;
+                const g = fid => { const el = document.getElementById(fid); return el ? el.value.trim() : ''; };
+                const gv = fid => { const el = document.getElementById(fid); return el ? el.value : ''; };
+                const body = {
+                    lastName:     g('fLastName'),
+                    firstName:    g('fFirstName'),
+                    middleName:   g('fMiddleName'),
+                    rank:         gv('fRank'),
+                    position:     g('fPosition'),
+                    fullPosition: g('fFullPosition'),
+                    phone:        g('fPhone'),
+                    birthDate:    gv('fBirthDate') || null,
+                    taxId:        g('fTaxId'),
+                    passportSeries:  g('fPassportSeries'),
+                    passportNumber:  g('fPassportNumber'),
+                    bloodGroup:      gv('fBloodGroup'),
+                    driverLicenseSeries:   g('fDriverLicenseSeries'),
+                    driverLicenseNumber:   g('fDriverLicenseNumber'),
+                    driverLicenseCategory: g('fDriverLicenseCategory'),
+                    registrationAddress: g('fRegAddress'),
+                    livingAddress:       g('fLiveAddress'),
+                    familyAddress:       g('fFamilyAddress'),
+                    maritalStatus:       gv('fMaritalStatus'),
+                    spouseName:          g('fSpouseName'),
+                    draftDate:           gv('fDraftDate') || null,
+                    draftOrganization:   g('fDraftOrg'),
+                    serviceType:         gv('fServiceType'),
+                    ubdNumber:           g('fUbdNumber'),
+                    admissionForm:       g('fAdmissionForm'),
+                    enrollmentInfo:      g('fEnrollmentInfo'),
+                    serviceFor:          gv('fServiceFor'),
+                    note:                g('fNote'),
+                };
+                if (!body.lastName)  { showToast('Прізвище обов\'язкове', 'error'); return; }
+                if (!body.firstName) { showToast('Ім\'я обов\'язкове', 'error'); return; }
+
+                const url    = id ? `/personnel/api/${id}` : '/personnel/api';
+                const method = id ? 'PUT' : 'POST';
+                const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+
+                if (res.ok) {
+                    const saved = await res.json();
+                    const pid = saved.id;
+                    if (id) {
+                        const oldEdus    = [...document.querySelectorAll('#eduRows .dynamic-row[data-edu-id]')].map(r => r.dataset.eduId);
+                        const oldChilds  = [...document.querySelectorAll('#childRows .dynamic-row[data-child-id]')].map(r => r.dataset.childId);
+                        const oldWeapons = [...document.querySelectorAll('#weaponRows .dynamic-row[data-weapon-id]')].map(r => r.dataset.weaponId);
+                        await Promise.all([
+                            ...oldEdus.map(eid    => fetch(`/personnel/api/${pid}/education/${eid}`, {method:'DELETE'})),
+                            ...oldChilds.map(cid  => fetch(`/personnel/api/${pid}/children/${cid}`, {method:'DELETE'})),
+                            ...oldWeapons.map(wid => fetch(`/personnel/api/${pid}/weapons/${wid}`,   {method:'DELETE'})),
+                        ]);
+                    }
+                    const eduList    = getEduRows();
+                    const childList  = getChildRows();
+                    const weaponList = getWeaponRows();
+                    await Promise.all([
+                        ...eduList.map(e => fetch(`/personnel/api/${pid}/education`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(e)})),
+                        ...childList.map(c => fetch(`/personnel/api/${pid}/children`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(c)})),
+                        ...weaponList.map(w => fetch(`/personnel/api/${pid}/weapons`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(w)})),
+                    ]);
+                    document.getElementById('formModal').classList.remove('open');
+                    await loadPersonnel();
+                    showToast(id ? 'Дані оновлено' : 'Особу додано', 'success');
+                } else {
+                    showToast('Помилка: ' + await res.text(), 'error');
+                }
+            }
+
+            function confirmDelete(id, name) {
+                document.getElementById('confirmText').textContent = `Видалити особу "${name}"?`;
+                document.getElementById('confirmBtn').onclick = async () => {
+                    const res = await fetch(`/personnel/api/${id}`, {method:'DELETE'});
+                    document.getElementById('confirmModal').classList.remove('open');
+                    if (res.ok) { await loadPersonnel(); showToast('Особу видалено', 'success'); }
+                    else showToast('Помилка видалення', 'error');
+                };
+                document.getElementById('confirmModal').classList.add('open');
+            }
+
+            function openModal(id)  { document.getElementById(id).classList.add('open'); }
+            function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+            document.querySelectorAll('.modal-overlay').forEach(el =>
+                el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
+            );
+            function showToast(msg, type = 'success') {
+                const t = document.getElementById('toast');
+                t.textContent = msg; t.className = `toast ${type} show`;
+                setTimeout(() => t.classList.remove('show'), 3000);
+            }
+
             function exportXlsx() {
                 window.location.href = '/personnel/api/export';
-            }
-
-            function exportFullVedomist() {
-                window.location.href = '/personnel/api/export/full';
-            }
-
-            function importVedomist(input) {
-                const file = input.files[0];
-                if (!file) return;
-
-                const formData = new FormData();
-                formData.append('file', file);
-
-                fetch('/personnel/api/import', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(r => r.text())
-                .then(msg => {
-                    alert(msg);
-                    loadPersonnel();
-                })
-                .catch(e => {
-                    alert('Помилка імпорту: ' + e);
-                });
             }
 
             loadPersonnel();
