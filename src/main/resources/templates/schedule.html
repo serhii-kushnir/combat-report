@@ -171,285 +171,289 @@
 </head>
 <body>
 <div class="layout">
-<div th:replace="~{fragments :: sidebar('schedule')}"></div>
-<div class="main-content">
+    <div th:replace="~{fragments :: sidebar('schedule')}"></div>
+    <div class="main-content">
 
 
-<div class="container">
-    <div class="toolbar">
-        <button class="btn btn-nav" id="prevBtn">◀</button>
-        <button class="btn btn-today" id="todayBtn">Сьогодні</button>
-        <button class="btn btn-nav" id="nextBtn">▶</button>
-        <h2 id="monthTitle">—</h2>
-    </div>
+        <div class="container">
+            <div class="toolbar">
+                <button class="btn btn-nav" id="prevBtn">◀</button>
+                <button class="btn btn-today" id="todayBtn">Сьогодні</button>
+                <button class="btn btn-nav" id="nextBtn">▶</button>
+                <h2 id="monthTitle">—</h2>
+            </div>
 
-    <div class="table-wrap">
-        <table id="scheduleTable">
-            <thead id="tableHead"></thead>
-            <tbody id="tableBody">
-                <tr><td colspan="40" style="text-align:center;padding:32px;color:#999">Завантаження...</td></tr>
-            </tbody>
-        </table>
-    </div>
+            <div class="table-wrap">
+                <table id="scheduleTable">
+                    <thead id="tableHead"></thead>
+                    <tbody id="tableBody">
+                    <tr><td colspan="40" style="text-align:center;padding:32px;color:#999">Завантаження...</td></tr>
+                    </tbody>
+                </table>
+            </div>
 
-    <div class="legend" id="legend"></div>
-</div>
+            <div class="legend" id="legend"></div>
+        </div>
 
-<!-- Dropdown меню статусу -->
-<div class="status-menu" id="statusMenu">
-    <div class="status-menu-title" id="menuTitle">Обрати статус</div>
-</div>
+        <!-- Dropdown меню статусу -->
+        <div class="status-menu" id="statusMenu">
+            <div class="status-menu-title" id="menuTitle">Обрати статус</div>
+        </div>
 
-<div class="toast" id="toast"></div>
+        <div class="toast" id="toast"></div>
 
-<script>
-const STATUSES = [
-    { code: 'БЧ',      label: 'БЧ',        color: '#ffcdd2', text: '#b71c1c' },
-    { code: 'БЧ БАТ',  label: 'БЧ Бат',    color: '#ef9a9a', text: '#7f0000' },
-    { code: 'БЧ РКП',  label: 'БЧ РКП',    color: '#ffab91', text: '#bf360c' },
-    { code: 'Р-НЯ',    label: 'Р-ня',       color: '#c8e6c9', text: '#1b5e20' },
-    { code: 'В-НЯ',    label: 'В-ня',       color: '#bbdefb', text: '#0d47a1' },
-    { code: 'В-КА',    label: 'В-ка',       color: '#b3e5fc', text: '#01579b' },
-    { code: 'ХВ',      label: 'Х-й',        color: '#f8bbd0', text: '#880e4f' },
-    { code: 'СЗЧ',     label: 'СЗЧ',        color: '#ffe0b2', text: '#e65100' },
-    { code: 'ПЛЮ',     label: 'Плюс',       color: '#e1bee7', text: '#4a148c' },
-    { code: 'ППД',     label: 'ППД',        color: '#dcedc8', text: '#33691e' },
-    { code: 'НАВ',     label: 'Навчання',   color: '#fff9c4', text: '#f57f17' },
-    { code: 'ПЕРЕВ',   label: 'Перевівся',  color: '#cfd8dc', text: '#37474f' },
-];
+        <script>
+            const STATUSES = [
+                { code: 'БЧ',      label: 'БЧ',        color: '#ffcdd2', text: '#b71c1c' },
+                { code: 'БЧ БАТ',  label: 'БЧ Бат',    color: '#ef9a9a', text: '#7f0000' },
+                { code: 'БЧ РКП',  label: 'БЧ РКП',    color: '#ffab91', text: '#bf360c' },
+                { code: 'Р-НЯ',    label: 'Р-ня',       color: '#c8e6c9', text: '#1b5e20' },
+                { code: 'В-НЯ',    label: 'В-ня',       color: '#bbdefb', text: '#0d47a1' },
+                { code: 'В-КА',    label: 'В-ка',       color: '#b3e5fc', text: '#01579b' },
+                { code: 'ХВ',      label: 'Х-й',        color: '#f8bbd0', text: '#880e4f' },
+                { code: 'СЗЧ',     label: 'СЗЧ',        color: '#ffe0b2', text: '#e65100' },
+                { code: 'ПЛЮ',     label: 'Плюс',       color: '#e1bee7', text: '#4a148c' },
+                { code: 'ППД',     label: 'ППД',        color: '#dcedc8', text: '#33691e' },
+                { code: 'НАВ',     label: 'Навчання',   color: '#fff9c4', text: '#f57f17' },
+                { code: 'ПЕРЕВ',   label: 'Перевівся',  color: '#cfd8dc', text: '#37474f' },
+            ];
 
-const STATUS_MAP = {};
-STATUSES.forEach(s => STATUS_MAP[s.code] = s);
+            const STATUS_MAP = {};
+            STATUSES.forEach(s => STATUS_MAP[s.code] = s);
 
-const UA_MONTHS = ['Січень','Лютий','Березень','Квітень','Травень','Червень',
-                   'Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
-const UA_DAYS   = ['Нд','Пн','Вт','Ср','Чт','Пт','Сб'];
+            const UA_MONTHS = ['Січень','Лютий','Березень','Квітень','Травень','Червень',
+                'Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+            const UA_DAYS   = ['Нд','Пн','Вт','Ср','Чт','Пт','Сб'];
 
-let currentYear, currentMonth;
-let tableData = [];
-let menuTarget = null; // { personnelId, day, date, cell }
+            let currentYear, currentMonth;
+            let tableData = [];
+            let menuTarget = null; // { personnelId, day, date, cell }
 
-// ===== ІНІЦІАЛІЗАЦІЯ =====
-const today = new Date();
-currentYear  = today.getFullYear();
-currentMonth = today.getMonth() + 1;
-buildLegend();
-loadMonth();
+            // ===== ІНІЦІАЛІЗАЦІЯ =====
+            const today = new Date();
+            currentYear  = today.getFullYear();
+            currentMonth = today.getMonth() + 1;
+            buildLegend();
+            loadMonth();
 
-// ===== НАВІГАЦІЯ =====
-document.getElementById('prevBtn').onclick = () => { shiftMonth(-1); };
-document.getElementById('nextBtn').onclick = () => { shiftMonth(+1); };
-document.getElementById('todayBtn').onclick = () => {
-    currentYear  = today.getFullYear();
-    currentMonth = today.getMonth() + 1;
-    loadMonth();
-};
+            // ===== НАВІГАЦІЯ =====
+            document.getElementById('prevBtn').onclick = () => { shiftMonth(-1); };
+            document.getElementById('nextBtn').onclick = () => { shiftMonth(+1); };
+            document.getElementById('todayBtn').onclick = () => {
+                currentYear  = today.getFullYear();
+                currentMonth = today.getMonth() + 1;
+                loadMonth();
+            };
 
-function shiftMonth(delta) {
-    currentMonth += delta;
-    if (currentMonth > 12) { currentMonth = 1; currentYear++; }
-    if (currentMonth < 1)  { currentMonth = 12; currentYear--; }
-    loadMonth();
-}
+            function shiftMonth(delta) {
+                currentMonth += delta;
+                if (currentMonth > 12) { currentMonth = 1; currentYear++; }
+                if (currentMonth < 1)  { currentMonth = 12; currentYear--; }
+                loadMonth();
+            }
 
-// ===== ЗАВАНТАЖЕННЯ =====
-async function loadMonth() {
-    document.getElementById('monthTitle').textContent =
-        UA_MONTHS[currentMonth - 1] + ' ' + currentYear;
+            // ===== ЗАВАНТАЖЕННЯ =====
+            async function loadMonth() {
+                document.getElementById('monthTitle').textContent =
+                    UA_MONTHS[currentMonth - 1] + ' ' + currentYear;
 
-    const res = await fetch(`/schedule/api?year=${currentYear}&month=${currentMonth}`);
-    if (!res.ok) { showToast('Помилка завантаження', 'err'); return; }
-    tableData = await res.json();
-    renderTable();
-}
+                const res = await fetch(`/schedule/api?year=${currentYear}&month=${currentMonth}`);
+                if (!res.ok) { showToast('Помилка завантаження', 'err'); return; }
+                tableData = await res.json();
+                renderTable();
+            }
 
-// ===== РЕНДЕР ТАБЛИЦІ =====
-function renderTable() {
-    const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+            // ===== РЕНДЕР ТАБЛИЦІ =====
+            function renderTable() {
+                const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
 
-    // --- ЗАГОЛОВОК ---
-    let headRow1 = `<tr>
+                // --- ЗАГОЛОВОК ---
+                let headRow1 = `<tr>
         <th class="col-num">#</th>
         <th class="col-name" style="text-align:left">ПІБ</th>
         <th class="col-rank" style="text-align:left">Звання</th>`;
 
-    for (let d = 1; d <= daysInMonth; d++) {
-        const dow = new Date(currentYear, currentMonth - 1, d).getDay();
-        const isWE = (dow === 0 || dow === 6);
-        const isTod = (currentYear === today.getFullYear() &&
-                       currentMonth === today.getMonth() + 1 &&
-                       d === today.getDate());
-        headRow1 += `<th class="col-day${isWE ? ' weekend' : ''}${isTod ? ' today-col' : ''}"
+                for (let d = 1; d <= daysInMonth; d++) {
+                    const dow = new Date(currentYear, currentMonth - 1, d).getDay();
+                    const isWE = (dow === 0 || dow === 6);
+                    const isTod = (currentYear === today.getFullYear() &&
+                        currentMonth === today.getMonth() + 1 &&
+                        d === today.getDate());
+                    headRow1 += `<th class="col-day${isWE ? ' weekend' : ''}${isTod ? ' today-col' : ''}"
                          style="font-size:11px;padding:4px 2px">${d}</th>`;
-    }
-    headRow1 += `<th class="col-sum" style="font-size:10px">Разом</th></tr>`;
+                }
+                headRow1 += `<th class="col-sum" style="font-size:10px">Разом</th></tr>`;
 
-    let headRow2 = `<tr><th></th><th></th><th></th>`;
-    for (let d = 1; d <= daysInMonth; d++) {
-        const dow = new Date(currentYear, currentMonth - 1, d).getDay();
-        headRow2 += `<th style="font-size:9px;color:#90caf9">${UA_DAYS[dow]}</th>`;
-    }
-    headRow2 += `<th></th></tr>`;
+                let headRow2 = `<tr><th></th><th></th><th></th>`;
+                for (let d = 1; d <= daysInMonth; d++) {
+                    const dow = new Date(currentYear, currentMonth - 1, d).getDay();
+                    headRow2 += `<th style="font-size:9px;color:#90caf9">${UA_DAYS[dow]}</th>`;
+                }
+                headRow2 += `<th></th></tr>`;
 
-    document.getElementById('tableHead').innerHTML = headRow1 + headRow2;
+                document.getElementById('tableHead').innerHTML = headRow1 + headRow2;
 
-    // --- ТІЛО ---
-    if (!tableData.length) {
-        document.getElementById('tableBody').innerHTML =
-            `<tr><td colspan="${daysInMonth + 4}" style="text-align:center;padding:32px;color:#999">Особовий склад порожній</td></tr>`;
-        return;
-    }
+                // --- ТІЛО ---
+                if (!tableData.length) {
+                    document.getElementById('tableBody').innerHTML =
+                        `<tr><td colspan="${daysInMonth + 4}" style="text-align:center;padding:32px;color:#999">Особовий склад порожній</td></tr>`;
+                    return;
+                }
 
-    let html = '';
-    tableData.forEach((row, idx) => {
-        let totalDays = Object.values(row.days).filter(v => v !== '').length;
-        let rowHtml = `<tr>
+                let html = '';
+                tableData.forEach((row, idx) => {
+                    let totalDays = Object.values(row.days).filter(v => v !== '').length;
+                    let rowHtml = `<tr>
             <td class="num-cell">${idx + 1}</td>
             <td class="name-cell">${row.shortName}</td>
             <td class="rank-cell">${row.rank}</td>`;
 
-        for (let d = 1; d <= daysInMonth; d++) {
-            const status = row.days[d] || '';
-            const dow = new Date(currentYear, currentMonth - 1, d).getDay();
-            const isWE = (dow === 0 || dow === 6);
-            const isTod = (currentYear === today.getFullYear() &&
-                           currentMonth === today.getMonth() + 1 &&
-                           d === today.getDate());
-            const dateStr = `${currentYear}-${String(currentMonth).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-            const cls = `day-cell${isWE ? ' weekend' : ''}${isTod ? ' today-col' : ''}`;
+                    for (let d = 1; d <= daysInMonth; d++) {
+                        const status = row.days[d] || '';
+                        const dow = new Date(currentYear, currentMonth - 1, d).getDay();
+                        const isWE = (dow === 0 || dow === 6);
+                        const isTod = (currentYear === today.getFullYear() &&
+                            currentMonth === today.getMonth() + 1 &&
+                            d === today.getDate());
+                        const dateStr = `${currentYear}-${String(currentMonth).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                        const cls = `day-cell${isWE ? ' weekend' : ''}${isTod ? ' today-col' : ''}`;
 
-            let badge = '';
-            if (status) {
-                const s = STATUS_MAP[status];
-                const cssClass = 's-' + status.replace(' ', '_');
-                if (s) {
-                    badge = `<span class="cell-badge ${cssClass}">${s.label}</span>`;
-                } else {
-                    badge = `<span class="cell-badge" style="background:#eee;color:#333">${status}</span>`;
-                }
-            }
+                        let badge = '';
+                        if (status) {
+                            const s = STATUS_MAP[status];
+                            const cssClass = 's-' + status.replace(' ', '_');
+                            if (s) {
+                                badge = `<span class="cell-badge ${cssClass}">${s.label}</span>`;
+                            } else {
+                                badge = `<span class="cell-badge" style="background:#eee;color:#333">${status}</span>`;
+                            }
+                        }
 
-            rowHtml += `<td class="${cls}"
+                        rowHtml += `<td class="${cls}"
                             data-pid="${row.id}"
                             data-day="${d}"
                             data-date="${dateStr}"
                             data-status="${status}"
                             onclick="openMenu(event, this)">${badge}</td>`;
-        }
+                    }
 
-        rowHtml += `<td class="sum-cell">${totalDays || ''}</td></tr>`;
-        html += rowHtml;
-    });
+                    rowHtml += `<td class="sum-cell">${totalDays || ''}</td></tr>`;
+                    html += rowHtml;
+                });
 
-    document.getElementById('tableBody').innerHTML = html;
-}
+                document.getElementById('tableBody').innerHTML = html;
+            }
 
-// ===== МЕНЮ ВИБОРУ СТАТУСУ =====
-const menu = document.getElementById('statusMenu');
+            // ===== МЕНЮ ВИБОРУ СТАТУСУ =====
+            const menu = document.getElementById('statusMenu');
 
-function openMenu(e, cell) {
-    e.stopPropagation();
-    menuTarget = {
-        personnelId: cell.dataset.pid,
-        date: cell.dataset.date,
-        current: cell.dataset.status,
-        cell
-    };
+            function openMenu(e, cell) {
+                e.stopPropagation();
+                e.preventDefault();
 
-    // Будуємо меню
-    const name = cell.closest('tr').querySelector('.name-cell').textContent;
-    const day  = cell.dataset.day;
-    document.getElementById('menuTitle').textContent = `${name} — ${day} ${UA_MONTHS[currentMonth-1]}`;
+                menuTarget = {
+                    personnelId: cell.dataset.pid,
+                    date: cell.dataset.date,
+                    current: cell.dataset.status,
+                    cell
+                };
 
-    let optionsHtml = '';
-    STATUSES.forEach(s => {
-        optionsHtml += `<div class="status-option"
+                // Будуємо меню заново
+                const name = cell.closest('tr').querySelector('.name-cell').textContent;
+                const day  = cell.dataset.day;
+                const title = `${name} — ${day} ${UA_MONTHS[currentMonth-1]}`;
+
+                let html = `<div class="status-menu-title">${title}</div>`;
+                STATUSES.forEach(s => {
+                    html += `<div class="status-option"
             style="background:${s.color};color:${s.text}"
-            onclick="selectStatus('${s.code}')">
+            onclick="event.stopPropagation();selectStatus('${s.code}')">
             <span class="dot" style="background:${s.text}"></span>
             ${s.label}
         </div>`;
-    });
-    optionsHtml += `<div class="status-option clear" onclick="selectStatus('')">✕ Очистити</div>`;
+                });
+                html += `<div class="status-option clear" onclick="event.stopPropagation();selectStatus('')">✕ Очистити</div>`;
+                menu.innerHTML = html;
 
-    menu.querySelector('.status-menu-title').nextSibling && menu.querySelectorAll('.status-option').forEach(el => el.remove());
-    menu.innerHTML = `<div class="status-menu-title">${document.getElementById('menuTitle').textContent}</div>` + optionsHtml;
+                // Позиціонуємо
+                const rect = cell.getBoundingClientRect();
+                let left = rect.left + window.scrollX;
+                let top  = rect.bottom + window.scrollY + 2;
+                if (left + 170 > window.innerWidth) left = window.innerWidth - 175;
+                if (top + 400 > window.innerHeight + window.scrollY) top = rect.top + window.scrollY - 410;
 
-    // Позиціонуємо
-    const rect = cell.getBoundingClientRect();
-    let left = rect.left + window.scrollX;
-    let top  = rect.bottom + window.scrollY + 2;
-    if (left + 170 > window.innerWidth) left = window.innerWidth - 175;
-    if (top + 400 > window.innerHeight + window.scrollY) top = rect.top + window.scrollY - 410;
+                menu.style.left = left + 'px';
+                menu.style.top  = top + 'px';
+                menu.classList.add('open');
+            }
 
-    menu.style.left = left + 'px';
-    menu.style.top  = top + 'px';
-    menu.classList.add('open');
-}
+            async function selectStatus(code) {
+                menu.classList.remove('open');
+                if (!menuTarget) return;
 
-async function selectStatus(code) {
-    menu.classList.remove('open');
-    if (!menuTarget) return;
+                const { personnelId, date, cell } = menuTarget;
 
-    const { personnelId, date, cell } = menuTarget;
+                try {
+                    const res = await fetch('/schedule/api/cell', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ personnelId, date, status: code })
+                    });
 
-    try {
-        const res = await fetch('/schedule/api/cell', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ personnelId, date, status: code })
-        });
+                    if (!res.ok) { showToast('Помилка збереження', 'err'); return; }
 
-        if (!res.ok) { showToast('Помилка збереження', 'err'); return; }
+                    // Оновлюємо локальні дані
+                    const row = tableData.find(r => String(r.id) === String(personnelId));
+                    const day = parseInt(cell.dataset.day);
+                    if (row) row.days[day] = code;
 
-        // Оновлюємо локальні дані
-        const row = tableData.find(r => String(r.id) === String(personnelId));
-        const day = parseInt(cell.dataset.day);
-        if (row) row.days[day] = code;
+                    // Оновлюємо клітинку без перерендеру всієї таблиці
+                    cell.dataset.status = code;
+                    if (code) {
+                        const s = STATUS_MAP[code];
+                        const cssClass = 's-' + code.replace(' ', '_');
+                        cell.innerHTML = `<span class="cell-badge ${cssClass}">${s ? s.label : code}</span>`;
+                    } else {
+                        cell.innerHTML = '';
+                    }
 
-        // Оновлюємо клітинку без перерендеру всієї таблиці
-        cell.dataset.status = code;
-        if (code) {
-            const s = STATUS_MAP[code];
-            const cssClass = 's-' + code.replace(' ', '_');
-            cell.innerHTML = `<span class="cell-badge ${cssClass}">${s ? s.label : code}</span>`;
-        } else {
-            cell.innerHTML = '';
-        }
+                    // Оновлюємо колонку "Разом"
+                    const tr = cell.closest('tr');
+                    const totalDays = Object.values(row.days).filter(v => v !== '').length;
+                    tr.querySelector('.sum-cell').textContent = totalDays || '';
 
-        // Оновлюємо колонку "Разом"
-        const tr = cell.closest('tr');
-        const totalDays = Object.values(row.days).filter(v => v !== '').length;
-        tr.querySelector('.sum-cell').textContent = totalDays || '';
+                } catch (err) {
+                    showToast('Помилка мережі', 'err');
+                }
+                menuTarget = null;
+            }
 
-    } catch (err) {
-        showToast('Помилка мережі', 'err');
-    }
-    menuTarget = null;
-}
+            // Закрити меню при кліку поза ним — але не при кліку на клітинку
+            document.addEventListener('click', (e) => {
+                if (!menu.contains(e.target)) {
+                    menu.classList.remove('open');
+                }
+            });
 
-// Закрити меню при кліку поза ним
-document.addEventListener('click', () => menu.classList.remove('open'));
+            // ===== ЛЕГЕНДА =====
+            function buildLegend() {
+                const el = document.getElementById('legend');
+                let html = '<span class="legend-title">Позначення:</span>';
+                STATUSES.forEach(s => {
+                    html += `<span class="legend-item s-${s.code.replace(' ','_')}">${s.label}</span>`;
+                });
+                el.innerHTML = html;
+            }
 
-// ===== ЛЕГЕНДА =====
-function buildLegend() {
-    const el = document.getElementById('legend');
-    let html = '<span class="legend-title">Позначення:</span>';
-    STATUSES.forEach(s => {
-        html += `<span class="legend-item s-${s.code.replace(' ','_')}">${s.label}</span>`;
-    });
-    el.innerHTML = html;
-}
-
-// ===== УТИЛІТИ =====
-function showToast(msg, type) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = `toast ${type} show`;
-    setTimeout(() => t.classList.remove('show'), 2500);
-}
-</script>
-</div>
+            // ===== УТИЛІТИ =====
+            function showToast(msg, type) {
+                const t = document.getElementById('toast');
+                t.textContent = msg;
+                t.className = `toast ${type} show`;
+                setTimeout(() => t.classList.remove('show'), 2500);
+            }
+        </script>
+    </div>
 </div>
 <div th:replace="~{fragments :: sidebar-js}"></div>
 </body>
