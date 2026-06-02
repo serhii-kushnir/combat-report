@@ -49,20 +49,20 @@ public class PersonnelExportService {
             XSSFCellStyle centerStyle = createCenterStyle(wb);
 
             String[] HEADERS = {
-                "№", "Прізвище", "Ім'я", "По батькові", "Звання", "Посада",
-                "Телефон", "Дата народження", "ІПН", "Пас. серія", "Пас. номер",
-                "Група крові", "Вод. посв.", "Адреса реєстрації", "Адреса проживання",
-                "Сімейний стан", "Дружина/Чоловік",
-                "Дата призову", "Вид служби", "Ким призваний", "УБД №",
-                "Примітка"
+                    "№", "Прізвище", "Ім'я", "По батькові", "Звання", "Посада",
+                    "Телефон", "Дата народження", "ІПН", "Пас. серія", "Пас. номер",
+                    "Група крові", "Вод. посв.", "Адреса реєстрації", "Адреса проживання",
+                    "Сімейний стан", "Дружина/Чоловік",
+                    "Дата призову", "Вид служби", "Ким призваний", "УБД №",
+                    "Примітка"
             };
             int[] WIDTHS = {
-                6, 18, 14, 18, 18, 20,
-                14, 14, 14, 10, 12,
-                10, 10, 30, 30,
-                14, 20,
-                14, 14, 20, 12,
-                30
+                    6, 18, 14, 18, 18, 20,
+                    14, 14, 14, 10, 12,
+                    10, 10, 30, 30,
+                    14, 20,
+                    14, 14, 20, 12,
+                    30
             };
 
             // Заголовок
@@ -93,7 +93,7 @@ public class PersonnelExportService {
                 setCell(row, 9,  p.getPassportSeries(), centerStyle);
                 setCell(row, 10, p.getPassportNumber(), centerStyle);
                 setCell(row, 11, p.getBloodGroup(), centerStyle);
-                setCell(row, 12, p.getDriverLicense(), centerStyle);
+                setCell(row, 12, java.util.stream.Stream.of(p.getDriverLicenseSeries(), p.getDriverLicenseNumber(), p.getDriverLicenseCategory()).filter(v -> v != null && !v.isBlank()).collect(java.util.stream.Collectors.joining(" ")), centerStyle);
                 setCell(row, 13, p.getRegistrationAddress(), dataStyle);
                 setCell(row, 14, p.getLivingAddress(), dataStyle);
                 setCell(row, 15, p.getMaritalStatus(), centerStyle);

@@ -77,11 +77,10 @@ public class PersonnelController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            log.error("Помилка оновлення особу id={}", id, e);
+            log.error("Помилка оновлення особи id={}", id, e);
             return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
         }
     }
-
 
     @DeleteMapping("/api/{id}")
     @ResponseBody
@@ -107,7 +106,7 @@ public class PersonnelController {
             String filename = URLEncoder.encode("Відомість_ОС.xlsx", StandardCharsets.UTF_8).replace("+", "%20");
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=\"" + filename + "\"; filename*=UTF-8\'\'" + filename)
+                            "attachment; filename=\"" + filename + "\"; filename*=UTF-8''" + filename)
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(data);
         } catch (Exception e) {

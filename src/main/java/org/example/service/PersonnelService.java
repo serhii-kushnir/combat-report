@@ -68,7 +68,13 @@ public class PersonnelService {
         e.setDraftOrganization(updated.getDraftOrganization());
         e.setServiceType(updated.getServiceType());
         e.setUbdNumber(updated.getUbdNumber());
-        e.setDriverLicense(updated.getDriverLicense());
+        e.setDriverLicenseSeries(updated.getDriverLicenseSeries());
+        e.setDriverLicenseNumber(updated.getDriverLicenseNumber());
+        e.setDriverLicenseCategory(updated.getDriverLicenseCategory());
+        e.setFamilyAddress(updated.getFamilyAddress());
+        e.setAdmissionForm(updated.getAdmissionForm());
+        e.setEnrollmentInfo(updated.getEnrollmentInfo());
+        e.setServiceFor(updated.getServiceFor());
 
         Personnel saved = repository.save(e);
         log.info("Оновлено особу: {} (id={})", saved.getFullName(), saved.getId());

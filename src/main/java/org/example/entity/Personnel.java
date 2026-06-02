@@ -91,10 +91,29 @@ public class Personnel {
     @Column(length = 50)
     private String ubdNumber;            // Номер УБД
 
-    @Column(length = 100)
-    private String driverLicense;        // Водійське посвідчення (категорії)
+    // Водійське посвідчення
+    @Column(length = 20)
+    private String driverLicenseSeries;   // Серія
+    @Column(length = 20)
+    private String driverLicenseNumber;   // Номер
+    @Column(length = 20)
+    private String driverLicenseCategory; // Категорія (B, C тощо)
 
     // ===== ОЗБРОЄННЯ =====
+
+    // ===== АДРЕСА СІМ'Ї =====
+    @Column(length = 500)
+    private String familyAddress;         // Адреса проживання сім'ї
+
+    // ===== ВІЙСЬКОВІ (розширені) =====
+    @Column(length = 255)
+    private String admissionForm;         // Форма допуску (Ф-№, наказ, дата)
+
+    @Column(length = 255)
+    private String enrollmentInfo;        // Зарахування у в/ч (дата, наказ)
+
+    @Column(length = 100)
+    private String serviceFor;            // Військова служба за
 
     public Personnel(String lastName, String firstName, String middleName,
                      String rank, String position) {
