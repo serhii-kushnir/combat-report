@@ -27,13 +27,9 @@ public class ReportService {
     }
 
     public CombatReport parseJson(String json) throws Exception {
-        CombatReport report = objectMapper.readValue(json, CombatReport.class);
-        log.debug("JSON розпарсено: unitName={}, targetType={}, weaponId={}",
-                report.getUnitName(), report.getTargetType(), report.getWeaponId());
-        return report;
+        return objectMapper.readValue(json, CombatReport.class);
     }
 
-    // ========== СЛОВНИК ЗАМІН ТИПІВ ЦІЛЕЙ ==========
     private static final Map<String, String> TARGET_TYPE_MAPPINGS = new HashMap<>();
 
     static {
@@ -55,47 +51,32 @@ public class ReportService {
     }
 
     private String extractWeaponName(String weaponId) {
-        if (weaponId == null || weaponId.isEmpty()) {
-            log.warn("weaponId порожній, використовується значення за замовчуванням");
-            return "AS3 Merops";
-        }
+        if (weaponId == null || weaponId.isEmpty()) return "AS3 Merops";
         Pattern pattern = Pattern.compile("\\(([^)]+)\\)");
         Matcher matcher = pattern.matcher(weaponId);
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        return weaponId;
+        return matcher.find() ? matcher.group(1) : weaponId;
     }
 
     private String getTargetTypeDisplay(CombatReport report) {
         String targetType = report.getTargetSubType();
-        if (targetType == null || targetType.isEmpty()) {
-            targetType = report.getTargetType();
-        }
-        if (targetType == null || targetType.isEmpty()) {
-            log.warn("Тип цілі не вказаний у звіті");
-            return "Невідомо";
-        }
+        if (targetType == null || targetType.isEmpty()) targetType = report.getTargetType();
+        if (targetType == null || targetType.isEmpty()) return "Невідомо";
         for (Map.Entry<String, String> entry : TARGET_TYPE_MAPPINGS.entrySet()) {
             if (targetType.equalsIgnoreCase(entry.getKey()) ||
                     targetType.toLowerCase().contains(entry.getKey().toLowerCase())) {
                 return entry.getValue();
             }
         }
-        log.debug("Тип цілі '{}' не знайдено в словнику, використовується оригінальне значення", targetType);
         return targetType.substring(0, 1).toUpperCase() + targetType.substring(1).toLowerCase();
     }
 
     private String getTargetTypeForReport(CombatReport report) {
         String targetType = getTargetTypeDisplay(report);
-        if ("Шахід".equals(targetType)) {
-            return "\"" + targetType + "\"";
-        }
-        return targetType;
+        return "Шахід".equals(targetType) ? "\"" + targetType + "\"" : targetType;
     }
 
     private int safeInt(Integer value, int defaultValue) {
-        return (value != null) ? value : defaultValue;
+        return value != null ? value : defaultValue;
     }
 
     private String safeTargetNumber(CombatReport report) {
@@ -103,50 +84,36 @@ public class ReportService {
         return (virazh != null && virazh != 0) ? String.valueOf(virazh) : "";
     }
 
-    // ========== ФОРМАТ 1: СТАНДАРТНИЙ ==========
+    // ========== ФОРМАТ 1 ==========
     public String formatStandardReport(CombatReport report, int manualDistance, int manualSpeed,
                                        int course, int manualAltitude, int targetAltitude) {
-        log.debug("Формування стандартного звіту для екіпажу: {}", report.getUnitName());
         StringBuilder sb = new StringBuilder();
-
         String takeoffTime = "";
         String lossTime;
         String reportDate;
         String weaponNumber = report.getWeaponNumber() != null ? report.getWeaponNumber() : "";
 
-        if (report.getTakeoffTime() != null) {
-            takeoffTime = report.getTakeoffTime().format(TIME_FORMATTER);
-        }
+        if (report.getTakeoffTime() != null) takeoffTime = report.getTakeoffTime().format(TIME_FORMATTER);
         if (report.getContactTime() != null) {
             reportDate = report.getContactTime().format(DATE_FORMATTER);
             lossTime = report.getContactTime().format(TIME_FORMATTER);
         } else {
-            log.warn("contactTime не вказано, використовується поточний час");
             reportDate = LocalDate.now().format(DATE_FORMATTER);
             lossTime = LocalTime.now().format(TIME_FORMATTER);
         }
-        if (takeoffTime.isEmpty()) {
-            takeoffTime = lossTime;
-        }
+        if (takeoffTime.isEmpty()) takeoffTime = lossTime;
 
         sb.append(reportDate).append("\n");
         sb.append("Екіпаж: ").append(report.getUnitName()).append("\n");
 
         String effectorStatus = report.getEffectorStatus() != null ? report.getEffectorStatus() : "";
         sb.append(effectorStatus);
-        if ("Ураження".equals(effectorStatus)) {
-            sb.append(" цілі");
-        }
+        if ("Ураження".equals(effectorStatus)) sb.append(" цілі");
         sb.append("\n\n");
 
         sb.append("Час: ").append(takeoffTime).append(" - ").append(lossTime).append("\n");
-
-        String coordinates = report.getCoordinates() != null ? report.getCoordinates() : "";
-        sb.append("Координати: ").append(coordinates).append("\n");
-
-        // Рядок з курсом, відстанню та висотою (ручні поля)
+        sb.append("Координати: ").append(report.getCoordinates() != null ? report.getCoordinates() : "").append("\n");
         sb.append("Азимут-").append(course).append("°, Дальність-").append(manualDistance).append(" м., Висота-").append(manualAltitude).append(" м.\n");
-
         sb.append("Тип: ").append(getTargetTypeDisplay(report)).append("\n");
 
         String weapon = extractWeaponName(report.getWeaponId());
@@ -158,7 +125,6 @@ public class ReportService {
         String unitName = report.getUnitName() != null ? report.getUnitName() : "";
         String militaryUnit = report.getMilitaryUnit() != null ? report.getMilitaryUnit() : "";
         String targetNumber = safeTargetNumber(report);
-        String effectorStatusForNote = report.getEffectorStatus() != null ? report.getEffectorStatus() : "";
         String effectorLossReason = report.getEffectorLossReason() != null ? report.getEffectorLossReason() : "";
 
         sb.append("Примітка: Екіпажем ").append("\"").append(unitName).append("\"")
@@ -166,28 +132,22 @@ public class ReportService {
                 .append(", який виконує завдання ведення повітряної розвідки та ураження противника в смузі відповідальності ОТУ м. Одеса")
                 .append(" здійснено виліт дроном-камікадзе ").append("\"").append(weapon).append(" (нічний)\"")
                 .append(" з метою ураження ворожого ударного дрона №").append(targetNumber)
-                .append(". ").append(effectorStatusForNote)
+                .append(". ").append(effectorStatus)
                 .append(", ").append(effectorLossReason.toLowerCase()).append("\n");
 
         int targetNum = safeInt(report.getTargetNumberVirazh(), 0);
         String targetSubTypeDisplay = getTargetTypeDisplay(report);
-
-        // Використовуємо targetAltitude (висота з JSON) для рядка "Висота цілі"
         sb.append("Висота цілі: ").append(targetAltitude).append(" м, ціль \"").append(targetSubTypeDisplay).append("\"");
-        if (targetNum != 0) {
-            sb.append(" №").append(targetNum).append(" (по віражу)");
-        }
+        if (targetNum != 0) sb.append(" №").append(targetNum).append(" (по віражу)");
         sb.append(", швидкість цілі: ").append(manualSpeed).append(" км/год.");
 
         return sb.toString();
     }
 
-    // ========== ФОРМАТ 2: СКОРОЧЕНИЙ ==========
+    // ========== ФОРМАТ 2 – ДОДАНО ПАРАМЕТР explosionArea ==========
     public String formatShortReport(CombatReport report, int manualDistance, int course,
-                                    int manualAltitude, int targetAltitude) {
-        log.debug("Формування скороченого звіту для екіпажу: {}", report.getUnitName());
+                                    int manualAltitude, int targetAltitude, String explosionArea) {
         StringBuilder sb = new StringBuilder();
-
         String weaponNumber = report.getWeaponNumber() != null ? report.getWeaponNumber() : "";
 
         sb.append("Екіпаж: ").append(report.getUnitName()).append("\n");
@@ -202,17 +162,12 @@ public class ReportService {
             sb.append("Час підриву: ").append(report.getContactTime().format(TIME_FORMATTER)).append("\n");
         }
 
-        sb.append("Район підриву: Море\n");
+        // ВИКОРИСТАННЯ explosionArea замість жорсткого "Море"
+        sb.append("Район підриву: ").append(explosionArea).append("\n");
 
-        String coordinates = report.getCoordinates() != null ? report.getCoordinates() : "";
-        sb.append("Приблизні координати підриву: ").append(coordinates).append("\n");
-
-        // Рядок з курсом, відстанню та висотою (ручні поля)
+        sb.append("Приблизні координати підриву: ").append(report.getCoordinates() != null ? report.getCoordinates() : "").append("\n");
         sb.append("Азимут-").append(course).append("°, Дальність-").append(manualDistance).append(" м., Висота-").append(manualAltitude).append(" м.\n");
-
         sb.append("Тип цілі: ").append(getTargetTypeDisplay(report)).append("\n");
-
-        // Використовуємо targetAltitude (висота з JSON)
         sb.append("Висота цілі: ").append(targetAltitude).append(" метрів\n");
 
         String weapon = extractWeaponName(report.getWeaponId());
@@ -222,18 +177,12 @@ public class ReportService {
         int virazhNum = safeInt(report.getTargetNumberVirazh(), 0);
         sb.append("Номер цілі по Віражу: ").append(virazhNum).append("\n");
 
-        String skymap = report.getTargetNumberSkymap() != null && !report.getTargetNumberSkymap().isEmpty()
-                ? report.getTargetNumberSkymap() : String.valueOf(virazhNum);
-//        sb.append("Номер по СкайМаті: ").append(skymap).append("\n");
-
         return sb.toString();
     }
 
-    // ========== ФОРМАТ 3: ДЕТАЛЬНИЙ (З ПІДПИСАМИ) ==========
+    // ========== ФОРМАТ 3 ==========
     public String formatDetailedReport(CombatReport report, String pilot) {
-        log.debug("Формування детального звіту для екіпажу: {}, пілот: {}", report.getUnitName(), pilot);
         StringBuilder sb = new StringBuilder();
-
         String weapon = extractWeaponName(report.getWeaponId());
         String unitName = report.getUnitName() != null ? report.getUnitName() : "СКОПА";
         String militaryUnit = report.getMilitaryUnit() != null ? report.getMilitaryUnit() : "А0826";
@@ -255,17 +204,12 @@ public class ReportService {
             reportDate = report.getContactTime().format(DATE_FORMATTER);
             contactTime = report.getContactTime().format(TIME_FORMATTER);
         } else {
-            log.warn("contactTime не вказано у детальному звіті, використовується поточний час");
             reportDate = LocalDate.now().format(DATE_FORMATTER);
             contactTime = LocalTime.now().format(TIME_FORMATTER);
         }
-
-        takeoffTime = (report.getTakeoffTime() != null)
-                ? report.getTakeoffTime().format(TIME_FORMATTER)
-                : contactTime;
+        takeoffTime = (report.getTakeoffTime() != null) ? report.getTakeoffTime().format(TIME_FORMATTER) : contactTime;
 
         String targetResult = targetDestroyed ? "вражена" : "не вражена";
-        log.debug("Результат ураження цілі: {}", targetResult);
 
         sb.append("Командиру взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n\n\n");
         sb.append("Рапорт\n\n");
@@ -282,7 +226,6 @@ public class ReportService {
                 .append(" (БпЛА противника типу ").append(targetTypeDisplay).append("). Ціль ").append(targetResult).append(".\n\n");
 
         sb.append("Пілот:\n");
-
         if (pilot.equals("Костянтин БИТКА")) {
             sb.append("Оператор безпілотних літальних апаратів екіпажу безпілотного авіаційного комплексу\n");
             sb.append("взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
