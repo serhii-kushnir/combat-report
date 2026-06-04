@@ -2184,3 +2184,36 @@ insert into personnel (access_form,access_number,active,additional_info,admissio
 2026-05-17 19:05:45.247409+03:00 jdbc[7]: exception
 org.h2.jdbc.JdbcSQLDataException: Value too long for column "EDUCATION_FORM CHARACTER VARYING(50)": "U&'\\0410\\043b\\0445\\0456\\043c\\043e\\0432\\0430 \\0414\\0456\\0430\\043d\\0430 \\0412\\043e... (62)"; SQL statement:
 insert into personnel (access_form,access_number,active,additional_info,admission_date,award_status,awards_list,birth_date,blood_group,combat_experience,contract_end_date,contract_start_date,diploma_number,disability_cause,disability_group,dismissal_date,draft_date,draft_organization,driver_license,education_end,education_form,education_institution,education_level,education_speciality,education_start,emergency_contact,first_name,full_position,last_name,living_address,marital_status,middle_name,military_rank_short,military_unit_previous,mobilization_type,note,passport_number,passport_series,phone,position,rank,registration_address,salary_card,service_type,shoe_size,spouse_name,tax_id,ubd_number,uniform_size,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,default) [22001-232]
+2026-06-03 01:39:50.498141+03:00 database: close
+org.h2.message.DbException: IO Exception: "Closing" [90028-232]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.mvstore.db.Store.close(Store.java:374)
+	at org.h2.engine.Database.closeOpenFilesAndUnlock(Database.java:1292)
+	at org.h2.engine.Database.closeImpl(Database.java:1254)
+	at org.h2.engine.Database.close(Database.java:1173)
+	at org.h2.engine.Database.onShutdown(Database.java:1158)
+	at org.h2.engine.OnExitDatabaseCloser.onShutdown(OnExitDatabaseCloser.java:85)
+	at org.h2.engine.OnExitDatabaseCloser.run(OnExitDatabaseCloser.java:114)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: IO Exception: "Closing" [90028-232]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:566)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	... 8 more
+Caused by: org.h2.mvstore.MVStoreException: java.lang.AssertionError [2.3.232/3]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:996)
+	at org.h2.mvstore.MVStore.executeFilestoreOperation(MVStore.java:926)
+	at org.h2.mvstore.RandomAccessStore.compactMoveChunks(RandomAccessStore.java:463)
+	at org.h2.mvstore.RandomAccessStore.compactStore(RandomAccessStore.java:443)
+	at org.h2.mvstore.FileStore.compactStore(FileStore.java:890)
+	at org.h2.mvstore.FileStore.stop(FileStore.java:275)
+	at org.h2.mvstore.MVStore.closeStore(MVStore.java:693)
+	at org.h2.mvstore.MVStore.close(MVStore.java:643)
+	at org.h2.mvstore.db.Store.close(Store.java:364)
+	... 6 more
+Caused by: java.lang.AssertionError
+	at org.h2.mvstore.RandomAccessStore.moveChunkInside(RandomAccessStore.java:630)
+	at org.h2.mvstore.RandomAccessStore.compactMoveChunks(RandomAccessStore.java:569)
+	at org.h2.mvstore.RandomAccessStore.compactMoveChunks(RandomAccessStore.java:481)
+	at org.h2.mvstore.RandomAccessStore.lambda$compactMoveChunks$1(RandomAccessStore.java:468)
+	at org.h2.mvstore.FileStore.executeFileStoreOperation(FileStore.java:1893)
+	at org.h2.mvstore.MVStore.executeFilestoreOperation(MVStore.java:922)
+	... 13 more
