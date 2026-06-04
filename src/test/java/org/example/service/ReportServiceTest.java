@@ -18,12 +18,12 @@ class ReportServiceTest {
 
     private ReportService reportService;
 
-    // Стандартні тестові значення для нових параметрів
     private static final int DISTANCE  = 5000;
     private static final int SPEED     = 160;
     private static final int COURSE    = 270;
-    private static final int M_ALT     = 50;   // manualAltitude
-    private static final int T_ALT     = 300;  // targetAltitude
+    private static final int M_ALT     = 50;
+    private static final int T_ALT     = 300;
+    private static final String EXPLOSION_AREA = "Море";  // новий параметр
 
     @BeforeEach
     void setUp() {
@@ -131,32 +131,29 @@ class ReportServiceTest {
         assertThat(result).contains("№42").contains("по віражу");
     }
 
-    // ========== formatShortReport ==========
+    // ========== formatShortReport (оновлено з explosionArea) ==========
 
     @Test
     @DisplayName("formatShortReport — містить номер зброї у верхньому регістрі")
     void formatShort_weaponNumberUpperCase() {
         CombatReport report = buildReport();
         report.setWeaponNumber("abc-123");
-        String result = reportService.formatShortReport(report, DISTANCE, COURSE, M_ALT, T_ALT);
+        String result = reportService.formatShortReport(report, DISTANCE, COURSE, M_ALT, T_ALT, EXPLOSION_AREA);
         assertThat(result).contains("ABC-123");
     }
 
     @Test
     @DisplayName("formatShortReport — висота цілі з targetAltitude")
     void formatShort_targetAltitude_shown() {
-        String result = reportService.formatShortReport(buildReport(), DISTANCE, COURSE, M_ALT, 450);
+        String result = reportService.formatShortReport(buildReport(), DISTANCE, COURSE, M_ALT, 450, EXPLOSION_AREA);
         assertThat(result).contains("450");
     }
 
     @Test
-    @DisplayName("formatShortReport — якщо skymap порожній, використовує номер по Віражу")
-    void formatShort_noSkymap_usesVirazhNumber() {
-        CombatReport report = buildReport();
-        report.setTargetNumberVirazh(7);
-        report.setTargetNumberSkymap(null);
-        String result = reportService.formatShortReport(report, DISTANCE, COURSE, M_ALT, T_ALT);
-        assertThat(result).contains("Номер по СкайМаті: 7");
+    @DisplayName("formatShortReport — містить район підриву")
+    void formatShort_containsExplosionArea() {
+        String result = reportService.formatShortReport(buildReport(), DISTANCE, COURSE, M_ALT, T_ALT, "Степ");
+        assertThat(result).contains("Район підриву: Степ");
     }
 
     // ========== formatDetailedReport ==========
@@ -202,7 +199,7 @@ class ReportServiceTest {
     void weaponId_withParentheses_extractsName() {
         CombatReport report = buildReport();
         report.setWeaponId("drone_v2 (FlyingKamikaze)");
-        String result = reportService.formatShortReport(report, DISTANCE, COURSE, M_ALT, T_ALT);
+        String result = reportService.formatShortReport(report, DISTANCE, COURSE, M_ALT, T_ALT, EXPLOSION_AREA);
         assertThat(result).contains("FlyingKamikaze");
     }
 
@@ -211,7 +208,7 @@ class ReportServiceTest {
     void weaponId_null_usesDefault() {
         CombatReport report = buildReport();
         report.setWeaponId(null);
-        String result = reportService.formatShortReport(report, DISTANCE, COURSE, M_ALT, T_ALT);
+        String result = reportService.formatShortReport(report, DISTANCE, COURSE, M_ALT, T_ALT, EXPLOSION_AREA);
         assertThat(result).contains("AS3 Merops");
     }
 

@@ -26,7 +26,6 @@ class ReportControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // Мінімальний валідний JSON звіту
     private static final Map<String, Object> VALID_REPORT = Map.of(
             "unitName", "СКОПА",
             "militaryUnit", "А0826",
@@ -38,8 +37,6 @@ class ReportControllerTest {
             "effectorStatus", "Засіб витрачено",
             "effectorLossReason", "Успішне камікадзе"
     );
-
-    // ========== /convert ==========
 
     @Test
     @DisplayName("POST /convert — формат 1 повертає 200 і текст звіту")
@@ -82,7 +79,7 @@ class ReportControllerTest {
                         .content(body))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Екіпаж:")))
-                .andExpect(content().string(containsString("Номер по СкайМаті:")));
+                .andExpect(content().string(containsString("Номер цілі по Віражу:"))); // ЗМІНЕНО
     }
 
     @Test
@@ -201,8 +198,6 @@ class ReportControllerTest {
                 .andExpect(content().string(containsString("пілот")));
     }
 
-    // ========== /save/txt ==========
-
     @Test
     @DisplayName("POST /save/txt — повертає файл з правильним заголовком")
     void saveTxt_returnsFile() throws Exception {
@@ -222,8 +217,6 @@ class ReportControllerTest {
                         .param("filename", "test.txt"))
                 .andExpect(status().isBadRequest());
     }
-
-    // ========== /save/docx ==========
 
     @Test
     @DisplayName("POST /save/docx — повертає файл")
