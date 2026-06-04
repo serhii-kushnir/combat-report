@@ -17,6 +17,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
@@ -273,19 +277,41 @@ public class ReportController {
 
     private byte[] createDocxContent(String text) throws Exception {
         try (XWPFDocument document = new XWPFDocument()) {
+            // ===== НАЛАШТУВАННЯ ПОЛІВ СТОРІНКИ =====
+            CTDocument1 ctDocument = document.getDocument();
+            CTBody body = ctDocument.getBody();
+            if (body.getSectPr() == null) body.addNewSectPr();
+            CTSectPr sectPr = body.getSectPr();
+            if (sectPr.getPgMar() == null) sectPr.addNewPgMar();
+            CTPageMar pageMar = sectPr.getPgMar();
+
+            // Верхнє поле (twips): 567 = 1 см (менше число – підняти верхнє поле)
+            pageMar.setTop(567);
+            // Нижнє поле (twips): 567 = 1 см (більше число – опустити нижнє поле)
+            pageMar.setBottom(567);
+            // Ліве і праве – за бажанням (2 см)
+//            pageMar.setLeft(1134);
+//            pageMar.setRight(1134);
+            // =====================================
+
             String[] lines = text.split("\n");
             for (String line : lines) {
                 XWPFParagraph paragraph = document.createParagraph();
                 paragraph.setSpacingBefore(0);
                 paragraph.setSpacingAfter(0);
 
-                if (line.contains("Командиру взводу перехоплювачів")) {
-                    paragraph.setIndentationLeft(5400);
+                // Ваші умови форматування (залишаються без змін)
+                if (line.contains("Командиру екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини А0826")) {
+                    paragraph.setIndentationLeft(5100);
                     paragraph.setAlignment(ParagraphAlignment.LEFT);
                 }
-                if (line.contains("Начальнику позаштатної служби безпілотних авіаційних комплексів")) {
-                    paragraph.setIndentationLeft(5400);
+                if (line.contains("Командиру взводу перехоплювачів безпілотних літальних апаратів військової частини А0826")) {
+                    paragraph.setIndentationLeft(5100);
                     paragraph.setAlignment(ParagraphAlignment.BOTH);
+                }
+                if (line.contains("Командиру військової частини А0826")) {
+                    paragraph.setIndentationLeft(5100);
+                    paragraph.setAlignment(ParagraphAlignment.LEFT);
                 }
                 if (line.contains("Командир взводу перехоплювачів")
                         && !line.contains("Клопочу")
@@ -299,7 +325,7 @@ public class ReportController {
                 if (line.contains("Клопочу по суті")) {
                     paragraph.setAlignment(ParagraphAlignment.CENTER);
                 }
-                if (line.contains("Пілот:") || line.contains("Оператор безпілотних")
+                if (line.contains("Оператор безпілотних")
                         || line.contains("взводу перехоплювачів безпілотних")
                         || line.contains("\tДійсним доповідаю")
                         || line.contains("Командир екіпажу:") || line.contains("Командир екіпажу безпілотних")
@@ -315,6 +341,7 @@ public class ReportController {
                 run.setLang("uk-UA");
                 run.setText(line);
             }
+
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             document.write(out);
             return out.toByteArray();

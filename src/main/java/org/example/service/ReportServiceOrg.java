@@ -14,15 +14,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
-public class ReportService {
+public class ReportServiceOrg {
 
-    private static final Logger log = LoggerFactory.getLogger(ReportService.class);
+    private static final Logger log = LoggerFactory.getLogger(ReportServiceOrg.class);
 
     private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private final ObjectMapper objectMapper;
 
-    public ReportService(ObjectMapper objectMapper) {
+    public ReportServiceOrg(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
@@ -211,7 +211,7 @@ public class ReportService {
 
         String targetResult = targetDestroyed ? "вражена" : "не вражена";
 
-        sb.append("Командиру екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n\n");
+        sb.append("Командиру взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n\n\n");
         sb.append("Рапорт\n\n");
         sb.append("\tДійсним доповідаю, що ").append(reportDate)
                 .append(" о ").append(takeoffTime)
@@ -225,32 +225,33 @@ public class ReportService {
                 .append(" споряджений тротиловою шашкою «3-1.2 КУФ» 1,2 кг та вбудованою розумною платою ініціації був витрачений у результаті контрольованого підриву для знищення повітряної цілі №").append(targetNumber)
                 .append(" (БпЛА противника типу ").append(targetTypeDisplay).append("). Ціль ").append(targetResult).append(".\n\n");
 
+        sb.append("Пілот:\n");
         if (pilot.equals("Костянтин БИТКА")) {
-            sb.append("Оператор безпілотних літальних апаратів екіпажу безпілотного авіаційного комплексу взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
-            sb.append("солдат                                                                                                                Костянтин БИТКА\n");
+            sb.append("Оператор безпілотних літальних апаратів екіпажу безпілотного авіаційного комплексу\n");
+            sb.append("взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
+            sb.append("солдат                                                                                                           Костянтин БИТКА\n");
             sb.append(reportDate).append(" р.\n\n");
+            sb.append("Командир екіпажу:\n");
+            sb.append("Командир екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
+            sb.append("старший сержант                                                                                    Олександр ШЕПРУК\n");
+            sb.append(reportDate).append(" р.\n\n\n\n");
         } else {
             sb.append("Командир екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
-            sb.append("старший сержант                                                                                         Олександр ШЕПРУК\n");
+            sb.append("старший сержант                                                                                    Олександр ШЕПРУК\n");
             sb.append(reportDate).append(" р.\n\n");
+            sb.append("Командир екіпажу:\n");
+            sb.append("Командир взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
+            sb.append("старший лейтенант                                                                                    Микола САВЕНКО\n");
+            sb.append(reportDate).append(" р.\n\n\n\n");
         }
 
-        sb.append("Командиру взводу перехоплювачів безпілотних літальних апаратів військової частини А0826\n\n");
+        sb.append("Начальнику позаштатної служби безпілотних авіаційних комплексів військової частини А1620\n\n");
         sb.append("Рапорт\n\n");
-        sb.append("Клопочу по суті рапорту  ")
+        sb.append("Клопочу по суті рапорту пілота ")
                 .append(pilot.equals("Костянтин БИТКА") ? "солдата Костянтина БИТКА" : "старшого сержанта Олександра ШЕПРУКА")
                 .append("\n\n");
-        sb.append("Командир екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
-        sb.append("старший сержант                                                                                    Олександр ШЕПРУК\n");
-        sb.append(reportDate).append(" р.\n\n");
-
-        sb.append("Командиру військової частини А0826\n\n");
-        sb.append("Рапорт\n\n");
-        sb.append("Клопочу по суті рапорту ")
-                .append("старшого сержанта Олександра ШЕПРУКА")
-                .append("\n\n");
         sb.append("Командир взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
-        sb.append("старший лейтенант                                                                                          Микола САВЕНКО\n");
+        sb.append("старший лейтенант                                                                                    Микола САВЕНКО\n");
         sb.append(reportDate).append(" р.\n");
 
         return sb.toString();
