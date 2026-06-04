@@ -133,7 +133,11 @@ public class ReportService {
         sb.append("Екіпаж: ").append(report.getUnitName()).append("\n");
 
         String effectorStatus = report.getEffectorStatus() != null ? report.getEffectorStatus() : "";
-        sb.append(effectorStatus).append("\n\n");
+        sb.append(effectorStatus);
+        if ("Ураження".equals(effectorStatus)) {
+            sb.append(" цілі");
+        }
+        sb.append("\n\n");
 
         sb.append("Час: ").append(takeoffTime).append(" - ").append(lossTime).append("\n");
 
@@ -144,7 +148,6 @@ public class ReportService {
         sb.append("Азимут-").append(course).append("°, Дальність-").append(manualDistance).append(" м., Висота-").append(manualAltitude).append(" м.\n");
 
         sb.append("Тип: ").append(getTargetTypeDisplay(report)).append("\n");
-        sb.append("Ідентифікація: Дружній\n");
 
         String weapon = extractWeaponName(report.getWeaponId());
         sb.append("Засіб ураження: ").append(weapon)
@@ -221,7 +224,7 @@ public class ReportService {
 
         String skymap = report.getTargetNumberSkymap() != null && !report.getTargetNumberSkymap().isEmpty()
                 ? report.getTargetNumberSkymap() : String.valueOf(virazhNum);
-        sb.append("Номер по СкайМаті: ").append(skymap).append("\n");
+//        sb.append("Номер по СкайМаті: ").append(skymap).append("\n");
 
         return sb.toString();
     }
