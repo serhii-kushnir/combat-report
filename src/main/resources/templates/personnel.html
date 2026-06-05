@@ -74,6 +74,10 @@
         .toast.error   { background: #c62828; }
 
         .empty-state { text-align: center; padding: 40px; color: #999; }
+        thead th[data-col] { cursor: pointer; user-select: none; }
+        thead th[data-col]:hover { background: #283593; }
+        thead th.sort-asc::after  { content: ' ▲'; font-size: 10px; }
+        thead th.sort-desc::after { content: ' ▼'; font-size: 10px; }
         .sub-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
         .sub-table th { background: #e8eaf6; color: #1a237e; padding: 6px 8px; text-align: left; font-size: 11px; }
         .sub-table td { padding: 5px 8px; border-bottom: 1px solid #f0f0f0; }
@@ -155,10 +159,10 @@
             <div class="table-section visible" id="shortTable">
                 <div class="table-wrap"><table>
                     <thead><tr>
-                        <th style="width:40px">#</th>
-                        <th>ПІБ</th>
-                        <th style="width:160px">Звання</th>
-                        <th>Повна посада</th>
+                        <th style="width:40px" >#</th>
+                        <th data-col="name" onclick="sortBy('name')">ПІБ</th>
+                        <th style="width:160px" data-col="rank" onclick="sortBy('rank')">Звання</th>
+                        <th data-col="position" onclick="sortBy('position')">Повна посада</th>
                         <th style="width:80px">Дії</th>
                     </tr></thead>
                     <tbody id="shortBody">
@@ -171,10 +175,10 @@
             <div class="table-section" id="fullTable">
                 <div class="table-wrap"><table style="min-width:2800px">
                     <thead><tr>
-                        <th style="width:36px">No</th>
-                        <th style="width:180px">ПІБ</th>
-                        <th style="width:110px">Моб. Телефон</th>
-                        <th style="width:100px">Дата народження</th>
+                        <th style="width:36px" >#</th>
+                        <th style="width:180px" data-col="name" onclick="sortBy('name')">ПІБ</th>
+                        <th style="width:110px" data-col="phone" onclick="sortBy('phone')">Моб. Телефон</th>
+                        <th style="width:100px" data-col="birth" onclick="sortBy('birth')">Дата народження</th>
                         <th style="width:60px">Повних років</th>
                         <th style="width:100px">Ідентифікаційний код</th>
                         <th style="width:130px">Паспорт (серія, номер)</th>
@@ -584,6 +588,8 @@
 
         <script>
             let allPersonnel = [];
+            let sortCol = null;
+            let sortDir = 1;
             let currentTab = 'short';
 
             let educationCounts = {};
@@ -718,14 +724,46 @@
                 }).join('');
             }
 
+            function sortBy(col) {
+                if (sortCol === col) { sortDir *= -1; } else { sortCol = col; sortDir = 1; }
+                document.querySelectorAll('thead th[data-col]').forEach(th => {
+                    th.classList.remove('sort-asc', 'sort-desc');
+                    if (th.dataset.col === col) th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+                });
+                applyFilters();
+            }
+
+            function getSortVal(p, col) {
+                switch(col) {
+                    case 'num':      return p.id || 0;
+                    case 'name':     return p.lastName || '';
+                    case 'rank':     return p.rank || '';
+                    case 'position': return p.position || '';
+                    case 'phone':    return p.phone || '';
+                    case 'birth':    return p.birthDate || '';
+                    case 'draft':    return p.draftDate || '';
+                    case 'ubd':      return p.ubdNumber || '';
+                    default:         return '';
+                }
+            }
+
             document.getElementById('searchInput').addEventListener('input', applyFilters);
 
             function applyFilters() {
                 const q = document.getElementById('searchInput').value.toLowerCase();
-                const filtered = !q ? allPersonnel : allPersonnel.filter(p =>
+                let filtered = !q ? allPersonnel : allPersonnel.filter(p =>
                     p.lastName.toLowerCase().includes(q) ||
                     (p.firstName || '').toLowerCase().includes(q)
                 );
+                if (sortCol) {
+                    filtered = [...filtered].sort((a, b) => {
+                        const va = getSortVal(a, sortCol);
+                        const vb = getSortVal(b, sortCol);
+                        if (va < vb) return -1 * sortDir;
+                        if (va > vb) return  1 * sortDir;
+                        return 0;
+                    });
+                }
                 renderShortTable(filtered);
                 renderFullTable(filtered);
                 const total = filtered.length;
