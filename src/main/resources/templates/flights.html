@@ -172,8 +172,7 @@
                         <th style="width:55px">Азимут (°)</th>
                         <th style="width:75px" data-col="dist" onclick="sortBy('dist')">Відстань (м)</th>
                         <th style="width:70px">Вис. польоту (м)</th>
-                        <th style="width:90px" data-col="type" onclick="sortBy('type')">Тип</th>
-                        <th style="width:80px" data-col="ident" onclick="sortBy('ident')">Ідентифікація</th>
+                        <!-- видалено стовпці "Тип" та "Ідентифікація" -->
                         <th style="width:120px" data-col="weapon" onclick="sortBy('weapon')">Засіб ураження</th>
                         <th style="width:130px" data-col="explos" onclick="sortBy('explos')">Вибухівка</th>
                         <th style="width:130px" data-col="det" onclick="sortBy('det')">Детонатор</th>
@@ -186,7 +185,7 @@
                     </tr>
                     </thead>
                     <tbody id="tableBody">
-                    <tr><td colspan="14" class="empty-state">Завантаження...</td></tr>
+                    <tr><td colspan="19" class="empty-state">Завантаження...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -396,8 +395,6 @@
                     case 'azimuth': return r.azimuth || 0;
                     case 'dist':   return r.distance || 0;
                     case 'alt':    return r.altitude || '';
-                    case 'type':   return r.targetType || '';
-                    case 'ident':  return r.identification || '';
                     case 'weapon': return r.weapon || '';
                     case 'targetAlt': return r.targetAltitude || 0;
                     case 'target': return r.target || '';
@@ -410,7 +407,7 @@
             function applyFilter() {
                 const q = document.getElementById('searchInput').value.toLowerCase();
                 let filtered = !q ? allRecords : allRecords.filter(r =>
-                    [r.crew, r.event, r.target, r.targetType, r.weapon, r.note, r.coordinates]
+                    [r.crew, r.event, r.target, r.weapon, r.note, r.coordinates]
                         .some(v => v && v.toLowerCase().includes(q))
                 );
                 if (sortCol) {
@@ -439,7 +436,7 @@
             function renderTable(records) {
                 const body = document.getElementById('tableBody');
                 if (!records.length) {
-                    body.innerHTML = '<tr><td colspan="21" class="empty-state">Записів немає</td></tr>';
+                    body.innerHTML = '<tr><td colspan="19" class="empty-state">Записів немає</td></tr>';
                     return;
                 }
                 body.innerHTML = records.map(r => {
@@ -457,8 +454,6 @@
             <td style="text-align:center">${r.azimuth != null ? r.azimuth + '°' : ''}</td>
             <td style="text-align:center">${r.distance ?? ''}</td>
             <td style="text-align:center">${r.altitude ?? ''}</td>
-            <td style="text-align:center">${r.targetType ?? ''}</td>
-            <td style="text-align:center">${r.identification ?? ''}</td>
             <td style="text-align:left;font-size:11px">${r.weapon ?? ''}</td>
             <td style="text-align:left;font-size:11px">${r.explosive ?? ''}</td>
             <td style="text-align:left;font-size:11px">${r.detonator ?? ''}</td>
@@ -471,12 +466,12 @@
                      title="Натисни щоб розгорнути">
                     ${r.note ?? ''}
                 </div>
-            </td>
+             </td>
             <td class="actions-col">
                 <button class="btn btn-warning btn-sm" onclick="openEditModal(${r.id})">✏️</button>
                 <button class="btn btn-danger btn-sm" onclick="confirmDelete(${r.id})">🗑</button>
-            </td>
-        </tr>`;
+             </td>
+         </tr>`;
                 }).join('');
             }
 
@@ -545,7 +540,6 @@
                     targetAltitude: parseInt(document.getElementById('fTargetAlt').value) || null,
                     target:         document.getElementById('fTarget').value.trim(),
                     targetSpeed:    parseInt(document.getElementById('fSpeed').value) || null,
-                    lossReason:     document.getElementById('fLossReason').value,
                     lossReason:     document.getElementById('fLossReason').value.trim(),
                     note:           document.getElementById('fNote').value.trim(),
                 };
@@ -576,8 +570,6 @@
                 };
                 document.getElementById('confirmModal').classList.add('open');
             }
-
-            // ===== ІМПОРТ =====
 
             // ===== ЕКСПОРТ =====
             function exportXlsx() {

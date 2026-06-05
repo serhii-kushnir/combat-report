@@ -125,26 +125,25 @@ public class FlightRecordService {
         try (XSSFWorkbook wb = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-            // Стилі
             XSSFCellStyle headerStyle = createHeaderStyle(wb);
             XSSFCellStyle dataStyle   = createDataStyle(wb);
-            XSSFCellStyle dateStyle   = createDateStyle(wb);
-            // [1] Зелений стиль для рядків "Знищення цілі"
             XSSFCellStyle greenStyle  = createGreenStyle(wb);
             XSSFCellStyle leftStyle   = createLeftStyle(wb);
-            XSSFCellStyle greenLeftStyle = createGreenStyle(wb); { greenLeftStyle.setAlignment(HorizontalAlignment.LEFT); }
+            XSSFCellStyle greenLeftStyle = createGreenStyle(wb);
+            greenLeftStyle.setAlignment(HorizontalAlignment.LEFT);
 
+            // Оновлені заголовки – без "Тип" та "Ідентифікація"
             String[] HEADERS = {
                     "№", "Дата", "Екіпаж", "Подія", "Час взльоту", "Час втрати",
                     "Координати", "Азимут (°)", "Відстань (м)", "Вис. польоту (м)",
-                    "Тип", "Ідентифікація", "Засіб ураження", "Вибухівка", "Детонатор",
+                    "Засіб ураження", "Вибухівка", "Детонатор",
                     "Висота цілі (м)", "Ціль", "Швидкість цілі (км/год)",
                     "Причина втрати", "Примітка"
             };
             int[] COL_WIDTHS = {
                     8, 14, 12, 24, 12, 12,
                     22, 10, 14, 14,
-                    14, 14, 22, 26, 28,
+                    22, 26, 28,
                     14, 20, 20,
                     22, 50
             };
@@ -152,12 +151,10 @@ public class FlightRecordService {
             for (Map.Entry<String, List<FlightRecord>> entry : byMonth.entrySet()) {
                 XSSFSheet sheet = wb.createSheet(entry.getKey());
 
-                // Ширина колонок
                 for (int c = 0; c < COL_WIDTHS.length; c++) {
                     sheet.setColumnWidth(c, COL_WIDTHS[c] * 256);
                 }
 
-                // Заголовок
                 XSSFRow hRow = sheet.createRow(0);
                 hRow.setHeightInPoints(30);
                 for (int c = 0; c < HEADERS.length; c++) {
@@ -166,7 +163,6 @@ public class FlightRecordService {
                     cell.setCellStyle(headerStyle);
                 }
 
-                // Дані
                 int rowIdx = 1;
                 DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("HH:mm");
                 DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -175,36 +171,32 @@ public class FlightRecordService {
                     XSSFRow row = sheet.createRow(rowIdx++);
                     row.setHeightInPoints(40);
 
-                    // [1] Визначаємо стиль рядка — зелений якщо Знищення цілі
                     boolean isDestroyed = r.getEvent() != null &&
                             (r.getEvent().toLowerCase().contains("знищен") ||
                                     r.getEvent().toLowerCase().contains("підрив"));
                     XSSFCellStyle rowStyle = isDestroyed ? greenStyle : dataStyle;
+                    XSSFCellStyle ctr = isDestroyed ? greenStyle : dataStyle;
+                    XSSFCellStyle lft = isDestroyed ? greenLeftStyle : leftStyle;
 
-                    // CENTER колонки (0-11, 15-17), LEFT — 12,13,14,18,19
-                    XSSFCellStyle ctr  = isDestroyed ? greenStyle    : dataStyle;
-                    XSSFCellStyle lft  = isDestroyed ? greenLeftStyle : leftStyle;
-
-                    setCell(row, 0,  r.getRecordNumber(), ctr);
-                    setCell(row, 1,  r.getFlightDate() != null ? r.getFlightDate().format(dateFmt) : "", ctr);
-                    setCell(row, 2,  r.getCrew(), ctr);
-                    setCell(row, 3,  r.getEvent(), ctr);
-                    setCell(row, 4,  r.getTakeoffTime() != null ? r.getTakeoffTime().format(timeFmt) : "", ctr);
-                    setCell(row, 5,  r.getLossTime() != null ? r.getLossTime().format(timeFmt) : "", ctr);
-                    setCell(row, 6,  r.getCoordinates(), ctr);
-                    setCell(row, 7,  r.getAzimuth() != null ? r.getAzimuth() + "°" : "", ctr);
-                    setCell(row, 8,  r.getDistance(), ctr);
-                    setCell(row, 9,  r.getAltitude(), ctr);
-                    setCell(row, 10, r.getTargetType(), ctr);
-                    setCell(row, 11, r.getIdentification(), ctr);
-                    setCell(row, 12, r.getWeapon(), lft);
-                    setCell(row, 13, r.getExplosive(), lft);
-                    setCell(row, 14, r.getDetonator(), lft);
-                    setCell(row, 15, r.getTargetAltitude(), ctr);
-                    setCell(row, 16, r.getTarget(), ctr);
-                    setCell(row, 17, r.getTargetSpeed(), ctr);
-                    setCell(row, 18, r.getLossReason(), lft);
-                    setCell(row, 19, r.getNote(), lft);
+                    int col = 0;
+                    setCell(row, col++, r.getRecordNumber(), ctr);
+                    setCell(row, col++, r.getFlightDate() != null ? r.getFlightDate().format(dateFmt) : "", ctr);
+                    setCell(row, col++, r.getCrew(), ctr);
+                    setCell(row, col++, r.getEvent(), ctr);
+                    setCell(row, col++, r.getTakeoffTime() != null ? r.getTakeoffTime().format(timeFmt) : "", ctr);
+                    setCell(row, col++, r.getLossTime() != null ? r.getLossTime().format(timeFmt) : "", ctr);
+                    setCell(row, col++, r.getCoordinates(), ctr);
+                    setCell(row, col++, r.getAzimuth() != null ? r.getAzimuth() + "°" : "", ctr);
+                    setCell(row, col++, r.getDistance(), ctr);
+                    setCell(row, col++, r.getAltitude(), ctr);
+                    setCell(row, col++, r.getWeapon(), lft);
+                    setCell(row, col++, r.getExplosive(), lft);
+                    setCell(row, col++, r.getDetonator(), lft);
+                    setCell(row, col++, r.getTargetAltitude(), ctr);
+                    setCell(row, col++, r.getTarget(), ctr);
+                    setCell(row, col++, r.getTargetSpeed(), ctr);
+                    setCell(row, col++, r.getLossReason(), lft);
+                    setCell(row, col++, r.getNote(), lft);
                 }
             }
 
