@@ -17,10 +17,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTBody;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDocument1;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -58,7 +61,6 @@ public class ReportController {
 
         String reportJson = request.getReport().toString();
 
-        // [ВИПРАВЛЕННЯ #4] Передаємо всі поля включно з новими course/altitude
         List<String> errors = validator.validate(
                 reportJson,
                 request.getFormat(),
@@ -77,12 +79,14 @@ public class ReportController {
 
         try {
             CombatReport report = reportService.parseJson(reportJson);
-
             int targetAltitude = report.getAltitude() != null ? report.getAltitude() : 0;
 
             log.info("Конвертація: формат={}, пілот={}, відстань={}м, швидкість={}км/год, курс={}°, висота(ручна)={}м, висота(з JSON)={}м",
                     request.getFormat(), request.getPilot(), request.getDistance(),
                     request.getSpeed(), request.getCourse(), request.getManualAltitude(), targetAltitude);
+
+            // Отримуємо район підриву, якщо null – "Море"
+            String explosionArea = request.getExplosionArea() != null ? request.getExplosionArea() : "Море";
 
             String result = switch (request.getFormat()) {
                 case 1 -> reportService.formatStandardReport(report,
@@ -90,12 +94,13 @@ public class ReportController {
                         request.getSpeed(),
                         request.getCourse(),
                         request.getManualAltitude(),
-                        request.getTargetAltitude());  // Додано
+                        request.getTargetAltitude());
                 case 2 -> reportService.formatShortReport(report,
                         request.getDistance(),
                         request.getCourse(),
                         request.getManualAltitude(),
-                        request.getTargetAltitude());  // Додано
+                        request.getTargetAltitude(),
+                        explosionArea);   // ПЕРЕДАЄМО explosionArea
                 case 3 -> reportService.formatDetailedReport(report, request.getPilot());
                 default -> throw new IllegalArgumentException("Невідомий формат: " + request.getFormat());
             };
@@ -114,11 +119,6 @@ public class ReportController {
         }
     }
 
-
-    /**
-     * Зберегти виліт з JSON у журнал БпАК.
-     * Викликається з кнопки "💾 В журнал" після конвертації.
-     */
     @PostMapping("/save/flight")
     @ResponseBody
     public ResponseEntity<?> saveToJournal(@RequestBody ConvertRequest request) {
@@ -127,9 +127,6 @@ public class ReportController {
         }
         try {
             CombatReport report = reportService.parseJson(request.getReport().toString());
-            log.info("saveToJournal: course={}, manualAltitude={}, distance={}, speed={}",
-                    request.getCourse(), request.getManualAltitude(),
-                    request.getDistance(), request.getSpeed());
             FlightRecord record = mapToFlightRecord(report, request);
             FlightRecord saved = flightRecordService.save(record);
             log.info("Виліт збережено в журнал БпАК: id={}, дата={}", saved.getId(), saved.getFlightDate());
@@ -144,11 +141,9 @@ public class ReportController {
         }
     }
 
-    /** Маппінг CombatReport → FlightRecord */
     private FlightRecord mapToFlightRecord(CombatReport report, ConvertRequest request) {
         FlightRecord r = new FlightRecord();
 
-        // Дата і час
         if (report.getContactTime() != null) {
             r.setFlightDate(report.getContactTime().toLocalDate());
             r.setLossTime(report.getContactTime().toLocalTime());
@@ -159,7 +154,6 @@ public class ReportController {
             r.setTakeoffTime(report.getTakeoffTime().toLocalTime());
         }
 
-        // Місяць (назва листа для групування)
         if (r.getFlightDate() != null) {
             String[] UA_MONTHS = {"Січень","Лютий","Березень","Квітень","Травень","Червень",
                     "Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"};
@@ -170,12 +164,10 @@ public class ReportController {
         r.setEvent(report.getEffectorStatus());
         r.setCoordinates(report.getCoordinates());
         r.setDistance(request.getDistance());
-        // [НОВІ ПОЛЯ] Азимут з параметрів конвертера
         r.setAzimuth(request.getCourse());
         r.setTargetType(report.getTargetSubType() != null ? report.getTargetSubType() : report.getTargetType());
         r.setIdentification("Дружній");
 
-        // Зброя — витягуємо назву з weaponId
         String weaponId = report.getWeaponId();
         if (weaponId != null) {
             java.util.regex.Matcher m = java.util.regex.Pattern
@@ -190,29 +182,24 @@ public class ReportController {
         r.setExplosive("ШИФР «3-1.2 КУФ» 1,2 кг");
         r.setDetonator("Вбудована розумна плата ініціації");
 
-        // Висота польоту борту — з поля "Висота (В)" конвертера
         if (request.getManualAltitude() > 0) {
             r.setAltitude(String.valueOf(request.getManualAltitude()));
         } else if (report.getAltitude() != null) {
             r.setAltitude(String.valueOf(report.getAltitude()));
         }
 
-        // Висота цілі — з JSON звіту (поле altitude в CombatReport)
         if (report.getAltitude() != null) {
             r.setTargetAltitude(report.getAltitude());
         }
 
-        // Ціль
         String targetNum = report.getTargetNumberVirazh() != null
                 ? String.valueOf(report.getTargetNumberVirazh()) : "";
         String targetType = report.getTargetSubType() != null
                 ? report.getTargetSubType() : "";
         r.setTarget(targetType + (targetNum.isEmpty() ? "" : " №" + targetNum));
         r.setTargetSpeed(request.getSpeed());
-        // Причина втрати
         r.setLossReason(report.getEffectorLossReason());
 
-        // Формуємо примітку автоматично
         String weaponName = r.getWeapon() != null ? r.getWeapon() : "";
         String targetTypeFull = report.getTargetSubType() != null
                 ? report.getTargetSubType() : (report.getTargetType() != null ? report.getTargetType() : "");
@@ -235,11 +222,8 @@ public class ReportController {
     public ResponseEntity<byte[]> saveAsTxt(@RequestParam String report,
                                             @RequestParam String filename) {
         if (report == null || report.isBlank()) {
-            log.warn("Спроба зберегти порожній TXT звіт");
             return ResponseEntity.badRequest().body("Звіт порожній".getBytes(StandardCharsets.UTF_8));
         }
-
-        log.info("Збереження TXT: {}", filename);
         byte[] content = report.getBytes(StandardCharsets.UTF_8);
         String safeFilename = encodeFilename(filename);
         return ResponseEntity.ok()
@@ -253,12 +237,9 @@ public class ReportController {
     public ResponseEntity<byte[]> saveAsDocx(@RequestParam String report,
                                              @RequestParam String filename) {
         if (report == null || report.isBlank()) {
-            log.warn("Спроба зберегти порожній DOCX звіт");
             return ResponseEntity.badRequest().body("Звіт порожній".getBytes(StandardCharsets.UTF_8));
         }
-
         try {
-            log.info("Збереження DOCX: {}", filename);
             byte[] content = createDocxContent(report);
             String safeFilename = encodeFilename(filename);
             return ResponseEntity.ok()
@@ -272,8 +253,6 @@ public class ReportController {
                     .body(("Помилка створення DOCX: " + e.getMessage()).getBytes(StandardCharsets.UTF_8));
         }
     }
-
-    // ========== ХЕЛПЕРИ ==========
 
     private ResponseEntity<String> ok(String body) {
         return ResponseEntity.ok()
@@ -298,20 +277,41 @@ public class ReportController {
 
     private byte[] createDocxContent(String text) throws Exception {
         try (XWPFDocument document = new XWPFDocument()) {
-            String[] lines = text.split("\n");
+            // ===== НАЛАШТУВАННЯ ПОЛІВ СТОРІНКИ =====
+            CTDocument1 ctDocument = document.getDocument();
+            CTBody body = ctDocument.getBody();
+            if (body.getSectPr() == null) body.addNewSectPr();
+            CTSectPr sectPr = body.getSectPr();
+            if (sectPr.getPgMar() == null) sectPr.addNewPgMar();
+            CTPageMar pageMar = sectPr.getPgMar();
 
+            // Верхнє поле (twips): 567 = 1 см (менше число – підняти верхнє поле)
+            pageMar.setTop(567);
+            // Нижнє поле (twips): 567 = 1 см (більше число – опустити нижнє поле)
+            pageMar.setBottom(567);
+            // Ліве і праве – за бажанням (2 см)
+//            pageMar.setLeft(1134);
+//            pageMar.setRight(1134);
+            // =====================================
+
+            String[] lines = text.split("\n");
             for (String line : lines) {
                 XWPFParagraph paragraph = document.createParagraph();
                 paragraph.setSpacingBefore(0);
                 paragraph.setSpacingAfter(0);
 
-                if (line.contains("Командиру взводу перехоплювачів")) {
-                    paragraph.setIndentationLeft(5400);
+                // Ваші умови форматування (залишаються без змін)
+                if (line.contains("Командиру екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини А0826")) {
+                    paragraph.setIndentationLeft(5100);
                     paragraph.setAlignment(ParagraphAlignment.LEFT);
                 }
-                if (line.contains("Начальнику позаштатної служби безпілотних авіаційних комплексів")) {
-                    paragraph.setIndentationLeft(5400);
+                if (line.contains("Командиру взводу перехоплювачів безпілотних літальних апаратів військової частини А0826")) {
+                    paragraph.setIndentationLeft(5100);
                     paragraph.setAlignment(ParagraphAlignment.BOTH);
+                }
+                if (line.contains("Командиру військової частини А0826")) {
+                    paragraph.setIndentationLeft(5100);
+                    paragraph.setAlignment(ParagraphAlignment.LEFT);
                 }
                 if (line.contains("Командир взводу перехоплювачів")
                         && !line.contains("Клопочу")
@@ -325,7 +325,7 @@ public class ReportController {
                 if (line.contains("Клопочу по суті")) {
                     paragraph.setAlignment(ParagraphAlignment.CENTER);
                 }
-                if (line.contains("Пілот:") || line.contains("Оператор безпілотних")
+                if (line.contains("Оператор безпілотних")
                         || line.contains("взводу перехоплювачів безпілотних")
                         || line.contains("\tДійсним доповідаю")
                         || line.contains("Командир екіпажу:") || line.contains("Командир екіпажу безпілотних")

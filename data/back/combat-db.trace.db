@@ -2217,6 +2217,3 @@ Caused by: java.lang.AssertionError
 	at org.h2.mvstore.FileStore.executeFileStoreOperation(FileStore.java:1893)
 	at org.h2.mvstore.MVStore.executeFilestoreOperation(MVStore.java:922)
 	... 13 more
-2026-06-06 16:03:31.220325+03:00 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLDataException: Value too long for column "NAME CHARACTER VARYING(255)": "U&'\\0435\\0443\\0456\\0435\\0446\\0443\\0439\\0446\\0443\\0439\\0446\\0443\\0439\\0446\\0443\\0... (304)"; SQL statement:
-insert into equipment (category,crew,location,name,quantity,unit,id) values (?,?,?,?,?,?,default) [22001-232]

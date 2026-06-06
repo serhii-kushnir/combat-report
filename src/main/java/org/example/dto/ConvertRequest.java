@@ -12,7 +12,8 @@ public class ConvertRequest {
     private String pilot;
     private int distance;
     private int speed;
-    private int course;          // Ручний курс (А)
-    private int manualAltitude;  // Ручна висота (В)
-    private int targetAltitude;  // Висота цілі (з JSON або ручна)
+    private int course;
+    private int manualAltitude;
+    private int targetAltitude;
+    private String explosionArea;   // НОВЕ ПОЛЕ – Район підриву
 }

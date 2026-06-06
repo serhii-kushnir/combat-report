@@ -112,6 +112,10 @@
         .confirm-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
         .empty-state { text-align: center; padding: 40px; color: #999; }
+        thead th { cursor: pointer; user-select: none; }
+        thead th:hover { background: #283593; }
+        thead th.sort-asc::after  { content: ' ▲'; font-size: 10px; }
+        thead th.sort-desc::after { content: ' ▼'; font-size: 10px; }
         .note-cell {
             max-height: 60px;
             overflow: hidden;
@@ -158,31 +162,30 @@
                 <table>
                     <thead>
                     <tr>
-                        <th style="width:36px">№</th>
-                        <th style="width:86px">Дата</th>
-                        <th style="width:75px">Екіпаж</th>
-                        <th style="width:130px">Подія</th>
-                        <th style="width:62px">Час взльоту</th>
-                        <th style="width:62px">Час втрати</th>
-                        <th style="width:120px">Координати</th>
+                        <th style="width:36px" data-col="num" onclick="sortBy('num')">№</th>
+                        <th style="width:86px" data-col="date" onclick="sortBy('date')">Дата</th>
+                        <th style="width:75px" data-col="crew" onclick="sortBy('crew')">Екіпаж</th>
+                        <th style="width:130px" data-col="event" onclick="sortBy('event')">Подія</th>
+                        <th style="width:62px" data-col="takeoff" onclick="sortBy('takeoff')">Час взльоту</th>
+                        <th style="width:62px" data-col="loss" onclick="sortBy('loss')">Час втрати</th>
+                        <th style="width:120px" data-col="coords" onclick="sortBy('coords')">Координати</th>
                         <th style="width:55px">Азимут (°)</th>
-                        <th style="width:75px">Відстань (м)</th>
+                        <th style="width:75px" data-col="dist" onclick="sortBy('dist')">Відстань (м)</th>
                         <th style="width:70px">Вис. польоту (м)</th>
-                        <th style="width:90px">Тип</th>
-                        <th style="width:80px">Ідентифікація</th>
-                        <th style="width:120px">Засіб ураження</th>
-                        <th style="width:130px">Вибухівка</th>
-                        <th style="width:130px">Детонатор</th>
-                        <th style="width:70px">Висота цілі (м)</th>
-                        <th style="width:120px">Ціль</th>
-                        <th style="width:80px">Швидкість цілі (км/год)</th>
-                        <th style="width:130px">Причина втрати</th>
-                        <th style="width:280px">Примітка</th>
+                        <!-- видалено стовпці "Тип" та "Ідентифікація" -->
+                        <th style="width:120px" data-col="weapon" onclick="sortBy('weapon')">Засіб ураження</th>
+                        <th style="width:130px" data-col="explos" onclick="sortBy('explos')">Вибухівка</th>
+                        <th style="width:130px" data-col="det" onclick="sortBy('det')">Детонатор</th>
+                        <th style="width:70px" data-col="targetAlt" onclick="sortBy('targetAlt')">Висота цілі (м)</th>
+                        <th style="width:120px" data-col="target" onclick="sortBy('target')">Ціль</th>
+                        <th style="width:80px" data-col="speed" onclick="sortBy('speed')">Швидкість цілі (км/год)</th>
+                        <th style="width:130px" data-col="loss_reason" onclick="sortBy('loss_reason')">Причина втрати</th>
+                        <th style="width:280px" data-col="note" onclick="sortBy('note')">Примітка</th>
                         <th style="width:55px">Дії</th>
                     </tr>
                     </thead>
                     <tbody id="tableBody">
-                    <tr><td colspan="14" class="empty-state">Завантаження...</td></tr>
+                    <tr><td colspan="19" class="empty-state">Завантаження...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -315,6 +318,8 @@
 
         <script>
             let allRecords = [];
+            let sortCol   = null;
+            let sortDir   = 1; // 1 = asc, -1 = desc
             let deleteTargetId = null;
 
             // ===== ІНІЦІАЛІЗАЦІЯ =====
@@ -353,6 +358,18 @@
                 const res = await fetch(url);
                 if (!res.ok) { showToast('Помилка завантаження', 'err'); return; }
                 allRecords = await res.json();
+
+                // Встановлюємо сортування за № за замовчуванням (спадання)
+                sortCol = 'num';
+                sortDir = -1;
+                // Оновлюємо клас у заголовку
+                document.querySelectorAll('thead th').forEach(th => {
+                    th.classList.remove('sort-asc', 'sort-desc');
+                    if (th.dataset.col === 'num') {
+                        th.classList.add('sort-desc');
+                    }
+                });
+
                 applyFilter();
                 renderStats();
             }
@@ -361,12 +378,59 @@
             document.getElementById('monthFilter').onchange = () => { document.getElementById('yearFilter').value = ''; loadRecords(); };
             document.getElementById('searchInput').oninput = applyFilter;
 
+            function sortBy(col) {
+                if (sortCol === col) {
+                    sortDir *= -1;
+                } else {
+                    sortCol = col;
+                    sortDir = 1;
+                }
+                // Оновлюємо стрілки в заголовках
+                document.querySelectorAll('thead th').forEach(th => {
+                    th.classList.remove('sort-asc', 'sort-desc');
+                    if (th.dataset.col === col) {
+                        th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+                    }
+                });
+                applyFilter();
+            }
+
+            function getSortValue(r, col) {
+                switch(col) {
+                    case 'num':    return r.recordNumber || 0;
+                    case 'date':   return r.flightDate || '';
+                    case 'crew':   return r.crew || '';
+                    case 'event':  return r.event || '';
+                    case 'takeoff': return r.takeoffTime || '';
+                    case 'loss':   return r.lossTime || '';
+                    case 'coords': return r.coordinates || '';
+                    case 'azimuth': return r.azimuth || 0;
+                    case 'dist':   return r.distance || 0;
+                    case 'alt':    return r.altitude || '';
+                    case 'weapon': return r.weapon || '';
+                    case 'targetAlt': return r.targetAltitude || 0;
+                    case 'target': return r.target || '';
+                    case 'speed':  return r.targetSpeed || 0;
+                    case 'loss_reason': return r.lossReason || '';
+                    default:       return '';
+                }
+            }
+
             function applyFilter() {
                 const q = document.getElementById('searchInput').value.toLowerCase();
-                const filtered = !q ? allRecords : allRecords.filter(r =>
-                    [r.crew, r.event, r.target, r.targetType, r.weapon, r.note, r.coordinates]
+                let filtered = !q ? allRecords : allRecords.filter(r =>
+                    [r.crew, r.event, r.target, r.weapon, r.note, r.coordinates]
                         .some(v => v && v.toLowerCase().includes(q))
                 );
+                if (sortCol) {
+                    filtered = [...filtered].sort((a, b) => {
+                        const va = getSortValue(a, sortCol);
+                        const vb = getSortValue(b, sortCol);
+                        if (va < vb) return -1 * sortDir;
+                        if (va > vb) return  1 * sortDir;
+                        return 0;
+                    });
+                }
                 renderTable(filtered);
             }
 
@@ -384,7 +448,7 @@
             function renderTable(records) {
                 const body = document.getElementById('tableBody');
                 if (!records.length) {
-                    body.innerHTML = '<tr><td colspan="21" class="empty-state">Записів немає</td></tr>';
+                    body.innerHTML = '<tr><td colspan="19" class="empty-state">Записів немає</td></tr>';
                     return;
                 }
                 body.innerHTML = records.map(r => {
@@ -402,8 +466,6 @@
             <td style="text-align:center">${r.azimuth != null ? r.azimuth + '°' : ''}</td>
             <td style="text-align:center">${r.distance ?? ''}</td>
             <td style="text-align:center">${r.altitude ?? ''}</td>
-            <td style="text-align:center">${r.targetType ?? ''}</td>
-            <td style="text-align:center">${r.identification ?? ''}</td>
             <td style="text-align:left;font-size:11px">${r.weapon ?? ''}</td>
             <td style="text-align:left;font-size:11px">${r.explosive ?? ''}</td>
             <td style="text-align:left;font-size:11px">${r.detonator ?? ''}</td>
@@ -416,12 +478,12 @@
                      title="Натисни щоб розгорнути">
                     ${r.note ?? ''}
                 </div>
-            </td>
+             </td>
             <td class="actions-col">
                 <button class="btn btn-warning btn-sm" onclick="openEditModal(${r.id})">✏️</button>
                 <button class="btn btn-danger btn-sm" onclick="confirmDelete(${r.id})">🗑</button>
-            </td>
-        </tr>`;
+             </td>
+         </tr>`;
                 }).join('');
             }
 
@@ -490,7 +552,6 @@
                     targetAltitude: parseInt(document.getElementById('fTargetAlt').value) || null,
                     target:         document.getElementById('fTarget').value.trim(),
                     targetSpeed:    parseInt(document.getElementById('fSpeed').value) || null,
-                    lossReason:     document.getElementById('fLossReason').value,
                     lossReason:     document.getElementById('fLossReason').value.trim(),
                     note:           document.getElementById('fNote').value.trim(),
                 };
@@ -521,8 +582,6 @@
                 };
                 document.getElementById('confirmModal').classList.add('open');
             }
-
-            // ===== ІМПОРТ =====
 
             // ===== ЕКСПОРТ =====
             function exportXlsx() {

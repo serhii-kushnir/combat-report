@@ -4,12 +4,6 @@
     <meta charset="UTF-8">
     <title>Графік чергувань</title>
     <style>
-
-        /* Зсув контенту при згортанні */
-
-        /* Основний контент */
-
-        /* Топбар всередині контенту */
         .topbar {
             background: white;
             padding: 12px 20px;
@@ -22,45 +16,132 @@
 
         .container { padding: 16px 20px; max-width: 100%; overflow-x: auto; }
 
+        /* Стилі для тулбару */
         .toolbar {
             background: white;
             padding: 12px 16px;
-            border-radius: 8px;
+            border-radius: 12px;
             margin-bottom: 14px;
             display: flex;
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: box-shadow 0.2s;
         }
-        .toolbar h2 { font-size: 16px; color: #1a237e; margin-right: auto; }
-        .btn { padding: 6px 14px; border: none; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: 600; }
-        .btn-nav  { background: #e8eaf6; color: #1a237e; }
-        .btn-nav:hover { background: #c5cae9; }
-        .btn-today { background: #1976d2; color: white; }
-        .btn-today:hover { background: #1565c0; }
+        .toolbar:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
 
-        /* Таблиця */
-        .table-wrap { overflow-x: auto; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        /* Базовий стиль кнопок */
+        .btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Специфічні кнопки */
+        .btn-nav {
+            background: #e8eaf6;
+            color: #1a237e;
+        }
+        .btn-nav:hover {
+            background: #c5cae9;
+        }
+
+        .btn-today {
+            background: #1976d2;
+            color: white;
+        }
+        .btn-today:hover {
+            background: #1565c0;
+        }
+
+        .btn-primary {
+            background: #1976d2;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1565c0;
+        }
+
+        .btn-success {
+            background: #388e3c;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #2e7d32;
+        }
+
+        .btn-warning {
+            background: #f57c00;
+            color: white;
+        }
+        .btn-warning:hover {
+            background: #e65100;
+        }
+
+        /* Стилі для select */
+        select, input[type="text"] {
+            padding: 6px 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            outline: none;
+        }
+        select:hover, input:hover {
+            border-color: #1976d2;
+        }
+        select:focus, input:focus {
+            border-color: #1976d2;
+            box-shadow: 0 0 0 2px rgba(25,118,210,0.2);
+        }
+
+        /* Дата */
+        .current-date {
+            font-size: 13px;
+            color: #1a237e;
+            background: #e8eaf6;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        /* Інші стилі залишаються без змін (таблиці, бейджі, меню) */
+        .table-wrap { overflow-x: auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
         table { border-collapse: collapse; background: white; min-width: 100%; }
-        thead tr:first-child th { background: #1a237e; color: white; font-size: 12px; padding: 8px 4px; }
-        thead tr:last-child th  { background: #283593; color: #c5cae9; font-size: 11px; padding: 4px 2px; }
+        thead tr:first-child th { background: #1a237e; color: white; font-size: 12px; padding: 10px 4px; }
+        thead tr:last-child th  { background: #283593; color: #c5cae9; font-size: 11px; padding: 6px 2px; }
 
         .col-num  { width: 32px; min-width: 32px; }
         .col-name { width: 160px; min-width: 140px; text-align: left !important; padding-left: 8px !important; }
         .col-rank { width: 110px; min-width: 100px; text-align: left !important; padding-left: 6px !important; }
         .col-day  { width: 36px; min-width: 32px; }
-        .col-sum  { width: 42px; min-width: 38px; background: #e8eaf6 !important; }
 
         td { padding: 2px; text-align: center; border-bottom: 1px solid #f0f0f0; border-right: 1px solid #f5f5f5; font-size: 12px; }
         td.name-cell { text-align: left; padding: 4px 6px 4px 8px; font-size: 12px; white-space: nowrap; }
         td.rank-cell { text-align: left; padding: 4px 4px 4px 6px; font-size: 11px; color: #555; white-space: nowrap; }
-        td.num-cell  { color: #999; font-size: 11px; }
-        td.sum-cell  { background: #f3f4fd; font-size: 11px; color: #1a237e; font-weight: 600; }
+        td.num-cell  { color: #999; font-size: 11px; text-align: center; }
         tr:hover td { background: #fafbff; }
-        tr:hover td.sum-cell { background: #e8eaf6; }
 
-        /* Клітинка дня */
         .day-cell {
             cursor: pointer;
             position: relative;
@@ -79,9 +160,9 @@
             font-weight: 700;
             line-height: 1.4;
             white-space: nowrap;
+            width: 100%;
         }
 
-        /* Кольори статусів */
         .s-БЧ     { background: #ffcdd2; color: #b71c1c; }
         .s-БЧ_БАТ { background: #ef9a9a; color: #7f0000; }
         .s-БЧ_РКП { background: #ffab91; color: #bf360c; }
@@ -90,19 +171,18 @@
         .s-В-КА   { background: #b3e5fc; color: #01579b; }
         .s-ХВ     { background: #f8bbd0; color: #880e4f; }
         .s-СЗЧ    { background: #ffe0b2; color: #e65100; }
-        .s-ПЛЮ   { background: #e1bee7; color: #4a148c; }
+        .s-ПЛЮ    { background: #e1bee7; color: #4a148c; }
         .s-ППД    { background: #dcedc8; color: #33691e; }
         .s-НАВ    { background: #fff9c4; color: #f57f17; }
         .s-ПЕРЕВ  { background: #cfd8dc; color: #37474f; }
 
-        /* Dropdown меню вибору статусу */
         .status-menu {
             display: none;
             position: fixed;
             z-index: 500;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
             padding: 6px;
             min-width: 160px;
         }
@@ -116,7 +196,7 @@
         }
         .status-option {
             padding: 5px 8px;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 12px;
             font-weight: 600;
@@ -124,8 +204,9 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            transition: all 0.1s;
         }
-        .status-option:hover { opacity: 0.85; }
+        .status-option:hover { opacity: 0.85; transform: translateX(2px); }
         .status-option .dot {
             width: 10px; height: 10px;
             border-radius: 50%;
@@ -137,13 +218,12 @@
             font-weight: 400;
         }
 
-        /* Легенда */
         .legend {
             background: white;
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 10px 14px;
             margin-top: 12px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
@@ -154,12 +234,70 @@
             font-size: 11px;
             font-weight: 700;
             padding: 2px 7px;
-            border-radius: 3px;
+            border-radius: 6px;
+        }
+
+        .stats-container {
+            margin-top: 14px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .stats-container h3 {
+            font-size: 15px;
+            margin: 8px 0 8px 0;
+            color: #1a237e;
+            font-weight: 600;
+        }
+        .stats-table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+        }
+        .stats-table {
+            border-collapse: collapse;
+            background: white;
+            width: 100%;
+            font-size: 12px;
+        }
+        .stats-table thead tr th {
+            background: #1a237e;
+            color: white;
+            font-size: 12px;
+            padding: 8px 4px;
+            border-bottom: 1px solid #283593;
+            white-space: nowrap;
+        }
+        .stats-table td.num-cell {
+            width: 32px;
+            min-width: 32px;
+            text-align: center;
+        }
+        .stats-table td.rank-cell {
+            text-align: left;
+            padding: 4px 4px 4px 6px;
+            font-size: 11px;
+            color: #555;
+            white-space: nowrap;
+        }
+        .stats-table td {
+            padding: 6px 4px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+            border-right: 1px solid #f5f5f5;
+            font-size: 12px;
+        }
+        .stats-table td:nth-child(2) {
+            text-align: left;
+            padding-left: 8px;
+            font-weight: 500;
+        }
+        .stats-table tr:hover td {
+            background: #fafbff;
         }
 
         .toast {
             position: fixed; bottom: 20px; right: 20px;
-            padding: 10px 18px; border-radius: 6px; color: white;
+            padding: 10px 18px; border-radius: 8px; color: white;
             font-size: 13px; font-weight: 600;
             opacity: 0; transition: opacity 0.3s; z-index: 9999;
         }
@@ -174,13 +312,21 @@
     <div th:replace="~{fragments :: sidebar('schedule')}"></div>
     <div class="main-content">
 
-
         <div class="container">
             <div class="toolbar">
+                <div class="current-date" id="currentDate"></div>
                 <button class="btn btn-nav" id="prevBtn">◀</button>
                 <button class="btn btn-today" id="todayBtn">Сьогодні</button>
                 <button class="btn btn-nav" id="nextBtn">▶</button>
                 <h2 id="monthTitle">—</h2>
+                <select id="yearFilter">
+                    <option value="">— Всі роки —</option>
+                </select>
+                <select id="monthFilter">
+                    <option value="">— Всі місяці —</option>
+                </select>
+                <button class="btn btn-primary" id="applyFilterBtn" style="background:#1976d2;">Показати</button>
+                <button class="btn btn-success" id="exportXlsxBtn" style="background:#388e3c;">📊 Експорт XLSX</button>
             </div>
 
             <div class="table-wrap">
@@ -193,6 +339,37 @@
             </div>
 
             <div class="legend" id="legend"></div>
+
+            <!-- ТАБЛИЦЯ СТАТИСТИКИ -->
+            <div class="stats-container" id="statsContainer">
+                <h3>📊 Статистика за категоріями (поточний місяць)</h3>
+                <div class="stats-table-wrap">
+                    <table class="stats-table" id="statsTable">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>ПІБ</th>
+                            <th>Звання</th>
+                            <th>БЧ</th>
+                            <th>Бат БЧ</th>
+                            <th>БЧ РКП</th>
+                            <th>Р-ня</th>
+                            <th>В-ня</th>
+                            <th>В-ка</th>
+                            <th>Х-й</th>
+                            <th>СЗЧ</th>
+                            <th>Плюс</th>
+                            <th>ППД</th>
+                            <th>Навчання</th>
+                            <th>Перевівся</th>
+                        </tr>
+                        </thead>
+                        <tbody id="statsTableBody">
+                        <tr><td colspan="15" style="text-align:center;">Завантаження...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <!-- Dropdown меню статусу -->
@@ -207,19 +384,36 @@
                 { code: 'БЧ',      label: 'БЧ',        color: '#ffcdd2', text: '#b71c1c' },
                 { code: 'БЧ БАТ',  label: 'БЧ Бат',    color: '#ef9a9a', text: '#7f0000' },
                 { code: 'БЧ РКП',  label: 'БЧ РКП',    color: '#ffab91', text: '#bf360c' },
-                { code: 'Р-НЯ',    label: 'Р-ня',       color: '#c8e6c9', text: '#1b5e20' },
-                { code: 'В-НЯ',    label: 'В-ня',       color: '#bbdefb', text: '#0d47a1' },
-                { code: 'В-КА',    label: 'В-ка',       color: '#b3e5fc', text: '#01579b' },
-                { code: 'ХВ',      label: 'Х-й',        color: '#f8bbd0', text: '#880e4f' },
-                { code: 'СЗЧ',     label: 'СЗЧ',        color: '#ffe0b2', text: '#e65100' },
-                { code: 'ПЛЮ',     label: 'Плюс',       color: '#e1bee7', text: '#4a148c' },
-                { code: 'ППД',     label: 'ППД',        color: '#dcedc8', text: '#33691e' },
-                { code: 'НАВ',     label: 'Навчання',   color: '#fff9c4', text: '#f57f17' },
-                { code: 'ПЕРЕВ',   label: 'Перевівся',  color: '#cfd8dc', text: '#37474f' },
+                { code: 'Р-НЯ',    label: 'Р-ня',      color: '#c8e6c9', text: '#1b5e20' },
+                { code: 'В-НЯ',    label: 'В-ня',      color: '#bbdefb', text: '#0d47a1' },
+                { code: 'В-КА',    label: 'В-ка',      color: '#b3e5fc', text: '#01579b' },
+                { code: 'ХВ',      label: 'Х-й',       color: '#f8bbd0', text: '#880e4f' },
+                { code: 'СЗЧ',     label: 'СЗЧ',       color: '#ffe0b2', text: '#e65100' },
+                { code: 'ПЛЮ',     label: 'Плюс',      color: '#e1bee7', text: '#4a148c' },
+                { code: 'ППД',     label: 'ППД',       color: '#dcedc8', text: '#33691e' },
+                { code: 'НАВ',     label: 'Навчання',  color: '#fff9c4', text: '#f57f17' },
+                { code: 'ПЕРЕВ',   label: 'Перевівся', color: '#cfd8dc', text: '#37474f' },
             ];
 
             const STATUS_MAP = {};
             STATUSES.forEach(s => STATUS_MAP[s.code] = s);
+
+            const CATEGORY_MAPPING = {
+                'БЧ':      'БЧ',
+                'БЧ БАТ':  'Бат БЧ',
+                'БЧ РКП':  'БЧ РКП',
+                'Р-НЯ':    'Р-ня',
+                'В-НЯ':    'В-ня',
+                'В-КА':    'В-ка',
+                'ХВ':      'Х-й',
+                'СЗЧ':     'СЗЧ',
+                'ПЛЮ':     'Плюс',
+                'ППД':     'ППД',
+                'НАВ':     'Навчання',
+                'ПЕРЕВ':   'Перевівся'
+            };
+
+            const STAT_CATEGORIES = ['БЧ', 'Бат БЧ', 'БЧ РКП', 'Р-ня', 'В-ня', 'В-ка', 'Х-й', 'СЗЧ', 'Плюс', 'ППД', 'Навчання', 'Перевівся'];
 
             const UA_MONTHS = ['Січень','Лютий','Березень','Квітень','Травень','Червень',
                 'Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
@@ -227,16 +421,25 @@
 
             let currentYear, currentMonth;
             let tableData = [];
-            let menuTarget = null; // { personnelId, day, date, cell }
+            let menuTarget = null;
 
-            // ===== ІНІЦІАЛІЗАЦІЯ =====
             const today = new Date();
             currentYear  = today.getFullYear();
             currentMonth = today.getMonth() + 1;
+
+            // Відображення поточної дати
+            function updateCurrentDate() {
+                const now = new Date();
+                const day = String(now.getDate()).padStart(2,'0');
+                const month = String(now.getMonth()+1).padStart(2,'0');
+                const year = now.getFullYear();
+                document.getElementById('currentDate').textContent = `📅 ${day}.${month}.${year}`;
+            }
+            updateCurrentDate();
+
             buildLegend();
             loadMonth();
 
-            // ===== НАВІГАЦІЯ =====
             document.getElementById('prevBtn').onclick = () => { shiftMonth(-1); };
             document.getElementById('nextBtn').onclick = () => { shiftMonth(+1); };
             document.getElementById('todayBtn').onclick = () => {
@@ -252,7 +455,6 @@
                 loadMonth();
             }
 
-            // ===== ЗАВАНТАЖЕННЯ =====
             async function loadMonth() {
                 document.getElementById('monthTitle').textContent =
                     UA_MONTHS[currentMonth - 1] + ' ' + currentYear;
@@ -261,18 +463,16 @@
                 if (!res.ok) { showToast('Помилка завантаження', 'err'); return; }
                 tableData = await res.json();
                 renderTable();
+                renderStatsTable();
             }
 
-            // ===== РЕНДЕР ТАБЛИЦІ =====
             function renderTable() {
                 const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
 
-                // --- ЗАГОЛОВОК ---
                 let headRow1 = `<tr>
         <th class="col-num">#</th>
         <th class="col-name" style="text-align:left">ПІБ</th>
         <th class="col-rank" style="text-align:left">Звання</th>`;
-
                 for (let d = 1; d <= daysInMonth; d++) {
                     const dow = new Date(currentYear, currentMonth - 1, d).getDay();
                     const isWE = (dow === 0 || dow === 6);
@@ -282,32 +482,29 @@
                     headRow1 += `<th class="col-day${isWE ? ' weekend' : ''}${isTod ? ' today-col' : ''}"
                          style="font-size:11px;padding:4px 2px">${d}</th>`;
                 }
-                headRow1 += `<th class="col-sum" style="font-size:10px">Разом</th></tr>`;
+                headRow1 += `</tr>`;
 
                 let headRow2 = `<tr><th></th><th></th><th></th>`;
                 for (let d = 1; d <= daysInMonth; d++) {
                     const dow = new Date(currentYear, currentMonth - 1, d).getDay();
                     headRow2 += `<th style="font-size:9px;color:#90caf9">${UA_DAYS[dow]}</th>`;
                 }
-                headRow2 += `<th></th></tr>`;
+                headRow2 += `</tr>`;
 
                 document.getElementById('tableHead').innerHTML = headRow1 + headRow2;
 
-                // --- ТІЛО ---
                 if (!tableData.length) {
                     document.getElementById('tableBody').innerHTML =
-                        `<tr><td colspan="${daysInMonth + 4}" style="text-align:center;padding:32px;color:#999">Особовий склад порожній</td></tr>`;
+                        `<tr><td colspan="${daysInMonth + 3}" style="text-align:center;padding:32px;color:#999">Особовий склад порожній</td></tr>`;
                     return;
                 }
 
                 let html = '';
                 tableData.forEach((row, idx) => {
-                    let totalDays = Object.values(row.days).filter(v => v !== '').length;
                     let rowHtml = `<tr>
             <td class="num-cell">${idx + 1}</td>
-            <td class="name-cell">${row.shortName}</td>
-            <td class="rank-cell">${row.rank}</td>`;
-
+            <td class="name-cell">${escapeHtml(row.shortName)}</td>
+            <td class="rank-cell">${escapeHtml(row.rank)}</td>`;
                     for (let d = 1; d <= daysInMonth; d++) {
                         const status = row.days[d] || '';
                         const dow = new Date(currentYear, currentMonth - 1, d).getDay();
@@ -336,17 +533,55 @@
                             data-status="${status}"
                             onclick="openMenu(event, this)">${badge}</td>`;
                     }
-
-                    rowHtml += `<td class="sum-cell">${totalDays || ''}</td></tr>`;
+                    rowHtml += `</tr>`;
                     html += rowHtml;
                 });
-
                 document.getElementById('tableBody').innerHTML = html;
             }
 
-            // ===== МЕНЮ ВИБОРУ СТАТУСУ =====
-            const menu = document.getElementById('statusMenu');
+            function renderStatsTable() {
+                const tbody = document.getElementById('statsTableBody');
+                if (!tableData || tableData.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;">Немає даних про особовий склад</td></tr>';
+                    return;
+                }
 
+                let rowsHtml = '';
+                let rowNum = 1;
+                for (const person of tableData) {
+                    let counts = {};
+                    STAT_CATEGORIES.forEach(cat => counts[cat] = 0);
+
+                    for (const dayNum in person.days) {
+                        const statusCode = person.days[dayNum];
+                        if (statusCode && CATEGORY_MAPPING[statusCode]) {
+                            const category = CATEGORY_MAPPING[statusCode];
+                            counts[category]++;
+                        }
+                    }
+
+                    rowsHtml += `<tr>
+                        <td class="num-cell">${rowNum++}</td>
+                        <td style="text-align:left;">${escapeHtml(person.shortName)}</td>
+                        <td class="rank-cell">${escapeHtml(person.rank)}</td>
+                        <td>${counts['БЧ']}</td>
+                        <td>${counts['Бат БЧ']}</td>
+                        <td>${counts['БЧ РКП']}</td>
+                        <td>${counts['Р-ня']}</td>
+                        <td>${counts['В-ня']}</td>
+                        <td>${counts['В-ка']}</td>
+                        <td>${counts['Х-й']}</td>
+                        <td>${counts['СЗЧ']}</td>
+                        <td>${counts['Плюс']}</td>
+                        <td>${counts['ППД']}</td>
+                        <td>${counts['Навчання']}</td>
+                        <td>${counts['Перевівся']}</td>
+                    </tr>`;
+                }
+                tbody.innerHTML = rowsHtml;
+            }
+
+            const menu = document.getElementById('statusMenu');
             function openMenu(e, cell) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -358,12 +593,11 @@
                     cell
                 };
 
-                // Будуємо меню заново
                 const name = cell.closest('tr').querySelector('.name-cell').textContent;
                 const day  = cell.dataset.day;
                 const title = `${name} — ${day} ${UA_MONTHS[currentMonth-1]}`;
 
-                let html = `<div class="status-menu-title">${title}</div>`;
+                let html = `<div class="status-menu-title">${escapeHtml(title)}</div>`;
                 STATUSES.forEach(s => {
                     html += `<div class="status-option"
             style="background:${s.color};color:${s.text}"
@@ -375,7 +609,6 @@
                 html += `<div class="status-option clear" onclick="event.stopPropagation();selectStatus('')">✕ Очистити</div>`;
                 menu.innerHTML = html;
 
-                // Позиціонуємо
                 const rect = cell.getBoundingClientRect();
                 let left = rect.left + window.scrollX;
                 let top  = rect.bottom + window.scrollY + 2;
@@ -402,12 +635,10 @@
 
                     if (!res.ok) { showToast('Помилка збереження', 'err'); return; }
 
-                    // Оновлюємо локальні дані
                     const row = tableData.find(r => String(r.id) === String(personnelId));
                     const day = parseInt(cell.dataset.day);
                     if (row) row.days[day] = code;
 
-                    // Оновлюємо клітинку без перерендеру всієї таблиці
                     cell.dataset.status = code;
                     if (code) {
                         const s = STATUS_MAP[code];
@@ -417,25 +648,19 @@
                         cell.innerHTML = '';
                     }
 
-                    // Оновлюємо колонку "Разом"
-                    const tr = cell.closest('tr');
-                    const totalDays = Object.values(row.days).filter(v => v !== '').length;
-                    tr.querySelector('.sum-cell').textContent = totalDays || '';
-
+                    renderStatsTable();
                 } catch (err) {
                     showToast('Помилка мережі', 'err');
                 }
                 menuTarget = null;
             }
 
-            // Закрити меню при кліку поза ним — але не при кліку на клітинку
             document.addEventListener('click', (e) => {
                 if (!menu.contains(e.target)) {
                     menu.classList.remove('open');
                 }
             });
 
-            // ===== ЛЕГЕНДА =====
             function buildLegend() {
                 const el = document.getElementById('legend');
                 let html = '<span class="legend-title">Позначення:</span>';
@@ -445,13 +670,114 @@
                 el.innerHTML = html;
             }
 
-            // ===== УТИЛІТИ =====
             function showToast(msg, type) {
                 const t = document.getElementById('toast');
                 t.textContent = msg;
                 t.className = `toast ${type} show`;
                 setTimeout(() => t.classList.remove('show'), 2500);
             }
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>]/g, function(m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    return m;
+                });
+            }
+
+            // Після ініціалізації
+            loadFilters();
+
+            async function loadFilters() {
+                // Завантажуємо роки (унікальні з даних)
+                const yearsRes = await fetch('/schedule/api/years');
+                if (yearsRes.ok) {
+                    const years = await yearsRes.json();
+                    const yearSelect = document.getElementById('yearFilter');
+                    years.forEach(y => {
+                        const opt = document.createElement('option');
+                        opt.value = y;
+                        opt.textContent = y;
+                        yearSelect.appendChild(opt);
+                    });
+                }
+
+                // Завантажуємо місяці (унікальні з даних)
+                const monthsRes = await fetch('/schedule/api/months');
+                if (monthsRes.ok) {
+                    const months = await monthsRes.json();
+                    const monthSelect = document.getElementById('monthFilter');
+                    months.forEach(m => {
+                        const opt = document.createElement('option');
+                        opt.value = m;
+                        opt.textContent = m;
+                        monthSelect.appendChild(opt);
+                    });
+                }
+            }
+
+            // Обробник кнопки "Показати"
+            document.getElementById('applyFilterBtn').onclick = () => {
+                const yearVal = document.getElementById('yearFilter').value;
+                const monthVal = document.getElementById('monthFilter').value;
+                if (monthVal) {
+                    // Якщо вибрано місяць, потрібно знайти номер місяця
+                    const monthIndex = UA_MONTHS.findIndex(m => m === monthVal);
+                    if (monthIndex !== -1) {
+                        currentYear = parseInt(yearVal) || new Date().getFullYear();
+                        currentMonth = monthIndex + 1;
+                        loadMonth();
+                    }
+                } else if (yearVal) {
+                    // Якщо вибрано тільки рік, завантажити дані за рік (потрібно змінити API)
+                    // Або просто показати всі місяці цього року. Для простоти поки завантажимо перший місяць року.
+                    currentYear = parseInt(yearVal);
+                    currentMonth = 1;
+                    loadMonth();
+                } else {
+                    // Якщо нічого не вибрано — завантажити поточний місяць
+                    currentYear = today.getFullYear();
+                    currentMonth = today.getMonth() + 1;
+                    loadMonth();
+                }
+            };
+
+            // Кнопка експорту — з використанням фільтрів
+            document.getElementById('exportXlsxBtn').addEventListener('click', () => {
+                const yearVal = document.getElementById('yearFilter').value;
+                const monthVal = document.getElementById('monthFilter').value;
+                let url = '/schedule/export?';
+                if (monthVal) {
+                    const monthIndex = UA_MONTHS.findIndex(m => m === monthVal);
+                    if (monthIndex !== -1) {
+                        url += `year=${yearVal || currentYear}&month=${monthIndex + 1}`;
+                    }
+                } else if (yearVal) {
+                    url += `year=${yearVal}`;
+                } else {
+                    url += `year=${currentYear}&month=${currentMonth}`;
+                }
+                window.location.href = url;
+            });
+
+            document.getElementById('exportXlsxBtn').addEventListener('click', () => {
+                const yearVal = document.getElementById('yearFilter').value;
+                const monthVal = document.getElementById('monthFilter').value;
+                let url = '/schedule/export?';
+                if (monthVal) {
+                    const monthIndex = UA_MONTHS.findIndex(m => m === monthVal);
+                    if (monthIndex !== -1) {
+                        url += `year=${yearVal || currentYear}&month=${monthIndex + 1}`;
+                    }
+                } else if (yearVal) {
+                    url += `year=${yearVal}`;
+                } else {
+                    url += `year=${currentYear}&month=${currentMonth}`;
+                }
+                window.location.href = url;
+            });
         </script>
     </div>
 </div>

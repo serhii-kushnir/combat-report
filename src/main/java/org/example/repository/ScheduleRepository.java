@@ -13,6 +13,13 @@ import java.util.Optional;
 @Repository
 public interface ScheduleRepository extends JpaRepository<ScheduleEntry, Long> {
 
+    @Query("SELECT DISTINCT YEAR(s.date) FROM ScheduleEntry s ORDER BY YEAR(s.date) ASC")
+    List<Integer> findDistinctYears();
+
+    @Query("SELECT DISTINCT MONTH(s.date) FROM ScheduleEntry s ORDER BY MONTH(s.date) ASC")
+    List<Integer> findDistinctMonthNumbers();
+
+
     @Query("SELECT s FROM ScheduleEntry s JOIN FETCH s.personnel p " +
            "WHERE s.date >= :from AND s.date <= :to AND p.active = true " +
            "ORDER BY p.lastName, s.date")
