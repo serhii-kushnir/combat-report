@@ -761,23 +761,6 @@
                 }
                 window.location.href = url;
             });
-
-            document.getElementById('exportXlsxBtn').addEventListener('click', () => {
-                const yearVal = document.getElementById('yearFilter').value;
-                const monthVal = document.getElementById('monthFilter').value;
-                let url = '/schedule/export?';
-                if (monthVal) {
-                    const monthIndex = UA_MONTHS.findIndex(m => m === monthVal);
-                    if (monthIndex !== -1) {
-                        url += `year=${yearVal || currentYear}&month=${monthIndex + 1}`;
-                    }
-                } else if (yearVal) {
-                    url += `year=${yearVal}`;
-                } else {
-                    url += `year=${currentYear}&month=${currentMonth}`;
-                }
-                window.location.href = url;
-            });
         </script>
     </div>
 </div>
