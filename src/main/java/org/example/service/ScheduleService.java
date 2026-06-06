@@ -70,6 +70,8 @@ public class ScheduleService {
         }
     }
 
+    // ========== ЕКСПОРТ В XLSX (оновлений) ==========
+
     private byte[] exportMonthToXlsx(int year, int month) throws Exception {
         List<Map<String, Object>> rows = getMonthData(year, month);
         if (rows.isEmpty()) {
@@ -84,9 +86,10 @@ public class ScheduleService {
             XSSFSheet sheet = wb.createSheet(String.format("%d_%02d", year, month));
 
             XSSFCellStyle headerStyle = createHeaderStyle(wb);
-            XSSFCellStyle dataStyle = createDataStyle(wb);
+            XSSFCellStyle dataCenterStyle = createDataStyle(wb); // для №
+            XSSFCellStyle dataLeftStyle = createLeftAlignedDataStyle(wb); // для ПІБ, Звання
 
-            // заголовки
+            // Заголовки
             String[] headers = new String[3 + daysInMonth];
             headers[0] = "#";
             headers[1] = "ПІБ";
@@ -115,15 +118,20 @@ public class ScheduleService {
                 XSSFRow dataRow = sheet.createRow(rowNum++);
                 dataRow.setHeightInPoints(18);
 
-                setCell(dataRow, 0, rowNum - 1, dataStyle);
-                setCell(dataRow, 1, rowMap.get("shortName"), dataStyle);
-                setCell(dataRow, 2, rowMap.get("rank"), dataStyle);
+                // № – по центру
+                setCell(dataRow, 0, rowNum - 1, dataCenterStyle);
+                // ПІБ – ліворуч
+                setCell(dataRow, 1, rowMap.get("shortName"), dataLeftStyle);
+                // Звання – ліворуч
+                setCell(dataRow, 2, rowMap.get("rank"), dataLeftStyle);
 
                 @SuppressWarnings("unchecked")
                 Map<Integer, String> daysMap = (Map<Integer, String>) rowMap.get("days");
                 for (int d = 1; d <= daysInMonth; d++) {
-                    String display = mapStatusToLabel(daysMap.get(d));
-                    setCell(dataRow, 2 + d, display, dataStyle);
+                    String statusCode = daysMap.get(d);
+                    String display = mapStatusToLabel(statusCode);
+                    XSSFCellStyle statusStyle = getStatusStyle(statusCode, wb);
+                    setCell(dataRow, 2 + d, display, statusStyle);
                 }
             }
 
@@ -138,13 +146,14 @@ public class ScheduleService {
 
             for (int month = 1; month <= 12; month++) {
                 List<Map<String, Object>> rows = getMonthData(year, month);
-                if (rows.isEmpty()) continue; // пропустити місяці без даних
+                if (rows.isEmpty()) continue;
 
                 int daysInMonth = LocalDate.of(year, month, 1).lengthOfMonth();
                 XSSFSheet sheet = wb.createSheet(String.format("%d_%02d", year, month));
 
                 XSSFCellStyle headerStyle = createHeaderStyle(wb);
-                XSSFCellStyle dataStyle = createDataStyle(wb);
+                XSSFCellStyle dataCenterStyle = createDataStyle(wb);
+                XSSFCellStyle dataLeftStyle = createLeftAlignedDataStyle(wb);
 
                 String[] headers = new String[3 + daysInMonth];
                 headers[0] = "#";
@@ -174,15 +183,17 @@ public class ScheduleService {
                     XSSFRow dataRow = sheet.createRow(rowNum++);
                     dataRow.setHeightInPoints(18);
 
-                    setCell(dataRow, 0, rowNum - 1, dataStyle);
-                    setCell(dataRow, 1, rowMap.get("shortName"), dataStyle);
-                    setCell(dataRow, 2, rowMap.get("rank"), dataStyle);
+                    setCell(dataRow, 0, rowNum - 1, dataCenterStyle);
+                    setCell(dataRow, 1, rowMap.get("shortName"), dataLeftStyle);
+                    setCell(dataRow, 2, rowMap.get("rank"), dataLeftStyle);
 
                     @SuppressWarnings("unchecked")
                     Map<Integer, String> daysMap = (Map<Integer, String>) rowMap.get("days");
                     for (int d = 1; d <= daysInMonth; d++) {
-                        String display = mapStatusToLabel(daysMap.get(d));
-                        setCell(dataRow, 2 + d, display, dataStyle);
+                        String statusCode = daysMap.get(d);
+                        String display = mapStatusToLabel(statusCode);
+                        XSSFCellStyle statusStyle = getStatusStyle(statusCode, wb);
+                        setCell(dataRow, 2 + d, display, statusStyle);
                     }
                 }
             }
@@ -190,6 +201,67 @@ public class ScheduleService {
             wb.write(out);
             return out.toByteArray();
         }
+    }
+
+// ========== НОВІ ДОПОМІЖНІ МЕТОДИ ==========
+
+    /**
+     * Стиль для комірок з вирівнюванням по лівому краю (для ПІБ, Звання)
+     */
+    private XSSFCellStyle createLeftAlignedDataStyle(XSSFWorkbook wb) {
+        XSSFCellStyle style = wb.createCellStyle();
+        XSSFFont font = wb.createFont();
+        font.setFontHeightInPoints((short) 10);
+        font.setFontName("Arial");
+        style.setFont(font);
+        style.setAlignment(HorizontalAlignment.LEFT);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setWrapText(true);
+        setBorders(style);
+        return style;
+    }
+
+    /**
+     * Повертає стиль для комірки статусу з відповідним кольором фону
+     * (кольори відповідають CSS-класам на веб-сторінці)
+     */
+    private XSSFCellStyle getStatusStyle(String statusCode, XSSFWorkbook wb) {
+        // Мапа кольорів для кожного статусу (RGB)
+        Map<String, byte[]> colorMap = new HashMap<>();
+        colorMap.put("БЧ",     new byte[]{(byte)255, (byte)205, (byte)210}); // #ffcdd2
+        colorMap.put("БЧ БАТ", new byte[]{(byte)239, (byte)154, (byte)154}); // #ef9a9a
+        colorMap.put("БЧ РКП", new byte[]{(byte)255, (byte)171, (byte)145}); // #ffab91
+        colorMap.put("Р-НЯ",   new byte[]{(byte)200, (byte)230, (byte)201}); // #c8e6c9
+        colorMap.put("В-НЯ",   new byte[]{(byte)187, (byte)222, (byte)251}); // #bbdefb
+        colorMap.put("В-КА",   new byte[]{(byte)179, (byte)229, (byte)252}); // #b3e5fc
+        colorMap.put("ХВ",     new byte[]{(byte)248, (byte)187, (byte)208}); // #f8bbd0
+        colorMap.put("СЗЧ",    new byte[]{(byte)255, (byte)224, (byte)178}); // #ffe0b2
+        colorMap.put("ПЛЮ",    new byte[]{(byte)225, (byte)190, (byte)231}); // #e1bee7
+        colorMap.put("ППД",    new byte[]{(byte)220, (byte)237, (byte)200}); // #dcedc8
+        colorMap.put("НАВ",    new byte[]{(byte)255, (byte)249, (byte)196}); // #fff9c4
+        colorMap.put("ПЕРЕВ",  new byte[]{(byte)207, (byte)216, (byte)220}); // #cfd8dc
+
+        if (statusCode == null || statusCode.isBlank()) {
+            return createDataStyle(wb); // порожня комірка – стандартний стиль
+        }
+
+        byte[] rgb = colorMap.get(statusCode);
+        if (rgb == null) {
+            return createDataStyle(wb);
+        }
+
+        XSSFCellStyle style = wb.createCellStyle();
+        XSSFFont font = wb.createFont();
+        font.setFontHeightInPoints((short) 10);
+        font.setFontName("Arial");
+        style.setFont(font);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setWrapText(true);
+        style.setFillForegroundColor(new XSSFColor(rgb, null));
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        setBorders(style);
+        return style;
     }
 
     // ========== ОСНОВНІ МЕТОДИ ==========
