@@ -232,7 +232,9 @@
                 <button class="btn btn-nav" id="prevBtn">◀</button>
                 <button class="btn btn-today" id="todayBtn">Сьогодні</button>
                 <button class="btn btn-nav" id="nextBtn">▶</button>
-                <h2 id="monthTitle">Червень 2026</h2>
+                <h2 id="monthTitle">—</h2>
+                <!-- НОВА КНОПКА ЕКСПОРТУ -->
+                <button class="btn btn-success" id="exportXlsxBtn" style="background:#388e3c;">📊 Експорт XLSX</button>
                 <div class="current-date" id="currentDate"></div>
             </div>
 
@@ -593,6 +595,11 @@
                     return m;
                 });
             }
+
+            document.getElementById('exportXlsxBtn').addEventListener('click', () => {
+                const url = `/schedule/export?year=${currentYear}&month=${currentMonth}`;
+                window.location.href = url;
+            });
         </script>
     </div>
 </div>

@@ -45,7 +45,7 @@
         .table-wrap { overflow-x: auto; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
         table { width: 100%; border-collapse: collapse; background: white; }
         thead { background: #1a237e; color: white; }
-        th { padding: 9px 8px; font-size: 12px; font-weight: 600; text-align: left; white-space: nowrap; }
+        th { padding: 9px 8px; font-size: 12px; font-weight: 600; text-align: center; white-space: nowrap; }
         td { padding: 7px 8px; font-size: 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
         tr:hover td { background: #f5f9ff; }
         tr:last-child td { border-bottom: none; }
@@ -159,7 +159,7 @@
             <div class="table-section visible" id="shortTable">
                 <div class="table-wrap"><table>
                     <thead><tr>
-                        <th style="width:40px" >#</th>
+                        <th style="width:40px" data-col="num" onclick="sortBy('num')">#</th>
                         <th data-col="name" onclick="sortBy('name')">ПІБ</th>
                         <th style="width:160px" data-col="rank" onclick="sortBy('rank')">Звання</th>
                         <th data-col="position" onclick="sortBy('position')">Повна посада</th>
@@ -175,7 +175,7 @@
             <div class="table-section" id="fullTable">
                 <div class="table-wrap"><table style="min-width:2800px">
                     <thead><tr>
-                        <th style="width:36px" >#</th>
+                        <th style="width:36px" data-col="num" onclick="sortBy('num')">#</th>
                         <th style="width:180px" data-col="name" onclick="sortBy('name')">ПІБ</th>
                         <th style="width:110px" data-col="phone" onclick="sortBy('phone')">Моб. Телефон</th>
                         <th style="width:100px" data-col="birth" onclick="sortBy('birth')">Дата народження</th>
@@ -766,11 +766,18 @@
                 }
                 renderShortTable(filtered);
                 renderFullTable(filtered);
-                const total = filtered.length;
-                const fromAll = filtered.length !== allPersonnel.length
+                const total    = filtered.length;
+                const officers = filtered.filter(p => p.rank && /лейтенант|капітан|майор|підполковник|полковник|генерал/i.test(p.rank)).length;
+                const sergeants= filtered.filter(p => p.rank && /сержант|старшина/i.test(p.rank)).length;
+                const soldiers = filtered.filter(p => p.rank && /солдат|рядовий/i.test(p.rank)).length;
+                const fromAll  = filtered.length !== allPersonnel.length
                     ? `<div class="stat-card"><div class="num" style="color:#555">${allPersonnel.length}</div><div class="lbl">Всього в базі</div></div>` : '';
                 document.getElementById('statsBar').innerHTML =
-                    `<div class="stat-card"><div class="num">${total}</div><div class="lbl">Осіб</div></div>` + fromAll;
+                    `<div class="stat-card"><div class="num">${total}</div><div class="lbl">Осіб</div></div>` +
+                    `<div class="stat-card"><div class="num" style="color:#1565c0">${officers}</div><div class="lbl">Офіцерів</div></div>` +
+                    `<div class="stat-card"><div class="num" style="color:#6a1b9a">${sergeants}</div><div class="lbl">Сержантів</div></div>` +
+                    `<div class="stat-card"><div class="num" style="color:#2e7d32">${soldiers}</div><div class="lbl">Солдат</div></div>` +
+                    fromAll;
             }
 
             // ===== ДИНАМІЧНІ РЯДКИ У ФОРМІ =====

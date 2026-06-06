@@ -6,6 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -41,6 +45,25 @@ public class ScheduleController {
         } catch (Exception e) {
             log.error("Помилка отримання графіку: year={}, month={}", year, month, e);
             return ResponseEntity.badRequest().body("Помилка: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportToXlsx(@RequestParam int year,
+                                               @RequestParam int month) {
+        try {
+            byte[] data = service.exportToXlsx(year, month);
+            String filename = URLEncoder.encode(
+                    String.format("Графік_чергувань_%d_%d.xlsx", year, month),
+                    StandardCharsets.UTF_8).replace("+", "%20");
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + filename + "\"; filename*=UTF-8''" + filename)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(data);
+        } catch (Exception e) {
+            log.error("Помилка експорту графіка: year={}, month={}", year, month, e);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
