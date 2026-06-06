@@ -16,36 +16,120 @@
 
         .container { padding: 16px 20px; max-width: 100%; overflow-x: auto; }
 
+        /* Стилі для тулбару */
         .toolbar {
             background: white;
             padding: 12px 16px;
-            border-radius: 8px;
+            border-radius: 12px;
             margin-bottom: 14px;
             display: flex;
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: box-shadow 0.2s;
         }
-        .toolbar h2 { font-size: 16px; color: #1a237e; margin-right: auto; }
-        .btn { padding: 6px 14px; border: none; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: 600; }
-        .btn-nav  { background: #e8eaf6; color: #1a237e; }
-        .btn-nav:hover { background: #c5cae9; }
-        .btn-today { background: #1976d2; color: white; }
-        .btn-today:hover { background: #1565c0; }
+        .toolbar:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        /* Базовий стиль кнопок */
+        .btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Специфічні кнопки */
+        .btn-nav {
+            background: #e8eaf6;
+            color: #1a237e;
+        }
+        .btn-nav:hover {
+            background: #c5cae9;
+        }
+
+        .btn-today {
+            background: #1976d2;
+            color: white;
+        }
+        .btn-today:hover {
+            background: #1565c0;
+        }
+
+        .btn-primary {
+            background: #1976d2;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1565c0;
+        }
+
+        .btn-success {
+            background: #388e3c;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #2e7d32;
+        }
+
+        .btn-warning {
+            background: #f57c00;
+            color: white;
+        }
+        .btn-warning:hover {
+            background: #e65100;
+        }
+
+        /* Стилі для select */
+        select, input[type="text"] {
+            padding: 6px 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            outline: none;
+        }
+        select:hover, input:hover {
+            border-color: #1976d2;
+        }
+        select:focus, input:focus {
+            border-color: #1976d2;
+            box-shadow: 0 0 0 2px rgba(25,118,210,0.2);
+        }
+
+        /* Дата */
         .current-date {
             font-size: 13px;
             color: #1a237e;
             background: #e8eaf6;
-            padding: 4px 10px;
-            border-radius: 16px;
+            padding: 5px 12px;
+            border-radius: 20px;
             font-weight: 500;
         }
 
-        .table-wrap { overflow-x: auto; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        /* Інші стилі залишаються без змін (таблиці, бейджі, меню) */
+        .table-wrap { overflow-x: auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
         table { border-collapse: collapse; background: white; min-width: 100%; }
-        thead tr:first-child th { background: #1a237e; color: white; font-size: 12px; padding: 8px 4px; }
-        thead tr:last-child th  { background: #283593; color: #c5cae9; font-size: 11px; padding: 4px 2px; }
+        thead tr:first-child th { background: #1a237e; color: white; font-size: 12px; padding: 10px 4px; }
+        thead tr:last-child th  { background: #283593; color: #c5cae9; font-size: 11px; padding: 6px 2px; }
 
         .col-num  { width: 32px; min-width: 32px; }
         .col-name { width: 160px; min-width: 140px; text-align: left !important; padding-left: 8px !important; }
@@ -97,8 +181,8 @@
             position: fixed;
             z-index: 500;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
             padding: 6px;
             min-width: 160px;
         }
@@ -112,7 +196,7 @@
         }
         .status-option {
             padding: 5px 8px;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 12px;
             font-weight: 600;
@@ -120,8 +204,9 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            transition: all 0.1s;
         }
-        .status-option:hover { opacity: 0.85; }
+        .status-option:hover { opacity: 0.85; transform: translateX(2px); }
         .status-option .dot {
             width: 10px; height: 10px;
             border-radius: 50%;
@@ -135,10 +220,10 @@
 
         .legend {
             background: white;
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 10px 14px;
             margin-top: 12px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
@@ -149,14 +234,14 @@
             font-size: 11px;
             font-weight: 700;
             padding: 2px 7px;
-            border-radius: 3px;
+            border-radius: 6px;
         }
 
         .stats-container {
             margin-top: 14px;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         .stats-container h3 {
             font-size: 15px;
@@ -166,7 +251,7 @@
         }
         .stats-table-wrap {
             overflow-x: auto;
-            border-radius: 8px;
+            border-radius: 12px;
         }
         .stats-table {
             border-collapse: collapse;
@@ -212,7 +297,7 @@
 
         .toast {
             position: fixed; bottom: 20px; right: 20px;
-            padding: 10px 18px; border-radius: 6px; color: white;
+            padding: 10px 18px; border-radius: 8px; color: white;
             font-size: 13px; font-weight: 600;
             opacity: 0; transition: opacity 0.3s; z-index: 9999;
         }
@@ -229,13 +314,19 @@
 
         <div class="container">
             <div class="toolbar">
+                <div class="current-date" id="currentDate"></div>
                 <button class="btn btn-nav" id="prevBtn">◀</button>
                 <button class="btn btn-today" id="todayBtn">Сьогодні</button>
                 <button class="btn btn-nav" id="nextBtn">▶</button>
                 <h2 id="monthTitle">—</h2>
-                <!-- НОВА КНОПКА ЕКСПОРТУ -->
+                <select id="yearFilter">
+                    <option value="">— Всі роки —</option>
+                </select>
+                <select id="monthFilter">
+                    <option value="">— Всі місяці —</option>
+                </select>
+                <button class="btn btn-primary" id="applyFilterBtn" style="background:#1976d2;">Показати</button>
                 <button class="btn btn-success" id="exportXlsxBtn" style="background:#388e3c;">📊 Експорт XLSX</button>
-                <div class="current-date" id="currentDate"></div>
             </div>
 
             <div class="table-wrap">
@@ -596,8 +687,95 @@
                 });
             }
 
+            // Після ініціалізації
+            loadFilters();
+
+            async function loadFilters() {
+                // Завантажуємо роки (унікальні з даних)
+                const yearsRes = await fetch('/schedule/api/years');
+                if (yearsRes.ok) {
+                    const years = await yearsRes.json();
+                    const yearSelect = document.getElementById('yearFilter');
+                    years.forEach(y => {
+                        const opt = document.createElement('option');
+                        opt.value = y;
+                        opt.textContent = y;
+                        yearSelect.appendChild(opt);
+                    });
+                }
+
+                // Завантажуємо місяці (унікальні з даних)
+                const monthsRes = await fetch('/schedule/api/months');
+                if (monthsRes.ok) {
+                    const months = await monthsRes.json();
+                    const monthSelect = document.getElementById('monthFilter');
+                    months.forEach(m => {
+                        const opt = document.createElement('option');
+                        opt.value = m;
+                        opt.textContent = m;
+                        monthSelect.appendChild(opt);
+                    });
+                }
+            }
+
+            // Обробник кнопки "Показати"
+            document.getElementById('applyFilterBtn').onclick = () => {
+                const yearVal = document.getElementById('yearFilter').value;
+                const monthVal = document.getElementById('monthFilter').value;
+                if (monthVal) {
+                    // Якщо вибрано місяць, потрібно знайти номер місяця
+                    const monthIndex = UA_MONTHS.findIndex(m => m === monthVal);
+                    if (monthIndex !== -1) {
+                        currentYear = parseInt(yearVal) || new Date().getFullYear();
+                        currentMonth = monthIndex + 1;
+                        loadMonth();
+                    }
+                } else if (yearVal) {
+                    // Якщо вибрано тільки рік, завантажити дані за рік (потрібно змінити API)
+                    // Або просто показати всі місяці цього року. Для простоти поки завантажимо перший місяць року.
+                    currentYear = parseInt(yearVal);
+                    currentMonth = 1;
+                    loadMonth();
+                } else {
+                    // Якщо нічого не вибрано — завантажити поточний місяць
+                    currentYear = today.getFullYear();
+                    currentMonth = today.getMonth() + 1;
+                    loadMonth();
+                }
+            };
+
+            // Кнопка експорту — з використанням фільтрів
             document.getElementById('exportXlsxBtn').addEventListener('click', () => {
-                const url = `/schedule/export?year=${currentYear}&month=${currentMonth}`;
+                const yearVal = document.getElementById('yearFilter').value;
+                const monthVal = document.getElementById('monthFilter').value;
+                let url = '/schedule/export?';
+                if (monthVal) {
+                    const monthIndex = UA_MONTHS.findIndex(m => m === monthVal);
+                    if (monthIndex !== -1) {
+                        url += `year=${yearVal || currentYear}&month=${monthIndex + 1}`;
+                    }
+                } else if (yearVal) {
+                    url += `year=${yearVal}`;
+                } else {
+                    url += `year=${currentYear}&month=${currentMonth}`;
+                }
+                window.location.href = url;
+            });
+
+            document.getElementById('exportXlsxBtn').addEventListener('click', () => {
+                const yearVal = document.getElementById('yearFilter').value;
+                const monthVal = document.getElementById('monthFilter').value;
+                let url = '/schedule/export?';
+                if (monthVal) {
+                    const monthIndex = UA_MONTHS.findIndex(m => m === monthVal);
+                    if (monthIndex !== -1) {
+                        url += `year=${yearVal || currentYear}&month=${monthIndex + 1}`;
+                    }
+                } else if (yearVal) {
+                    url += `year=${yearVal}`;
+                } else {
+                    url += `year=${currentYear}&month=${currentMonth}`;
+                }
                 window.location.href = url;
             });
         </script>

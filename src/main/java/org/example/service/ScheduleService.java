@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.stream.Collectors;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
@@ -36,9 +37,40 @@ public class ScheduleService {
         this.personnelRepo = personnelRepo;
     }
 
+    // В кінець класу ScheduleService (перед допоміжними методами)
+
+    public List<Integer> getYears() {
+        return scheduleRepo.findDistinctYears();
+    }
+
+    public List<String> getMonths() {
+        List<Integer> monthNumbers = scheduleRepo.findDistinctMonthNumbers();
+        String[] monthNames = {"Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
+                "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"};
+        return monthNumbers.stream()
+                .map(num -> monthNames[num - 1])
+                .collect(Collectors.toList());
+    }
+
     // ========== ЕКСПОРТ В XLSX ==========
 
-    public byte[] exportToXlsx(int year, int month) throws Exception {
+    /**
+     * Експорт за рік і місяць (якщо month != null)
+     * Якщо month == null, експортує всі місяці вказаного року (по одному аркушу на місяць)
+     */
+    public byte[] exportToXlsx(Integer year, Integer month) throws Exception {
+        if (month != null) {
+            // Експорт за конкретний місяць
+            return exportMonthToXlsx(year, month);
+        } else if (year != null) {
+            // Експорт за весь рік (окремі аркуші для кожного місяця, де є дані)
+            return exportYearToXlsx(year);
+        } else {
+            throw new IllegalArgumentException("Необхідно вказати рік або рік+місяць");
+        }
+    }
+
+    private byte[] exportMonthToXlsx(int year, int month) throws Exception {
         List<Map<String, Object>> rows = getMonthData(year, month);
         if (rows.isEmpty()) {
             throw new IllegalStateException("Немає даних за вибраний місяць");
@@ -49,11 +81,12 @@ public class ScheduleService {
         try (XSSFWorkbook wb = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-            XSSFSheet sheet = wb.createSheet("Графік чергувань " + month + "." + year);
+            XSSFSheet sheet = wb.createSheet(String.format("%d_%02d", year, month));
 
             XSSFCellStyle headerStyle = createHeaderStyle(wb);
             XSSFCellStyle dataStyle = createDataStyle(wb);
 
+            // заголовки
             String[] headers = new String[3 + daysInMonth];
             headers[0] = "#";
             headers[1] = "ПІБ";
@@ -89,9 +122,68 @@ public class ScheduleService {
                 @SuppressWarnings("unchecked")
                 Map<Integer, String> daysMap = (Map<Integer, String>) rowMap.get("days");
                 for (int d = 1; d <= daysInMonth; d++) {
-                    String statusCode = daysMap.get(d);
-                    String display = mapStatusToLabel(statusCode);
+                    String display = mapStatusToLabel(daysMap.get(d));
                     setCell(dataRow, 2 + d, display, dataStyle);
+                }
+            }
+
+            wb.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    private byte[] exportYearToXlsx(int year) throws Exception {
+        try (XSSFWorkbook wb = new XSSFWorkbook();
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+            for (int month = 1; month <= 12; month++) {
+                List<Map<String, Object>> rows = getMonthData(year, month);
+                if (rows.isEmpty()) continue; // пропустити місяці без даних
+
+                int daysInMonth = LocalDate.of(year, month, 1).lengthOfMonth();
+                XSSFSheet sheet = wb.createSheet(String.format("%d_%02d", year, month));
+
+                XSSFCellStyle headerStyle = createHeaderStyle(wb);
+                XSSFCellStyle dataStyle = createDataStyle(wb);
+
+                String[] headers = new String[3 + daysInMonth];
+                headers[0] = "#";
+                headers[1] = "ПІБ";
+                headers[2] = "Звання";
+                for (int d = 1; d <= daysInMonth; d++) {
+                    headers[2 + d] = String.valueOf(d);
+                }
+
+                sheet.setColumnWidth(0, 8 * 256);
+                sheet.setColumnWidth(1, 24 * 256);
+                sheet.setColumnWidth(2, 18 * 256);
+                for (int d = 1; d <= daysInMonth; d++) {
+                    sheet.setColumnWidth(2 + d, 10 * 256);
+                }
+
+                XSSFRow headerRow = sheet.createRow(0);
+                headerRow.setHeightInPoints(25);
+                for (int i = 0; i < headers.length; i++) {
+                    XSSFCell cell = headerRow.createCell(i);
+                    cell.setCellValue(headers[i]);
+                    cell.setCellStyle(headerStyle);
+                }
+
+                int rowNum = 1;
+                for (Map<String, Object> rowMap : rows) {
+                    XSSFRow dataRow = sheet.createRow(rowNum++);
+                    dataRow.setHeightInPoints(18);
+
+                    setCell(dataRow, 0, rowNum - 1, dataStyle);
+                    setCell(dataRow, 1, rowMap.get("shortName"), dataStyle);
+                    setCell(dataRow, 2, rowMap.get("rank"), dataStyle);
+
+                    @SuppressWarnings("unchecked")
+                    Map<Integer, String> daysMap = (Map<Integer, String>) rowMap.get("days");
+                    for (int d = 1; d <= daysInMonth; d++) {
+                        String display = mapStatusToLabel(daysMap.get(d));
+                        setCell(dataRow, 2 + d, display, dataStyle);
+                    }
                 }
             }
 

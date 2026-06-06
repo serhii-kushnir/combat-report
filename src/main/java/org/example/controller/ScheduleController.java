@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/schedule")
@@ -49,12 +50,17 @@ public class ScheduleController {
     }
 
     @GetMapping("/export")
-    public ResponseEntity<byte[]> exportToXlsx(@RequestParam int year,
-                                               @RequestParam int month) {
+    public ResponseEntity<byte[]> exportToXlsx(@RequestParam(required = false) Integer year,
+                                               @RequestParam(required = false) Integer month) {
         try {
+            // Якщо рік не вказано, використовуємо поточний
+            if (year == null) {
+                year = LocalDate.now().getYear();
+            }
             byte[] data = service.exportToXlsx(year, month);
+            String suffix = (month != null) ? String.format("_%d_%d", year, month) : String.format("_%d", year);
             String filename = URLEncoder.encode(
-                    String.format("Графік_чергувань_%d_%d.xlsx", year, month),
+                    "Графік_чергувань" + suffix + ".xlsx",
                     StandardCharsets.UTF_8).replace("+", "%20");
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -62,9 +68,21 @@ public class ScheduleController {
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(data);
         } catch (Exception e) {
-            log.error("Помилка експорту графіка: year={}, month={}", year, month, e);
+            log.error("Помилка експорту графіка", e);
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @GetMapping("/api/years")
+    @ResponseBody
+    public List<Integer> getYears() {
+        return service.getYears();
+    }
+
+    @GetMapping("/api/months")
+    @ResponseBody
+    public List<String> getMonths() {
+        return service.getMonths();
     }
 
     /** REST: встановити статус на клітинку */
