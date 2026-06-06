@@ -47,7 +47,7 @@ public class EquipmentService {
             CellStyle headerStyle = createHeaderStyle(wb);
             CellStyle dataStyle = createDataStyle(wb);
 
-            String[] headers = {"№", "Назва", "Кількість", "Од.", "Екіпаж", "Локація", "Категорія"};
+            String[] headers = {"№", "Назва", "Кількість", "Одиниць.", "Екіпаж", "Локація", "Категорія"};
             Row headerRow = sheet.createRow(0);
             headerRow.setHeightInPoints(25);
             for (int i = 0; i < headers.length; i++) {
