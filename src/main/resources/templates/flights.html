@@ -358,6 +358,18 @@
                 const res = await fetch(url);
                 if (!res.ok) { showToast('Помилка завантаження', 'err'); return; }
                 allRecords = await res.json();
+
+                // Встановлюємо сортування за № за замовчуванням (спадання)
+                sortCol = 'num';
+                sortDir = -1;
+                // Оновлюємо клас у заголовку
+                document.querySelectorAll('thead th').forEach(th => {
+                    th.classList.remove('sort-asc', 'sort-desc');
+                    if (th.dataset.col === 'num') {
+                        th.classList.add('sort-desc');
+                    }
+                });
+
                 applyFilter();
                 renderStats();
             }
