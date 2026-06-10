@@ -1,29 +1,143 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Вхід</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вхід до системи</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
-        .login-container { max-width: 400px; margin: 100px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h2 { color: #1a237e; margin-top: 0; }
-        input { width: 100%; padding: 8px 10px; margin: 8px 0 16px; border: 1px solid #ccc; border-radius: 5px; }
-        button { background: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
-        button:hover { background: #1565c0; }
-        .error { color: #c62828; }
-        .success { color: #2e7d32; }
+        :root {
+            --primary: #1976d2;
+            --primary-dark: #1565c0;
+            --secondary: #1a237e;
+            --bg-light: #f0f2f5;
+            --white: #ffffff;
+            --error-bg: #ffebee;
+            --error-text: #c62828;
+            --success-bg: #e8f5e9;
+            --success-text: #2e7d32;
+            --border: #ccc;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg-light);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .login-container {
+            max-width: 400px;
+            width: 100%;
+            background: var(--white);
+            padding: 30px 28px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        h2 {
+            color: var(--secondary);
+            text-align: center;
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 24px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(25,118,210,0.2);
+        }
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 8px;
+        }
+        button:hover {
+            background: var(--primary-dark);
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .error {
+            color: var(--error-text);
+            background: var(--error-bg);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .success {
+            color: var(--success-text);
+            background: var(--success-bg);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 24px 20px;
+            }
+        }
     </style>
 </head>
 <body>
 <div class="login-container">
-    <h2>Вхід до системи</h2>
-    <div th:if="${param.error}" class="error">Невірне ім'я або пароль</div>
-    <div th:if="${param.logout}" class="success">Ви вийшли</div>
+    <h2>🔐 Вхід до системи</h2>
+
+    <!-- Повідомлення про помилку -->
+    <div th:if="${param.error}" class="error">
+        ❌ Невірне ім'я або пароль
+    </div>
+
+    <!-- Повідомлення про успішний вихід -->
+    <div th:if="${param.logout}" class="success">
+        ✅ Ви успішно вийшли
+    </div>
+
     <form method="post" th:action="@{/login}">
-        <label>Логін</label>
-        <input type="text" name="username" required autofocus>
-        <label>Пароль</label>
-        <input type="password" name="password" required>
+        <div class="input-group">
+            <label>👤 Логін</label>
+            <input type="text" name="username" placeholder="Введіть ваш логін" required autofocus>
+        </div>
+
+        <div class="input-group">
+            <label>🔒 Пароль</label>
+            <input type="password" name="password" placeholder="Введіть пароль" required>
+        </div>
+
         <button type="submit">Увійти</button>
     </form>
 </div>

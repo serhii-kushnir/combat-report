@@ -11,16 +11,24 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class DataInitializer {
 
     @Bean
-    public CommandLineRunner initUsers(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner initAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            if (userRepository.findByUsername("admin").isEmpty()) {
-                userRepository.save(new AppUser("admin", passwordEncoder.encode("admin123"), "ADMIN"));
-                System.out.println("Створено admin/admin123");
-            }
-            if (userRepository.findByUsername("operator").isEmpty()) {
-                userRepository.save(new AppUser("operator", passwordEncoder.encode("oper123"), "USER"));
-                System.out.println("Створено operator/oper123");
-            }
+            String username = "admin_skopa";
+            String password = "skopa9099";
+            userRepository.findByUsername(username).ifPresentOrElse(
+                    user -> {
+                        // Якщо користувач існує, оновлюємо пароль (на випадок зміни)
+                        if (!passwordEncoder.matches(password, user.getPassword())) {
+                            user.setPassword(passwordEncoder.encode(password));
+                            userRepository.save(user);
+                            System.out.println("✅ Пароль для " + username + " оновлено");
+                        }
+                    },
+                    () -> {
+                        userRepository.save(new AppUser(username, passwordEncoder.encode(password), "ADMIN"));
+                        System.out.println("✅ Користувача " + username + " створено (пароль: " + password + ")");
+                    }
+            );
         };
     }
 }
