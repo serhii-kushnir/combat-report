@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Майно / Склад</title>
     <style>
-        /* ===== СТИЛІ ===== */
         .topbar { background: white; padding: 12px 20px; border-bottom: 1px solid #e0e0e0; font-size: 15px; font-weight: 600; color: #1a237e; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
         .container { padding: 16px 20px; }
@@ -30,8 +29,6 @@
         th.sort-desc::after { content: ' ▼'; font-size: 10px; }
         td { padding: 7px 8px; font-size: 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
         tr:hover td { background: #f5f9ff; }
-
-        /* Ширина колонок */
         .col-num { width: 40px; text-align: center; }
         .col-name { width: auto; min-width: 180px; }
         .col-quantity { width: 90px; text-align: center; }
@@ -40,16 +37,12 @@
         .col-location { width: 100px; text-align: center; }
         .col-category { width: 100px; text-align: center; }
         .col-actions { width: 100px; text-align: center !important; white-space: nowrap; }
-
-        /* Кольорові неактивні блоки */
         .btn-quantity { background: #17a2b8; color: white; display: inline-block; padding: 4px 9px; border-radius: 5px; font-size: 11px; font-weight: 600; min-width: 50px; }
         .btn-unit { background: #28a745; color: white; display: inline-block; padding: 4px 9px; border-radius: 5px; font-size: 11px; font-weight: 600; }
         .btn-crew { background: #fd7e14; color: white; display: inline-block; padding: 4px 9px; border-radius: 5px; font-size: 11px; font-weight: 600; }
         .btn-location { background: #6f42c1; color: white; display: inline-block; padding: 4px 9px; border-radius: 5px; font-size: 11px; font-weight: 600; }
         .btn-category { background: #20c997; color: white; display: inline-block; padding: 4px 9px; border-radius: 5px; font-size: 11px; font-weight: 600; }
         .btn-empty { background: #6c757d; color: white; display: inline-block; padding: 4px 9px; border-radius: 5px; font-size: 11px; font-weight: 600; }
-
-        /* Кнопки дій */
         .btn-edit, .btn-delete {
             display: inline-block !important;
             margin: 0 4px !important;
@@ -63,7 +56,6 @@
         .btn-edit:hover { background: #e66a0b; }
         .btn-delete { background: #dc3545; color: white; }
         .btn-delete:hover { background: #c82333; }
-
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
         .modal-overlay.open { display: flex; }
         .modal { background: white; border-radius: 10px; padding: 24px; width: 600px; max-width: 96vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
@@ -300,15 +292,20 @@
             }
 
             async function loadData() {
-                const res = await fetch('/equipment/api');
-                allItems = await res.json();
-                filterAndSort();
-                document.querySelectorAll('thead th[data-col]').forEach(th => {
-                    th.classList.remove('sort-asc', 'sort-desc');
-                    if (th.getAttribute('data-col') === sortCol) {
-                        th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+                try {
+                    const res = await fetch('/equipment/api');
+                    if (!res.ok) {
+                        console.error('Помилка завантаження:', res.status);
+                        showToast('Помилка завантаження: ' + res.status, 'err');
+                        return;
                     }
-                });
+                    allItems = await res.json();
+                    console.log('Завантажено:', allItems.length, 'записів');
+                    filterAndSort();
+                } catch (err) {
+                    console.error('Network error:', err);
+                    showToast('Помилка мережі', 'err');
+                }
             }
 
             function sortBy(col) {
@@ -357,7 +354,7 @@
                 if (!name) { showToast("Введіть назву", "err"); return; }
                 const res = await fetch('/equipment/api', {
                     method: 'POST',
-                    headers: {'Content-Type':'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, quantity, unit, crew, location, category })
                 });
                 if (res.ok) {
@@ -394,7 +391,7 @@
                 if (!name) { showToast("Назва не може бути порожньою", "err"); return; }
                 const res = await fetch(`/equipment/api/${id}`, {
                     method: 'PUT',
-                    headers: {'Content-Type':'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, quantity, unit, crew, location, category })
                 });
                 if (res.ok) {
