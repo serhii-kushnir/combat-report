@@ -89,36 +89,37 @@
         .sidebar.collapsed .nav-item { justify-content: center; padding: 10px 0; }
         .sidebar.collapsed .nav-item.active { border-left-color: transparent; border-right: 3px solid #90caf9; }
 
-        /* ========== FOOTER З КНОПКОЮ ВИХОДУ (адаптивна) ========== */
+        /* ========== FOOTER (версія зверху, кнопка на всю ширину по центру) ========== */
         .sidebar-footer {
             padding: 12px 16px;
             border-top: 1px solid rgba(255,255,255,0.1);
             transition: padding 0.2s, opacity 0.2s;
             flex-shrink: 0;
+            text-align: center;
         }
         .sidebar.collapsed .sidebar-footer {
             padding: 12px 0;
         }
 
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s;
+        .version {
+            display: block;
+            font-size: 11px;
+            color: #5c6bc0;
+            margin-bottom: 10px;
+            transition: opacity 0.2s, height 0.2s, margin 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
         }
         .sidebar.collapsed .version {
             opacity: 0;
-            width: 0;
-            overflow: hidden;
+            height: 0;
+            margin-bottom: 0;
             pointer-events: none;
         }
-        .sidebar.collapsed .logout-text {
-            display: none;
-        }
-        .sidebar.collapsed .logout-btn {
-            justify-content: center;
-            padding: 0;
+
+        .logout-form {
             width: 100%;
+            margin: 0;
         }
         .logout-btn {
             background: none;
@@ -128,8 +129,10 @@
             font-size: 12px;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 6px;
-            padding: 4px 8px;
+            width: 100%;
+            padding: 6px 0;
             border-radius: 4px;
             transition: background 0.2s;
         }
@@ -137,11 +140,11 @@
             background: rgba(255,255,255,0.1);
             color: white;
         }
+        .sidebar.collapsed .logout-text {
+            display: none;
+        }
         .sidebar.collapsed .logout-icon {
             font-size: 18px;
-        }
-        .logout-form {
-            margin: 0;
         }
 
         /* ========== MAIN CONTENT ========== */
@@ -208,15 +211,13 @@
     </nav>
 
     <div class="sidebar-footer">
-        <div class="footer-content">
-            <span class="version">v1.1 - by Serhii Kushnir</span>
-            <form action="/logout" method="post" class="logout-form">
-                <button type="submit" class="logout-btn">
-                    <span class="logout-icon">🚪</span>
-                    <span class="logout-text">Вийти</span>
-                </button>
-            </form>
-        </div>
+        <form action="/logout" method="post" class="logout-form">
+            <button type="submit" class="logout-btn">
+                <span class="logout-icon">🚪</span>
+                <span class="logout-text">Вийти</span>
+            </button>
+        </form>
+        <span class="version">v1.1 - by Serhii Kushnir</span>
     </div>
 </div>
 
