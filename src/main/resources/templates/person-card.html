@@ -3,15 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${isNew} ? 'Нова особа' : 'Картка: ' + ${person.fullName}">Картка особи</title>
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title th:text="${person.id == null ? 'Нова особа' : 'Картка: ' + person.fullName}">Картка особи</title>
     <link th:replace="~{fragments :: sidebar-css}">
     <style>
+        /* ===== ОСНОВНІ СТИЛІ (з personnel.html) ===== */
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f0f2f5; }
 
+        .container { padding: 16px 20px; }
+
+        /* Кнопки */
+        .btn {
+            padding: 7px 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: #1976d2; color: white; }
+        .btn-primary:hover { background: #1565c0; }
+        .btn-success { background: #388e3c; color: white; }
+        .btn-success:hover { background: #2e7d32; }
+        .btn-warning { background: #f57c00; color: white; }
+        .btn-warning:hover { background: #e65100; }
+        .btn-danger  { background: #d32f2f; color: white; }
+        .btn-danger:hover  { background: #b71c1c; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
+        .btn-outline { background: none; border: 1px solid white; color: white; }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); }
+        .btn-sm { padding: 4px 9px; font-size: 11px; }
+        .btn-xs { padding: 3px 8px; font-size: 11px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
+        .btn-xs-primary { background: #1976d2; color: white; }
+        .btn-xs-danger  { background: #d32f2f; color: white; }
+        .btn-back { margin-bottom: 16px; display: inline-block; }
+
+        /* Картка */
         .card {
             background: white;
             border-radius: 16px;
@@ -31,24 +60,6 @@
         }
         .card-header h1 { margin: 0; font-size: 22px; }
         .card-actions { display: flex; gap: 10px; }
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .btn-primary { background: #1976d2; color: white; }
-        .btn-primary:hover { background: #1565c0; }
-        .btn-warning { background: #f57c00; color: white; }
-        .btn-warning:hover { background: #e65100; }
-        .btn-secondary { background: #6c757d; color: white; }
-        .btn-secondary:hover { background: #5a6268; }
-        .btn-outline { background: none; border: 1px solid white; color: white; }
-        .btn-outline:hover { background: rgba(255,255,255,0.1); }
-        .btn-success { background: #388e3c; color: white; }
-        .btn-success:hover { background: #2e7d32; }
 
         .card-section {
             padding: 20px 24px;
@@ -98,8 +109,9 @@
             text-align: left;
             transition: all 0.2s;
             display: block;
-            min-height: 40px;
+            min-height: 42px;          /* фіксована мінімальна висота для уникнення зсуву */
             line-height: 1.4;
+            overflow: hidden;          /* щоб нічого не вилазило */
         }
         .info-value:empty::before {
             content: "—";
@@ -113,6 +125,7 @@
             padding: 0;
         }
         .info-value.editable input,
+        .info-value.editable select,
         .info-value.editable textarea {
             width: 100%;
             box-sizing: border-box;
@@ -157,10 +170,8 @@
             font-weight: 600;
         }
         .sub-table tr:hover td { background: #f5f9ff; }
-        .btn-sm { padding: 4px 8px; font-size: 12px; }
-        .btn-danger { background: #dc3545; color: white; }
-        .btn-danger:hover { background: #c82333; }
 
+        /* Модальні вікна */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -180,31 +191,80 @@
             max-height: 90vh;
             overflow-y: auto;
         }
-        .modal h3 { margin: 0 0 16px; color: #1a237e; }
+        .modal h2, .modal h3 { margin: 0 0 18px; color: #1a237e; font-size: 17px; }
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 7px 9px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+        .form-group textarea { height: 80px; resize: vertical; }
 
+        /* Динамічні рядки */
+        .dynamic-row {
+            display: grid;
+            gap: 6px;
+            align-items: end;
+            margin-bottom: 6px;
+            padding: 8px;
+            background: #f5f7fa;
+            border-radius: 5px;
+            border-left: 3px solid #90caf9;
+            width: 100%;
+            overflow: hidden;
+        }
+        .dynamic-row input, .dynamic-row select {
+            padding: 5px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: inherit;
+            width: 100%;
+            box-sizing: border-box;
+            min-width: 0;
+        }
+        .dynamic-section { margin-bottom: 14px; }
+        .dynamic-section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1a237e;
+            margin: 14px 0 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Тостер */
         .toast {
             position: fixed; bottom: 20px; right: 20px;
-            padding: 10px 18px; border-radius: 8px;
-            color: white; font-size: 13px; font-weight: 600;
+            padding: 10px 18px; border-radius: 6px; color: white;
+            font-size: 13px; font-weight: 600;
             opacity: 0; transition: opacity 0.3s; z-index: 9999;
         }
         .toast.show { opacity: 1; }
         .toast.success { background: #2e7d32; }
-        .toast.error { background: #c62828; }
-        .btn-back { margin-bottom: 16px; display: inline-block; }
-
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-        .form-group { display: flex; flex-direction: column; gap: 4px; }
-        label { font-size: 12px; font-weight: 600; color: #555; }
-        .form-group input, .form-group select, .form-group textarea { padding: 7px 9px; border: 1px solid #ccc; border-radius: 5px; font-size: 13px; font-family: inherit; }
-        .dynamic-row { display: grid; gap: 6px; align-items: end; margin-bottom: 6px; padding: 8px; background: #f5f7fa; border-radius: 5px; border-left: 3px solid #90caf9; width: 100%; overflow: hidden; }
-        .dynamic-row input, .dynamic-row select { padding: 5px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; font-family: inherit; width: 100%; box-sizing: border-box; min-width: 0; }
-        .dynamic-section { margin-bottom: 14px; }
-        .dynamic-section-title { font-size: 12px; font-weight: 700; color: #1a237e; margin: 14px 0 8px; padding-bottom: 4px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; }
-        .btn-xs { padding: 3px 8px; font-size: 11px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
-        .btn-xs-primary { background: #1976d2; color: white; }
-        .btn-xs-danger  { background: #d32f2f; color: white; }
+        .toast.error   { background: #c62828; }
     </style>
 </head>
 <body>
@@ -212,24 +272,20 @@
     <div th:replace="~{fragments :: sidebar('personnel')}"></div>
     <div class="main-content">
         <div class="container">
-            <a href="/personnel" class="btn btn-secondary btn-back">← Назад до списку</a>
-
             <div class="card">
                 <div class="card-header">
                     <h1 id="pageTitle">
-                        <span th:if="${!isNew}">
+                        <span th:if="${person.id != null}">
                             <span th:if="${person.rank != null and !person.rank.isEmpty()}" th:text="${person.rank}"></span>
                             <span th:text="${person.fullName}"></span>
                             <span th:if="${person.position != null and !person.position.isEmpty()}" th:text="' (' + ${person.position} + ')'"></span>
                         </span>
-                        <span th:if="${isNew}">➕ Нова особа</span>
                     </h1>
                     <div class="card-actions">
-                        <button class="btn btn-success" id="addPersonBtn" onclick="location.href='/personnel/new'">+ Нова особа</button>
-                        <button class="btn btn-primary" id="editBtn" th:if="${!isNew}">✏️ Редагувати</button>
+                        <button class="btn btn-primary" id="editBtn" th:if="${person.id != null}">✏️ Редагувати</button>
                         <button class="btn btn-warning" id="saveBtn" style="display:none;">💾 Зберегти</button>
                         <button class="btn btn-secondary" id="cancelBtn" style="display:none;">❌ Скасувати</button>
-                        <button class="btn btn-outline" onclick="window.location.href='/personnel'">📋 Список</button>
+                        <button class="btn btn-outline" onclick="window.location.href='/personnel'">📋 До списку</button>
                     </div>
                 </div>
 
@@ -237,34 +293,13 @@
                 <div class="card-section">
                     <div class="section-title">👤 Загальна інформація</div>
                     <div class="info-grid">
-                        <div class="info-field">
-                            <div class="info-label">Прізвище</div>
-                            <div class="info-value" data-field="lastName" th:text="${person.lastName}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">Ім'я</div>
-                            <div class="info-value" data-field="firstName" th:text="${person.firstName}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">По батькові</div>
-                            <div class="info-value" data-field="middleName" th:text="${person.middleName}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">Звання</div>
-                            <div class="info-value" data-field="rank" th:text="${person.rank}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">Коротка посада</div>
-                            <div class="info-value" data-field="position" th:text="${person.position}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">Телефон</div>
-                            <div class="info-value" data-field="phone" th:text="${person.phone}">—</div>
-                        </div>
-                        <div class="info-field full-width">
-                            <div class="info-label">Повна посада</div>
-                            <div class="info-value" data-field="fullPosition" th:text="${person.fullPosition}">—</div>
-                        </div>
+                        <div class="info-field"><div class="info-label">Прізвище</div><div class="info-value" data-field="lastName" th:text="${person.lastName}">—</div></div>
+                        <div class="info-field"><div class="info-label">Ім'я</div><div class="info-value" data-field="firstName" th:text="${person.firstName}">—</div></div>
+                        <div class="info-field"><div class="info-label">По батькові</div><div class="info-value" data-field="middleName" th:text="${person.middleName}">—</div></div>
+                        <div class="info-field"><div class="info-label">Звання</div><div class="info-value" data-field="rank" th:text="${person.rank}">—</div></div>
+                        <div class="info-field"><div class="info-label">Коротка посада</div><div class="info-value" data-field="position" th:text="${person.position}">—</div></div>
+                        <div class="info-field"><div class="info-label">Телефон</div><div class="info-value" data-field="phone" th:text="${person.phone}">—</div></div>
+                        <div class="info-field full-width"><div class="info-label">Повна посада</div><div class="info-value" data-field="fullPosition" th:text="${person.fullPosition}">—</div></div>
                     </div>
                 </div>
 
@@ -272,129 +307,16 @@
                 <div class="card-section">
                     <div class="section-title">📄 Детальна інформація</div>
                     <div class="info-grid">
-                        <div class="info-field">
-                            <div class="info-label">Дата народження</div>
-                            <div class="info-value" data-field="birthDate" th:if="${!isNew}" th:text="${#temporals.format(person.birthDate, 'dd.MM.yyyy')}">—</div>
-                            <div class="info-value" data-field="birthDate" th:if="${isNew}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">ІПН</div>
-                            <div class="info-value" data-field="taxId" th:text="${person.taxId}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">Паспорт серія</div>
-                            <div class="info-value" data-field="passportSeries" th:text="${person.passportSeries}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">Паспорт номер</div>
-                            <div class="info-value" data-field="passportNumber" th:text="${person.passportNumber}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">Група крові</div>
-                            <div class="info-value" data-field="bloodGroup" th:text="${person.bloodGroup}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">Вод. посв. серія</div>
-                            <div class="info-value" data-field="driverLicenseSeries" th:text="${person.driverLicenseSeries}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">Вод. посв. номер</div>
-                            <div class="info-value" data-field="driverLicenseNumber" th:text="${person.driverLicenseNumber}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">Категорія</div>
-                            <div class="info-value" data-field="driverLicenseCategory" th:text="${person.driverLicenseCategory}">—</div>
-                        </div>
-                        <div class="info-field full-width">
-                            <div class="info-label">Адреса реєстрації</div>
-                            <div class="info-value" data-field="registrationAddress" th:text="${person.registrationAddress}">—</div>
-                        </div>
-                        <div class="info-field full-width">
-                            <div class="info-label">Адреса проживання</div>
-                            <div class="info-value" data-field="livingAddress" th:text="${person.livingAddress}">—</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Сімейний стан -->
-                <div class="card-section">
-                    <div class="section-title">👨‍👩‍👧 Сім'я</div>
-                    <div class="info-grid">
-                        <div class="info-field">
-                            <div class="info-label">Сімейний стан</div>
-                            <div class="info-value" data-field="maritalStatus" th:text="${person.maritalStatus}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">Дружина/Чоловік</div>
-                            <div class="info-value" data-field="spouseName" th:text="${person.spouseName}">—</div>
-                        </div>
-                        <div class="info-field full-width">
-                            <div class="info-label">Адреса проживання (сім'я)</div>
-                            <div class="info-value" data-field="familyAddress" th:text="${person.familyAddress}">—</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Військові дані (разом зі зброєю) -->
-                <div class="card-section">
-                    <div class="section-title">🎖 Військові дані</div>
-                    <div class="info-grid">
-                        <div class="info-field">
-                            <div class="info-label">Дата призову</div>
-                            <div class="info-value" data-field="draftDate" th:if="${!isNew}" th:text="${#temporals.format(person.draftDate, 'dd.MM.yyyy')}">—</div>
-                            <div class="info-value" data-field="draftDate" th:if="${isNew}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">Вид служби</div>
-                            <div class="info-value" data-field="serviceType" th:text="${person.serviceType}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">Ким призваний</div>
-                            <div class="info-value" data-field="draftOrganization" th:text="${person.draftOrganization}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">УБД №</div>
-                            <div class="info-value" data-field="ubdNumber" th:text="${person.ubdNumber}">—</div>
-                        </div>
-                        <div class="info-field full-width">
-                            <div class="info-label">Форма допуску</div>
-                            <div class="info-value" data-field="admissionForm" th:text="${person.admissionForm}">—</div>
-                        </div>
-                        <div class="info-field full-width">
-                            <div class="info-label">Зарахування</div>
-                            <div class="info-value" data-field="enrollmentInfo" th:text="${person.enrollmentInfo}">—</div>
-                        </div>
-                        <div class="info-field">
-                            <div class="info-label">Військова служба за</div>
-                            <div class="info-value" data-field="serviceFor" th:text="${person.serviceFor}">—</div>
-                        </div>
-                    </div>
-
-                    <!-- Озброєння -->
-                    <div class="sub-section">
-                        <div class="sub-title">
-                            <span>🔫 Закріплена зброя</span>
-                            <button class="btn btn-primary btn-sm" onclick="openAddWeaponModal()">+ Додати</button>
-                        </div>
-                        <table class="sub-table" id="weaponTable">
-                            <thead><tr><th>Тип</th><th>Серійний №</th><th>Дата видачі</th><th>Примітка</th><th>Дії</th></tr></thead>
-                            <tbody id="weaponList"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Діти -->
-                <div class="card-section">
-                    <div class="section-title">👶 Діти</div>
-                    <div class="sub-section">
-                        <div class="sub-title">
-                            <span>Список дітей</span>
-                            <button class="btn btn-primary btn-sm" onclick="openAddChildModal()">+ Додати</button>
-                        </div>
-                        <table class="sub-table" id="childrenTable">
-                            <thead><tr><th>ПІБ дитини</th><th>Дата народження</th><th>Дії</th></tr></thead>
-                            <tbody id="childrenList"></tbody>
-                        </table>
+                        <div class="info-field"><div class="info-label">Дата народження</div><div class="info-value" data-field="birthDate" th:text="${#temporals.format(person.birthDate, 'dd.MM.yyyy')}">—</div></div>
+                        <div class="info-field"><div class="info-label">ІПН</div><div class="info-value" data-field="taxId" th:text="${person.taxId}">—</div></div>
+                        <div class="info-field"><div class="info-label">Паспорт серія</div><div class="info-value" data-field="passportSeries" th:text="${person.passportSeries}">—</div></div>
+                        <div class="info-field"><div class="info-label">Паспорт номер</div><div class="info-value" data-field="passportNumber" th:text="${person.passportNumber}">—</div></div>
+                        <div class="info-field"><div class="info-label">Група крові</div><div class="info-value" data-field="bloodGroup" th:text="${person.bloodGroup}">—</div></div>
+                        <div class="info-field"><div class="info-label">Вод. посв. серія</div><div class="info-value" data-field="driverLicenseSeries" th:text="${person.driverLicenseSeries}">—</div></div>
+                        <div class="info-field"><div class="info-label">Вод. посв. номер</div><div class="info-value" data-field="driverLicenseNumber" th:text="${person.driverLicenseNumber}">—</div></div>
+                        <div class="info-field"><div class="info-label">Категорія</div><div class="info-value" data-field="driverLicenseCategory" th:text="${person.driverLicenseCategory}">—</div></div>
+                        <div class="info-field full-width"><div class="info-label">Адреса реєстрації</div><div class="info-value" data-field="registrationAddress" th:text="${person.registrationAddress}">—</div></div>
+                        <div class="info-field full-width"><div class="info-label">Адреса проживання</div><div class="info-value" data-field="livingAddress" th:text="${person.livingAddress}">—</div></div>
                     </div>
                 </div>
 
@@ -402,22 +324,51 @@
                 <div class="card-section">
                     <div class="section-title">🎓 Освіта</div>
                     <div class="sub-section">
-                        <div class="sub-title">
-                            <span>Список освіти</span>
-                            <button class="btn btn-primary btn-sm" onclick="openAddEducationModal()">+ Додати</button>
-                        </div>
-                        <table class="sub-table" id="educationTable">
-                            <thead><tr><th>Рівень</th><th>Заклад</th><th>Спеціальність</th><th>Початок</th><th>Кінець</th><th>Диплом</th><th>Дії</th></tr></thead>
-                            <tbody id="educationList"></tbody>
-                        </table>
+                        <div class="sub-title"><span>Список освіти</span><button class="btn btn-primary btn-sm" onclick="openAddEducationModal()">+ Додати</button></div>
+                        <table class="sub-table" id="educationTable"><thead><tr><th>Рівень</th><th>Заклад</th><th>Спеціальність</th><th>Початок</th><th>Кінець</th><th>Диплом</th><th>Дії</th></tr></thead><tbody id="educationList"></tbody></table>
+                    </div>
+                </div>
+
+                <!-- Сімейний стан -->
+                <div class="card-section">
+                    <div class="section-title">👨‍👩‍👧 Сім'я</div>
+                    <div class="info-grid">
+                        <div class="info-field"><div class="info-label">Сімейний стан</div><div class="info-value" data-field="maritalStatus" th:text="${person.maritalStatus}">—</div></div>
+                        <div class="info-field"><div class="info-label">Дружина/Чоловік</div><div class="info-value" data-field="spouseName" th:text="${person.spouseName}">—</div></div>
+                        <div class="info-field full-width"><div class="info-label">Адреса проживання (сім'я)</div><div class="info-value" data-field="familyAddress" th:text="${person.familyAddress}">—</div></div>
+                    </div>
+                </div>
+
+                <!-- Діти -->
+                <div class="card-section">
+                    <div class="section-title">👶 Діти</div>
+                    <div class="sub-section">
+                        <div class="sub-title"><span>Список дітей</span><button class="btn btn-primary btn-sm" onclick="openAddChildModal()">+ Додати</button></div>
+                        <table class="sub-table" id="childrenTable"><thead><tr><th>ПІБ дитини</th><th>Дата народження</th><th>Дії</th></tr></thead><tbody id="childrenList"></tbody></table>
+                    </div>
+                </div>
+
+                <!-- Військові дані (зброя всередині) -->
+                <div class="card-section">
+                    <div class="section-title">🎖 Військові дані</div>
+                    <div class="info-grid">
+                        <div class="info-field"><div class="info-label">Дата призову</div><div class="info-value" data-field="draftDate" th:text="${#temporals.format(person.draftDate, 'dd.MM.yyyy')}">—</div></div>
+                        <div class="info-field"><div class="info-label">Вид служби</div><div class="info-value" data-field="serviceType" th:text="${person.serviceType}">—</div></div>
+                        <div class="info-field"><div class="info-label">Ким призваний</div><div class="info-value" data-field="draftOrganization" th:text="${person.draftOrganization}">—</div></div>
+                        <div class="info-field"><div class="info-label">УБД №</div><div class="info-value" data-field="ubdNumber" th:text="${person.ubdNumber}">—</div></div>
+                        <div class="info-field full-width"><div class="info-label">Форма допуску</div><div class="info-value" data-field="admissionForm" th:text="${person.admissionForm}">—</div></div>
+                        <div class="info-field full-width"><div class="info-label">Зарахування</div><div class="info-value" data-field="enrollmentInfo" th:text="${person.enrollmentInfo}">—</div></div>
+                        <div class="info-field"><div class="info-label">Військова служба за</div><div class="info-value" data-field="serviceFor" th:text="${person.serviceFor}">—</div></div>
+                    </div>
+                    <!-- Озброєння -->
+                    <div class="sub-section">
+                        <div class="sub-title"><span>🔫 Закріплена зброя</span><button class="btn btn-primary btn-sm" onclick="openAddWeaponModal()">+ Додати</button></div>
+                        <table class="sub-table" id="weaponTable"><thead><tr><th>Тип</th><th>Серійний №</th><th>Дата видачі</th><th>Примітка</th><th>Дії</th></tr></thead><tbody id="weaponList"></tbody></table>
                     </div>
                 </div>
 
                 <div class="card-section">
-                    <div class="info-field full-width">
-                        <div class="info-label">📝 Примітка</div>
-                        <div class="info-value" data-field="note" th:text="${person.note}">—</div>
-                    </div>
+                    <div class="info-field full-width"><div class="info-label">📝 Примітка</div><div class="info-value" data-field="note" th:text="${person.note}">—</div></div>
                 </div>
             </div>
         </div>
@@ -427,60 +378,27 @@
 <div class="toast" id="toast"></div>
 
 <!-- Модальні вікна для дітей, освіти, зброї -->
-<div class="modal-overlay" id="childModal">
-    <div class="modal"><h3>➕ Додати дитину</h3>
-        <div class="form-group"><label>ПІБ дитини</label><input type="text" id="childFullName" placeholder="Іванов Іван Іванович"></div>
-        <div class="form-group"><label>Дата народження</label><input type="date" id="childBirthDate"></div>
-        <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('childModal')">Скасувати</button><button class="btn btn-primary" onclick="saveChild()">Зберегти</button></div>
-    </div>
-</div>
-<div class="modal-overlay" id="educationModal">
-    <div class="modal"><h3>➕ Додати освіту</h3>
-        <div class="form-group"><label>Рівень</label><input type="text" id="eduLevel" placeholder="Вища"></div>
-        <div class="form-group"><label>Заклад</label><input type="text" id="eduInstitution" placeholder="КПІ"></div>
-        <div class="form-group"><label>Спеціальність</label><input type="text" id="eduSpeciality" placeholder="Інженер"></div>
-        <div class="form-group"><label>Початок</label><input type="date" id="eduStartDate"></div>
-        <div class="form-group"><label>Кінець</label><input type="date" id="eduEndDate"></div>
-        <div class="form-group"><label>Диплом №</label><input type="text" id="eduDiploma" placeholder="AA123456"></div>
-        <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('educationModal')">Скасувати</button><button class="btn btn-primary" onclick="saveEducation()">Зберегти</button></div>
-    </div>
-</div>
-<div class="modal-overlay" id="weaponModal">
-    <div class="modal"><h3>➕ Додати зброю</h3>
-        <div class="form-group"><label>Тип зброї</label><input type="text" id="weaponType" placeholder="АК-74"></div>
-        <div class="form-group"><label>Серійний №</label><input type="text" id="weaponSerial" placeholder="1234567"></div>
-        <div class="form-group"><label>Дата видачі</label><input type="text" id="weaponIssueDate" placeholder="01.01.2024"></div>
-        <div class="form-group"><label>Примітка</label><input type="text" id="weaponNote"></div>
-        <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('weaponModal')">Скасувати</button><button class="btn btn-primary" onclick="saveWeapon()">Зберегти</button></div>
-    </div>
-</div>
+<div class="modal-overlay" id="childModal"><div class="modal"><h3>➕ Додати дитину</h3><div class="form-group"><label>ПІБ дитини</label><input type="text" id="childFullName" placeholder="Іванов Іван Іванович"></div><div class="form-group"><label>Дата народження</label><input type="date" id="childBirthDate"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('childModal')">Скасувати</button><button class="btn btn-primary" onclick="saveChild()">Зберегти</button></div></div></div>
+<div class="modal-overlay" id="educationModal"><div class="modal"><h3>➕ Додати освіту</h3><div class="form-group"><label>Рівень</label><input type="text" id="eduLevel" placeholder="Вища"></div><div class="form-group"><label>Заклад</label><input type="text" id="eduInstitution" placeholder="КПІ"></div><div class="form-group"><label>Спеціальність</label><input type="text" id="eduSpeciality" placeholder="Інженер"></div><div class="form-group"><label>Початок</label><input type="date" id="eduStartDate"></div><div class="form-group"><label>Кінець</label><input type="date" id="eduEndDate"></div><div class="form-group"><label>Диплом №</label><input type="text" id="eduDiploma" placeholder="AA123456"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('educationModal')">Скасувати</button><button class="btn btn-primary" onclick="saveEducation()">Зберегти</button></div></div></div>
+<div class="modal-overlay" id="weaponModal"><div class="modal"><h3>➕ Додати зброю</h3><div class="form-group"><label>Тип зброї</label><input type="text" id="weaponType" placeholder="АК-74"></div><div class="form-group"><label>Серійний №</label><input type="text" id="weaponSerial" placeholder="1234567"></div><div class="form-group"><label>Дата видачі</label><input type="text" id="weaponIssueDate" placeholder="01.01.2024"></div><div class="form-group"><label>Примітка</label><input type="text" id="weaponNote"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('weaponModal')">Скасувати</button><button class="btn btn-primary" onclick="saveWeapon()">Зберегти</button></div></div></div>
 
 <script>
-    // CSRF
-    const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
-    function getCsrfHeaders() { return csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : {}; }
+    // CSRF вимкнено
+    function getCsrfHeaders() { return {}; }
 
-    // Глобальні змінні
     let currentPersonId = [[${person.id}]];
-    let isNewMode = [[${isNew != null ? isNew : false}]];
+    let isNewMode = (currentPersonId == null);
     let isEditMode = false;
-    let allPersonnel = []; // не використовується, але залишимо для сумісності
-    let currentDetailId = null; // для дочірніх таблиць
+    let currentDetailId = null;
 
-    // Допоміжні функції
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
     function formatDate(dateStr) { if (!dateStr) return '—'; let parts = dateStr.substring(0,10).split('-'); if (parts.length === 3) return `${parts[2]}.${parts[1]}.${parts[0]}`; return dateStr; }
     function showToast(msg, type) { let toast = document.getElementById('toast'); toast.textContent = msg; toast.className = `toast ${type} show`; setTimeout(() => toast.classList.remove('show'), 3000); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     document.querySelectorAll('.modal-overlay').forEach(el => el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); }));
 
-    // Якщо нова особа – одразу вмикаємо режим редагування
     if (isNewMode) {
-        currentPersonId = null;
-        window.addEventListener('DOMContentLoaded', () => {
-            enableEditModeForNew();
-        });
+        window.addEventListener('DOMContentLoaded', () => { enableEditModeForNew(); });
     }
 
     function enableEditModeForNew() {
@@ -499,7 +417,6 @@
         document.getElementById('cancelBtn').onclick = () => window.location.href = '/personnel';
     }
 
-    // Редагування існуючої особи
     function enableEditMode() {
         if (isEditMode || isNewMode) return;
         isEditMode = true;
@@ -571,6 +488,7 @@
             input.type = 'text';
             input.value = currentValue;
         }
+        // Фіксуємо стилі, щоб елемент не вилазив за межі
         input.style.width = '100%';
         input.style.boxSizing = 'border-box';
         input.style.padding = '8px 10px';
@@ -579,6 +497,9 @@
         input.style.fontSize = '14px';
         input.style.fontFamily = 'inherit';
         input.style.backgroundColor = 'white';
+        input.style.display = 'block';
+        input.style.margin = '0';
+        // Очищаємо комірку і вставляємо input
         el.innerHTML = '';
         el.appendChild(input);
         input.focus();
@@ -657,7 +578,6 @@
         }
     }
 
-    // Функції для завантаження дочірніх таблиць (діти, освіта, зброя) – лише якщо є id
     if (!isNewMode && currentPersonId) {
         currentDetailId = currentPersonId;
         loadChildren(); loadEducation(); loadWeapons();
@@ -667,10 +587,9 @@
         if (!currentPersonId) return;
         try {
             let res = await fetch(`/personnel/api/${currentPersonId}/children`);
-            if (!res.ok) throw new Error();
             let list = await res.json();
             let tbody = document.getElementById('childrenList');
-            if (!list.length) { tbody.innerHTML = '<tr><td colspan="3">Немає даних</td><\/tr>'; return; }
+            if (!list.length) { tbody.innerHTML = '<tr><td colspan="3">Немає даних<\/td><\/tr>'; return; }
             tbody.innerHTML = list.map(c => `<tr><td>${escapeHtml(c.fullName || '—')}</td><td style="text-align:center">${formatDate(c.birthDate)}</td><td><button class="btn btn-danger btn-sm" onclick="deleteChild(${c.id})">🗑</button></td></tr>`).join('');
         } catch(e) { console.error(e); }
     }
@@ -694,15 +613,24 @@
             let res = await fetch(`/personnel/api/${currentPersonId}/education`);
             let list = await res.json();
             let tbody = document.getElementById('educationList');
-            if (!list.length) { tbody.innerHTML = '<tr><td colspan="7">Немає даних</td><\/tr>'; return; }
+            if (!list.length) { tbody.innerHTML = '<td><td colspan="7">Немає даних<\/td><\/tr>'; return; }
             tbody.innerHTML = list.map(e => `<tr><td>${escapeHtml(e.level || '—')}</td><td>${escapeHtml(e.institution || '—')}</td><td>${escapeHtml(e.speciality || '—')}</td><td style="text-align:center">${formatDate(e.startDate)}</td><td style="text-align:center">${formatDate(e.endDate)}</td><td>${escapeHtml(e.diploma || '—')}</td><td><button class="btn btn-danger btn-sm" onclick="deleteEducation(${e.id})">🗑</button></td></tr>`).join('');
         } catch(e) { console.error(e); }
     }
     async function openAddEducationModal() { document.getElementById('educationModal').classList.add('open'); }
     async function saveEducation() {
         if (!currentPersonId) { showToast("Спочатку збережіть особу", "error"); return; }
-        let body = { level: document.getElementById('eduLevel').value, institution: document.getElementById('eduInstitution').value, speciality: document.getElementById('eduSpeciality').value, startDate: document.getElementById('eduStartDate').value || null, endDate: document.getElementById('eduEndDate').value || null, diploma: document.getElementById('eduDiploma').value };
-        let res = await fetch(`/personnel/api/${currentPersonId}/education`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...getCsrfHeaders() }, body: JSON.stringify(body) });
+        let body = {
+            level: document.getElementById('eduLevel').value,
+            institution: document.getElementById('eduInstitution').value,
+            speciality: document.getElementById('eduSpeciality').value,
+            startDate: document.getElementById('eduStartDate').value || null,
+            endDate: document.getElementById('eduEndDate').value || null,
+            diploma: document.getElementById('eduDiploma').value
+        };
+        let res = await fetch(`/personnel/api/${currentPersonId}/education`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json', ...getCsrfHeaders() }, body: JSON.stringify(body)
+        });
         if (res.ok) { closeModal('educationModal'); loadEducation(); showToast("Додано", "success"); }
         else showToast("Помилка", "error");
     }
@@ -714,22 +642,28 @@
             let res = await fetch(`/personnel/api/${currentPersonId}/weapons`);
             let list = await res.json();
             let tbody = document.getElementById('weaponList');
-            if (!list.length) { tbody.innerHTML = '<td><td colspan="5">Немає даних</td><\/tr>'; return; }
-            tbody.innerHTML = list.map(w => `<tr><td>${escapeHtml(w.weaponType || '—')}</td><td style="text-align:center">${escapeHtml(w.serialNumber || '—')}</td><td style="text-align:center">${escapeHtml(w.issuedDate || '—')}</td><td>${escapeHtml(w.note || '—')}</td><td><button class="btn btn-danger btn-sm" onclick="deleteWeapon(${w.id})">🗑</button></td></tr>`).join('');
+            if (!list.length) { tbody.innerHTML = '<tr><td colspan="5">Немає даних<\/td><\/tr>'; return; }
+            tbody.innerHTML = list.map(w => `<tr><td>${escapeHtml(w.weaponType || '—')}</td><td>${escapeHtml(w.serialNumber || '—')}</td><td>${escapeHtml(w.issuedDate || '—')}</td><td>${escapeHtml(w.note || '—')}</td><td><button class="btn btn-danger btn-sm" onclick="deleteWeapon(${w.id})">🗑</button></td></tr>`).join('');
         } catch(e) { console.error(e); }
     }
     async function openAddWeaponModal() { document.getElementById('weaponModal').classList.add('open'); }
     async function saveWeapon() {
         if (!currentPersonId) { showToast("Спочатку збережіть особу", "error"); return; }
-        let body = { weaponType: document.getElementById('weaponType').value, serialNumber: document.getElementById('weaponSerial').value, issuedDate: document.getElementById('weaponIssueDate').value, note: document.getElementById('weaponNote').value };
+        let body = {
+            weaponType: document.getElementById('weaponType').value,
+            serialNumber: document.getElementById('weaponSerial').value,
+            issuedDate: document.getElementById('weaponIssueDate').value,
+            note: document.getElementById('weaponNote').value
+        };
         if (!body.weaponType) { showToast("Введіть тип зброї", "error"); return; }
-        let res = await fetch(`/personnel/api/${currentPersonId}/weapons`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...getCsrfHeaders() }, body: JSON.stringify(body) });
+        let res = await fetch(`/personnel/api/${currentPersonId}/weapons`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json', ...getCsrfHeaders() }, body: JSON.stringify(body)
+        });
         if (res.ok) { closeModal('weaponModal'); loadWeapons(); showToast("Додано", "success"); }
         else showToast("Помилка", "error");
     }
     async function deleteWeapon(id) { if (!confirm("Видалити запис про зброю?")) return; let res = await fetch(`/personnel/api/${currentPersonId}/weapons/${id}`, { method: 'DELETE', headers: getCsrfHeaders() }); if (res.ok) { loadWeapons(); showToast("Видалено", "success"); } else showToast("Помилка", "error"); }
 
-    // Прив'язка кнопки редагування для існуючої особи
     if (!isNewMode && document.getElementById('editBtn')) {
         document.getElementById('editBtn').onclick = enableEditMode;
     }
