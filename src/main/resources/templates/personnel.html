@@ -94,7 +94,7 @@
         .dynamic-section { margin-bottom: 14px; }
         .dynamic-section-title { font-size: 12px; font-weight: 700; color: #1a237e; margin: 14px 0 8px; padding-bottom: 4px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; }
 
-        /* Детальна картка */
+        /* Детальна */
         .detail-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1200; align-items: center; justify-content: center; }
         .detail-overlay.open { display: flex; }
         .detail-modal {
@@ -223,7 +223,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Прізвище *</label>
-                        <input type="text" id="fLastName" placeholder="Шепрук">
+                        <minput type="text" id="fLastName" placeholder="Шепрук">
                     </div>
                     <div class="form-group">
                         <label>Ім'я *</label>
@@ -592,6 +592,17 @@
             let sortDir = 1;
             let currentTab = 'short';
 
+            // Додайте цю функцію кудись на початку скрипта
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
             let educationCounts = {};
             let eduFirstLevel = {};
             let eduFirstInst  = {};
@@ -656,22 +667,23 @@
             }
 
             function renderShortTable(data) {
-                const body = document.getElementById('shortBody');
-                if (!data.length) { body.innerHTML = '<tr><td colspan="5" class="empty-state">Особовий склад порожній</td></tr>'; return; }
-                body.innerHTML = data.map((p, i) => {
-                    const fullName = `${p.lastName} ${p.firstName || ''} ${p.middleName || ''}`.trim();
-                    return `<tr>
-                        <td style="text-align:center">${i + 1}</td>
-                        <td><strong>${fullName}</strong></td>
-                        <td>${p.rank || '—'}</td>
-                        <td>${p.fullPosition || p.position || '—'}</td>
-                        <td style="white-space:nowrap">
-                            <button class="btn btn-warning btn-sm" onclick="openEditModal(${p.id})">✏️</button>
-                            <button class="btn btn-danger btn-sm" onclick="confirmDelete(${p.id}, '${fullName}')">🗑</button>
-                        </td>
-                    </tr>`;
-                }).join('');
-            }
+    const body = document.getElementById('shortBody');
+    if (!data.length) { body.innerHTML = '<table><td colspan="5" class="empty-state">Особовий склад порожній</td></tr>'; return; }
+    body.innerHTML = data.map((p, i) => {
+        const fullName = `${p.lastName} ${p.firstName || ''} ${p.middleName || ''}`.trim();
+        return `<tr>
+            <td style="text-align:center">${i + 1}</td>
+            <td><strong>${escapeHtml(fullName)}</strong></td>
+            <td>${p.rank || '—'}</td>
+            <td>${p.fullPosition || p.position || '—'}</td>
+            <td style="white-space:nowrap">
+                <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/card'">📇</button>
+                <button class="btn btn-warning btn-sm" onclick="openEditModal(${p.id})">✏️</button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete(${p.id}, '${escapeHtml(fullName)}')">🗑</button>
+            </td>
+        </tr>`;
+    }).join('');
+}
 
             function renderFullTable(data) {
                 const body = document.getElementById('fullBody');
@@ -717,6 +729,7 @@
                         <td style="font-size:11px">${weaponCounts[p.id] > 0 ? weaponFirstInfo[p.id] || weaponCounts[p.id] : '—'}</td>
                         <td style="white-space:nowrap">
                             <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="openDetailModal(${p.id})">👁</button>
+                            <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/card'">📇</button>
                             <button class="btn btn-warning btn-sm" onclick="openEditModal(${p.id})">✏️</button>
                             <button class="btn btn-danger btn-sm" onclick="confirmDelete(${p.id}, '${fullName}')">🗑</button>
                         </td>
