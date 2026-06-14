@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -87,6 +89,55 @@ public class PersonnelService {
         p.setActive(false);
         repository.save(p);
         log.info("Деактивовано особу: {} (id={})", p.getFullName(), id);
+    }
+
+    public Personnel patch(Long id, Map<String, Object> updates) {
+        Personnel p = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Особу не знайдено: " + id));
+
+        updates.forEach((key, value) -> {
+            // Якщо значення – порожній рядок, замінюємо на null
+            if (value instanceof String && ((String) value).isEmpty()) {
+                value = null;
+            }
+
+            switch (key) {
+                case "lastName": p.setLastName((String) value); break;
+                case "firstName": p.setFirstName((String) value); break;
+                case "middleName": p.setMiddleName((String) value); break;
+                case "rank": p.setRank((String) value); break;
+                case "position": p.setPosition((String) value); break;
+                case "fullPosition": p.setFullPosition((String) value); break;
+                case "phone": p.setPhone((String) value); break;
+                case "birthDate":
+                    p.setBirthDate(value != null ? LocalDate.parse((String) value) : null);
+                    break;
+                case "taxId": p.setTaxId((String) value); break;
+                case "passportSeries": p.setPassportSeries((String) value); break;
+                case "passportNumber": p.setPassportNumber((String) value); break;
+                case "bloodGroup": p.setBloodGroup((String) value); break;
+                case "driverLicenseSeries": p.setDriverLicenseSeries((String) value); break;
+                case "driverLicenseNumber": p.setDriverLicenseNumber((String) value); break;
+                case "driverLicenseCategory": p.setDriverLicenseCategory((String) value); break;
+                case "registrationAddress": p.setRegistrationAddress((String) value); break;
+                case "livingAddress": p.setLivingAddress((String) value); break;
+                case "maritalStatus": p.setMaritalStatus((String) value); break;
+                case "spouseName": p.setSpouseName((String) value); break;
+                case "familyAddress": p.setFamilyAddress((String) value); break;
+                case "draftDate":
+                    p.setDraftDate(value != null ? LocalDate.parse((String) value) : null);
+                    break;
+                case "draftOrganization": p.setDraftOrganization((String) value); break;
+                case "serviceType": p.setServiceType((String) value); break;
+                case "ubdNumber": p.setUbdNumber((String) value); break;
+                case "admissionForm": p.setAdmissionForm((String) value); break;
+                case "enrollmentInfo": p.setEnrollmentInfo((String) value); break;
+                case "serviceFor": p.setServiceFor((String) value); break;
+                case "note": p.setNote((String) value); break;
+                default: log.warn("Невідоме поле для оновлення: {}", key);
+            }
+        });
+        return repository.save(p);
     }
 
     public List<Personnel> search(String query) {

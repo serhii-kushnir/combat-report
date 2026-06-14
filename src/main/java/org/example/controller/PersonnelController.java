@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/personnel")
@@ -27,6 +28,20 @@ public class PersonnelController {
     public PersonnelController(PersonnelService service, PersonnelExportService exportService) {
         this.service = service;
         this.exportService = exportService;
+    }
+
+    @PatchMapping("/api/{id}")
+    @ResponseBody
+    public ResponseEntity<?> patch(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+        try {
+            Personnel updated = service.patch(id, updates);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("Помилка часткового оновлення id={}", id, e);
+            return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
+        }
     }
 
     @GetMapping
@@ -54,6 +69,14 @@ public class PersonnelController {
         return service.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/pcard")
+    public String pCard(@PathVariable Long id, Model model) {
+        Personnel p = service.getById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Особу не знайдено: " + id));
+        model.addAttribute("person", p);
+        return "pCard";
     }
 
     @PostMapping("/api")
