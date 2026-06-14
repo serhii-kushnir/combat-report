@@ -34,6 +34,15 @@ public class PersonnelController {
         return "personnel";
     }
 
+    // Додайте в клас PersonnelController
+
+    @GetMapping("/new")
+    public String newPersonCard(Model model) {
+        model.addAttribute("person", new Personnel()); // порожній об'єкт
+        model.addAttribute("isNew", true);
+        return "person-card";
+    }
+
     @GetMapping("/{id}/card")
     public String personCard(@PathVariable Long id, Model model) {
         Personnel p = service.getById(id)
