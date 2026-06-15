@@ -46,16 +46,16 @@ public class Personnel {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;         // Дата народження
 
-    @Column(length = 20)
+    @Column(length = 50)
     private String taxId;                // ІПН
 
-    @Column(length = 20)
+    @Column(length = 50)
     private String passportSeries;       // Серія паспорта
 
-    @Column(length = 20)
+    @Column(length = 50)
     private String passportNumber;       // Номер паспорта
 
-    @Column(length = 10)
+    @Column(length = 50)
     private String bloodGroup;           // Група крові
 
 
@@ -88,15 +88,15 @@ public class Personnel {
     @Column(length = 100)
     private String serviceType;          // Вид служби (контракт/мобілізація)
 
-    @Column(length = 50)
+    @Column(length = 100)
     private String ubdNumber;            // Номер УБД
 
     // Водійське посвідчення
-    @Column(length = 20)
+    @Column(length = 50)
     private String driverLicenseSeries;   // Серія
-    @Column(length = 20)
+    @Column(length = 50)
     private String driverLicenseNumber;   // Номер
-    @Column(length = 20)
+    @Column(length = 100)
     private String driverLicenseCategory; // Категорія (B, C тощо)
 
     // ===== ОЗБРОЄННЯ =====
