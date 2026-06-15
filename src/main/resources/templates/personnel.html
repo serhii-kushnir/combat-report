@@ -689,7 +689,7 @@
                         <td>${p.fullPosition || p.position || '—'}</td>
                         <td style="white-space:nowrap">
                             <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
-                            <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/card'">2📇</button>
+                            <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="openDetailModal(${p.id})">👁</button>
                             <button class="btn btn-warning btn-sm" onclick="openEditModal(${p.id})">✏️</button>
                             <button class="btn btn-danger btn-sm" onclick="confirmDelete(${p.id}, '${escapeHtml(fullName)}')">🗑</button>
                         </td>
@@ -740,8 +740,8 @@
                         <td>${val(p.serviceFor)}</td>
                         <td style="font-size:11px">${weaponCounts[p.id] > 0 ? weaponFirstInfo[p.id] || weaponCounts[p.id] : '—'}</td>
                         <td style="white-space:nowrap">
+                            <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
                             <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="openDetailModal(${p.id})">👁</button>
-                            <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/card'">📇</button>
                             <button class="btn btn-warning btn-sm" onclick="openEditModal(${p.id})">✏️</button>
                             <button class="btn btn-danger btn-sm" onclick="confirmDelete(${p.id}, '${fullName}')">🗑</button>
                         </td>

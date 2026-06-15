@@ -152,8 +152,6 @@
   <div th:replace="~{fragments :: sidebar('personnel')}"></div>
   <div class="main-content">
     <div class="container">
-      <a href="/personnel" class="btn btn-secondary" style="margin-bottom:16px;display:inline-block;">← Назад до списку</a>
-
       <div class="card">
         <div class="card-header">
           <h1>
@@ -165,7 +163,7 @@
             <button class="btn btn-primary" id="enableEditBtn">✏️ Редагувати</button>
             <button class="btn btn-warning" id="saveAllBtn" style="display:none;">💾 Зберегти всі</button>
             <button class="btn btn-secondary" id="cancelEditBtn" style="display:none;">❌ Скасувати</button>
-            <button class="btn btn-outline" onclick="window.location.href='/personnel'">📋 Список</button>
+            <button class="btn btn-outline" onclick="window.location.href='/personnel'">📋 До списку</button>
           </div>
         </div>
 
@@ -197,28 +195,6 @@
             <div class="info-field"><div class="info-label">Адреса проживання</div><div class="info-value" data-field="livingAddress" th:text="${person.livingAddress}">—</div></div>
           </div>
 
-          <!-- Сім'я -->
-          <div class="section-title">👨‍👩‍👧 Сім'я</div>
-          <div class="info-grid">
-            <div class="info-field"><div class="info-label">Сімейний стан</div><div class="info-value" data-field="maritalStatus" th:text="${person.maritalStatus}">—</div></div>
-            <div class="info-field"><div class="info-label">Дружина/Чоловік</div><div class="info-value" data-field="spouseName" th:text="${person.spouseName}">—</div></div>
-            <div class="info-field"><div class="info-label">Адреса проживання (сім'я)</div><div class="info-value" data-field="familyAddress" th:text="${person.familyAddress}">—</div></div>
-          </div>
-
-          <!-- Військові дані -->
-          <div class="section-title">🎖 Військові дані</div>
-          <div class="info-grid">
-            <div class="info-field"><div class="info-label">Дата призову</div><div class="info-value" data-field="draftDate" th:text="${#temporals.format(person.draftDate, 'dd.MM.yyyy')}">—</div></div>
-            <div class="info-field"><div class="info-label">Вид служби</div><div class="info-value" data-field="serviceType" th:text="${person.serviceType}">—</div></div>
-            <div class="info-field"><div class="info-label">Ким призваний</div><div class="info-value" data-field="draftOrganization" th:text="${person.draftOrganization}">—</div></div>
-            <div class="info-field"><div class="info-label">УБД №</div><div class="info-value" data-field="ubdNumber" th:text="${person.ubdNumber}">—</div></div>
-            <div class="info-field"><div class="info-label">Форма допуску</div><div class="info-value" data-field="admissionForm" th:text="${person.admissionForm}">—</div></div>
-            <div class="info-field"><div class="info-label">Зарахування</div><div class="info-value" data-field="enrollmentInfo" th:text="${person.enrollmentInfo}">—</div></div>
-            <div class="info-field"><div class="info-label">Військова служба за</div><div class="info-value" data-field="serviceFor" th:text="${person.serviceFor}">—</div></div>
-          </div>
-
-          <div class="info-field"><div class="info-label">📝 Примітка</div><div class="info-value" data-field="note" th:text="${person.note}">—</div></div>
-
           <!-- Таблиця освіти -->
           <div class="section-title">🎓 Освіта</div>
           <div class="sub-section">
@@ -229,6 +205,14 @@
               <thead><tr><th>Рівень</th><th>Заклад</th><th>Спеціальність</th><th>Початок</th><th>Кінець</th><th>Диплом</th><th>Дії</th></tr></thead>
               <tbody id="educationList"></tbody>
             </table>
+          </div>
+
+          <!-- Сім'я -->
+          <div class="section-title">👨‍👩‍👧 Сім'я</div>
+          <div class="info-grid">
+            <div class="info-field"><div class="info-label">Сімейний стан</div><div class="info-value" data-field="maritalStatus" th:text="${person.maritalStatus}">—</div></div>
+            <div class="info-field"><div class="info-label">Дружина/Чоловік</div><div class="info-value" data-field="spouseName" th:text="${person.spouseName}">—</div></div>
+            <div class="info-field"><div class="info-label">Адреса проживання (сім'я)</div><div class="info-value" data-field="familyAddress" th:text="${person.familyAddress}">—</div></div>
           </div>
 
           <!-- Таблиця дітей -->
@@ -243,6 +227,18 @@
             </table>
           </div>
 
+          <!-- Військові дані -->
+          <div class="section-title">🎖 Військові дані</div>
+          <div class="info-grid">
+            <div class="info-field"><div class="info-label">Дата призову</div><div class="info-value" data-field="draftDate" th:text="${#temporals.format(person.draftDate, 'dd.MM.yyyy')}">—</div></div>
+            <div class="info-field"><div class="info-label">Вид служби</div><div class="info-value" data-field="serviceType" th:text="${person.serviceType}">—</div></div>
+            <div class="info-field"><div class="info-label">Ким призваний</div><div class="info-value" data-field="draftOrganization" th:text="${person.draftOrganization}">—</div></div>
+            <div class="info-field"><div class="info-label">УБД №</div><div class="info-value" data-field="ubdNumber" th:text="${person.ubdNumber}">—</div></div>
+            <div class="info-field"><div class="info-label">Форма допуску</div><div class="info-value" data-field="admissionForm" th:text="${person.admissionForm}">—</div></div>
+            <div class="info-field"><div class="info-label">Зарахування</div><div class="info-value" data-field="enrollmentInfo" th:text="${person.enrollmentInfo}">—</div></div>
+            <div class="info-field"><div class="info-label">Військова служба за</div><div class="info-value" data-field="serviceFor" th:text="${person.serviceFor}">—</div></div>
+          </div>
+
           <!-- Таблиця зброї -->
           <div class="section-title">🔫 Закріплена зброя</div>
           <div class="sub-section">
@@ -255,6 +251,9 @@
             </table>
           </div>
         </div>
+
+        <div class="info-field"><div class="info-label">📝 Примітка</div><div class="info-value" data-field="note" th:text="${person.note}">—</div></div>
+
       </div>
     </div>
   </div>
@@ -324,8 +323,8 @@
       let options = [];
       if (field === 'rank') options = ['Солдат','Старший солдат','Молодший сержант','Сержант','Старший сержант','Головний сержант','Штаб-сержант','Майстер-сержант','Молодший лейтенант','Лейтенант','Старший лейтенант','Капітан'];
       else if (field === 'bloodGroup') options = ['O(I) Rh+','O(I) Rh-','A(II) Rh+','A(II) Rh-','B(III) Rh+','B(III) Rh-','AB(IV) Rh+','AB(IV) Rh-'];
-      else if (field === 'maritalStatus') options = ['Одружений','Незаміжній','Розлучений','Вдівець/Вдова'];
-      else if (field === 'serviceType') options = ['Мобілізація','Контракт','Добровольці'];
+      else if (field === 'maritalStatus') options = ['Одружений(на)','Не одружений(на)','Розлучений(на)','Вдівець/Вдова'];
+      else if (field === 'serviceType') options = ['Мобілізація','Контракт'];
       else if (field === 'serviceFor') options = ['За призовом','За контрактом'];
       input.innerHTML = '<option value="">— не вказано —</option>' + options.map(o => `<option value="${o}">${o}</option>`).join('');
       input.value = currentValue;
