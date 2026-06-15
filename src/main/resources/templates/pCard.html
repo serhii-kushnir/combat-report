@@ -185,8 +185,8 @@
           <div class="info-grid">
             <div class="info-field"><div class="info-label">Дата народження</div><div class="info-value" data-field="birthDate" th:text="${#temporals.format(person.birthDate, 'dd.MM.yyyy')}">—</div></div>
             <div class="info-field"><div class="info-label">ІПН</div><div class="info-value" data-field="taxId" th:text="${person.taxId}">—</div></div>
-            <div class="info-field"><div class="info-label">Паспорт серія</div><div class="info-value" data-field="passportSeries" th:text="${person.passportSeries}">—</div></div>
-            <div class="info-field"><div class="info-label">Паспорт номер</div><div class="info-value" data-field="passportNumber" th:text="${person.passportNumber}">—</div></div>
+<!--            <div class="info-field"><div class="info-label">Паспорт серія</div><div class="info-value" data-field="passportSeries" th:text="${person.passportSeries}">—</div></div>-->
+<!--            <div class="info-field"><div class="info-label">Паспорт номер</div><div class="info-value" data-field="passportNumber" th:text="${person.passportNumber}">—</div></div>-->
             <div class="info-field"><div class="info-label">Група крові</div><div class="info-value" data-field="bloodGroup" th:text="${person.bloodGroup}">—</div></div>
             <div class="info-field"><div class="info-label">Вод. посв. серія</div><div class="info-value" data-field="driverLicenseSeries" th:text="${person.driverLicenseSeries}">—</div></div>
             <div class="info-field"><div class="info-label">Вод. посв. номер</div><div class="info-value" data-field="driverLicenseNumber" th:text="${person.driverLicenseNumber}">—</div></div>
@@ -194,6 +194,14 @@
             <div class="info-field"><div class="info-label">Адреса реєстрації</div><div class="info-value" data-field="registrationAddress" th:text="${person.registrationAddress}">—</div></div>
             <div class="info-field"><div class="info-label">Адреса проживання</div><div class="info-value" data-field="livingAddress" th:text="${person.livingAddress}">—</div></div>
           </div>
+
+          <!-- Паспорт -->
+          <div class="section-title">📄 Паспорт</div>
+          <div class="info-grid">
+            <div class="info-field"><div class="info-label">Серія</div><div class="info-value" data-field="passportSeries" th:text="${person.passportSeries}">—</div></div>
+            <div class="info-field"><div class="info-label">Номер</div><div class="info-value" data-field="passportNumber" th:text="${person.passportNumber}">—</div></div>
+          </div>
+
 
           <!-- Таблиця освіти -->
           <div class="section-title">🎓 Освіта</div>
