@@ -134,6 +134,22 @@ public class PersonnelService {
                 case "enrollmentInfo": p.setEnrollmentInfo((String) value); break;
                 case "serviceFor": p.setServiceFor((String) value); break;
                 case "note": p.setNote((String) value); break;
+
+                // ===== НОВІ ПОЛЯ =====
+                case "drafObl": p.setDrafObl((String) value); break;
+                case "draftLoc": p.setDraftLoc((String) value); break;
+                case "enrollmentDate":
+                    p.setEnrollmentDate(value != null ? LocalDate.parse((String) value) : null);
+                    break;
+                case "enrollmentNakaz": p.setEnrollmentNakaz((String) value); break;
+                case "ubdDate":
+                    p.setUbdDate(value != null ? LocalDate.parse((String) value) : null);
+                    break;
+                case "admissionNakaz": p.setAdmissionNakaz((String) value); break;
+                case "admissionDate":
+                    p.setAdmissionDate(value != null ? LocalDate.parse((String) value) : null);
+                    break;
+
                 default: log.warn("Невідоме поле для оновлення: {}", key);
             }
         });

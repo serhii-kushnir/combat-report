@@ -27,7 +27,7 @@
       gap: 10px;
     }
     .card-header h1 { margin: 0; font-size: 22px; }
-    .card-actions { display: flex; gap: 10px; }
+    .card-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
     .btn {
       padding: 7px 14px;
@@ -38,12 +38,25 @@
       font-weight: 600;
       transition: all 0.2s;
     }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
     .btn-primary { background: #1976d2; color: white; }
+    .btn-primary:hover:not(:disabled) { background: #1565c0; }
     .btn-warning { background: #f57c00; color: white; }
+    .btn-warning:hover:not(:disabled) { background: #e65100; }
     .btn-secondary { background: #6c757d; color: white; }
+    .btn-secondary:hover:not(:disabled) { background: #5a6268; }
     .btn-outline { background: none; border: 1px solid white; color: white; }
-    .btn-sm { padding: 4px 9px; font-size: 11px; }
+    .btn-outline:hover { background: rgba(255,255,255,0.1); }
     .btn-danger { background: #dc3545; color: white; }
+    .btn-danger:hover:not(:disabled) { background: #c82333; }
+    .btn-sm { padding: 4px 9px; font-size: 11px; }
+
+    .hidden-action {
+      display: none !important;
+    }
 
     .info-grid {
       display: grid;
@@ -110,7 +123,20 @@
       text-align: left;
       border-bottom: 1px solid #eee;
     }
-    .sub-table th { background: #e8eaf6; color: #1a237e; }
+    .sub-table th {
+      background: #e8eaf6;
+      color: #1a237e;
+      font-weight: 600;
+    }
+    .sub-table tr:hover td { background: #f5f9ff; }
+    .sub-table td:last-child,
+    .sub-table th:last-child {
+      width: 80px;
+      min-width: 80px;
+      max-width: 80px;
+      white-space: nowrap;
+      text-align: center;
+    }
 
     .modal-overlay {
       display: none;
@@ -163,6 +189,7 @@
             <button class="btn btn-primary" id="enableEditBtn">✏️ Редагувати</button>
             <button class="btn btn-warning" id="saveAllBtn" style="display:none;">💾 Зберегти всі</button>
             <button class="btn btn-secondary" id="cancelEditBtn" style="display:none;">❌ Скасувати</button>
+            <button class="btn btn-danger" id="deleteBtn" onclick="confirmDeletePerson()" style="display:none;">🗑 Видалити особу</button>
             <button class="btn btn-outline" onclick="window.location.href='/personnel'">📋 До списку</button>
           </div>
         </div>
@@ -174,40 +201,39 @@
             <div class="info-field"><div class="info-label">Прізвище</div><div class="info-value" data-field="lastName" th:text="${person.lastName}">—</div></div>
             <div class="info-field"><div class="info-label">Ім'я</div><div class="info-value" data-field="firstName" th:text="${person.firstName}">—</div></div>
             <div class="info-field"><div class="info-label">По батькові</div><div class="info-value" data-field="middleName" th:text="${person.middleName}">—</div></div>
-            <div class="info-field"><div class="info-label">Звання</div><div class="info-value" data-field="rank" th:text="${person.rank}">—</div></div>
-            <div class="info-field"><div class="info-label">Коротка посада</div><div class="info-value" data-field="position" th:text="${person.position}">—</div></div>
             <div class="info-field"><div class="info-label">Телефон</div><div class="info-value" data-field="phone" th:text="${person.phone}">—</div></div>
-            <div class="info-field"><div class="info-label">Повна посада</div><div class="info-value" data-field="fullPosition" th:text="${person.fullPosition}">—</div></div>
-          </div>
-
-          <!-- Деталі особи -->
-          <div class="section-title">📄 Детальна інформація</div>
-          <div class="info-grid">
             <div class="info-field"><div class="info-label">Дата народження</div><div class="info-value" data-field="birthDate" th:text="${#temporals.format(person.birthDate, 'dd.MM.yyyy')}">—</div></div>
             <div class="info-field"><div class="info-label">ІПН</div><div class="info-value" data-field="taxId" th:text="${person.taxId}">—</div></div>
-<!--            <div class="info-field"><div class="info-label">Паспорт серія</div><div class="info-value" data-field="passportSeries" th:text="${person.passportSeries}">—</div></div>-->
-<!--            <div class="info-field"><div class="info-label">Паспорт номер</div><div class="info-value" data-field="passportNumber" th:text="${person.passportNumber}">—</div></div>-->
             <div class="info-field"><div class="info-label">Група крові</div><div class="info-value" data-field="bloodGroup" th:text="${person.bloodGroup}">—</div></div>
-            <div class="info-field"><div class="info-label">Вод. посв. серія</div><div class="info-value" data-field="driverLicenseSeries" th:text="${person.driverLicenseSeries}">—</div></div>
-            <div class="info-field"><div class="info-label">Вод. посв. номер</div><div class="info-value" data-field="driverLicenseNumber" th:text="${person.driverLicenseNumber}">—</div></div>
-            <div class="info-field"><div class="info-label">Категорія</div><div class="info-value" data-field="driverLicenseCategory" th:text="${person.driverLicenseCategory}">—</div></div>
-            <div class="info-field"><div class="info-label">Адреса реєстрації</div><div class="info-value" data-field="registrationAddress" th:text="${person.registrationAddress}">—</div></div>
-            <div class="info-field"><div class="info-label">Адреса проживання</div><div class="info-value" data-field="livingAddress" th:text="${person.livingAddress}">—</div></div>
           </div>
 
           <!-- Паспорт -->
-          <div class="section-title">📄 Паспорт</div>
+          <div class="section-title">🪪 Паспорт</div>
           <div class="info-grid">
             <div class="info-field"><div class="info-label">Серія</div><div class="info-value" data-field="passportSeries" th:text="${person.passportSeries}">—</div></div>
             <div class="info-field"><div class="info-label">Номер</div><div class="info-value" data-field="passportNumber" th:text="${person.passportNumber}">—</div></div>
           </div>
 
+          <!-- Водійське посвідчення -->
+          <div class="section-title">🚗 Водійське посвідчення</div>
+          <div class="info-grid">
+            <div class="info-field"><div class="info-label">Серія</div><div class="info-value" data-field="driverLicenseSeries" th:text="${person.driverLicenseSeries}">—</div></div>
+            <div class="info-field"><div class="info-label">Номер</div><div class="info-value" data-field="driverLicenseNumber" th:text="${person.driverLicenseNumber}">—</div></div>
+            <div class="info-field"><div class="info-label">Категорія</div><div class="info-value" data-field="driverLicenseCategory" th:text="${person.driverLicenseCategory}">—</div></div>
+          </div>
+
+          <!-- Адреса -->
+          <div class="section-title">🏠 Адреса</div>
+          <div class="info-grid">
+            <div class="info-field"><div class="info-label">Адреса реєстрації</div><div class="info-value" data-field="registrationAddress" th:text="${person.registrationAddress}">—</div></div>
+            <div class="info-field"><div class="info-label">Адреса проживання</div><div class="info-value" data-field="livingAddress" th:text="${person.livingAddress}">—</div></div>
+          </div>
 
           <!-- Таблиця освіти -->
           <div class="section-title">🎓 Освіта</div>
           <div class="sub-section">
             <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
-              <button class="btn btn-primary btn-sm" onclick="openAddEducationModal()">+ Додати освіту</button>
+              <button class="btn btn-primary btn-sm hidden-action" id="addEducationBtn" onclick="openAddEducationModal()">+ Додати освіту</button>
             </div>
             <table class="sub-table" id="educationTable">
               <thead><tr><th>Рівень</th><th>Заклад</th><th>Спеціальність</th><th>Початок</th><th>Кінець</th><th>Диплом</th><th>Дії</th></tr></thead>
@@ -227,7 +253,7 @@
           <div class="section-title">👶 Діти</div>
           <div class="sub-section">
             <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
-              <button class="btn btn-primary btn-sm" onclick="openAddChildModal()">+ Додати дитину</button>
+              <button class="btn btn-primary btn-sm hidden-action" id="addChildBtn" onclick="openAddChildModal()">+ Додати дитину</button>
             </div>
             <table class="sub-table" id="childrenTable">
               <thead><tr><th>ПІБ дитини</th><th>Дата народження</th><th>Дії</th></tr></thead>
@@ -236,63 +262,122 @@
           </div>
 
           <!-- Військові дані -->
-          <div class="section-title">🎖 Військові дані</div>
+          <div class="section-title">🎖️ Військові дані</div>
+          <div class="info-grid">
+            <div class="info-field"><div class="info-label">Звання</div><div class="info-value" data-field="rank" th:text="${person.rank}">—</div></div>
+            <div class="info-field"><div class="info-label">Коротка посада</div><div class="info-value" data-field="position" th:text="${person.position}">—</div></div>
+            <div class="info-field"><div class="info-label">Повна посада</div><div class="info-value" data-field="fullPosition" th:text="${person.fullPosition}">—</div></div>
+            <div class="info-field"><div class="info-label">Військова служба за</div><div class="info-value" data-field="serviceFor" th:text="${person.serviceFor}">—</div></div>
+          </div>
+
+          <!-- Призваний на військову службу -->
+          <div class="section-title">🪖 Призваний на військову службу</div>
           <div class="info-grid">
             <div class="info-field"><div class="info-label">Дата призову</div><div class="info-value" data-field="draftDate" th:text="${#temporals.format(person.draftDate, 'dd.MM.yyyy')}">—</div></div>
-            <div class="info-field"><div class="info-label">Вид служби</div><div class="info-value" data-field="serviceType" th:text="${person.serviceType}">—</div></div>
             <div class="info-field"><div class="info-label">Ким призваний</div><div class="info-value" data-field="draftOrganization" th:text="${person.draftOrganization}">—</div></div>
-            <div class="info-field"><div class="info-label">УБД №</div><div class="info-value" data-field="ubdNumber" th:text="${person.ubdNumber}">—</div></div>
-            <div class="info-field"><div class="info-label">Форма допуску</div><div class="info-value" data-field="admissionForm" th:text="${person.admissionForm}">—</div></div>
-            <div class="info-field"><div class="info-label">Зарахування</div><div class="info-value" data-field="enrollmentInfo" th:text="${person.enrollmentInfo}">—</div></div>
-            <div class="info-field"><div class="info-label">Військова служба за</div><div class="info-value" data-field="serviceFor" th:text="${person.serviceFor}">—</div></div>
+            <div class="info-field"><div class="info-label">Область</div><div class="info-value" data-field="drafObl" th:text="${person.drafObl}">—</div></div>
+            <div class="info-field"><div class="info-label">Місто/Селище</div><div class="info-value" data-field="draftLoc" th:text="${person.draftLoc}">—</div></div>
+          </div>
+
+          <!-- Зарахування у військову частину -->
+          <div class="section-title">📜 Зарахування у військову частину</div>
+          <div class="info-grid">
+            <div class="info-field"><div class="info-label">Дата</div><div class="info-value" data-field="enrollmentDate" th:text="${person.enrollmentDate}">—</div></div>
+            <div class="info-field"><div class="info-label">Наказ</div><div class="info-value" data-field="enrollmentNakaz" th:text="${person.enrollmentNakaz}">—</div></div>
+          </div>
+
+          <!-- Учасник бойових дій -->
+          <div class="section-title">🏅 Учасник бойових дій</div>
+          <div class="info-grid">
+            <div class="info-field"><div class="info-label">УБД Номер</div><div class="info-value" data-field="ubdNumber" th:text="${person.ubdNumber}">—</div></div>
+            <div class="info-field"><div class="info-label">УБД дата</div><div class="info-value" data-field="ubdDate" th:text="${person.ubdDate}">—</div></div>
+          </div>
+
+          <!-- Форма допуску -->
+          <div class="section-title">🔑 Форма допуску</div>
+          <div class="info-grid">
+            <div class="info-field"><div class="info-label">Ф-Номер</div><div class="info-value" data-field="admissionForm" th:text="${person.admissionForm}">—</div></div>
+            <div class="info-field"><div class="info-label">Ф-Наказ</div><div class="info-value" data-field="admissionNakaz" th:text="${person.admissionNakaz}">—</div></div>
+            <div class="info-field"><div class="info-label">Ф-Дата</div><div class="info-value" data-field="admissionDate" th:text="${person.admissionDate}">—</div></div>
           </div>
 
           <!-- Таблиця зброї -->
           <div class="section-title">🔫 Закріплена зброя</div>
           <div class="sub-section">
             <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
-              <button class="btn btn-primary btn-sm" onclick="openAddWeaponModal()">+ Додати зброю</button>
+              <button class="btn btn-primary btn-sm hidden-action" id="addWeaponBtn" onclick="openAddWeaponModal()">+ Додати зброю</button>
             </div>
             <table class="sub-table" id="weaponTable">
               <thead><tr><th>Тип</th><th>Серійний №</th><th>Дата видачі</th><th>Примітка</th><th>Дії</th></tr></thead>
               <tbody id="weaponList"></tbody>
             </table>
           </div>
+
+          <!-- Примітка -->
+          <div class="section-title">📝 Примітка</div>
+          <div class="info-field"><div class="info-label">Примітка</div><div class="info-value" data-field="note" th:text="${person.note}">—</div></div>
         </div>
-
-        <div class="info-field"><div class="info-label">📝 Примітка</div><div class="info-value" data-field="note" th:text="${person.note}">—</div></div>
-
       </div>
     </div>
   </div>
 </div>
 
-<!-- Модальні вікна -->
-<div class="modal-overlay" id="educationModal"><div class="modal"><h3>➕ Додати освіту</h3><div class="form-group"><label>Рівень</label><input type="text" id="eduLevel"></div><div class="form-group"><label>Заклад</label><input type="text" id="eduInstitution"></div><div class="form-group"><label>Спеціальність</label><input type="text" id="eduSpeciality"></div><div class="form-group"><label>Початок</label><input type="date" id="eduStartDate"></div><div class="form-group"><label>Кінець</label><input type="date" id="eduEndDate"></div><div class="form-group"><label>Диплом №</label><input type="text" id="eduDiploma"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('educationModal')">Скасувати</button><button class="btn btn-primary" onclick="saveEducation()">Зберегти</button></div></div></div>
-<div class="modal-overlay" id="childModal"><div class="modal"><h3>➕ Додати дитину</h3><div class="form-group"><label>ПІБ дитини</label><input type="text" id="childFullName"></div><div class="form-group"><label>Дата народження</label><input type="date" id="childBirthDate"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('childModal')">Скасувати</button><button class="btn btn-primary" onclick="saveChild()">Зберегти</button></div></div></div>
-<div class="modal-overlay" id="weaponModal"><div class="modal"><h3>➕ Додати зброю</h3><div class="form-group"><label>Тип зброї</label><input type="text" id="weaponType"></div><div class="form-group"><label>Серійний №</label><input type="text" id="weaponSerial"></div><div class="form-group"><label>Дата видачі</label><input type="text" id="weaponIssueDate"></div><div class="form-group"><label>Примітка</label><input type="text" id="weaponNote"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('weaponModal')">Скасувати</button><button class="btn btn-primary" onclick="saveWeapon()">Зберегти</button></div></div></div>
+<!-- Модальне вікно підтвердження видалення -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="width:400px;">
+    <h3 style="color:#d32f2f;">⚠️ Підтвердження видалення</h3>
+    <p id="confirmMessage" style="font-size:15px; margin:16px 0;">Ви впевнені, що хочете видалити цей запис?</p>
+    <div class="modal-actions" style="justify-content:center;">
+      <button class="btn btn-secondary" onclick="closeConfirm()">Скасувати</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn" style="background:#d32f2f;">Видалити</button>
+    </div>
+  </div>
+</div>
+
+<!-- Модальні вікна для додавання/редагування -->
+<div class="modal-overlay" id="educationModal"><div class="modal"><input type="hidden" id="eduId"><h3>➕ Додати освіту</h3><div class="form-group"><label>Рівень</label><input type="text" id="eduLevel"></div><div class="form-group"><label>Заклад</label><input type="text" id="eduInstitution"></div><div class="form-group"><label>Спеціальність</label><input type="text" id="eduSpeciality"></div><div class="form-group"><label>Початок</label><input type="date" id="eduStartDate"></div><div class="form-group"><label>Кінець</label><input type="date" id="eduEndDate"></div><div class="form-group"><label>Диплом №</label><input type="text" id="eduDiploma"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('educationModal')">Скасувати</button><button class="btn btn-primary" onclick="saveEducation()">Зберегти</button></div></div></div>
+<div class="modal-overlay" id="childModal"><div class="modal"><input type="hidden" id="childId"><h3>➕ Додати дитину</h3><div class="form-group"><label>ПІБ дитини</label><input type="text" id="childFullName"></div><div class="form-group"><label>Дата народження</label><input type="date" id="childBirthDate"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('childModal')">Скасувати</button><button class="btn btn-primary" onclick="saveChild()">Зберегти</button></div></div></div>
+<div class="modal-overlay" id="weaponModal"><div class="modal"><input type="hidden" id="weaponId"><h3>➕ Додати зброю</h3><div class="form-group"><label>Тип зброї</label><input type="text" id="weaponType"></div><div class="form-group"><label>Серійний №</label><input type="text" id="weaponSerial"></div><div class="form-group"><label>Дата видачі</label><input type="text" id="weaponIssueDate"></div><div class="form-group"><label>Примітка</label><input type="text" id="weaponNote"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('weaponModal')">Скасувати</button><button class="btn btn-primary" onclick="saveWeapon()">Зберегти</button></div></div></div>
 
 <div class="toast" id="toast"></div>
 
 <script>
+  // ===== ГЛОБАЛЬНІ ЗМІННІ =====
   let currentPersonId = [[${person.id}]];
   let isEditMode = false;
   let activeEditor = null;
+  let confirmCallback = null;
 
+  // ===== ДОПОМІЖНІ ФУНКЦІЇ =====
   function showToast(msg, type) {
     let toast = document.getElementById('toast');
     toast.textContent = msg;
     toast.className = `toast ${type} show`;
     setTimeout(() => toast.classList.remove('show'), 3000);
   }
+
   function formatDateForDisplay(dateStr) {
     if (!dateStr) return '—';
+    if (dateStr.match(/^\d{2}\.\d{2}\.\d{4}$/)) return dateStr;
     let parts = dateStr.substring(0,10).split('-');
     if (parts.length === 3) return `${parts[2]}.${parts[1]}.${parts[0]}`;
     return dateStr;
   }
+
   function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]) : ''; }
 
+  // ===== КЕРУВАННЯ ВИДИМІСТЮ КНОПОК =====
+  function showActionButtons() {
+    document.querySelectorAll('.hidden-action').forEach(el => el.classList.remove('hidden-action'));
+    document.getElementById('deleteBtn').style.display = 'inline-block';
+  }
+
+  function hideActionButtons() {
+    document.querySelectorAll('.hidden-action').forEach(el => el.classList.add('hidden-action'));
+    document.getElementById('deleteBtn').style.display = 'none';
+  }
+
+  // ===== РЕЖИМ РЕДАГУВАННЯ =====
   function enableEditMode() {
     if (isEditMode) return;
     isEditMode = true;
@@ -300,6 +385,9 @@
       el.classList.add('editable');
       el.onclick = () => startEdit(el);
     });
+    // Показуємо всі приховані кнопки (додавання та дій)
+    showActionButtons();
+    // Показуємо кнопки збереження/скасування
     document.getElementById('enableEditBtn').style.display = 'none';
     document.getElementById('saveAllBtn').style.display = 'inline-block';
     document.getElementById('cancelEditBtn').style.display = 'inline-block';
@@ -307,9 +395,12 @@
 
   function cancelEdit() {
     if (activeEditor) finishEdit(activeEditor);
-    window.location.reload(); // скасування – перезавантажуємо
+    // Ховаємо всі кнопки додавання та дій
+    hideActionButtons();
+    window.location.reload();
   }
 
+  // ===== РЕДАГУВАННЯ ПОЛІВ =====
   function startEdit(el) {
     if (activeEditor && activeEditor !== el) finishEdit(activeEditor);
     if (activeEditor === el) return;
@@ -319,24 +410,25 @@
     if (currentValue === '—') currentValue = '';
 
     let input;
-    if (field === 'birthDate' || field === 'draftDate') {
+    const dateFields = ['birthDate', 'draftDate', 'enrollmentDate', 'ubdDate', 'admissionDate'];
+    const selectFields = ['rank', 'bloodGroup', 'maritalStatus', 'serviceFor'];
+    const textareaFields = ['fullPosition', 'note'];
+
+    if (dateFields.includes(field)) {
       input = document.createElement('input');
-      input.type = 'date';
-      if (currentValue && currentValue.includes('.')) {
-        let parts = currentValue.split('.');
-        if (parts.length === 3) currentValue = `${parts[2]}-${parts[1]}-${parts[0]}`;
-      }
-    } else if (field === 'rank' || field === 'bloodGroup' || field === 'maritalStatus' || field === 'serviceType' || field === 'serviceFor') {
+      input.type = 'text';
+      input.placeholder = 'ДД.ММ.РРРР';
+      input.value = currentValue;
+    } else if (selectFields.includes(field)) {
       input = document.createElement('select');
       let options = [];
       if (field === 'rank') options = ['Солдат','Старший солдат','Молодший сержант','Сержант','Старший сержант','Головний сержант','Штаб-сержант','Майстер-сержант','Молодший лейтенант','Лейтенант','Старший лейтенант','Капітан'];
       else if (field === 'bloodGroup') options = ['O(I) Rh+','O(I) Rh-','A(II) Rh+','A(II) Rh-','B(III) Rh+','B(III) Rh-','AB(IV) Rh+','AB(IV) Rh-'];
       else if (field === 'maritalStatus') options = ['Одружений(на)','Не одружений(на)','Розлучений(на)','Вдівець/Вдова'];
-      else if (field === 'serviceType') options = ['Мобілізація','Контракт'];
       else if (field === 'serviceFor') options = ['За призовом','За контрактом'];
       input.innerHTML = '<option value="">— не вказано —</option>' + options.map(o => `<option value="${o}">${o}</option>`).join('');
       input.value = currentValue;
-    } else if (field === 'fullPosition' || field === 'note') {
+    } else if (textareaFields.includes(field)) {
       input = document.createElement('textarea');
       input.rows = 2;
       input.value = currentValue;
@@ -363,27 +455,49 @@
       let newVal = input.value.trim();
       if (newVal === '') newVal = '—';
 
+      // Якщо значення не змінилося – просто закриваємо редактор
+      if (newVal === currentValue) {
+        el.textContent = currentValue;
+        el.classList.add('editable');
+        el.onclick = () => startEdit(el);
+        activeEditor = null;
+        return;
+      }
+
       let isoValue = newVal;
       let displayValue = newVal;
 
-      if (field === 'birthDate' || field === 'draftDate') {
-        if (newVal !== '—' && newVal.includes('-')) {
+      // Перевірка для полів дати
+      if (dateFields.includes(field)) {
+        if (newVal !== '—' && newVal.match(/^\d{2}\.\d{2}\.\d{4}$/)) {
+          let parts = newVal.split('.');
+          isoValue = `${parts[2]}-${parts[1]}-${parts[0]}`;
+          displayValue = newVal;
+        } else if (newVal !== '—' && newVal.match(/^\d{4}-\d{2}-\d{2}$/)) {
           isoValue = newVal;
           let parts = newVal.split('-');
-          if (parts.length === 3) displayValue = `${parts[2]}.${parts[1]}.${parts[0]}`;
-        } else if (newVal === '—') {
+          displayValue = `${parts[2]}.${parts[1]}.${parts[0]}`;
+        } else if (newVal === '—' || newVal === '') {
           isoValue = '';
           displayValue = '—';
+        } else {
+          showToast('Невірний формат дати (очікується ДД.ММ.РРРР)', 'error');
+          el.textContent = currentValue;
+          el.classList.add('editable');
+          el.onclick = () => startEdit(el);
+          activeEditor = null;
+          return;
         }
       }
 
-      // Оновлюємо текст комірки одразу (оптимістичне оновлення)
-      el.textContent = displayValue;
+      // Закриваємо редактор, показуємо старе значення до підтвердження
+      el.textContent = currentValue;
       el.classList.add('editable');
       el.onclick = () => startEdit(el);
       activeEditor = null;
 
-      updateField(field, isoValue === '—' ? '' : isoValue);
+      // Відправляємо запит на сервер
+      updateField(field, isoValue === '—' ? '' : isoValue, el, displayValue);
     };
 
     if (input.tagName === 'SELECT') {
@@ -408,7 +522,7 @@
     activeEditor = null;
   }
 
-  async function updateField(field, value) {
+  async function updateField(field, value, el, displayValue) {
     try {
       const res = await fetch(`/personnel/api/${currentPersonId}`, {
         method: 'PATCH',
@@ -416,23 +530,23 @@
         body: JSON.stringify({ [field]: value })
       });
       if (res.ok) {
+        // Успіх – оновлюємо відображення на нове значення
+        el.textContent = displayValue;
         showToast(`Поле "${field}" оновлено`, 'success');
-        // Оновлюємо заголовок, якщо змінилося ПІБ або звання
         if (field === 'lastName' || field === 'firstName' || field === 'middleName' || field === 'rank') {
           updatePageHeader();
         }
       } else {
         const err = await res.text();
         showToast(`Помилка: ${err}`, 'error');
-        window.location.reload(); // при помилці перезавантажуємо для відновлення
+        // Залишаємо старе значення (воно вже в el)
       }
     } catch(e) {
       showToast('Помилка мережі', 'error');
-      window.location.reload();
+      // Залишаємо старе значення
     }
   }
 
-  // Оновлення заголовка картки без перезавантаження
   function updatePageHeader() {
     fetch(`/personnel/api/${currentPersonId}`)
             .then(res => res.json())
@@ -445,7 +559,26 @@
             .catch(e => console.error('Помилка оновлення заголовка', e));
   }
 
-  // Завантаження таблиць
+  // ===== ВИДАЛЕННЯ ОСОБИ =====
+  function confirmDeletePerson() {
+    if (activeEditor) finishEdit(activeEditor);
+    showConfirm('Ви впевнені, що хочете видалити особу? Цю дію неможливо скасувати.', async function() {
+      try {
+        const res = await fetch(`/personnel/api/${currentPersonId}`, { method: 'DELETE' });
+        if (res.ok) {
+          showToast('Особу видалено', 'success');
+          window.location.href = '/personnel';
+        } else {
+          const err = await res.text();
+          showToast('Помилка: ' + err, 'error');
+        }
+      } catch(e) {
+        showToast('Помилка мережі', 'error');
+      }
+    });
+  }
+
+  // ===== ЗАВАНТАЖЕННЯ ТАБЛИЦЬ =====
   async function loadEducation() {
     const res = await fetch(`/personnel/api/${currentPersonId}/education`);
     const list = await res.json();
@@ -453,35 +586,76 @@
     if (!list.length) { tbody.innerHTML = '<tr><td colspan="7">Немає даних</td></tr>'; return; }
     tbody.innerHTML = list.map(e => `
             <tr>
-                <td>${escapeHtml(e.level)}</td><td>${escapeHtml(e.institution)}</td><td>${escapeHtml(e.speciality)}</td>
-                <td>${formatDateForDisplay(e.startDate)}</td><td>${formatDateForDisplay(e.endDate)}</td><td>${escapeHtml(e.diploma)}</td>
-                <td><button class="btn btn-danger btn-sm" onclick="deleteEducation(${e.id})">🗑</button></td>
+                <td>${escapeHtml(e.level)}</td>
+                <td>${escapeHtml(e.institution)}</td>
+                <td>${escapeHtml(e.speciality)}</td>
+                <td>${formatDateForDisplay(e.startDate)}</td>
+                <td>${formatDateForDisplay(e.endDate)}</td>
+                <td>${escapeHtml(e.diploma)}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm hidden-action" onclick="openEditEducation(${e.id})">✏️</button>
+                    <button class="btn btn-danger btn-sm hidden-action" onclick="confirmDeleteEducation(${e.id})">🗑</button>
+                </td>
             </tr>
         `).join('');
+    if (isEditMode) showActionButtons();
   }
+
   async function loadChildren() {
     const res = await fetch(`/personnel/api/${currentPersonId}/children`);
     const list = await res.json();
     const tbody = document.getElementById('childrenList');
     if (!list.length) { tbody.innerHTML = '<tr><td colspan="3">Немає даних</td></tr>'; return; }
     tbody.innerHTML = list.map(c => `
-            <tr><td>${escapeHtml(c.fullName)}</td><td>${formatDateForDisplay(c.birthDate)}</td>
-            <td><button class="btn btn-danger btn-sm" onclick="deleteChild(${c.id})">🗑</button></td></tr>
+            <tr>
+                <td>${escapeHtml(c.fullName)}</td>
+                <td>${formatDateForDisplay(c.birthDate)}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm hidden-action" onclick="openEditChild(${c.id})">✏️</button>
+                    <button class="btn btn-danger btn-sm hidden-action" onclick="confirmDeleteChild(${c.id})">🗑</button>
+                </td>
+            </tr>
         `).join('');
+    if (isEditMode) showActionButtons();
   }
+
   async function loadWeapons() {
     const res = await fetch(`/personnel/api/${currentPersonId}/weapons`);
     const list = await res.json();
     const tbody = document.getElementById('weaponList');
     if (!list.length) { tbody.innerHTML = '<tr><td colspan="5">Немає даних</td></tr>'; return; }
     tbody.innerHTML = list.map(w => `
-            <tr><td>${escapeHtml(w.weaponType)}</td><td>${escapeHtml(w.serialNumber)}</td><td>${escapeHtml(w.issuedDate)}</td><td>${escapeHtml(w.note)}</td>
-            <td><button class="btn btn-danger btn-sm" onclick="deleteWeapon(${w.id})">🗑</button></td></tr>
+            <tr>
+                <td>${escapeHtml(w.weaponType)}</td>
+                <td>${escapeHtml(w.serialNumber)}</td>
+                <td>${escapeHtml(w.issuedDate)}</td>
+                <td>${escapeHtml(w.note)}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm hidden-action" onclick="openEditWeapon(${w.id})">✏️</button>
+                    <button class="btn btn-danger btn-sm hidden-action" onclick="confirmDeleteWeapon(${w.id})">🗑</button>
+                </td>
+            </tr>
         `).join('');
+    if (isEditMode) showActionButtons();
   }
 
-  // Додавання/видалення через модальні вікна
+  // ===== ОСВІТА =====
+  async function openEditEducation(id) {
+    const res = await fetch(`/personnel/api/${currentPersonId}/education/${id}`);
+    const data = await res.json();
+    document.getElementById('eduId').value = id;
+    document.getElementById('eduLevel').value = data.level || '';
+    document.getElementById('eduInstitution').value = data.institution || '';
+    document.getElementById('eduSpeciality').value = data.speciality || '';
+    document.getElementById('eduStartDate').value = data.startDate ? data.startDate.substring(0,10) : '';
+    document.getElementById('eduEndDate').value = data.endDate ? data.endDate.substring(0,10) : '';
+    document.getElementById('eduDiploma').value = data.diploma || '';
+    document.querySelector('#educationModal h3').textContent = '✏️ Редагувати освіту';
+    document.getElementById('educationModal').classList.add('open');
+  }
+
   async function saveEducation() {
+    const id = document.getElementById('eduId').value;
     const body = {
       level: document.getElementById('eduLevel').value,
       institution: document.getElementById('eduInstitution').value,
@@ -490,63 +664,219 @@
       endDate: document.getElementById('eduEndDate').value || null,
       diploma: document.getElementById('eduDiploma').value
     };
-    const res = await fetch(`/personnel/api/${currentPersonId}/education`, {
-      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+    const url = id ? `/personnel/api/${currentPersonId}/education/${id}` : `/personnel/api/${currentPersonId}/education`;
+    const method = id ? 'PUT' : 'POST';
+    const res = await fetch(url, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
     });
-    if (res.ok) { closeModal('educationModal'); loadEducation(); showToast('Освіту додано', 'success'); }
-    else showToast('Помилка', 'error');
+    if (res.ok) {
+      closeModal('educationModal');
+      document.getElementById('eduId').value = '';
+      document.querySelector('#educationModal h3').textContent = '➕ Додати освіту';
+      loadEducation();
+      showToast(id ? 'Освіту оновлено' : 'Освіту додано', 'success');
+    } else {
+      showToast('Помилка', 'error');
+    }
   }
-  async function deleteEducation(id) {
-    if (!confirm('Видалити запис?')) return;
-    await fetch(`/personnel/api/${currentPersonId}/education/${id}`, {method:'DELETE'});
-    loadEducation();
+
+  async function confirmDeleteEducation(id) {
+    showConfirm('Видалити запис про освіту?', async function() {
+      await fetch(`/personnel/api/${currentPersonId}/education/${id}`, {method: 'DELETE'});
+      loadEducation();
+      showToast('Освіту видалено', 'success');
+    });
   }
+
+  // ===== ДІТИ =====
+  async function openEditChild(id) {
+    const res = await fetch(`/personnel/api/${currentPersonId}/children/${id}`);
+    const data = await res.json();
+    document.getElementById('childId').value = id;
+    document.getElementById('childFullName').value = data.fullName || '';
+    document.getElementById('childBirthDate').value = data.birthDate ? data.birthDate.substring(0,10) : '';
+    document.querySelector('#childModal h3').textContent = '✏️ Редагувати дитину';
+    document.getElementById('childModal').classList.add('open');
+  }
+
   async function saveChild() {
-    const body = { fullName: document.getElementById('childFullName').value, birthDate: document.getElementById('childBirthDate').value || null };
-    const res = await fetch(`/personnel/api/${currentPersonId}/children`, {
-      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+    const id = document.getElementById('childId').value;
+    const body = {
+      fullName: document.getElementById('childFullName').value,
+      birthDate: document.getElementById('childBirthDate').value || null
+    };
+    const url = id ? `/personnel/api/${currentPersonId}/children/${id}` : `/personnel/api/${currentPersonId}/children`;
+    const method = id ? 'PUT' : 'POST';
+    const res = await fetch(url, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
     });
-    if (res.ok) { closeModal('childModal'); loadChildren(); showToast('Дитину додано', 'success'); }
-    else showToast('Помилка', 'error');
+    if (res.ok) {
+      closeModal('childModal');
+      document.getElementById('childId').value = '';
+      document.querySelector('#childModal h3').textContent = '➕ Додати дитину';
+      loadChildren();
+      showToast(id ? 'Дитину оновлено' : 'Дитину додано', 'success');
+    } else {
+      showToast('Помилка', 'error');
+    }
   }
-  async function deleteChild(id) {
-    if (!confirm('Видалити дитину?')) return;
-    await fetch(`/personnel/api/${currentPersonId}/children/${id}`, {method:'DELETE'});
-    loadChildren();
+
+  async function confirmDeleteChild(id) {
+    showConfirm('Видалити дитину?', async function() {
+      await fetch(`/personnel/api/${currentPersonId}/children/${id}`, {method: 'DELETE'});
+      loadChildren();
+      showToast('Дитину видалено', 'success');
+    });
   }
+
+  // ===== ЗБРОЯ =====
+  async function openEditWeapon(id) {
+    const res = await fetch(`/personnel/api/${currentPersonId}/weapons/${id}`);
+    const data = await res.json();
+    document.getElementById('weaponId').value = id;
+    document.getElementById('weaponType').value = data.weaponType || '';
+    document.getElementById('weaponSerial').value = data.serialNumber || '';
+    document.getElementById('weaponIssueDate').value = data.issuedDate || '';
+    document.getElementById('weaponNote').value = data.note || '';
+    document.querySelector('#weaponModal h3').textContent = '✏️ Редагувати зброю';
+    document.getElementById('weaponModal').classList.add('open');
+  }
+
   async function saveWeapon() {
+    const id = document.getElementById('weaponId').value;
     const body = {
       weaponType: document.getElementById('weaponType').value,
       serialNumber: document.getElementById('weaponSerial').value,
       issuedDate: document.getElementById('weaponIssueDate').value,
       note: document.getElementById('weaponNote').value
     };
-    const res = await fetch(`/personnel/api/${currentPersonId}/weapons`, {
-      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+    const url = id ? `/personnel/api/${currentPersonId}/weapons/${id}` : `/personnel/api/${currentPersonId}/weapons`;
+    const method = id ? 'PUT' : 'POST';
+    const res = await fetch(url, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
     });
-    if (res.ok) { closeModal('weaponModal'); loadWeapons(); showToast('Зброю додано', 'success'); }
-    else showToast('Помилка', 'error');
-  }
-  async function deleteWeapon(id) {
-    if (!confirm('Видалити запис?')) return;
-    await fetch(`/personnel/api/${currentPersonId}/weapons/${id}`, {method:'DELETE'});
-    loadWeapons();
+    if (res.ok) {
+      closeModal('weaponModal');
+      document.getElementById('weaponId').value = '';
+      document.querySelector('#weaponModal h3').textContent = '➕ Додати зброю';
+      loadWeapons();
+      showToast(id ? 'Зброю оновлено' : 'Зброю додано', 'success');
+    } else {
+      showToast('Помилка', 'error');
+    }
   }
 
-  function openAddEducationModal() { document.getElementById('educationModal').classList.add('open'); }
-  function openAddChildModal() { document.getElementById('childModal').classList.add('open'); }
-  function openAddWeaponModal() { document.getElementById('weaponModal').classList.add('open'); }
-  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  async function confirmDeleteWeapon(id) {
+    showConfirm('Видалити запис про зброю?', async function() {
+      await fetch(`/personnel/api/${currentPersonId}/weapons/${id}`, {method: 'DELETE'});
+      loadWeapons();
+      showToast('Зброю видалено', 'success');
+    });
+  }
 
-  // Ініціалізація
+  // ===== КАСТОМНЕ ПІДТВЕРДЖЕННЯ =====
+  function showConfirm(message, onConfirm) {
+    document.getElementById('confirmMessage').textContent = message || 'Ви впевнені, що хочете видалити цей запис?';
+    document.getElementById('confirmModal').classList.add('open');
+    confirmCallback = onConfirm;
+  }
+
+  function closeConfirm() {
+    document.getElementById('confirmModal').classList.remove('open');
+    confirmCallback = null;
+  }
+
+  document.getElementById('confirmDeleteBtn').onclick = function() {
+    if (typeof confirmCallback === 'function') {
+      confirmCallback();
+    }
+    closeConfirm();
+  };
+
+  // ===== ВІДКРИТТЯ МОДАЛЬНИХ ВІКОН ДЛЯ ДОДАВАННЯ =====
+  function openAddEducationModal() {
+    document.getElementById('eduId').value = '';
+    document.querySelector('#educationModal h3').textContent = '➕ Додати освіту';
+    document.getElementById('eduLevel').value = '';
+    document.getElementById('eduInstitution').value = '';
+    document.getElementById('eduSpeciality').value = '';
+    document.getElementById('eduStartDate').value = '';
+    document.getElementById('eduEndDate').value = '';
+    document.getElementById('eduDiploma').value = '';
+    document.getElementById('educationModal').classList.add('open');
+  }
+
+  function openAddChildModal() {
+    document.getElementById('childId').value = '';
+    document.querySelector('#childModal h3').textContent = '➕ Додати дитину';
+    document.getElementById('childFullName').value = '';
+    document.getElementById('childBirthDate').value = '';
+    document.getElementById('childModal').classList.add('open');
+  }
+
+  function openAddWeaponModal() {
+    document.getElementById('weaponId').value = '';
+    document.querySelector('#weaponModal h3').textContent = '➕ Додати зброю';
+    document.getElementById('weaponType').value = '';
+    document.getElementById('weaponSerial').value = '';
+    document.getElementById('weaponIssueDate').value = '';
+    document.getElementById('weaponNote').value = '';
+    document.getElementById('weaponModal').classList.add('open');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    if (id === 'educationModal') document.querySelector('#educationModal h3').textContent = '➕ Додати освіту';
+    if (id === 'childModal') document.querySelector('#childModal h3').textContent = '➕ Додати дитину';
+    if (id === 'weaponModal') document.querySelector('#weaponModal h3').textContent = '➕ Додати зброю';
+  }
+
+  // ===== ОБРОБНИК КЛАВІШІ ESCAPE =====
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const modals = document.querySelectorAll('.modal-overlay.open');
+      modals.forEach(modal => {
+        modal.classList.remove('open');
+        if (modal.id === 'confirmModal') confirmCallback = null;
+        if (modal.id === 'educationModal') document.querySelector('#educationModal h3').textContent = '➕ Додати освіту';
+        if (modal.id === 'childModal') document.querySelector('#childModal h3').textContent = '➕ Додати дитину';
+        if (modal.id === 'weaponModal') document.querySelector('#weaponModal h3').textContent = '➕ Додати зброю';
+      });
+    }
+  });
+
+  // ===== ІНІЦІАЛІЗАЦІЯ =====
   document.getElementById('enableEditBtn').onclick = enableEditMode;
   document.getElementById('saveAllBtn').onclick = () => {
     if (activeEditor) finishEdit(activeEditor);
     showToast('Всі зміни збережено', 'success');
-    window.location.reload(); // перезавантажуємо сторінку тільки тут
+    window.location.reload();
   };
   document.getElementById('cancelEditBtn').onclick = cancelEdit;
-  document.querySelectorAll('.modal-overlay').forEach(el => el.addEventListener('click', e => { if(e.target===el) el.classList.remove('open'); }));
+
+  // Початкове приховування кнопок (застосовується після завантаження DOM)
+  document.addEventListener('DOMContentLoaded', function() {
+    hideActionButtons();
+  });
+
+  // Закриття модальних вікон при кліку поза ними
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.remove('open');
+        if (this.id === 'confirmModal') confirmCallback = null;
+        if (this.id === 'educationModal') document.querySelector('#educationModal h3').textContent = '➕ Додати освіту';
+        if (this.id === 'childModal') document.querySelector('#childModal h3').textContent = '➕ Додати дитину';
+        if (this.id === 'weaponModal') document.querySelector('#weaponModal h3').textContent = '➕ Додати зброю';
+      }
+    });
+  });
 
   loadEducation(); loadChildren(); loadWeapons();
 </script>

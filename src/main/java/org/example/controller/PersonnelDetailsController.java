@@ -33,7 +33,7 @@ public class PersonnelDetailsController {
     // ===== ОСВІТА =====
 
     @GetMapping("/api/{id}/education")
-    public List<PersonnelEducation> getEducation(@PathVariable Long id) {
+    public List<PersonnelEducation> getEducationList(@PathVariable Long id) {
         return eduRepo.findByPersonnelIdOrderByStartDateAsc(id);
     }
 
@@ -69,10 +69,18 @@ public class PersonnelDetailsController {
         return ResponseEntity.ok().build();
     }
 
+    // ===== ОСВІТА: отримати одну =====
+    @GetMapping("/api/{id}/education/{eduId}")
+    public ResponseEntity<PersonnelEducation> getEducationById(@PathVariable Long eduId) {
+        return eduRepo.findById(eduId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     // ===== ДІТИ =====
 
     @GetMapping("/api/{id}/children")
-    public List<PersonnelChild> getChildren(@PathVariable Long id) {
+    public List<PersonnelChild> getChildrenList(@PathVariable Long id) {
         return childRepo.findByPersonnelIdOrderByBirthDateAsc(id);
     }
 
@@ -103,10 +111,18 @@ public class PersonnelDetailsController {
         return ResponseEntity.ok().build();
     }
 
+    // ===== ДІТИ: отримати одну =====
+    @GetMapping("/api/{id}/children/{childId}")
+    public ResponseEntity<PersonnelChild> getChildById(@PathVariable Long childId) {
+        return childRepo.findById(childId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     // ===== ЗБРОЯ =====
 
     @GetMapping("/api/{id}/weapons")
-    public List<PersonnelWeapon> getWeapons(@PathVariable Long id) {
+    public List<PersonnelWeapon> getWeaponsList(@PathVariable Long id) {
         return weaponRepo.findByPersonnelId(id);
     }
 
@@ -137,5 +153,13 @@ public class PersonnelDetailsController {
     public ResponseEntity<?> deleteWeapon(@PathVariable Long weaponId) {
         weaponRepo.deleteById(weaponId);
         return ResponseEntity.ok().build();
+    }
+
+    // ===== ЗБРОЯ: отримати одну =====
+    @GetMapping("/api/{id}/weapons/{weaponId}")
+    public ResponseEntity<PersonnelWeapon> getWeaponById(@PathVariable Long weaponId) {
+        return weaponRepo.findById(weaponId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

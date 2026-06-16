@@ -58,10 +58,30 @@ public class Personnel {
     @Column(length = 50)
     private String bloodGroup;           // Група крові
 
+    // ===== ПРИЗВАНИЙ НА ВІЙСЬКОВУ СЛУЖБУ =====
+    @Column(length = 100)
+    private String drafObl;             // Область
 
+    @Column(length = 100)
+    private String draftLoc;            // Місто/Селище
 
+    // ===== ЗАРАХУВАННЯ У ВІЙСЬКОВУ ЧАСТИНУ =====
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate enrollmentDate;   // Дата зарахування
 
+    @Column(length = 100)
+    private String enrollmentNakaz;     // Наказ
 
+    // ===== УЧАСНИК БОЙОВИХ ДІЙ =====
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate ubdDate;          // Дата УБД
+
+    // ===== ФОРМА ДОПУСКУ =====
+    @Column(length = 50)
+    private String admissionNakaz;      // Ф-Наказ
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate admissionDate;    // Ф-Дата
 
     // ===== АДРЕСА =====
     @Column(length = 500)
@@ -76,8 +96,7 @@ public class Personnel {
 
     @Column(length = 500)
     private String spouseName;           // Дружина/чоловік
-
-
+    
     // ===== ВІЙСЬКОВІ ДАНІ =====
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate draftDate;         // Дата призову
