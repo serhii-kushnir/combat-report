@@ -126,6 +126,9 @@ public class PersonnelService {
                 case "personnelStatus": p.setPersonnelStatus((String) value); break;
                 case "vos": p.setVos((String) value); break;
                 case "tariffGrade": p.setTariffGrade((String) value); break;
+                case "shoeSize": p.setShoeSize((String) value); break;
+                case "uniformSize": p.setUniformSize((String) value); break;
+                case "headwearSize": p.setHeadwearSize((String) value); break;
                 case "familyAddress": p.setFamilyAddress((String) value); break;
                 case "draftDate":
                     p.setDraftDate(value != null ? LocalDate.parse((String) value) : null);

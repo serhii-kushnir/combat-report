@@ -27,6 +27,16 @@ public class Personnel {
     @Column(nullable = false)
     private String lastName;
 
+    // ===== РЕЧОВЕ ЗАБЕЗПЕЧЕННЯ =====
+    @Column(length = 10)
+    private String shoeSize;          // Розмір взуття
+
+    @Column(length = 10)
+    private String uniformSize;       // Розмір форми
+
+    @Column(length = 10)
+    private String headwearSize;      // Розмір головного убору
+
     @Column(length = 50)
     private String vos;                // ВОС
 

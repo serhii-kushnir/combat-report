@@ -19,19 +19,22 @@ public class PersonnelDetailsController {
     private final PersonnelChildRepository childRepo;
     private final PersonnelWeaponRepository weaponRepo;
     private final org.example.repository.PersonnelRepository personnelRepo;
+    private final PersonnelVosTrainingRepository vosTrainingRepo;
 
+    // ОНОВЛЕНИЙ КОНСТРУКТОР – додано PersonnelVosTrainingRepository
     public PersonnelDetailsController(PersonnelEducationRepository eduRepo,
                                       PersonnelChildRepository childRepo,
                                       PersonnelWeaponRepository weaponRepo,
-                                      org.example.repository.PersonnelRepository personnelRepo) {
+                                      org.example.repository.PersonnelRepository personnelRepo,
+                                      PersonnelVosTrainingRepository vosTrainingRepo) {
         this.eduRepo = eduRepo;
         this.childRepo = childRepo;
         this.weaponRepo = weaponRepo;
         this.personnelRepo = personnelRepo;
+        this.vosTrainingRepo = vosTrainingRepo;
     }
 
     // ===== ОСВІТА =====
-
     @GetMapping("/api/{id}/education")
     public List<PersonnelEducation> getEducationList(@PathVariable Long id) {
         return eduRepo.findByPersonnelIdOrderByStartDateAsc(id);
@@ -161,5 +164,52 @@ public class PersonnelDetailsController {
         return weaponRepo.findById(weaponId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    // ===== ВОС НАВЧАННЯ =====
+
+    @GetMapping("/api/{id}/vos-training")
+    public List<PersonnelVosTraining> getVosTraining(@PathVariable Long id) {
+        return vosTrainingRepo.findByPersonnelIdOrderByStartDateAsc(id);
+    }
+
+    @GetMapping("/api/{id}/vos-training/{trainingId}")
+    public ResponseEntity<PersonnelVosTraining> getVosTrainingById(@PathVariable Long trainingId) {
+        return vosTrainingRepo.findById(trainingId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/api/{id}/vos-training")
+    public ResponseEntity<?> addVosTraining(@PathVariable Long id,
+                                            @RequestBody PersonnelVosTraining training) {
+        Personnel p = personnelRepo.findById(id).orElse(null);
+        if (p == null) return ResponseEntity.notFound().build();
+        training.setPersonnel(p);
+        training.setId(null);
+        log.info("Додано ВОС навчання для особи id={}: {}", id, training.getName());
+        return ResponseEntity.ok(vosTrainingRepo.save(training));
+    }
+
+    @PutMapping("/api/{id}/vos-training/{trainingId}")
+    public ResponseEntity<?> updateVosTraining(@PathVariable Long trainingId,
+                                               @RequestBody PersonnelVosTraining training) {
+        return vosTrainingRepo.findById(trainingId).map(t -> {
+            t.setName(training.getName());
+            t.setSpeciality(training.getSpeciality());
+            t.setVosNumber(training.getVosNumber());
+            t.setStartDate(training.getStartDate());
+            t.setEndDate(training.getEndDate());
+            t.setOrderNumber(training.getOrderNumber());
+            t.setOrderDate(training.getOrderDate());
+            t.setMilitaryUnit(training.getMilitaryUnit());
+            return ResponseEntity.ok(vosTrainingRepo.save(t));
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/api/{id}/vos-training/{trainingId}")
+    public ResponseEntity<?> deleteVosTraining(@PathVariable Long trainingId) {
+        vosTrainingRepo.deleteById(trainingId);
+        return ResponseEntity.ok().build();
     }
 }
