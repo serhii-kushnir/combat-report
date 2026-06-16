@@ -23,4 +23,7 @@ public class PersonnelWeapon {
     private String serialNumber;      // Серійний номер
     private String issuedDate;        // Дата видачі
     private String note;              // Примітка
+    private String bayonet;           // Штик-багнет
+    private String magazines;         // Магазини
+    private String caliber;           // Калібр (наприклад, 5.45, 7.62, 9 мм)
 }

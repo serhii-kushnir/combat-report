@@ -4,21 +4,114 @@
     <meta charset="UTF-8">
     <title>Графік чергувань</title>
     <style>
+        /* ===== CSS ЗМІННІ ===== */
+        :root {
+            --bg-body: #f0f2f5;
+            --bg-card: #ffffff;
+            --bg-toolbar: #ffffff;
+            --bg-header: #1a237e;
+            --bg-header-light: #283593;
+            --bg-input: #ffffff;
+            --bg-hover: #fafbff;
+            --bg-weekend: #fff8f0;
+            --bg-today: #fffde7;
+            --bg-menu: #ffffff;
+            --bg-legend: #ffffff;
+            --bg-stats: #ffffff;
+            --text-primary: #222222;
+            --text-secondary: #555555;
+            --text-light: #999999;
+            --text-white: #ffffff;
+            --text-muted: #666666;
+            --border-color: #e0e0e0;
+            --border-light: #f0f0f0;
+            --border-lighter: #f5f5f5;
+            --shadow-color: rgba(0,0,0,0.08);
+            --shadow-light: rgba(0,0,0,0.05);
+            --shadow-medium: rgba(0,0,0,0.15);
+            --btn-nav-bg: #e8eaf6;
+            --btn-nav-color: #1a237e;
+            --btn-nav-hover: #c5cae9;
+            --btn-today-bg: #1976d2;
+            --btn-today-hover: #1565c0;
+            --btn-primary-bg: #1976d2;
+            --btn-primary-hover: #1565c0;
+            --btn-success-bg: #388e3c;
+            --btn-success-hover: #2e7d32;
+            --btn-warning-bg: #f57c00;
+            --btn-warning-hover: #e65100;
+            --current-date-bg: #e8eaf6;
+            --current-date-color: #1a237e;
+            --toast-success: #2e7d32;
+            --toast-error: #c62828;
+            --stats-header-bg: #1a237e;
+            --stats-header-border: #283593;
+        }
+
+        /* Темна тема */
+        body.dark-theme {
+            --bg-body: #1e1e24;
+            --bg-card: #2d2d35;
+            --bg-toolbar: #2d2d35;
+            --bg-header: #2a2a3a;
+            --bg-header-light: #3a3a4a;
+            --bg-input: #3a3a44;
+            --bg-hover: #3a3a44;
+            --bg-weekend: #2a2a35;
+            --bg-today: #3a3a30;
+            --bg-menu: #2d2d35;
+            --bg-legend: #2d2d35;
+            --bg-stats: #2d2d35;
+            --text-primary: #e8e8ec;
+            --text-secondary: #b0b0b8;
+            --text-light: #88888f;
+            --text-white: #ffffff;
+            --text-muted: #a0a0a8;
+            --border-color: #3d3d48;
+            --border-light: #3d3d48;
+            --border-lighter: #3d3d48;
+            --shadow-color: rgba(0,0,0,0.4);
+            --shadow-light: rgba(0,0,0,0.3);
+            --shadow-medium: rgba(0,0,0,0.5);
+            --btn-nav-bg: #3a3a4a;
+            --btn-nav-color: #90caf9;
+            --btn-nav-hover: #4a4a5a;
+            --btn-today-bg: #4a7ab5;
+            --btn-today-hover: #5a8ac5;
+            --btn-primary-bg: #4a7ab5;
+            --btn-primary-hover: #5a8ac5;
+            --btn-success-bg: #3a6a3a;
+            --btn-success-hover: #4a7a4a;
+            --btn-warning-bg: #b87a2a;
+            --btn-warning-hover: #c88a3a;
+            --current-date-bg: #3a3a4a;
+            --current-date-color: #90caf9;
+            --stats-header-bg: #2a2a3a;
+            --stats-header-border: #3d3d48;
+        }
+
+        /* ===== ОСНОВНІ СТИЛІ ===== */
         .topbar {
-            background: white;
+            background: var(--bg-card);
             padding: 12px 20px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border-color);
             font-size: 15px;
             font-weight: 600;
-            color: #1a237e;
+            color: var(--text-primary);
         }
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            margin: 0;
+            transition: background 0.3s, color 0.3s;
+        }
 
         .container { padding: 16px 20px; max-width: 100%; overflow-x: auto; }
 
-        /* Стилі для тулбару */
+        /* ===== ТУЛБАР ===== */
         .toolbar {
-            background: white;
+            background: var(--bg-toolbar);
             padding: 12px 16px;
             border-radius: 12px;
             margin-bottom: 14px;
@@ -26,14 +119,14 @@
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            transition: box-shadow 0.2s;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            transition: background 0.3s, box-shadow 0.3s;
         }
         .toolbar:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            box-shadow: 0 4px 12px var(--shadow-color);
         }
 
-        /* Базовий стиль кнопок */
+        /* ===== КНОПКИ ===== */
         .btn {
             padding: 6px 14px;
             border: none;
@@ -45,102 +138,156 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 2px var(--shadow-light);
         }
         .btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px var(--shadow-color);
         }
         .btn:active {
             transform: translateY(1px);
         }
 
-        /* Специфічні кнопки */
         .btn-nav {
-            background: #e8eaf6;
-            color: #1a237e;
+            background: var(--btn-nav-bg);
+            color: var(--btn-nav-color);
         }
         .btn-nav:hover {
-            background: #c5cae9;
+            background: var(--btn-nav-hover);
         }
 
         .btn-today {
-            background: #1976d2;
+            background: var(--btn-today-bg);
             color: white;
         }
         .btn-today:hover {
-            background: #1565c0;
+            background: var(--btn-today-hover);
         }
 
         .btn-primary {
-            background: #1976d2;
+            background: var(--btn-primary-bg);
             color: white;
         }
         .btn-primary:hover {
-            background: #1565c0;
+            background: var(--btn-primary-hover);
         }
 
         .btn-success {
-            background: #388e3c;
+            background: var(--btn-success-bg);
             color: white;
         }
         .btn-success:hover {
-            background: #2e7d32;
+            background: var(--btn-success-hover);
         }
 
         .btn-warning {
-            background: #f57c00;
+            background: var(--btn-warning-bg);
             color: white;
         }
         .btn-warning:hover {
-            background: #e65100;
+            background: var(--btn-warning-hover);
         }
 
-        /* Стилі для select */
+        /* ===== ПОЛЯ ВВОДУ ===== */
         select, input[type="text"] {
             padding: 6px 10px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 13px;
-            background: white;
+            background: var(--bg-input);
+            color: var(--text-primary);
             cursor: pointer;
             transition: all 0.2s;
             outline: none;
         }
         select:hover, input:hover {
-            border-color: #1976d2;
+            border-color: var(--btn-primary-bg);
         }
         select:focus, input:focus {
-            border-color: #1976d2;
+            border-color: var(--btn-primary-bg);
             box-shadow: 0 0 0 2px rgba(25,118,210,0.2);
         }
 
-        /* Дата */
+        /* ===== ПОТОЧНА ДАТА ===== */
         .current-date {
             font-size: 13px;
-            color: #1a237e;
-            background: #e8eaf6;
+            color: var(--current-date-color);
+            background: var(--current-date-bg);
             padding: 5px 12px;
             border-radius: 20px;
             font-weight: 500;
+            transition: background 0.3s, color 0.3s;
         }
 
-        /* Інші стилі залишаються без змін (таблиці, бейджі, меню) */
-        .table-wrap { overflow-x: auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-        table { border-collapse: collapse; background: white; min-width: 100%; }
-        thead tr:first-child th { background: #1a237e; color: white; font-size: 12px; padding: 10px 4px; }
-        thead tr:last-child th  { background: #283593; color: #c5cae9; font-size: 11px; padding: 6px 2px; }
+        #monthTitle {
+            color: var(--text-primary);
+            transition: color 0.3s;
+        }
+
+        /* ===== ТАБЛИЦЯ ===== */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            transition: box-shadow 0.3s;
+        }
+        table {
+            border-collapse: collapse;
+            background: var(--bg-card);
+            min-width: 100%;
+            transition: background 0.3s;
+        }
+        thead tr:first-child th {
+            background: var(--bg-header);
+            color: var(--text-white);
+            font-size: 12px;
+            padding: 10px 4px;
+            transition: background 0.3s;
+        }
+        thead tr:last-child th {
+            background: var(--bg-header-light);
+            color: #c5cae9;
+            font-size: 11px;
+            padding: 6px 2px;
+            transition: background 0.3s;
+        }
 
         .col-num  { width: 32px; min-width: 32px; }
         .col-name { width: 160px; min-width: 140px; text-align: left !important; padding-left: 8px !important; }
         .col-rank { width: 110px; min-width: 100px; text-align: left !important; padding-left: 6px !important; }
         .col-day  { width: 36px; min-width: 32px; }
 
-        td { padding: 2px; text-align: center; border-bottom: 1px solid #f0f0f0; border-right: 1px solid #f5f5f5; font-size: 12px; }
-        td.name-cell { text-align: left; padding: 4px 6px 4px 8px; font-size: 12px; white-space: nowrap; }
-        td.rank-cell { text-align: left; padding: 4px 4px 4px 6px; font-size: 11px; color: #555; white-space: nowrap; }
-        td.num-cell  { color: #999; font-size: 11px; text-align: center; }
-        tr:hover td { background: #fafbff; }
+        td {
+            padding: 2px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-light);
+            border-right: 1px solid var(--border-lighter);
+            font-size: 12px;
+            color: var(--text-primary);
+            transition: border-color 0.3s, color 0.3s;
+        }
+        td.name-cell {
+            text-align: left;
+            padding: 4px 6px 4px 8px;
+            font-size: 12px;
+            white-space: nowrap;
+            color: var(--text-primary);
+        }
+        td.rank-cell {
+            text-align: left;
+            padding: 4px 4px 4px 6px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        td.num-cell {
+            color: var(--text-light);
+            font-size: 11px;
+            text-align: center;
+        }
+        tr:hover td {
+            background: var(--bg-hover);
+        }
 
         .day-cell {
             cursor: pointer;
@@ -148,9 +295,9 @@
             height: 28px;
             vertical-align: middle;
         }
-        .day-cell:hover { background: #e3f2fd !important; }
-        .day-cell.weekend { background: #fff8f0; }
-        .day-cell.today-col { background: #fffde7 !important; }
+        .day-cell:hover { background: var(--bg-hover) !important; }
+        .day-cell.weekend { background: var(--bg-weekend); }
+        .day-cell.today-col { background: var(--bg-today) !important; }
 
         .cell-badge {
             display: inline-block;
@@ -176,22 +323,24 @@
         .s-НАВ    { background: #fff9c4; color: #f57f17; }
         .s-ПЕРЕВ  { background: #cfd8dc; color: #37474f; }
 
+        /* ===== МЕНЮ СТАТУСІВ ===== */
         .status-menu {
             display: none;
             position: fixed;
             z-index: 500;
-            background: white;
+            background: var(--bg-menu);
             border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 24px var(--shadow-medium);
             padding: 6px;
             min-width: 160px;
+            transition: background 0.3s, box-shadow 0.3s;
         }
         .status-menu.open { display: block; }
         .status-menu-title {
             font-size: 11px;
-            color: #999;
+            color: var(--text-light);
             padding: 4px 6px 6px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-color);
             margin-bottom: 4px;
         }
         .status-option {
@@ -213,23 +362,30 @@
             flex-shrink: 0;
         }
         .status-option.clear {
-            background: #f5f5f5;
-            color: #999;
+            background: var(--bg-hover);
+            color: var(--text-light);
             font-weight: 400;
         }
 
+        /* ===== ЛЕГЕНДА ===== */
         .legend {
-            background: white;
+            background: var(--bg-legend);
             border-radius: 12px;
             padding: 10px 14px;
             margin-top: 12px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 6px var(--shadow-color);
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
             align-items: center;
+            transition: background 0.3s, box-shadow 0.3s;
         }
-        .legend-title { font-size: 12px; color: #666; margin-right: 4px; }
+        .legend-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-right: 4px;
+            transition: color 0.3s;
+        }
         .legend-item {
             font-size: 11px;
             font-weight: 700;
@@ -237,17 +393,21 @@
             border-radius: 6px;
         }
 
+        /* ===== СТАТИСТИКА ===== */
         .stats-container {
             margin-top: 14px;
-            background: white;
+            background: var(--bg-stats);
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px var(--shadow-color);
+            transition: background 0.3s, box-shadow 0.3s;
         }
         .stats-container h3 {
             font-size: 15px;
             margin: 8px 0 8px 0;
-            color: #1a237e;
+            color: var(--text-primary);
             font-weight: 600;
+            padding: 8px 14px 0;
+            transition: color 0.3s;
         }
         .stats-table-wrap {
             overflow-x: auto;
@@ -255,17 +415,19 @@
         }
         .stats-table {
             border-collapse: collapse;
-            background: white;
+            background: var(--bg-stats);
             width: 100%;
             font-size: 12px;
+            transition: background 0.3s;
         }
         .stats-table thead tr th {
-            background: #1a237e;
-            color: white;
+            background: var(--stats-header-bg);
+            color: var(--text-white);
             font-size: 12px;
             padding: 8px 4px;
-            border-bottom: 1px solid #283593;
+            border-bottom: 1px solid var(--stats-header-border);
             white-space: nowrap;
+            transition: background 0.3s;
         }
         .stats-table td.num-cell {
             width: 32px;
@@ -276,15 +438,17 @@
             text-align: left;
             padding: 4px 4px 4px 6px;
             font-size: 11px;
-            color: #555;
+            color: var(--text-secondary);
             white-space: nowrap;
         }
         .stats-table td {
             padding: 6px 4px;
             text-align: center;
-            border-bottom: 1px solid #f0f0f0;
-            border-right: 1px solid #f5f5f5;
+            border-bottom: 1px solid var(--border-light);
+            border-right: 1px solid var(--border-lighter);
             font-size: 12px;
+            color: var(--text-primary);
+            transition: border-color 0.3s, color 0.3s;
         }
         .stats-table td:nth-child(2) {
             text-align: left;
@@ -292,18 +456,20 @@
             font-weight: 500;
         }
         .stats-table tr:hover td {
-            background: #fafbff;
+            background: var(--bg-hover);
         }
 
+        /* ===== TOAST ===== */
         .toast {
             position: fixed; bottom: 20px; right: 20px;
             padding: 10px 18px; border-radius: 8px; color: white;
             font-size: 13px; font-weight: 600;
-            opacity: 0; transition: opacity 0.3s; z-index: 9999;
+            opacity: 0; transition: opacity 0.3s;
+            z-index: 9999;
         }
         .toast.show { opacity: 1; }
-        .toast.ok  { background: #2e7d32; }
-        .toast.err { background: #c62828; }
+        .toast.ok  { background: var(--toast-success); }
+        .toast.err { background: var(--toast-error); }
     </style>
     <link th:replace="~{fragments :: sidebar-css}">
 </head>
@@ -325,15 +491,15 @@
                 <select id="monthFilter">
                     <option value="">— Всі місяці —</option>
                 </select>
-                <button class="btn btn-primary" id="applyFilterBtn" style="background:#1976d2;">Показати</button>
-                <button class="btn btn-success" id="exportXlsxBtn" style="background:#388e3c;">📊 Експорт XLSX</button>
+                <button class="btn btn-primary" id="applyFilterBtn">Показати</button>
+                <button class="btn btn-success" id="exportXlsxBtn">📊 Експорт XLSX</button>
             </div>
 
             <div class="table-wrap">
                 <table id="scheduleTable">
                     <thead id="tableHead"></thead>
                     <tbody id="tableBody">
-                    <tr><td colspan="40" style="text-align:center;padding:32px;color:#999">Завантаження...</td></tr>
+                    <tr><td colspan="40" style="text-align:center;padding:32px;color:var(--text-light)">Завантаження...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -365,7 +531,7 @@
                         </tr>
                         </thead>
                         <tbody id="statsTableBody">
-                        <tr><td colspan="15" style="text-align:center;">Завантаження...</td></tr>
+                        <tr><td colspan="15" style="text-align:center;color:var(--text-light)">Завантаження...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -427,7 +593,6 @@
             currentYear  = today.getFullYear();
             currentMonth = today.getMonth() + 1;
 
-            // Відображення поточної дати
             function updateCurrentDate() {
                 const now = new Date();
                 const day = String(now.getDate()).padStart(2,'0');
@@ -495,7 +660,7 @@
 
                 if (!tableData.length) {
                     document.getElementById('tableBody').innerHTML =
-                        `<tr><td colspan="${daysInMonth + 3}" style="text-align:center;padding:32px;color:#999">Особовий склад порожній</td></tr>`;
+                        `<tr><td colspan="${daysInMonth + 3}" style="text-align:center;padding:32px;color:var(--text-light)">Особовий склад порожній</td></tr>`;
                     return;
                 }
 
@@ -542,7 +707,7 @@
             function renderStatsTable() {
                 const tbody = document.getElementById('statsTableBody');
                 if (!tableData || tableData.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;">Немає даних про особовий склад</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;color:var(--text-light)">Немає даних про особовий склад</td></tr>';
                     return;
                 }
 
@@ -687,11 +852,9 @@
                 });
             }
 
-            // Після ініціалізації
             loadFilters();
 
             async function loadFilters() {
-                // Завантажуємо роки (унікальні з даних)
                 const yearsRes = await fetch('/schedule/api/years');
                 if (yearsRes.ok) {
                     const years = await yearsRes.json();
@@ -704,7 +867,6 @@
                     });
                 }
 
-                // Завантажуємо місяці (унікальні з даних)
                 const monthsRes = await fetch('/schedule/api/months');
                 if (monthsRes.ok) {
                     const months = await monthsRes.json();
@@ -718,12 +880,10 @@
                 }
             }
 
-            // Обробник кнопки "Показати"
             document.getElementById('applyFilterBtn').onclick = () => {
                 const yearVal = document.getElementById('yearFilter').value;
                 const monthVal = document.getElementById('monthFilter').value;
                 if (monthVal) {
-                    // Якщо вибрано місяць, потрібно знайти номер місяця
                     const monthIndex = UA_MONTHS.findIndex(m => m === monthVal);
                     if (monthIndex !== -1) {
                         currentYear = parseInt(yearVal) || new Date().getFullYear();
@@ -731,20 +891,16 @@
                         loadMonth();
                     }
                 } else if (yearVal) {
-                    // Якщо вибрано тільки рік, завантажити дані за рік (потрібно змінити API)
-                    // Або просто показати всі місяці цього року. Для простоти поки завантажимо перший місяць року.
                     currentYear = parseInt(yearVal);
                     currentMonth = 1;
                     loadMonth();
                 } else {
-                    // Якщо нічого не вибрано — завантажити поточний місяць
                     currentYear = today.getFullYear();
                     currentMonth = today.getMonth() + 1;
                     loadMonth();
                 }
             };
 
-            // Кнопка експорту — з використанням фільтрів
             document.getElementById('exportXlsxBtn').addEventListener('click', () => {
                 const yearVal = document.getElementById('yearFilter').value;
                 const monthVal = document.getElementById('monthFilter').value;

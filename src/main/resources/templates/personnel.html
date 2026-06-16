@@ -4,136 +4,699 @@
     <meta charset="UTF-8">
     <title>Особовий склад</title>
     <style>
+        /* ===== CSS ЗМІННІ (узгоджено з fragments) ===== */
+        :root {
+            --bg-body: #f0f2f5;
+            --bg-card: #ffffff;
+            --bg-toolbar: #ffffff;
+            --bg-header: #1a237e;
+            --bg-input: #ffffff;
+            --bg-editable: #f8f9fa;
+            --bg-hover: #f5f9ff;
+            --bg-modal: rgba(0,0,0,0.5);
+            --bg-detail: #ffffff;
+            --bg-detail-header: #1a237e;
+            --bg-add-row: #f5f7fa;
+            --bg-dynamic: #f5f7fa;
+            --bg-stat: #ffffff;
+            --text-primary: #222222;
+            --text-secondary: #555555;
+            --text-light: #888888;
+            --text-white: #ffffff;
+            --text-muted: #666666;
+            --border-color: #e0e0e0;
+            --border-light: #f0f0f0;
+            --shadow-color: rgba(0,0,0,0.1);
+            --shadow-strong: rgba(0,0,0,0.2);
+            --btn-primary-bg: #1976d2;
+            --btn-primary-hover: #1565c0;
+            --btn-success-bg: #388e3c;
+            --btn-success-hover: #2e7d32;
+            --btn-warning-bg: #f57c00;
+            --btn-warning-hover: #e65100;
+            --btn-danger-bg: #d32f2f;
+            --btn-danger-hover: #b71c1c;
+            --toast-success: #2e7d32;
+            --toast-error: #c62828;
+            --stat-num-color: #1976d2;
+            --detail-label-color: #888;
+            --detail-value-bg: #f5f7fa;
+            --detail-tab-color: #666;
+            --detail-tab-active: #1a237e;
+            --detail-close-color: #fff;
+        }
+
+        /* Темна тема */
+        body.dark-theme {
+            --bg-body: #1e1e24;
+            --bg-card: #2d2d35;
+            --bg-toolbar: #2d2d35;
+            --bg-header: #2a2a3a;
+            --bg-input: #3a3a44;
+            --bg-editable: #3a3a44;
+            --bg-hover: #3a3a44;
+            --bg-modal: rgba(0,0,0,0.7);
+            --bg-detail: #2d2d35;
+            --bg-detail-header: #2a2a3a;
+            --bg-add-row: #3a3a44;
+            --bg-dynamic: #3a3a44;
+            --bg-stat: #2d2d35;
+            --text-primary: #e8e8ec;
+            --text-secondary: #b0b0b8;
+            --text-light: #88888f;
+            --text-white: #ffffff;
+            --text-muted: #a0a0a8;
+            --border-color: #3d3d48;
+            --border-light: #3d3d48;
+            --shadow-color: rgba(0,0,0,0.4);
+            --shadow-strong: rgba(0,0,0,0.5);
+            --btn-primary-bg: #4a7ab5;
+            --btn-primary-hover: #5a8ac5;
+            --btn-success-bg: #3a6a3a;
+            --btn-success-hover: #4a7a4a;
+            --btn-warning-bg: #b87a2a;
+            --btn-warning-hover: #c88a3a;
+            --btn-danger-bg: #a03040;
+            --btn-danger-hover: #b04050;
+            --stat-num-color: #5a8ac5;
+            --detail-label-color: #a0a0a8;
+            --detail-value-bg: #3a3a44;
+            --detail-tab-color: #a0a0a8;
+            --detail-tab-active: #90caf9;
+            --detail-close-color: #90caf9;
+        }
+
+        /* ===== ОСНОВНІ СТИЛІ ===== */
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f0f2f5; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
+        }
 
         .container { padding: 16px 20px; }
 
         .toolbar {
-            background: white; padding: 12px 16px; border-radius: 8px;
-            margin-bottom: 14px; display: flex; align-items: center;
-            gap: 10px; flex-wrap: wrap;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            background: var(--bg-toolbar);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            box-shadow: 0 1px 4px var(--shadow-color);
+            transition: background 0.3s, box-shadow 0.3s;
         }
         .toolbar input {
-            padding: 7px 10px; border: 1px solid #ccc; border-radius: 5px;
-            font-size: 13px; font-family: inherit; width: 220px;
+            padding: 7px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 13px;
+            font-family: inherit;
+            width: 220px;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            transition: border-color 0.2s, background 0.3s, color 0.3s;
         }
-        .btn { padding: 7px 14px; border: none; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: 600; }
-        .btn-primary { background: #1976d2; color: white; }
-        .btn-primary:hover { background: #1565c0; }
-        .btn-success { background: #388e3c; color: white; }
-        .btn-success:hover { background: #2e7d32; }
-        .btn-warning { background: #f57c00; color: white; }
-        .btn-warning:hover { background: #e65100; }
-        .btn-danger  { background: #d32f2f; color: white; }
-        .btn-danger:hover  { background: #b71c1c; }
+        .btn {
+            padding: 7px 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: var(--btn-primary-bg);
+            color: white;
+        }
+        .btn-primary:hover { background: var(--btn-primary-hover); }
+        .btn-success {
+            background: var(--btn-success-bg);
+            color: white;
+        }
+        .btn-success:hover { background: var(--btn-success-hover); }
+        .btn-warning {
+            background: var(--btn-warning-bg);
+            color: white;
+        }
+        .btn-warning:hover { background: var(--btn-warning-hover); }
+        .btn-danger {
+            background: var(--btn-danger-bg);
+            color: white;
+        }
+        .btn-danger:hover { background: var(--btn-danger-hover); }
         .btn-sm { padding: 4px 9px; font-size: 11px; }
 
-        .table-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-        .tab-btn {
-            padding: 7px 18px; border: 2px solid #1a237e; border-radius: 6px;
-            background: white; color: #1a237e; font-size: 13px; font-weight: 600;
-            cursor: pointer; transition: all 0.15s;
+        .table-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
         }
-        .tab-btn.active { background: #1a237e; color: white; }
-        .tab-btn:hover:not(.active) { background: #e8eaf6; }
+        .tab-btn {
+            padding: 7px 18px;
+            border: 2px solid var(--bg-header);
+            border-radius: 6px;
+            background: var(--bg-card);
+            color: var(--bg-header);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .tab-btn.active {
+            background: var(--bg-header);
+            color: var(--text-white);
+        }
+        .tab-btn:hover:not(.active) {
+            background: var(--bg-hover);
+        }
 
         .table-section { display: none; }
         .table-section.visible { display: block; }
 
-        .table-wrap { overflow-x: auto; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        thead { background: #1a237e; color: white; }
-        th { padding: 9px 8px; font-size: 12px; font-weight: 600; text-align: center; white-space: nowrap; }
-        td { padding: 7px 8px; font-size: 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
-        tr:hover td { background: #f5f9ff; }
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px var(--shadow-color);
+            transition: box-shadow 0.3s;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            transition: background 0.3s;
+        }
+        thead {
+            background: var(--bg-header);
+            color: var(--text-white);
+            transition: background 0.3s;
+        }
+        th {
+            padding: 9px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+        }
+        td {
+            padding: 7px 8px;
+            font-size: 12px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-primary);
+            vertical-align: top;
+            transition: border-color 0.3s, color 0.3s;
+        }
+        tr:hover td {
+            background: var(--bg-hover);
+        }
         tr:last-child td { border-bottom: none; }
         .actions-col { white-space: nowrap; }
 
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--bg-modal);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
         .modal-overlay.open { display: flex; }
-        .modal { background: white; border-radius: 10px; padding: 24px; width: 580px; max-width: 96vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
-        .modal h2 { margin: 0 0 18px; font-size: 17px; color: #1a237e; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .form-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
-        label { font-size: 12px; font-weight: 600; color: #555; }
-        .form-group input, .form-group select, .form-group textarea { padding: 7px 9px; border: 1px solid #ccc; border-radius: 5px; font-size: 13px; font-family: inherit; }
+        .modal {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 24px;
+            width: 580px;
+            max-width: 96vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px var(--shadow-strong);
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .modal h2 {
+            margin: 0 0 18px;
+            font-size: 17px;
+            color: var(--text-primary);
+            transition: color 0.3s;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 7px 9px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 13px;
+            font-family: inherit;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            transition: border-color 0.2s, background 0.3s, color 0.3s;
+        }
         .form-group textarea { height: 80px; resize: vertical; }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
 
-        .confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1100; align-items: center; justify-content: center; }
+        .confirm-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--bg-modal);
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+        }
         .confirm-overlay.open { display: flex; }
-        .confirm-box { background: white; border-radius: 10px; padding: 24px; width: 340px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
-        .confirm-box p { margin: 0 0 16px; }
-        .confirm-actions { display: flex; gap: 10px; justify-content: flex-end; }
+        .confirm-box {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 24px;
+            width: 340px;
+            box-shadow: 0 8px 32px var(--shadow-strong);
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .confirm-box p {
+            margin: 0 0 16px;
+            color: var(--text-primary);
+        }
+        .confirm-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
 
-        .toast { position: fixed; bottom: 20px; right: 20px; padding: 10px 18px; border-radius: 6px; color: white; font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.3s; z-index: 9999; }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 18px;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 9999;
+        }
         .toast.show { opacity: 1; }
-        .toast.success { background: #2e7d32; }
-        .toast.error   { background: #c62828; }
+        .toast.success { background: var(--toast-success); }
+        .toast.error   { background: var(--toast-error); }
 
-        .empty-state { text-align: center; padding: 40px; color: #999; }
-        thead th[data-col] { cursor: pointer; user-select: none; }
-        thead th[data-col]:hover { background: #283593; }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+        thead th[data-col] {
+            cursor: pointer;
+            user-select: none;
+        }
+        thead th[data-col]:hover {
+            background: var(--bg-header-light, #283593);
+        }
         thead th.sort-asc::after  { content: ' ▲'; font-size: 10px; }
         thead th.sort-desc::after { content: ' ▼'; font-size: 10px; }
-        .sub-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
-        .sub-table th { background: #e8eaf6; color: #1a237e; padding: 6px 8px; text-align: left; font-size: 11px; }
-        .sub-table td { padding: 5px 8px; border-bottom: 1px solid #f0f0f0; }
-        .sub-table tr:hover td { background: #f5f9ff; }
-        .sub-table .actions { white-space: nowrap; }
-        .add-row { display: grid; gap: 8px; margin-top: 10px; padding: 10px; background: #f5f7fa; border-radius: 6px; }
-        .add-row input, .add-row select { padding: 5px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; font-family: inherit; }
-        .add-row-title { font-size: 11px; font-weight: 700; color: #1a237e; margin-bottom: 4px; }
-        .btn-xs { padding: 3px 8px; font-size: 11px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
-        .btn-xs-primary { background: #1976d2; color: white; }
-        .btn-xs-danger  { background: #d32f2f; color: white; }
-        .dynamic-row { display: grid; gap: 6px; align-items: end; margin-bottom: 6px; padding: 8px; background: #f5f7fa; border-radius: 5px; border-left: 3px solid #90caf9; width: 100%; overflow: hidden; }
-        .dynamic-row input, .dynamic-row select { padding: 5px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; font-family: inherit; width: 100%; box-sizing: border-box; min-width: 0; }
-        .dynamic-section { margin-bottom: 14px; }
-        .dynamic-section-title { font-size: 12px; font-weight: 700; color: #1a237e; margin: 14px 0 8px; padding-bottom: 4px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; }
 
-        /* Детальна */
-        .detail-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1200; align-items: center; justify-content: center; }
+        .sub-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 12px;
+        }
+        .sub-table th {
+            background: var(--bg-header);
+            color: var(--text-white);
+            padding: 6px 8px;
+            text-align: left;
+            font-size: 11px;
+            transition: background 0.3s;
+        }
+        .sub-table td {
+            padding: 5px 8px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-primary);
+            transition: border-color 0.3s, color 0.3s;
+        }
+        .sub-table tr:hover td {
+            background: var(--bg-hover);
+        }
+        .sub-table .actions { white-space: nowrap; }
+        .add-row {
+            display: grid;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 10px;
+            background: var(--bg-add-row);
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+        .add-row input,
+        .add-row select {
+            padding: 5px 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: inherit;
+            background: var(--bg-input);
+            color: var(--text-primary);
+        }
+        .add-row-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .btn-xs {
+            padding: 3px 8px;
+            font-size: 11px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-xs-primary { background: var(--btn-primary-bg); color: white; }
+        .btn-xs-danger { background: var(--btn-danger-bg); color: white; }
+
+        .dynamic-row {
+            display: grid;
+            gap: 6px;
+            align-items: end;
+            margin-bottom: 6px;
+            padding: 8px;
+            background: var(--bg-dynamic);
+            border-radius: 5px;
+            border-left: 3px solid #90caf9;
+            width: 100%;
+            overflow: hidden;
+            transition: background 0.3s;
+        }
+        .dynamic-row input,
+        .dynamic-row select {
+            padding: 5px 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: inherit;
+            width: 100%;
+            box-sizing: border-box;
+            min-width: 0;
+            background: var(--bg-input);
+            color: var(--text-primary);
+        }
+        .dynamic-section { margin-bottom: 14px; }
+        .dynamic-section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 14px 0 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: color 0.3s, border-color 0.3s;
+        }
+
+        /* Детальна інформація */
+        .detail-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--bg-modal);
+            z-index: 1200;
+            align-items: center;
+            justify-content: center;
+        }
         .detail-overlay.open { display: flex; }
         .detail-modal {
-            background: white; border-radius: 10px; width: 720px; max-width: 96vw;
-            max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+            background: var(--bg-detail);
+            border-radius: 10px;
+            width: 720px;
+            max-width: 96vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px var(--shadow-strong);
+            transition: background 0.3s, box-shadow 0.3s;
         }
         .detail-header {
-            background: #1a237e; color: white; padding: 16px 24px;
-            border-radius: 10px 10px 0 0; display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-detail-header);
+            color: var(--text-white);
+            padding: 16px 24px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s;
         }
         .detail-header h2 { margin: 0; font-size: 17px; }
-        .detail-close { background: none; border: none; color: white; font-size: 22px; cursor: pointer; line-height: 1; }
-        .detail-body { padding: 20px 24px; }
-        .detail-tabs { display: flex; border-bottom: 2px solid #e0e0e0; margin-bottom: 16px; gap: 4px; }
-        .detail-tab {
-            padding: 7px 16px; border: none; background: none; cursor: pointer;
-            font-size: 13px; font-weight: 600; color: #666; border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
+        .detail-close {
+            background: none;
+            border: none;
+            color: var(--detail-close-color);
+            font-size: 22px;
+            cursor: pointer;
+            line-height: 1;
         }
-        .detail-tab.active { color: #1a237e; border-bottom-color: #1a237e; }
+        .detail-body { padding: 20px 24px; }
+        .detail-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 16px;
+            gap: 4px;
+        }
+        .detail-tab {
+            padding: 7px 16px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--detail-tab-color);
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .detail-tab.active {
+            color: var(--detail-tab-active);
+            border-bottom-color: var(--detail-tab-active);
+        }
         .detail-tab-content { display: none; }
         .detail-tab-content.active { display: block; }
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
         .info-group { margin-bottom: 4px; }
         .info-group.full { grid-column: 1 / -1; }
-        .info-label { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
-        .info-value { font-size: 13px; color: #222; padding: 6px 10px; background: #f5f7fa; border-radius: 5px; min-height: 30px; }
-        .info-value.empty { color: #bbb; font-style: italic; }
-        .section-title { font-size: 13px; font-weight: 700; color: #1a237e; margin: 16px 0 10px; padding-bottom: 4px; border-bottom: 1px solid #e0e0e0; grid-column: 1 / -1; }
-        .detail-actions { display: flex; gap: 10px; justify-content: flex-end; padding: 12px 24px; border-top: 1px solid #eee; }
-
-
-        .stats { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
-        .stat-card {
-            background: white; border-radius: 8px; padding: 10px 16px;
-            text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.1); min-width: 100px;
+        .info-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--detail-label-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
         }
-        .stat-card .num { font-size: 26px; font-weight: bold; color: #1976d2; }
-        .stat-card .lbl { font-size: 11px; color: #666; }
+        .info-value {
+            font-size: 13px;
+            color: var(--text-primary);
+            padding: 6px 10px;
+            background: var(--detail-value-bg);
+            border-radius: 5px;
+            min-height: 30px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .info-value.empty {
+            color: var(--text-light);
+            font-style: italic;
+        }
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 16px 0 10px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border-color);
+            grid-column: 1 / -1;
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .detail-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            padding: 12px 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .stats {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: var(--bg-stat);
+            border-radius: 8px;
+            padding: 10px 16px;
+            text-align: center;
+            box-shadow: 0 1px 4px var(--shadow-color);
+            min-width: 100px;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .stat-card .num {
+            font-size: 26px;
+            font-weight: bold;
+            color: var(--stat-num-color);
+            transition: color 0.3s;
+        }
+        .stat-card .lbl {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Додаткові стилі для темної теми */
+        .dark-theme .btn-primary {
+            background: var(--btn-primary-bg);
+            color: white;
+        }
+        .dark-theme .btn-primary:hover { background: var(--btn-primary-hover); }
+
+        .dark-theme .btn-success {
+            background: var(--btn-success-bg);
+            color: white;
+        }
+        .dark-theme .btn-success:hover { background: var(--btn-success-hover); }
+
+        .dark-theme .btn-warning {
+            background: var(--btn-warning-bg);
+            color: white;
+        }
+        .dark-theme .btn-warning:hover { background: var(--btn-warning-hover); }
+
+        .dark-theme .btn-danger {
+            background: var(--btn-danger-bg);
+            color: white;
+        }
+        .dark-theme .btn-danger:hover { background: var(--btn-danger-hover); }
+
+        .dark-theme .toolbar input {
+            background: var(--bg-input);
+            color: var(--text-primary);
+        }
+        .dark-theme .modal {
+            background: var(--bg-card);
+        }
+        .dark-theme .modal h2 {
+            color: var(--text-primary);
+        }
+        .dark-theme .detail-modal {
+            background: var(--bg-detail);
+        }
+        .dark-theme .detail-header {
+            background: var(--bg-detail-header);
+        }
+        .dark-theme .sub-table th {
+            background: var(--bg-header);
+        }
+        .dark-theme .sub-table td {
+            color: var(--text-primary);
+        }
+        .dark-theme .add-row {
+            background: var(--bg-add-row);
+        }
+        .dark-theme .dynamic-row {
+            background: var(--bg-dynamic);
+        }
+        .dark-theme .info-value {
+            background: var(--detail-value-bg);
+            color: var(--text-primary);
+        }
+        .dark-theme .section-title {
+            color: var(--text-primary);
+            border-bottom-color: var(--border-color);
+        }
+        .dark-theme .stat-card {
+            background: var(--bg-stat);
+        }
+        .dark-theme .stat-card .lbl {
+            color: var(--text-secondary);
+        }
+        .dark-theme .confirm-box {
+            background: var(--bg-card);
+        }
+        .dark-theme .confirm-box p {
+            color: var(--text-primary);
+        }
+        .dark-theme .detail-tabs {
+            border-bottom-color: var(--border-color);
+        }
+        .dark-theme .detail-tab {
+            color: var(--detail-tab-color);
+        }
+        .dark-theme .detail-tab.active {
+            color: var(--detail-tab-active);
+            border-bottom-color: var(--detail-tab-active);
+        }
+        .dark-theme .detail-close {
+            color: var(--detail-close-color);
+        }
+        .dark-theme .btn-xs-primary {
+            background: var(--btn-primary-bg);
+        }
+        .dark-theme .btn-xs-danger {
+            background: var(--btn-danger-bg);
+        }
+        .dark-theme .dynamic-row {
+            border-left-color: #4a7ab5;
+        }
+        .dark-theme .empty-state {
+            color: var(--text-light);
+        }
+        .dark-theme .tab-btn {
+            background: var(--bg-card);
+            color: var(--bg-header);
+        }
+        .dark-theme .tab-btn.active {
+            background: var(--bg-header);
+            color: var(--text-white);
+        }
+        .dark-theme .tab-btn:hover:not(.active) {
+            background: var(--bg-hover);
+        }
+        .dark-theme .table-wrap {
+            box-shadow: 0 1px 4px var(--shadow-color);
+        }
+        .dark-theme .toast.success { background: var(--toast-success); }
+        .dark-theme .toast.error { background: var(--toast-error); }
+        .dark-theme thead th[data-col]:hover {
+            background: var(--bg-header-light, #3a3a4a);
+        }
     </style>
     <link th:replace="~{fragments :: sidebar-css}">
 </head>
@@ -274,7 +837,7 @@
                     </div>
 
                     <!-- Особові дані -->
-                    <div style="font-size:12px;font-weight:700;color:#1a237e;margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid #e0e0e0;">👤 Особові дані</div>
+                    <div style="font-size:12px;font-weight:700;color:var(--text-primary);margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border-color);">👤 Особові дані</div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Дата народження</label>
@@ -364,7 +927,7 @@
                     </div>
 
                     <!-- Адреса -->
-                    <div style="font-size:12px;font-weight:700;color:#1a237e;margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid #e0e0e0;">🏠 Адреса</div>
+                    <div style="font-size:12px;font-weight:700;color:var(--text-primary);margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border-color);">🏠 Адреса</div>
                     <div class="form-group">
                         <label>Адреса реєстрації</label>
                         <input type="text" id="fRegAddress" placeholder="м. Одеса, вул. ...">
@@ -375,7 +938,7 @@
                     </div>
 
                     <!-- Сім'я -->
-                    <div style="font-size:12px;font-weight:700;color:#1a237e;margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid #e0e0e0;">👨‍👩‍👧 Сім'я</div>
+                    <div style="font-size:12px;font-weight:700;color:var(--text-primary);margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border-color);">👨‍👩‍👧 Сім'я</div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Сімейний стан</label>
@@ -403,7 +966,7 @@
                     </div>
 
                     <!-- Військові дані -->
-                    <div style="font-size:12px;font-weight:700;color:#1a237e;margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid #e0e0e0;">🎖 Військові дані</div>
+                    <div style="font-size:12px;font-weight:700;color:var(--text-primary);margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border-color);">🎖 Військові дані</div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Дата призову</label>
@@ -512,7 +1075,7 @@
                                     <th style="width:36px"></th>
                                 </tr>
                                 </thead>
-                                <tbody id="eduList"><tr><td colspan="7" style="text-align:center;color:#999">Завантаження...</td></tr></tbody>
+                                <tbody id="eduList"><tr><td colspan="7" style="text-align:center;color:var(--text-light)">Завантаження...</td></tr></tbody>
                             </table>
                             <div class="add-row" style="grid-template-columns:1fr 2fr 2fr 1fr 1fr 1fr auto;margin-top:10px">
                                 <div><div class="add-row-title">Рівень</div>
@@ -541,7 +1104,7 @@
                                 <div class="info-group"><div class="info-label">Сімейний стан</div><div class="info-value" id="d-marital"></div></div>
                                 <div class="info-group"><div class="info-label">Дружина / Чоловік</div><div class="info-value" id="d-spouse"></div></div>
                             </div>
-                            <div class="section-title" style="margin-top:14px;font-size:12px;font-weight:700;color:#1a237e;border-bottom:1px solid #e0e0e0;padding-bottom:4px">Діти</div>
+                            <div class="section-title" style="margin-top:14px;font-size:12px;font-weight:700;color:var(--text-primary);border-bottom:1px solid var(--border-color);padding-bottom:4px">Діти</div>
                             <table class="sub-table">
                                 <thead>
                                 <tr>
@@ -550,7 +1113,7 @@
                                     <th style="width:36px"></th>
                                 </tr>
                                 </thead>
-                                <tbody id="childList"><tr><td colspan="3" style="text-align:center;color:#999">Завантаження...</td></tr></tbody>
+                                <tbody id="childList"><tr><td colspan="3" style="text-align:center;color:var(--text-light)">Завантаження...</td></tr></tbody>
                             </table>
                             <div class="add-row" style="grid-template-columns:2fr 1fr auto;margin-top:10px">
                                 <div><div class="add-row-title">ПІБ дитини</div><input type="text" id="newChildName" placeholder="Іванов Іван Іванович"></div>
@@ -567,7 +1130,7 @@
                                 <div class="info-group"><div class="info-label">Вид служби</div><div class="info-value" id="d-service-type"></div></div>
                                 <div class="info-group"><div class="info-label">УБД №</div><div class="info-value" id="d-ubd"></div></div>
                             </div>
-                            <div class="section-title" style="margin-top:14px;font-size:12px;font-weight:700;color:#1a237e;border-bottom:1px solid #e0e0e0;padding-bottom:4px">Озброєння</div>
+                            <div class="section-title" style="margin-top:14px;font-size:12px;font-weight:700;color:var(--text-primary);border-bottom:1px solid var(--border-color);padding-bottom:4px">Озброєння</div>
                             <table class="sub-table">
                                 <thead>
                                 <tr>
@@ -578,7 +1141,7 @@
                                     <th style="width:36px"></th>
                                 </tr>
                                 </thead>
-                                <tbody id="weaponList"><tr><td colspan="5" style="text-align:center;color:#999">Завантаження...</td></tr></tbody>
+                                <tbody id="weaponList"><tr><td colspan="5" style="text-align:center;color:var(--text-light)">Завантаження...</td></tr></tbody>
                             </table>
                             <div class="add-row" style="grid-template-columns:1fr 1fr 1fr 1fr auto;margin-top:10px">
                                 <div><div class="add-row-title">Тип</div><input type="text" id="newWeaponType" placeholder="АК-74"></div>
@@ -1104,7 +1667,7 @@
                         <td style="text-align:center">${e.diploma || '—'}</td>
                         <td class="actions"><button class="btn-xs btn-xs-danger" onclick="deleteEducation(${e.id})">🗑</button></td>
                     </tr>`).join('') :
-                        '<tr><td colspan="7" style="text-align:center;color:#999">Записів немає</td></tr>';
+                        '<tr><td colspan="7" style="text-align:center;color:var(--text-light)">Записів немає</td></tr>';
                 }
 
                 async function addEducation() {
@@ -1141,7 +1704,7 @@
                         <td style="text-align:center">${fmtDate(c.birthDate)}</td>
                         <td class="actions"><button class="btn-xs btn-xs-danger" onclick="deleteChild(${c.id})">🗑</button></td>
                     </tr>`).join('') :
-                        '<tr><td colspan="3" style="text-align:center;color:#999">Дітей немає</td></tr>';
+                        '<tr><td colspan="3" style="text-align:center;color:var(--text-light)">Дітей немає</td></tr>';
                 }
 
                 async function addChild() {
@@ -1176,7 +1739,7 @@
                         <td>${w.note || '—'}</td>
                         <td class="actions"><button class="btn-xs btn-xs-danger" onclick="deleteWeapon(${w.id})">🗑</button></td>
                     </tr>`).join('') :
-                        '<tr><td colspan="5" style="text-align:center;color:#999">Зброї немає</td></tr>';
+                        '<tr><td colspan="5" style="text-align:center;color:var(--text-light)">Зброї немає</td></tr>';
                 }
 
                 async function addWeapon() {

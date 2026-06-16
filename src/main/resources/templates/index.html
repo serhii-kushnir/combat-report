@@ -4,19 +4,127 @@
     <meta charset="UTF-8">
     <title>Конвертер бойових звітів</title>
     <style>
+        /* ===== CSS ЗМІННІ ===== */
+        :root {
+            --bg-body: #f5f5f5;
+            --bg-card: #ffffff;
+            --bg-toolbar: #ffffff;
+            --bg-params: #e3f2fd;          /* замість зеленого - світло-синій */
+            --bg-additional: #e3f2fd;      /* залишимо той самий синій */
+            --bg-actions: #e3f2fd;         /* замість зеленого - світло-синій */
+            --bg-status: #e3f2fd;
+            --bg-json-panel: #fafafa;
+            --bg-report-panel: #fafafa;
+            --bg-textarea: #ffffff;
+            --border-color: #ddd;
+            --border-light: #ccc;
+            --shadow-color: rgba(0,0,0,0.1);
+            --text-primary: #333333;
+            --text-secondary: #555555;
+            --text-light: #999999;
+            --text-white: #ffffff;
+            --text-muted: #666666;
+            --text-status: #1565c0;
+            --text-status-error: #c62828;
+            --btn-file-bg: #9C27B0;
+            --btn-file-hover: #7B1FA2;
+            --btn-convert-bg: #1976d2;     /* синій замість зеленого */
+            --btn-convert-hover: #1565c0;
+            --btn-copy-bg: #607D8B;
+            --btn-copy-hover: #546E7A;
+            --btn-clear-bg: #f44336;
+            --btn-clear-hover: #d32f2f;
+            --btn-save-txt-bg: #2196F3;
+            --btn-save-txt-hover: #1976D2;
+            --btn-save-docx-bg: #ff9800;
+            --btn-save-docx-hover: #fb8c00;
+            --btn-flight-bg: #6a1b9a;
+            --btn-flight-hover: #4a148c;
+            --border-header: #1976d2;      /* синій замість зеленого */
+            --topbar-bg: #ffffff;
+            --topbar-color: #1a237e;
+            --separator-color: #ccc;
+        }
+
+        /* Темна тема */
+        body.dark-theme {
+            --bg-body: #1e1e24;
+            --bg-card: #2d2d35;
+            --bg-toolbar: #2d2d35;
+            --bg-params: #1a2a3a;          /* темно-синій */
+            --bg-additional: #1a2a3a;
+            --bg-actions: #1a2a3a;         /* темно-синій */
+            --bg-status: #1a2a3a;
+            --bg-json-panel: #2d2d35;
+            --bg-report-panel: #2d2d35;
+            --bg-textarea: #3a3a44;
+            --border-color: #3d3d48;
+            --border-light: #3d3d48;
+            --shadow-color: rgba(0,0,0,0.4);
+            --text-primary: #e8e8ec;
+            --text-secondary: #b0b0b8;
+            --text-light: #88888f;
+            --text-white: #ffffff;
+            --text-muted: #a0a0a8;
+            --text-status: #90caf9;
+            --text-status-error: #ef9a9a;
+            --btn-file-bg: #8e24aa;
+            --btn-file-hover: #6a1b9a;
+            --btn-convert-bg: #4a7ab5;     /* синій для темної теми */
+            --btn-convert-hover: #5a8ac5;
+            --btn-copy-bg: #4a5a6a;
+            --btn-copy-hover: #5a6a7a;
+            --btn-clear-bg: #8a2a2a;
+            --btn-clear-hover: #6a1a1a;
+            --btn-save-txt-bg: #1a5a8a;
+            --btn-save-txt-hover: #2a6a9a;
+            --btn-save-docx-bg: #8a5a1a;
+            --btn-save-docx-hover: #9a6a2a;
+            --btn-flight-bg: #4a1a6a;
+            --btn-flight-hover: #5a2a7a;
+            --border-header: #4a7ab5;      /* синій для темної теми */
+            --topbar-bg: #2d2d35;
+            --topbar-color: #90caf9;
+            --separator-color: #3d3d48;
+        }
+
+        /* ===== ОСНОВНІ СТИЛІ ===== */
         .topbar {
-            background: white;
+            background: var(--topbar-bg);
             padding: 12px 20px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border-color);
             font-size: 15px;
             font-weight: 600;
-            color: #1a237e;
+            color: var(--topbar-color);
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
-        .container { max-width: 1400px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; margin-top: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
+            margin: 0;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        h1 {
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-header);
+            padding-bottom: 10px;
+            margin-top: 0;
+            transition: color 0.3s, border-color 0.3s;
+        }
+
+        /* ===== ПАНЕЛІ ПАРАМЕТРІВ ===== */
         .params-bar {
-            background: #e8f5e9;
+            background: var(--bg-params);
             padding: 12px 15px;
             border-radius: 5px;
             margin-bottom: 15px;
@@ -25,9 +133,10 @@
             align-items: center;
             justify-content: flex-start;
             gap: 15px;
+            transition: background 0.3s;
         }
         .additional-bar {
-            background: #e3f2fd;
+            background: var(--bg-additional);
             padding: 12px 15px;
             border-radius: 5px;
             margin-bottom: 15px;
@@ -36,31 +145,48 @@
             align-items: center;
             justify-content: flex-start;
             gap: 15px;
+            transition: background 0.3s;
         }
-        .params-bar label, .additional-bar label { font-weight: bold; font-size: 13px; margin: 0; }
-        .params-bar select, .params-bar input, .additional-bar select, .additional-bar input {
+        .params-bar label,
+        .additional-bar label {
+            font-weight: bold;
+            font-size: 13px;
+            margin: 0;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+        }
+        .params-bar select,
+        .params-bar input,
+        .additional-bar select,
+        .additional-bar input {
             padding: 6px 10px;
             border-radius: 4px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--border-light);
             font-size: 13px;
+            background: var(--bg-textarea);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
         .params-bar select { min-width: 220px; }
         .params-bar input { width: 80px; }
         .additional-bar input { width: 80px; }
+
+        /* ===== КНОПКИ ===== */
         .file-button {
-            background: #9C27B0;
-            color: white;
+            background: var(--btn-file-bg);
+            color: var(--text-white);
             border: none;
             padding: 6px 14px;
             border-radius: 4px;
             cursor: pointer;
             font-size: 13px;
             font-weight: bold;
-            margin-left: 10px;
+            transition: background 0.2s;
         }
-        .file-button:hover { background: #7B1FA2; }
+        .file-button:hover { background: var(--btn-file-hover); }
+
         .actions-bar {
-            background: #e8f5e9;
+            background: var(--bg-actions);
             padding: 10px 15px;
             border-radius: 5px;
             margin-bottom: 15px;
@@ -68,48 +194,211 @@
             flex-wrap: wrap;
             align-items: center;
             gap: 10px;
+            transition: background 0.3s;
         }
         .actions-bar button {
-            background: #4CAF50;
-            color: white;
             border: none;
             padding: 6px 14px;
             border-radius: 4px;
             cursor: pointer;
             font-size: 13px;
             font-weight: bold;
+            color: var(--text-white);
+            transition: background 0.2s, opacity 0.2s;
         }
-        .actions-bar button:hover { background: #45a049; }
-        .actions-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .actions-bar .save-txt { background: #2196F3; }
-        .actions-bar .save-txt:hover:not(:disabled) { background: #1976D2; }
-        .actions-bar .save-docx { background: #ff9800; }
-        .actions-bar .save-docx:hover:not(:disabled) { background: #fb8c00; }
-        .actions-bar .copy-btn { background: #607D8B; }
-        .actions-bar .copy-btn:hover:not(:disabled) { background: #546E7A; }
-        .actions-bar .clear-btn { background: #f44336; }
-        .actions-bar .clear-btn:hover { background: #d32f2f; }
-        .actions-bar .convert-btn { background: #4CAF50; }
-        .actions-bar .save-flight-btn { background: #6a1b9a; color: white; }
-        .actions-bar .save-flight-btn:hover:not(:disabled) { background: #4a148c; }
+        .actions-bar button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .actions-bar .convert-btn {
+            background: var(--btn-convert-bg);
+        }
+        .actions-bar .convert-btn:hover:not(:disabled) {
+            background: var(--btn-convert-hover);
+        }
+        .actions-bar .save-txt {
+            background: var(--btn-save-txt-bg);
+        }
+        .actions-bar .save-txt:hover:not(:disabled) {
+            background: var(--btn-save-txt-hover);
+        }
+        .actions-bar .save-docx {
+            background: var(--btn-save-docx-bg);
+        }
+        .actions-bar .save-docx:hover:not(:disabled) {
+            background: var(--btn-save-docx-hover);
+        }
+        .actions-bar .copy-btn {
+            background: var(--btn-copy-bg);
+        }
+        .actions-bar .copy-btn:hover:not(:disabled) {
+            background: var(--btn-copy-hover);
+        }
+        .actions-bar .clear-btn {
+            background: var(--btn-clear-bg);
+        }
+        .actions-bar .clear-btn:hover:not(:disabled) {
+            background: var(--btn-clear-hover);
+        }
+        .actions-bar .save-flight-btn {
+            background: var(--btn-flight-bg);
+            color: var(--text-white);
+        }
+        .actions-bar .save-flight-btn:hover:not(:disabled) {
+            background: var(--btn-flight-hover);
+        }
+
+        /* ===== СТАТУС ===== */
         .status {
             margin-bottom: 20px;
             padding: 10px;
             border-radius: 4px;
-            background: #e3f2fd;
-            color: #1565c0;
+            background: var(--bg-status);
+            color: var(--text-status);
             font-size: 13px;
+            transition: background 0.3s, color 0.3s;
         }
-        .status.error { background: #ffebee; color: #c62828; }
-        .split-pane { display: flex; gap: 20px; margin-top: 20px; }
-        .json-panel, .report-panel { flex: 1; border: 1px solid #ddd; border-radius: 5px; padding: 15px; background: #fafafa; }
-        .json-panel h3, .report-panel h3 { margin-top: 0; color: #555; }
-        textarea { width: 100%; height: 500px; font-family: 'Consolas', monospace; font-size: 13px; border: 1px solid #ccc; border-radius: 4px; padding: 10px; resize: vertical; box-sizing: border-box; }
-        .footer { margin-top: 20px; text-align: right; color: #999; font-size: 12px; border-top: 1px solid #eee; padding-top: 10px; }
-        .file-input-wrapper { display: inline-block; position: relative; }
-        .file-input-wrapper input { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; left: 0; top: 0; }
-        .separator { width: 1px; height: 30px; background: #ccc; margin: 0 5px; }
+        .status.error {
+            background: var(--bg-status);
+            color: var(--text-status-error);
+        }
+
+        /* ===== СПЛІТ-ПАНЕЛЬ ===== */
+        .split-pane {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .json-panel,
+        .report-panel {
+            flex: 1;
+            min-width: 280px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 15px;
+            background: var(--bg-json-panel);
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .report-panel {
+            background: var(--bg-report-panel);
+        }
+        .json-panel h3,
+        .report-panel h3 {
+            margin-top: 0;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+        }
+        textarea {
+            width: 100%;
+            height: 500px;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            border: 1px solid var(--border-light);
+            border-radius: 4px;
+            padding: 10px;
+            resize: vertical;
+            box-sizing: border-box;
+            background: var(--bg-textarea);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        /* ===== РІЗНЕ ===== */
+        .footer {
+            margin-top: 20px;
+            text-align: right;
+            color: var(--text-light);
+            font-size: 12px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .file-input-wrapper {
+            display: inline-block;
+            position: relative;
+        }
+        .file-input-wrapper input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            left: 0;
+            top: 0;
+        }
+        .separator {
+            width: 1px;
+            height: 30px;
+            background: var(--separator-color);
+            margin: 0 5px;
+            transition: background 0.3s;
+        }
         .additional-bar input#explosionArea { width: 150px; }
+
+        /* ===== КОЛЬОРИ В ТЕМНІЙ ТЕМІ (ДОДАТКОВІ) ===== */
+        .dark-theme .params-bar label,
+        .dark-theme .additional-bar label {
+            color: var(--text-secondary);
+        }
+        .dark-theme .params-bar select,
+        .dark-theme .params-bar input,
+        .dark-theme .additional-bar select,
+        .dark-theme .additional-bar input {
+            background: var(--bg-textarea);
+            color: var(--text-primary);
+            border-color: var(--border-light);
+        }
+        .dark-theme .json-panel,
+        .dark-theme .report-panel {
+            background: var(--bg-json-panel);
+            border-color: var(--border-color);
+        }
+        .dark-theme .status {
+            background: var(--bg-status);
+            color: var(--text-status);
+        }
+        .dark-theme .status.error {
+            background: var(--bg-status);
+            color: var(--text-status-error);
+        }
+        .dark-theme .actions-bar {
+            background: var(--bg-actions);
+        }
+        .dark-theme .file-button {
+            background: var(--btn-file-bg);
+        }
+        .dark-theme .file-button:hover {
+            background: var(--btn-file-hover);
+        }
+        .dark-theme .topbar {
+            background: var(--topbar-bg);
+            color: var(--topbar-color);
+            border-bottom-color: var(--border-color);
+        }
+        .dark-theme .container {
+            background: var(--bg-card);
+        }
+        .dark-theme h1 {
+            color: var(--text-primary);
+            border-bottom-color: var(--border-header);
+        }
+        .dark-theme .footer {
+            color: var(--text-light);
+            border-top-color: var(--border-color);
+        }
+        .dark-theme .separator {
+            background: var(--separator-color);
+        }
+        .dark-theme textarea {
+            background: var(--bg-textarea);
+            color: var(--text-primary);
+            border-color: var(--border-light);
+        }
+        .dark-theme .json-panel h3,
+        .dark-theme .report-panel h3 {
+            color: var(--text-secondary);
+        }
     </style>
     <link th:replace="~{fragments :: sidebar-css}">
 </head>
@@ -142,15 +431,15 @@
 
             <!-- ДРУГИЙ РЯДОК: додаткові параметри (А, Д, В, швидкість, район підриву) -->
             <div class="additional-bar">
-                <label style="color: #1565c0;">Азимут (А):</label>
+                <label style="color: var(--text-status);">Азимут (А):</label>
                 <input type="number" id="course" value="50" step="1" style="width: 60px;">
                 <span>°</span>
 
-                <label style="color: #1565c0;">Дальність (Д):</label>
+                <label style="color: var(--text-status);">Дальність (Д):</label>
                 <input type="number" id="distance" value="17900" step="100" style="width: 80px;">
                 <span>м.</span>
 
-                <label style="color: #1565c0;">Висота (В):</label>
+                <label style="color: var(--text-status);">Висота (В):</label>
                 <input type="number" id="altitude" value="2042" step="10" style="width: 80px;">
                 <span>м.</span>
 
@@ -396,7 +685,7 @@
                     let data = {};
                     try { data = JSON.parse(text); } catch(e) { data = { error: text }; }
                     if (res.ok) {
-                        setStatus('✅ ' + data.message + ' (id=' + data.id + '). <a href="/flights" style="color:#1565c0">Відкрити журнал →</a>');
+                        setStatus('✅ ' + data.message + ' (id=' + data.id + '). <a href="/flights" style="color:var(--text-status)">Відкрити журнал →</a>');
                         btn.textContent = '✅ Збережено';
                     } else {
                         setStatus('❌ Помилка збереження: ' + (data.error || data.message || text), true);

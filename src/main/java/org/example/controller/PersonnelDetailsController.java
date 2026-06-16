@@ -20,18 +20,66 @@ public class PersonnelDetailsController {
     private final PersonnelWeaponRepository weaponRepo;
     private final org.example.repository.PersonnelRepository personnelRepo;
     private final PersonnelVosTrainingRepository vosTrainingRepo;
+    private final PreviousServiceRepository previousServiceRepo;
 
     // ОНОВЛЕНИЙ КОНСТРУКТОР – додано PersonnelVosTrainingRepository
     public PersonnelDetailsController(PersonnelEducationRepository eduRepo,
                                       PersonnelChildRepository childRepo,
                                       PersonnelWeaponRepository weaponRepo,
                                       org.example.repository.PersonnelRepository personnelRepo,
-                                      PersonnelVosTrainingRepository vosTrainingRepo) {
+                                      PersonnelVosTrainingRepository vosTrainingRepo,
+                                      PreviousServiceRepository previousServiceRepo) {
         this.eduRepo = eduRepo;
         this.childRepo = childRepo;
         this.weaponRepo = weaponRepo;
         this.personnelRepo = personnelRepo;
         this.vosTrainingRepo = vosTrainingRepo;
+        this.previousServiceRepo = previousServiceRepo;
+    }
+
+    // ===== ПОПЕРЕДНЯ ВІЙСЬКОВА СЛУЖБА =====
+
+    @GetMapping("/api/{id}/previous-service")
+    public List<PreviousService> getPreviousServices(@PathVariable Long id) {
+        return previousServiceRepo.findByPersonnelIdOrderByStartDateAsc(id);
+    }
+
+    @GetMapping("/api/{id}/previous-service/{serviceId}")
+    public ResponseEntity<PreviousService> getPreviousServiceById(@PathVariable Long serviceId) {
+        return previousServiceRepo.findById(serviceId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/api/{id}/previous-service")
+    public ResponseEntity<?> addPreviousService(@PathVariable Long id,
+                                                @RequestBody PreviousService service) {
+        Personnel p = personnelRepo.findById(id).orElse(null);
+        if (p == null) return ResponseEntity.notFound().build();
+        service.setPersonnel(p);
+        service.setId(null);
+        log.info("Додано запис попередньої служби для особи id={}", id);
+        return ResponseEntity.ok(previousServiceRepo.save(service));
+    }
+
+    @PutMapping("/api/{id}/previous-service/{serviceId}")
+    public ResponseEntity<?> updatePreviousService(@PathVariable Long serviceId,
+                                                   @RequestBody PreviousService service) {
+        return previousServiceRepo.findById(serviceId).map(s -> {
+            s.setServiceType(service.getServiceType());
+            s.setDraftedBy(service.getDraftedBy());
+            s.setStartDate(service.getStartDate());
+            s.setEndDate(service.getEndDate());
+            s.setRank(service.getRank());
+            s.setMilitaryUnit(service.getMilitaryUnit());
+            return ResponseEntity.ok(previousServiceRepo.save(s));
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/api/{id}/previous-service/{serviceId}")
+    public ResponseEntity<?> deletePreviousService(@PathVariable Long serviceId) {
+        previousServiceRepo.deleteById(serviceId);
+        return ResponseEntity.ok().build();
     }
 
     // ===== ОСВІТА =====
@@ -148,6 +196,9 @@ public class PersonnelDetailsController {
             w.setSerialNumber(weapon.getSerialNumber());
             w.setIssuedDate(weapon.getIssuedDate());
             w.setNote(weapon.getNote());
+            w.setBayonet(weapon.getBayonet());       // нове
+            w.setMagazines(weapon.getMagazines());   // нове
+            w.setCaliber(weapon.getCaliber());   // НОВЕ
             return ResponseEntity.ok(weaponRepo.save(w));
         }).orElse(ResponseEntity.notFound().build());
     }

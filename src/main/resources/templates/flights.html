@@ -4,118 +4,384 @@
     <meta charset="UTF-8">
     <title>Журнал БпАК</title>
     <style>
+        /* ===== CSS ЗМІННІ ===== */
+        :root {
+            --bg-body: #f0f2f5;
+            --bg-card: #ffffff;
+            --bg-toolbar: #ffffff;
+            --bg-table: #ffffff;
+            --bg-table-header: #1a237e;
+            --bg-input: #ffffff;
+            --bg-modal: rgba(0,0,0,0.5);
+            --bg-hover: #f5f9ff;
+            --bg-confirm: #ffffff;
+            --bg-stat: #ffffff;
+            --bg-badge-success: #e8f5e9;
+            --bg-badge-warning: #fff3e0;
+            --bg-row-success: #e8f5e9;
+            --bg-row-success-span: #c8e6c9;
+            --text-primary: #222222;
+            --text-secondary: #555555;
+            --text-light: #999999;
+            --text-white: #ffffff;
+            --text-muted: #666666;
+            --text-note: #666666;
+            --text-loss-reason: #c62828;
+            --border-color: #ccc;
+            --border-light: #f0f0f0;
+            --shadow-color: rgba(0,0,0,0.1);
+            --shadow-strong: rgba(0,0,0,0.2);
+            --toast-success: #2e7d32;
+            --toast-error: #c62828;
+            --badge-success-text: #2e7d32;
+            --badge-warning-text: #e65100;
+            --stat-num-color: #1976d2;
+            --stat-num-hits: #2e7d32;
+            --stat-num-loss: #d32f2f;
+            --topbar-color: #1a237e;
+            --btn-primary-bg: #1976d2;
+            --btn-primary-hover: #1565c0;
+            --btn-success-bg: #388e3c;
+            --btn-success-hover: #2e7d32;
+            --btn-warning-bg: #f57c00;
+            --btn-warning-hover: #e65100;
+            --btn-danger-bg: #d32f2f;
+            --btn-danger-hover: #b71c1c;
+        }
 
-        /* Зсув контенту при згортанні */
+        /* Темна тема */
+        body.dark-theme {
+            --bg-body: #1e1e24;
+            --bg-card: #2d2d35;
+            --bg-toolbar: #2d2d35;
+            --bg-table: #2d2d35;
+            --bg-table-header: #2a2a3a;
+            --bg-input: #3a3a44;
+            --bg-modal: rgba(0,0,0,0.7);
+            --bg-hover: #3a3a44;
+            --bg-confirm: #2d2d35;
+            --bg-stat: #2d2d35;
+            --bg-badge-success: #1a3a1a;
+            --bg-badge-warning: #3a2a1a;
+            --bg-row-success: #1a2a1a;
+            --bg-row-success-span: #1a3a1a;
+            --text-primary: #e8e8ec;
+            --text-secondary: #b0b0b8;
+            --text-light: #88888f;
+            --text-white: #ffffff;
+            --text-muted: #a0a0a8;
+            --text-note: #b0b0b8;
+            --text-loss-reason: #ef9a9a;
+            --border-color: #3d3d48;
+            --border-light: #3d3d48;
+            --shadow-color: rgba(0,0,0,0.4);
+            --shadow-strong: rgba(0,0,0,0.5);
+            --badge-success-text: #81c784;
+            --badge-warning-text: #ffb74d;
+            --stat-num-color: #5a8ac5;
+            --stat-num-hits: #81c784;
+            --stat-num-loss: #ef9a9a;
+            --topbar-color: #90caf9;
+            --btn-primary-bg: #4a7ab5;
+            --btn-primary-hover: #5a8ac5;
+            --btn-success-bg: #3a6a3a;
+            --btn-success-hover: #4a7a4a;
+            --btn-warning-bg: #b87a2a;
+            --btn-warning-hover: #c88a3a;
+            --btn-danger-bg: #a03040;
+            --btn-danger-hover: #b04050;
+        }
 
-        /* Основний контент */
-
-        /* Топбар всередині контенту */
+        /* ===== ОСНОВНІ СТИЛІ ===== */
         .topbar {
-            background: white;
+            background: var(--bg-card);
             padding: 12px 20px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border-color);
             font-size: 15px;
             font-weight: 600;
-            color: #1a237e;
+            color: var(--topbar-color);
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
-
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
+            margin: 0;
+        }
         .container { padding: 16px 20px; }
 
+        /* ===== ТУЛБАР ===== */
         .toolbar {
-            background: white; padding: 12px 16px; border-radius: 8px;
-            margin-bottom: 14px; display: flex; align-items: center;
-            gap: 10px; flex-wrap: wrap;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            background: var(--bg-toolbar);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            box-shadow: 0 1px 4px var(--shadow-color);
+            transition: background 0.3s, box-shadow 0.3s;
         }
-        .btn { padding: 7px 14px; border: none; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: 600; }
-        .btn-primary { background: #1976d2; color: white; }
-        .btn-primary:hover { background: #1565c0; }
-        .btn-success { background: #388e3c; color: white; }
-        .btn-success:hover { background: #2e7d32; }
-        .btn-warning { background: #f57c00; color: white; }
-        .btn-warning:hover { background: #e65100; }
-        .btn-danger  { background: #d32f2f; color: white; }
-        .btn-danger:hover  { background: #b71c1c; }
+        .btn {
+            padding: 7px 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: var(--btn-primary-bg);
+            color: var(--text-white);
+        }
+        .btn-primary:hover { background: var(--btn-primary-hover); }
+        .btn-success {
+            background: var(--btn-success-bg);
+            color: var(--text-white);
+        }
+        .btn-success:hover { background: var(--btn-success-hover); }
+        .btn-warning {
+            background: var(--btn-warning-bg);
+            color: var(--text-white);
+        }
+        .btn-warning:hover { background: var(--btn-warning-hover); }
+        .btn-danger {
+            background: var(--btn-danger-bg);
+            color: var(--text-white);
+        }
+        .btn-danger:hover { background: var(--btn-danger-hover); }
         .btn-sm { padding: 4px 9px; font-size: 11px; }
-        select, input[type=text] {
-            padding: 7px 10px; border: 1px solid #ccc; border-radius: 5px;
-            font-size: 13px; font-family: inherit;
+
+        /* ===== ПОЛЯ ВВОДУ ===== */
+        select, input[type=text], input[type=number], input[type=date], input[type=time] {
+            padding: 7px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 13px;
+            font-family: inherit;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
 
+        /* ===== СТАТИСТИКА ===== */
         .stats {
-            display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
         }
         .stat-card {
-            background: white; border-radius: 8px; padding: 10px 16px;
-            text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.1); min-width: 100px;
+            background: var(--bg-stat);
+            border-radius: 8px;
+            padding: 10px 16px;
+            text-align: center;
+            box-shadow: 0 1px 4px var(--shadow-color);
+            min-width: 100px;
+            transition: background 0.3s, box-shadow 0.3s;
         }
-        .stat-card .num { font-size: 26px; font-weight: bold; color: #1976d2; }
-        .stat-card .lbl { font-size: 11px; color: #666; }
+        .stat-card .num {
+            font-size: 26px;
+            font-weight: bold;
+            color: var(--stat-num-color);
+            transition: color 0.3s;
+        }
+        .stat-card .lbl {
+            font-size: 11px;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+        }
 
-        .table-wrap { overflow-x: auto; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; background: white; min-width: 1200px; }
-        thead { background: #1a237e; color: white; }
-        th { padding: 9px 8px; font-size: 12px; font-weight: 600; text-align: left; white-space: nowrap; }
-        td { padding: 7px 8px; font-size: 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
-        tr:hover td { background: #f5f9ff; }
+        /* ===== ТАБЛИЦЯ ===== */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px var(--shadow-color);
+            transition: box-shadow 0.3s;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-table);
+            min-width: 1200px;
+            transition: background 0.3s;
+        }
+        thead {
+            background: var(--bg-table-header);
+            color: var(--text-white);
+            transition: background 0.3s;
+        }
+        th {
+            padding: 9px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: left;
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+        th:hover { background: var(--bg-hover); }
+        th.sort-asc::after { content: ' ▲'; font-size: 10px; }
+        th.sort-desc::after { content: ' ▼'; font-size: 10px; }
+
+        td {
+            padding: 7px 8px;
+            font-size: 12px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-primary);
+            vertical-align: top;
+            transition: border-color 0.3s, color 0.3s;
+        }
+        tr:hover td { background: var(--bg-hover); }
         .actions-col { white-space: nowrap; }
 
-        .badge-success  { background: #e8f5e9; color: #2e7d32; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
-        .badge-warning  { background: #fff3e0; color: #e65100; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+        .badge-success {
+            background: var(--bg-badge-success);
+            color: var(--badge-success-text);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .badge-warning {
+            background: var(--bg-badge-warning);
+            color: var(--badge-warning-text);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            transition: background 0.3s, color 0.3s;
+        }
 
-        /* Модальне вікно */
+        .row-success td {
+            background: var(--bg-row-success) !important;
+            transition: background 0.3s;
+        }
+        .row-success td span {
+            background: var(--bg-row-success-span) !important;
+            color: var(--badge-success-text) !important;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ===== МОДАЛЬНЕ ВІКНО ===== */
         .modal-overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.5); z-index: 1000;
-            align-items: center; justify-content: center;
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--bg-modal);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
         }
         .modal-overlay.open { display: flex; }
         .modal {
-            background: white; border-radius: 10px; padding: 24px;
-            width: 700px; max-width: 96vw; max-height: 90vh;
-            overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 24px;
+            width: 700px;
+            max-width: 96vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px var(--shadow-strong);
+            transition: background 0.3s, box-shadow 0.3s;
         }
-        .modal h2 { margin: 0 0 18px; font-size: 17px; color: #1a237e; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .form-group { display: flex; flex-direction: column; gap: 4px; }
+        .modal h2 {
+            margin: 0 0 18px;
+            font-size: 17px;
+            color: var(--text-primary);
+            transition: color 0.3s;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
         .form-group.full { grid-column: 1 / -1; }
-        label { font-size: 12px; font-weight: 600; color: #555; }
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+        }
         .form-group input, .form-group select, .form-group textarea {
-            padding: 7px 9px; border: 1px solid #ccc; border-radius: 5px;
-            font-size: 13px; font-family: inherit;
+            padding: 7px 9px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 13px;
+            font-family: inherit;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
         .form-group textarea { height: 80px; resize: vertical; }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
-
-        .toast {
-            position: fixed; bottom: 20px; right: 20px;
-            padding: 10px 18px; border-radius: 6px; color: white;
-            font-size: 13px; font-weight: 600;
-            opacity: 0; transition: opacity 0.3s; z-index: 9999;
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 18px;
         }
-        .toast.show { opacity: 1; }
-        .toast.ok  { background: #2e7d32; }
-        .toast.err { background: #c62828; }
 
         .confirm-overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.5); z-index: 1100;
-            align-items: center; justify-content: center;
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--bg-modal);
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
         }
         .confirm-overlay.open { display: flex; }
         .confirm-box {
-            background: white; border-radius: 10px; padding: 24px;
-            width: 340px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            background: var(--bg-confirm);
+            border-radius: 10px;
+            padding: 24px;
+            width: 340px;
+            box-shadow: 0 8px 32px var(--shadow-strong);
+            transition: background 0.3s, box-shadow 0.3s;
         }
-        .confirm-box p { margin: 0 0 16px; }
-        .confirm-actions { display: flex; gap: 10px; justify-content: flex-end; }
+        .confirm-box p {
+            margin: 0 0 16px;
+            color: var(--text-primary);
+        }
+        .confirm-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
 
-        .empty-state { text-align: center; padding: 40px; color: #999; }
-        thead th { cursor: pointer; user-select: none; }
-        thead th:hover { background: #283593; }
-        thead th.sort-asc::after  { content: ' ▲'; font-size: 10px; }
-        thead th.sort-desc::after { content: ' ▼'; font-size: 10px; }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 18px;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 9999;
+        }
+        .toast.show { opacity: 1; }
+        .toast.ok { background: var(--toast-success); }
+        .toast.err { background: var(--toast-error); }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+            transition: color 0.3s;
+        }
+
         .note-cell {
             max-height: 60px;
             overflow: hidden;
@@ -124,16 +390,22 @@
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
-            transition: max-height 0.2s ease;
+            transition: max-height 0.2s ease, color 0.3s;
         }
         .note-cell.expanded {
             max-height: 500px;
             -webkit-line-clamp: unset;
             display: block;
         }
-        .note-cell:hover { color: #1565c0; }
-        .row-success td { background: #e8f5e9 !important; }
-        .row-success td span { background: #c8e6c9 !important; color: #1b5e20 !important; }
+        .note-cell:hover { color: var(--btn-primary-bg); }
+
+        /* Додаткові стилі для темної теми */
+        .dark-theme .toast.ok { background: var(--toast-success); }
+        .dark-theme .toast.err { background: var(--toast-error); }
+        .dark-theme .stat-card .num[style*="color:#2e7d32"] { color: var(--stat-num-hits) !important; }
+        .dark-theme .stat-card .num[style*="color:#d32f2f"] { color: var(--stat-num-loss) !important; }
+        .dark-theme td[style*="color:#c62828"] { color: var(--text-loss-reason) !important; }
+        .dark-theme td[style*="color:#666"] { color: var(--text-note) !important; }
     </style>
     <link th:replace="~{fragments :: sidebar-css}">
 </head>
@@ -141,8 +413,6 @@
 <div class="layout">
     <div th:replace="~{fragments :: sidebar('flights')}"></div>
     <div class="main-content">
-
-
         <div class="container">
             <div class="toolbar">
                 <select id="yearFilter">
@@ -172,7 +442,6 @@
                         <th style="width:55px">Азимут (°)</th>
                         <th style="width:75px" data-col="dist" onclick="sortBy('dist')">Відстань (м)</th>
                         <th style="width:70px">Вис. польоту (м)</th>
-                        <!-- видалено стовпці "Тип" та "Ідентифікація" -->
                         <th style="width:120px" data-col="weapon" onclick="sortBy('weapon')">Засіб ураження</th>
                         <th style="width:130px" data-col="explos" onclick="sortBy('explos')">Вибухівка</th>
                         <th style="width:130px" data-col="det" onclick="sortBy('det')">Детонатор</th>
@@ -440,8 +709,8 @@
                 const loss  = allRecords.filter(r => r.event && r.event.toLowerCase().includes('втрат')).length;
                 document.getElementById('statsBar').innerHTML = `
         <div class="stat-card"><div class="num">${total}</div><div class="lbl">Всього вильотів</div></div>
-        <div class="stat-card"><div class="num" style="color:#2e7d32">${hits}</div><div class="lbl">Знищення цілі</div></div>
-        <div class="stat-card"><div class="num" style="color:#d32f2f">${loss}</div><div class="lbl">Втрат бортів</div></div>
+        <div class="stat-card"><div class="num" style="color:var(--stat-num-hits, #2e7d32)">${hits}</div><div class="lbl">Знищення цілі</div></div>
+        <div class="stat-card"><div class="num" style="color:var(--stat-num-loss, #d32f2f)">${loss}</div><div class="lbl">Втрат бортів</div></div>
     `;
             }
 
@@ -472,8 +741,8 @@
             <td style="text-align:center">${r.targetAltitude ?? ''}</td>
             <td style="text-align:center">${r.target ?? ''}</td>
             <td style="text-align:center">${r.targetSpeed ?? ''}</td>
-            <td style="text-align:left;font-size:11px;color:#c62828">${r.lossReason ?? ''}</td>
-            <td style="text-align:left;font-size:11px;color:#666;max-width:280px">
+            <td style="text-align:left;font-size:11px;color:var(--text-loss-reason, #c62828)">${r.lossReason ?? ''}</td>
+            <td style="text-align:left;font-size:11px;color:var(--text-note, #666);max-width:280px">
                 <div class="note-cell" onclick="this.classList.toggle('expanded')"
                      title="Натисни щоб розгорнути">
                     ${r.note ?? ''}

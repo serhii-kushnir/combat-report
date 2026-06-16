@@ -6,25 +6,37 @@
   <title th:text="'Картка: ' + ${person.fullName}">Картка особи</title>
   <link th:replace="~{fragments :: sidebar-css}">
   <style>
+    /* ===== ОСНОВНІ СТИЛІ З ВИКОРИСТАННЯМ ЗМІННИХ ===== */
     * { box-sizing: border-box; }
-    body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-body);
+      color: var(--text-primary);
+      margin: 0;
+      transition: background 0.3s, color 0.3s;
+    }
     .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
 
     .card {
-      background: white;
+      background: var(--bg-card);
       border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      overflow: hidden;
+      box-shadow: 0 4px 12px var(--shadow-color);
+      transition: background 0.3s, box-shadow 0.3s;
     }
     .card-header {
-      background: #1a237e;
-      color: white;
+      background: var(--bg-header);
+      color: var(--text-white);
       padding: 20px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       gap: 10px;
+      border-radius: 16px 16px 0 0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      transition: background 0.3s;
     }
     .card-header h1 { margin: 0; font-size: 22px; }
     .card-actions { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -39,15 +51,33 @@
       transition: all 0.2s;
     }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-primary { background: #1976d2; color: white; }
-    .btn-primary:hover:not(:disabled) { background: #1565c0; }
-    .btn-warning { background: #f57c00; color: white; }
+    .btn-primary {
+      background: var(--bg-btn-primary, #1976d2);
+      color: white;
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--bg-btn-primary-hover, #1565c0);
+    }
+    .btn-warning {
+      background: #f57c00;
+      color: white;
+    }
     .btn-warning:hover:not(:disabled) { background: #e65100; }
-    .btn-secondary { background: #6c757d; color: white; }
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
     .btn-secondary:hover:not(:disabled) { background: #5a6268; }
-    .btn-outline { background: none; border: 1px solid white; color: white; }
+    .btn-outline {
+      background: none;
+      border: 1px solid var(--border-color, rgba(255,255,255,0.3));
+      color: var(--text-white, #fff);
+    }
     .btn-outline:hover { background: rgba(255,255,255,0.1); }
-    .btn-danger { background: #dc3545; color: white; }
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
     .btn-danger:hover:not(:disabled) { background: #c82333; }
     .btn-sm { padding: 4px 9px; font-size: 11px; }
 
@@ -67,22 +97,28 @@
     .info-label {
       font-size: 11px;
       font-weight: 600;
-      color: #888;
+      color: var(--text-light, #888);
       text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: color 0.3s;
     }
     .info-value {
       font-size: 14px;
       padding: 8px 10px;
-      background: #f8f9fa;
+      background: var(--bg-editable, #f8f9fa);
+      color: var(--text-primary);
       border-radius: 8px;
       min-height: 38px;
       cursor: pointer;
-      transition: 0.1s;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+      border: 1px solid transparent;
     }
-    .info-value:hover { background: #e3f2fd; }
+    .info-value:hover {
+      background: var(--bg-hover, #e3f2fd);
+    }
     .info-value.editable {
-      background: white;
-      border: 1px solid #1976d2;
+      background: var(--bg-input, #fff);
+      border-color: var(--border-color, #ccc);
       padding: 0;
     }
     .info-value.editable input,
@@ -93,19 +129,21 @@
       border: none;
       font-size: 14px;
       font-family: inherit;
-      background: white;
+      background: transparent;
+      color: var(--text-primary);
       border-radius: 8px;
       outline: none;
     }
-    .info-value:empty::before { content: "—"; color: #bbb; }
+    .info-value:empty::before { content: "—"; color: var(--text-light, #bbb); }
 
     .section-title {
       font-size: 18px;
       font-weight: 700;
-      color: #1a237e;
+      color: var(--text-primary);
       margin: 24px 0 16px 0;
-      border-left: 3px solid #1976d2;
+      border-left: 3px solid var(--bg-btn-primary, #1976d2);
       padding-left: 12px;
+      transition: color 0.3s, border-color 0.3s;
     }
 
     .sub-table {
@@ -114,17 +152,24 @@
       font-size: 13px;
       margin-bottom: 20px;
     }
-    .sub-table th, .sub-table td {
+    .sub-table th {
+      background: var(--bg-table-header, #e8eaf6);
+      color: var(--text-primary);
+      font-weight: 600;
       padding: 10px 8px;
       text-align: left;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid var(--border-color, #eee);
+      transition: background 0.3s, color 0.3s, border-color 0.3s;
     }
-    .sub-table th {
-      background: #e8eaf6;
-      color: #1a237e;
-      font-weight: 600;
+    .sub-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border-color, #eee);
+      color: var(--text-primary);
+      transition: color 0.3s, background 0.3s, border-color 0.3s;
     }
-    .sub-table tr:hover td { background: #f5f9ff; }
+    .sub-table tr:hover td {
+      background: var(--bg-table-hover, #f5f9ff);
+    }
     .sub-table td:last-child,
     .sub-table th:last-child {
       width: 80px;
@@ -138,38 +183,107 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.5);
+      background: var(--bg-modal, rgba(0,0,0,0.5));
       z-index: 1100;
       align-items: center;
       justify-content: center;
+      transition: background 0.3s;
     }
     .modal-overlay.open { display: flex; }
     .modal {
-      background: white;
+      background: var(--bg-card, #fff);
+      color: var(--text-primary);
       border-radius: 12px;
       padding: 24px;
       width: 700px;
       max-width: 96vw;
       max-height: 90vh;
       overflow-y: auto;
+      box-shadow: 0 8px 32px var(--shadow-color);
+      transition: background 0.3s, color 0.3s, box-shadow 0.3s;
     }
-    .modal h3 { margin: 0 0 16px; color: #1a237e; }
+    .modal h3 { margin: 0 0 16px; color: var(--text-primary); transition: color 0.3s; }
     .form-group { margin-bottom: 12px; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    label { font-size: 12px; font-weight: 600; color: #555; display: block; margin-bottom: 4px; }
-    input, select, textarea { width: 100%; padding: 7px 9px; border: 1px solid #ccc; border-radius: 5px; font-size: 13px; font-family: inherit; }
-    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary, #555);
+      display: block;
+      margin-bottom: 4px;
+      transition: color 0.3s;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 7px 9px;
+      border: 1px solid var(--border-color, #ccc);
+      border-radius: 5px;
+      font-size: 13px;
+      font-family: inherit;
+      background: var(--bg-input, #fff);
+      color: var(--text-primary);
+      transition: border-color 0.2s, background 0.3s, color 0.3s;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
 
     .toast {
-      position: fixed; bottom: 20px; right: 20px;
-      padding: 10px 18px; border-radius: 6px; color: white;
-      opacity: 0; transition: opacity 0.3s; z-index: 9999;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 18px;
+      border-radius: 6px;
+      color: white;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 9999;
     }
     .toast.show { opacity: 1; }
-    .toast.success { background: #2e7d32; }
-    .toast.error { background: #c62828; }
+    .toast.success { background: var(--toast-success, #2e7d32); }
+    .toast.error { background: var(--toast-error, #c62828); }
 
-    hr { border: 0; border-top: 1px solid #e0e0e0; margin: 24px 0; }
+    hr {
+      border: 0;
+      border-top: 1px solid var(--border-color, #e0e0e0);
+      margin: 24px 0;
+      transition: border-color 0.3s;
+    }
+
+    /* ===== ПЕРЕВИЗНАЧЕННЯ ДЛЯ ТЕМНОЇ ТЕМИ ===== */
+    .dark-theme .btn-warning {
+      background: #b87a2a;
+      color: white;
+    }
+    .dark-theme .btn-warning:hover:not(:disabled) {
+      background: #c88a3a;
+    }
+    .dark-theme .btn-secondary {
+      background: #4a4a55;
+      color: white;
+    }
+    .dark-theme .btn-secondary:hover:not(:disabled) {
+      background: #5a5a65;
+    }
+    .dark-theme .btn-danger {
+      background: #a03040;
+      color: white;
+    }
+    .dark-theme .btn-danger:hover:not(:disabled) {
+      background: #b04050;
+    }
+    .dark-theme .btn-outline {
+      border-color: rgba(255,255,255,0.3);
+      color: #ccc;
+    }
+    .dark-theme .btn-outline:hover {
+      background: rgba(255,255,255,0.1);
+    }
   </style>
 </head>
 <body>
@@ -334,7 +448,17 @@
               <button class="btn btn-primary btn-sm hidden-action" id="addWeaponBtn" onclick="openAddWeaponModal()">+ Додати зброю</button>
             </div>
             <table class="sub-table" id="weaponTable">
-              <thead><tr><th>Тип</th><th>Серійний №</th><th>Дата видачі</th><th>Дії</th></tr></thead>
+              <thead>
+              <tr>
+                <th>Модель зброї</th>
+                <th>Серійний №</th>
+                <th>Штик-багнет №</th>
+                <th>Магазини</th>
+                <th>Калібр</th>
+                <th>Дата видачі</th>
+                <th>Дії</th>
+              </tr>
+              </thead>
               <tbody id="weaponList"></tbody>
             </table>
           </div>
@@ -363,6 +487,29 @@
               <tbody id="vosTrainingList"></tbody>
             </table>
           </div>
+
+          <!-- Попередня військова служба (таблиця) -->
+          <div class="section-title">🪖 Попередня військова служба</div>
+          <div class="sub-section">
+            <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
+              <button class="btn btn-primary btn-sm hidden-action" id="addPrevServiceBtn" onclick="openAddPrevServiceModal()">+ Додати</button>
+            </div>
+            <table class="sub-table" id="prevServiceTable">
+              <thead>
+              <tr>
+                <th>Служба</th>
+                <th>Ким призваний</th>
+                <th>Початок періоду</th>
+                <th>Кінець періоду</th>
+                <th>Звання</th>
+                <th>Військова частина</th>
+                <th>Дії</th>
+              </tr>
+              </thead>
+              <tbody id="prevServiceList"></tbody>
+            </table>
+          </div>
+          <hr>
 
           <!-- Примітка -->
           <div class="section-title">📝 Примітка</div>
@@ -434,8 +581,11 @@
   <div class="modal">
     <input type="hidden" id="weaponId">
     <h3>➕ Додати зброю</h3>
-    <div class="form-group"><label>Тип зброї</label><input type="text" id="weaponType"></div>
+    <div class="form-group"><label>Модель зброї</label><input type="text" id="weaponType"></div>
     <div class="form-group"><label>Серійний №</label><input type="text" id="weaponSerial"></div>
+    <div class="form-group"><label>Штик-багнет №</label><input type="text" id="weaponBayonet"></div>
+    <div class="form-group"><label>Магазини</label><input type="text" id="weaponMagazines"></div>
+    <div class="form-group"><label>Калібр</label><input type="text" id="weaponCaliber" placeholder="5.45, 7.62, 9 мм"></div>
     <div class="form-group"><label>Дата видачі</label><input type="date" id="weaponIssueDate"></div>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal('weaponModal')">Скасувати</button>
@@ -464,6 +614,26 @@
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal('vosTrainingModal')">Скасувати</button>
       <button class="btn btn-primary" onclick="saveVosTraining()">Зберегти</button>
+    </div>
+  </div>
+</div>
+
+<!-- Попередня військова служба -->
+<div class="modal-overlay" id="prevServiceModal">
+  <div class="modal">
+    <input type="hidden" id="prevServiceId">
+    <h3>➕ Додати запис служби</h3>
+    <div class="form-group"><label>Служба</label><input type="text" id="psServiceType"></div>
+    <div class="form-group"><label>Ким призваний</label><input type="text" id="psDraftedBy"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Початок періоду</label><input type="date" id="psStartDate"></div>
+      <div class="form-group"><label>Кінець періоду</label><input type="date" id="psEndDate"></div>
+    </div>
+    <div class="form-group"><label>Звання</label><input type="text" id="psRank"></div>
+    <div class="form-group"><label>Військова частина</label><input type="text" id="psMilitaryUnit"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('prevServiceModal')">Скасувати</button>
+      <button class="btn btn-primary" onclick="savePrevService()">Зберегти</button>
     </div>
   </div>
 </div>
@@ -778,11 +948,17 @@
     const res = await fetch(`/personnel/api/${currentPersonId}/weapons`);
     const list = await res.json();
     const tbody = document.getElementById('weaponList');
-    if (!list.length) { tbody.innerHTML = '<tr><td colspan="4">Немає даних</td></tr>'; return; }
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="7">Немає даних</td></tr>';
+      return;
+    }
     tbody.innerHTML = list.map(w => `
             <tr>
                 <td>${escapeHtml(w.weaponType)}</td>
                 <td>${escapeHtml(w.serialNumber)}</td>
+                <td>${escapeHtml(w.bayonet)}</td>
+                <td>${escapeHtml(w.magazines)}</td>
+                <td>${escapeHtml(w.caliber)}</td>
                 <td>${escapeHtml(w.issuedDate)}</td>
                 <td>
                     <button class="btn btn-warning btn-sm hidden-action" onclick="openEditWeapon(${w.id})">✏️</button>
@@ -814,6 +990,31 @@
                 <td>
                     <button class="btn btn-warning btn-sm hidden-action" onclick="openEditVosTraining(${item.id})">✏️</button>
                     <button class="btn btn-danger btn-sm hidden-action" onclick="confirmDeleteVosTraining(${item.id})">🗑</button>
+                </td>
+            </tr>
+        `).join('');
+    if (isEditMode) showActionButtons();
+  }
+
+  async function loadPrevServices() {
+    const res = await fetch(`/personnel/api/${currentPersonId}/previous-service`);
+    const list = await res.json();
+    const tbody = document.getElementById('prevServiceList');
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="7">Немає даних</td></tr>';
+      return;
+    }
+    tbody.innerHTML = list.map(item => `
+            <tr>
+                <td>${escapeHtml(item.serviceType)}</td>
+                <td>${escapeHtml(item.draftedBy)}</td>
+                <td>${formatDateForDisplay(item.startDate)}</td>
+                <td>${formatDateForDisplay(item.endDate)}</td>
+                <td>${escapeHtml(item.rank)}</td>
+                <td>${escapeHtml(item.militaryUnit)}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm hidden-action" onclick="openEditPrevService(${item.id})">✏️</button>
+                    <button class="btn btn-danger btn-sm hidden-action" onclick="confirmDeletePrevService(${item.id})">🗑</button>
                 </td>
             </tr>
         `).join('');
@@ -921,6 +1122,9 @@
     document.getElementById('weaponId').value = id;
     document.getElementById('weaponType').value = data.weaponType || '';
     document.getElementById('weaponSerial').value = data.serialNumber || '';
+    document.getElementById('weaponBayonet').value = data.bayonet || '';
+    document.getElementById('weaponMagazines').value = data.magazines || '';
+    document.getElementById('weaponCaliber').value = data.caliber || '';
     document.getElementById('weaponIssueDate').value = data.issuedDate || '';
     document.querySelector('#weaponModal h3').textContent = '✏️ Редагувати зброю';
     document.getElementById('weaponModal').classList.add('open');
@@ -931,6 +1135,9 @@
     const body = {
       weaponType: document.getElementById('weaponType').value,
       serialNumber: document.getElementById('weaponSerial').value,
+      bayonet: document.getElementById('weaponBayonet').value,
+      magazines: document.getElementById('weaponMagazines').value,
+      caliber: document.getElementById('weaponCaliber').value,
       issuedDate: document.getElementById('weaponIssueDate').value || null
     };
     const url = id ? `/personnel/api/${currentPersonId}/weapons/${id}` : `/personnel/api/${currentPersonId}/weapons`;
@@ -1028,6 +1235,69 @@
     });
   }
 
+  // ===== ПОПЕРЕДНЯ ВІЙСЬКОВА СЛУЖБА =====
+  async function openEditPrevService(id) {
+    const res = await fetch(`/personnel/api/${currentPersonId}/previous-service/${id}`);
+    const data = await res.json();
+    document.getElementById('prevServiceId').value = id;
+    document.getElementById('psServiceType').value = data.serviceType || '';
+    document.getElementById('psDraftedBy').value = data.draftedBy || '';
+    document.getElementById('psStartDate').value = data.startDate ? data.startDate.substring(0,10) : '';
+    document.getElementById('psEndDate').value = data.endDate ? data.endDate.substring(0,10) : '';
+    document.getElementById('psRank').value = data.rank || '';
+    document.getElementById('psMilitaryUnit').value = data.militaryUnit || '';
+    document.querySelector('#prevServiceModal h3').textContent = '✏️ Редагувати запис';
+    document.getElementById('prevServiceModal').classList.add('open');
+  }
+
+  async function savePrevService() {
+    const id = document.getElementById('prevServiceId').value;
+    const body = {
+      serviceType: document.getElementById('psServiceType').value,
+      draftedBy: document.getElementById('psDraftedBy').value,
+      startDate: document.getElementById('psStartDate').value || null,
+      endDate: document.getElementById('psEndDate').value || null,
+      rank: document.getElementById('psRank').value,
+      militaryUnit: document.getElementById('psMilitaryUnit').value
+    };
+    const url = id ? `/personnel/api/${currentPersonId}/previous-service/${id}` : `/personnel/api/${currentPersonId}/previous-service`;
+    const method = id ? 'PUT' : 'POST';
+    const res = await fetch(url, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (res.ok) {
+      closeModal('prevServiceModal');
+      document.getElementById('prevServiceId').value = '';
+      document.querySelector('#prevServiceModal h3').textContent = '➕ Додати запис служби';
+      loadPrevServices();
+      showToast(id ? 'Запис оновлено' : 'Запис додано', 'success');
+    } else {
+      showToast('Помилка', 'error');
+    }
+  }
+
+  function openAddPrevServiceModal() {
+    document.getElementById('prevServiceId').value = '';
+    document.querySelector('#prevServiceModal h3').textContent = '➕ Додати запис служби';
+    document.getElementById('psServiceType').value = '';
+    document.getElementById('psDraftedBy').value = '';
+    document.getElementById('psStartDate').value = '';
+    document.getElementById('psEndDate').value = '';
+    document.getElementById('psRank').value = '';
+    document.getElementById('psMilitaryUnit').value = '';
+    document.getElementById('prevServiceModal').classList.add('open');
+  }
+
+  async function confirmDeletePrevService(id) {
+    showConfirm('Видалити запис про попередню службу?', async function() {
+      await fetch(`/personnel/api/${currentPersonId}/previous-service/${id}`, {method: 'DELETE'});
+      loadPrevServices();
+      showToast('Запис видалено', 'success');
+    });
+  }
+
   // ===== КАСТОМНЕ ПІДТВЕРДЖЕННЯ =====
   function showConfirm(message, onConfirm) {
     document.getElementById('confirmMessage').textContent = message || 'Ви впевнені, що хочете видалити цей запис?';
@@ -1073,6 +1343,9 @@
     document.querySelector('#weaponModal h3').textContent = '➕ Додати зброю';
     document.getElementById('weaponType').value = '';
     document.getElementById('weaponSerial').value = '';
+    document.getElementById('weaponBayonet').value = '';
+    document.getElementById('weaponMagazines').value = '';
+    document.getElementById('weaponCaliber').value = '';
     document.getElementById('weaponIssueDate').value = '';
     document.getElementById('weaponModal').classList.add('open');
   }
@@ -1083,6 +1356,7 @@
     if (id === 'childModal') document.querySelector('#childModal h3').textContent = '➕ Додати дитину';
     if (id === 'weaponModal') document.querySelector('#weaponModal h3').textContent = '➕ Додати зброю';
     if (id === 'vosTrainingModal') document.querySelector('#vosTrainingModal h3').textContent = '➕ Додати ВОС навчання';
+    if (id === 'prevServiceModal') document.querySelector('#prevServiceModal h3').textContent = '➕ Додати запис служби';
   }
 
   // ===== ОБРОБНИК КЛАВІШІ ESCAPE =====
@@ -1096,6 +1370,7 @@
         if (modal.id === 'childModal') document.querySelector('#childModal h3').textContent = '➕ Додати дитину';
         if (modal.id === 'weaponModal') document.querySelector('#weaponModal h3').textContent = '➕ Додати зброю';
         if (modal.id === 'vosTrainingModal') document.querySelector('#vosTrainingModal h3').textContent = '➕ Додати ВОС навчання';
+        if (modal.id === 'prevServiceModal') document.querySelector('#prevServiceModal h3').textContent = '➕ Додати запис служби';
       });
     }
   });
@@ -1122,6 +1397,7 @@
         if (this.id === 'childModal') document.querySelector('#childModal h3').textContent = '➕ Додати дитину';
         if (this.id === 'weaponModal') document.querySelector('#weaponModal h3').textContent = '➕ Додати зброю';
         if (this.id === 'vosTrainingModal') document.querySelector('#vosTrainingModal h3').textContent = '➕ Додати ВОС навчання';
+        if (this.id === 'prevServiceModal') document.querySelector('#prevServiceModal h3').textContent = '➕ Додати запис служби';
       }
     });
   });
@@ -1130,6 +1406,7 @@
   loadChildren();
   loadWeapons();
   loadVosTraining();
+  loadPrevServices();
 </script>
 <div th:replace="~{fragments :: sidebar-js}"></div>
 </body>
