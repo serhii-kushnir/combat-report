@@ -123,6 +123,9 @@ public class PersonnelService {
                 case "livingAddress": p.setLivingAddress((String) value); break;
                 case "maritalStatus": p.setMaritalStatus((String) value); break;
                 case "spouseName": p.setSpouseName((String) value); break;
+                case "personnelStatus": p.setPersonnelStatus((String) value); break;
+                case "vos": p.setVos((String) value); break;
+                case "tariffGrade": p.setTariffGrade((String) value); break;
                 case "familyAddress": p.setFamilyAddress((String) value); break;
                 case "draftDate":
                     p.setDraftDate(value != null ? LocalDate.parse((String) value) : null);
@@ -135,7 +138,23 @@ public class PersonnelService {
                 case "serviceFor": p.setServiceFor((String) value); break;
                 case "note": p.setNote((String) value); break;
 
-                // ===== НОВІ ПОЛЯ =====
+                // Нові поля
+                case "personnelNumber":
+                    if (value instanceof Integer) {
+                        p.setPersonnelNumber((Integer) value);
+                    } else if (value instanceof String) {
+                        try {
+                            p.setPersonnelNumber(Integer.parseInt((String) value));
+                        } catch (NumberFormatException e) {
+                            p.setPersonnelNumber(null);
+                        }
+                    } else {
+                        p.setPersonnelNumber(null);
+                    }
+                    break;
+                case "militaryUnit":
+                    p.setMilitaryUnit((String) value);
+                    break;
                 case "drafObl": p.setDrafObl((String) value); break;
                 case "draftLoc": p.setDraftLoc((String) value); break;
                 case "enrollmentDate":

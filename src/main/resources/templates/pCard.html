@@ -6,42 +6,16 @@
   <title th:text="'Картка: ' + ${person.fullName}">Картка особи</title>
   <link th:replace="~{fragments :: sidebar-css}">
   <style>
+    /* Ваші стилі (без змін) – використовуйте ті, що вже є */
     * { box-sizing: border-box; }
     body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; }
     .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-
-    .card {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      overflow: hidden;
-    }
-    .card-header {
-      background: #1a237e;
-      color: white;
-      padding: 20px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
+    .card { background: white; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
+    .card-header { background: #1a237e; color: white; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
     .card-header h1 { margin: 0; font-size: 22px; }
     .card-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
-    .btn {
-      padding: 7px 14px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    .btn { padding: 7px 14px; border: none; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-primary { background: #1976d2; color: white; }
     .btn-primary:hover:not(:disabled) { background: #1565c0; }
     .btn-warning { background: #f57c00; color: white; }
@@ -53,124 +27,34 @@
     .btn-danger { background: #dc3545; color: white; }
     .btn-danger:hover:not(:disabled) { background: #c82333; }
     .btn-sm { padding: 4px 9px; font-size: 11px; }
-
-    .hidden-action {
-      display: none !important;
-    }
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .info-field {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .info-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: #888;
-      text-transform: uppercase;
-    }
-    .info-value {
-      font-size: 14px;
-      padding: 8px 10px;
-      background: #f8f9fa;
-      border-radius: 8px;
-      min-height: 38px;
-      cursor: pointer;
-      transition: 0.1s;
-    }
+    .hidden-action { display: none !important; }
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .info-field { display: flex; flex-direction: column; gap: 4px; }
+    .info-label { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; }
+    .info-value { font-size: 14px; padding: 8px 10px; background: #f8f9fa; border-radius: 8px; min-height: 38px; cursor: pointer; transition: 0.1s; }
     .info-value:hover { background: #e3f2fd; }
-    .info-value.editable {
-      background: white;
-      border: 1px solid #1976d2;
-      padding: 0;
-    }
-    .info-value.editable input,
-    .info-value.editable select,
-    .info-value.editable textarea {
-      width: 100%;
-      padding: 8px 10px;
-      border: none;
-      font-size: 14px;
-      font-family: inherit;
-      background: white;
-      border-radius: 8px;
-      outline: none;
-    }
+    .info-value.editable { background: white; border: 1px solid #1976d2; padding: 0; }
+    .info-value.editable input, .info-value.editable select, .info-value.editable textarea { width: 100%; padding: 8px 10px; border: none; font-size: 14px; font-family: inherit; background: white; border-radius: 8px; outline: none; }
     .info-value:empty::before { content: "—"; color: #bbb; }
-
-    .section-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #1a237e;
-      margin: 24px 0 16px 0;
-      border-left: 3px solid #1976d2;
-      padding-left: 12px;
-    }
-    .sub-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      margin-bottom: 20px;
-    }
-    .sub-table th, .sub-table td {
-      padding: 10px 8px;
-      text-align: left;
-      border-bottom: 1px solid #eee;
-    }
-    .sub-table th {
-      background: #e8eaf6;
-      color: #1a237e;
-      font-weight: 600;
-    }
+    .section-title { font-size: 18px; font-weight: 700; color: #1a237e; margin: 24px 0 16px 0; border-left: 3px solid #1976d2; padding-left: 12px; }
+    .sub-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px; }
+    .sub-table th, .sub-table td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #eee; }
+    .sub-table th { background: #e8eaf6; color: #1a237e; font-weight: 600; }
     .sub-table tr:hover td { background: #f5f9ff; }
-    .sub-table td:last-child,
-    .sub-table th:last-child {
-      width: 80px;
-      min-width: 80px;
-      max-width: 80px;
-      white-space: nowrap;
-      text-align: center;
-    }
-
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 1100;
-      align-items: center;
-      justify-content: center;
-    }
+    .sub-table td:last-child, .sub-table th:last-child { width: 80px; min-width: 80px; max-width: 80px; white-space: nowrap; text-align: center; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1100; align-items: center; justify-content: center; }
     .modal-overlay.open { display: flex; }
-    .modal {
-      background: white;
-      border-radius: 12px;
-      padding: 24px;
-      width: 600px;
-      max-width: 96vw;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
+    .modal { background: white; border-radius: 12px; padding: 24px; width: 600px; max-width: 96vw; max-height: 90vh; overflow-y: auto; }
     .modal h3 { margin: 0 0 16px; color: #1a237e; }
     .form-group { margin-bottom: 12px; }
     label { font-size: 12px; font-weight: 600; color: #555; display: block; margin-bottom: 4px; }
     input, select, textarea { width: 100%; padding: 7px 9px; border: 1px solid #ccc; border-radius: 5px; font-size: 13px; }
     .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-
-    .toast {
-      position: fixed; bottom: 20px; right: 20px;
-      padding: 10px 18px; border-radius: 6px; color: white;
-      opacity: 0; transition: opacity 0.3s; z-index: 9999;
-    }
+    .toast { position: fixed; bottom: 20px; right: 20px; padding: 10px 18px; border-radius: 6px; color: white; opacity: 0; transition: opacity 0.3s; z-index: 9999; }
     .toast.show { opacity: 1; }
     .toast.success { background: #2e7d32; }
     .toast.error { background: #c62828; }
+    hr { border: 0; border-top: 1px solid #e0e0e0; margin: 24px 0; }
   </style>
 </head>
 <body>
@@ -183,7 +67,7 @@
           <h1>
             <span th:if="${person.rank}" th:text="${person.rank + ' '}"></span>
             <span th:text="${person.fullName}"></span>
-            <span th:if="${person.position}" th:text="' (' + ${person.position} + ')'"></span>
+            <span th:if="${person.position}" th:text="' ' + ${person.position} + ''"></span>
           </h1>
           <div class="card-actions">
             <button class="btn btn-primary" id="enableEditBtn">✏️ Редагувати</button>
@@ -195,6 +79,21 @@
         </div>
 
         <div style="padding:20px 24px">
+
+          <!-- № Порядковий номер та Статус -->
+          <div class="section-title">№ Порядковий номер та Статус</div>
+          <div class="info-grid">
+            <div class="info-field">
+              <div class="info-label">Порядковий номер</div>
+              <div class="info-value" data-field="personnelNumber" th:text="${person.personnelNumber}">—</div>
+            </div>
+            <div class="info-field">
+              <div class="info-label">Статус</div>
+              <div class="info-value" data-field="personnelStatus" th:text="${person.personnelStatus}">—</div>
+            </div>
+          </div>
+          <hr>
+
           <!-- Загальна інформація -->
           <div class="section-title">👤 Загальна інформація</div>
           <div class="info-grid">
@@ -260,6 +159,7 @@
               <tbody id="childrenList"></tbody>
             </table>
           </div>
+          <hr>
 
           <!-- Військові дані -->
           <div class="section-title">🎖️ Військові дані</div>
@@ -268,6 +168,8 @@
             <div class="info-field"><div class="info-label">Коротка посада</div><div class="info-value" data-field="position" th:text="${person.position}">—</div></div>
             <div class="info-field"><div class="info-label">Повна посада</div><div class="info-value" data-field="fullPosition" th:text="${person.fullPosition}">—</div></div>
             <div class="info-field"><div class="info-label">Військова служба за</div><div class="info-value" data-field="serviceFor" th:text="${person.serviceFor}">—</div></div>
+            <div class="info-field"><div class="info-label">ВОС</div><div class="info-value" data-field="vos" th:text="${person.vos}">—</div></div>
+            <div class="info-field"><div class="info-label">Тарифний розряд</div><div class="info-value" data-field="tariffGrade" th:text="${person.tariffGrade}">—</div></div>
           </div>
 
           <!-- Призваний на військову службу -->
@@ -284,6 +186,7 @@
           <div class="info-grid">
             <div class="info-field"><div class="info-label">Дата</div><div class="info-value" data-field="enrollmentDate" th:text="${person.enrollmentDate}">—</div></div>
             <div class="info-field"><div class="info-label">Наказ</div><div class="info-value" data-field="enrollmentNakaz" th:text="${person.enrollmentNakaz}">—</div></div>
+            <div class="info-field"><div class="info-label">Військова частина</div><div class="info-value" data-field="militaryUnit" th:text="${person.militaryUnit}">—</div></div>
           </div>
 
           <!-- Учасник бойових дій -->
@@ -308,17 +211,19 @@
               <button class="btn btn-primary btn-sm hidden-action" id="addWeaponBtn" onclick="openAddWeaponModal()">+ Додати зброю</button>
             </div>
             <table class="sub-table" id="weaponTable">
-              <thead><tr><th>Тип</th><th>Серійний №</th><th>Дата видачі</th><th>Примітка</th><th>Дії</th></tr></thead>
+              <thead><tr><th>Тип</th><th>Серійний №</th><th>Дата видачі</th><th>Дії</th></tr></thead>
               <tbody id="weaponList"></tbody>
             </table>
           </div>
+          <hr>
 
           <!-- Примітка -->
           <div class="section-title">📝 Примітка</div>
           <div class="info-field"><div class="info-label">Примітка</div><div class="info-value" data-field="note" th:text="${person.note}">—</div></div>
-        </div>
-      </div>
-    </div>
+
+        </div><!-- end padding -->
+      </div><!-- end card -->
+    </div><!-- end container -->
   </div>
 </div>
 
@@ -335,9 +240,49 @@
 </div>
 
 <!-- Модальні вікна для додавання/редагування -->
-<div class="modal-overlay" id="educationModal"><div class="modal"><input type="hidden" id="eduId"><h3>➕ Додати освіту</h3><div class="form-group"><label>Рівень</label><input type="text" id="eduLevel"></div><div class="form-group"><label>Заклад</label><input type="text" id="eduInstitution"></div><div class="form-group"><label>Спеціальність</label><input type="text" id="eduSpeciality"></div><div class="form-group"><label>Початок</label><input type="date" id="eduStartDate"></div><div class="form-group"><label>Кінець</label><input type="date" id="eduEndDate"></div><div class="form-group"><label>Диплом №</label><input type="text" id="eduDiploma"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('educationModal')">Скасувати</button><button class="btn btn-primary" onclick="saveEducation()">Зберегти</button></div></div></div>
+<div class="modal-overlay" id="educationModal">
+  <div class="modal">
+    <input type="hidden" id="eduId">
+    <h3>➕ Додати освіту</h3>
+    <div class="form-group">
+      <label>Рівень</label>
+      <select id="eduLevel">
+        <option value="">— виберіть —</option>
+        <option value="Вища">Вища</option>
+        <option value="Неповна вища">Неповна вища</option>
+        <option value="Середня спеціальна">Середня спеціальна</option>
+        <option value="Середня">Середня</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Заклад</label>
+      <input type="text" id="eduInstitution">
+    </div>
+    <div class="form-group">
+      <label>Спеціальність</label>
+      <input type="text" id="eduSpeciality">
+    </div>
+    <div class="form-group">
+      <label>Початок</label>
+      <input type="date" id="eduStartDate">
+    </div>
+    <div class="form-group">
+      <label>Кінець</label>
+      <input type="date" id="eduEndDate">
+    </div>
+    <div class="form-group">
+      <label>Диплом №</label>
+      <input type="text" id="eduDiploma">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('educationModal')">Скасувати</button>
+      <button class="btn btn-primary" onclick="saveEducation()">Зберегти</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="childModal"><div class="modal"><input type="hidden" id="childId"><h3>➕ Додати дитину</h3><div class="form-group"><label>ПІБ дитини</label><input type="text" id="childFullName"></div><div class="form-group"><label>Дата народження</label><input type="date" id="childBirthDate"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('childModal')">Скасувати</button><button class="btn btn-primary" onclick="saveChild()">Зберегти</button></div></div></div>
-<div class="modal-overlay" id="weaponModal"><div class="modal"><input type="hidden" id="weaponId"><h3>➕ Додати зброю</h3><div class="form-group"><label>Тип зброї</label><input type="text" id="weaponType"></div><div class="form-group"><label>Серійний №</label><input type="text" id="weaponSerial"></div><div class="form-group"><label>Дата видачі</label><input type="text" id="weaponIssueDate"></div><div class="form-group"><label>Примітка</label><input type="text" id="weaponNote"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('weaponModal')">Скасувати</button><button class="btn btn-primary" onclick="saveWeapon()">Зберегти</button></div></div></div>
+<div class="modal-overlay" id="weaponModal"><div class="modal"><input type="hidden" id="weaponId"><h3>➕ Додати зброю</h3><div class="form-group"><label>Тип зброї</label><input type="text" id="weaponType"></div><div class="form-group"><label>Серійний №</label><input type="text" id="weaponSerial"></div><div class="form-group"><label>Дата видачі</label><input type="date" id="weaponIssueDate"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('weaponModal')">Скасувати</button><button class="btn btn-primary" onclick="saveWeapon()">Зберегти</button></div></div></div>
 
 <div class="toast" id="toast"></div>
 
@@ -385,9 +330,7 @@
       el.classList.add('editable');
       el.onclick = () => startEdit(el);
     });
-    // Показуємо всі приховані кнопки (додавання та дій)
     showActionButtons();
-    // Показуємо кнопки збереження/скасування
     document.getElementById('enableEditBtn').style.display = 'none';
     document.getElementById('saveAllBtn').style.display = 'inline-block';
     document.getElementById('cancelEditBtn').style.display = 'inline-block';
@@ -395,7 +338,6 @@
 
   function cancelEdit() {
     if (activeEditor) finishEdit(activeEditor);
-    // Ховаємо всі кнопки додавання та дій
     hideActionButtons();
     window.location.reload();
   }
@@ -410,14 +352,32 @@
     if (currentValue === '—') currentValue = '';
 
     let input;
-    const dateFields = ['birthDate', 'draftDate', 'enrollmentDate', 'ubdDate', 'admissionDate'];
-    const selectFields = ['rank', 'bloodGroup', 'maritalStatus', 'serviceFor'];
+    const dateFields = ['birthDate', 'draftDate', 'ubdDate', 'admissionDate', 'enrollmentDate'];
+    // Додаємо 'personnelStatus' до списку полів, які будуть випадаючими списками
+    const selectFields = ['rank', 'bloodGroup', 'maritalStatus', 'serviceFor', 'personnelStatus'];
     const textareaFields = ['fullPosition', 'note'];
 
     if (dateFields.includes(field)) {
       input = document.createElement('input');
+      input.type = 'date';
+      if (currentValue && currentValue.match(/^\d{2}\.\d{2}\.\d{4}$/)) {
+        let parts = currentValue.split('.');
+        currentValue = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      }
+      input.value = currentValue;
+    } else if (field === 'phone') {
+      input = document.createElement('input');
+      input.type = 'tel';
+      input.value = currentValue;
+    } else if (field === 'personnelNumber') {
+      input = document.createElement('input');
+      input.type = 'number';
+      input.step = '1';
+      input.value = currentValue;
+    } else if (field === 'taxId') {
+      input = document.createElement('input');
       input.type = 'text';
-      input.placeholder = 'ДД.ММ.РРРР';
+      input.inputMode = 'numeric';
       input.value = currentValue;
     } else if (selectFields.includes(field)) {
       input = document.createElement('select');
@@ -425,7 +385,8 @@
       if (field === 'rank') options = ['Солдат','Старший солдат','Молодший сержант','Сержант','Старший сержант','Головний сержант','Штаб-сержант','Майстер-сержант','Молодший лейтенант','Лейтенант','Старший лейтенант','Капітан'];
       else if (field === 'bloodGroup') options = ['O(I) Rh+','O(I) Rh-','A(II) Rh+','A(II) Rh-','B(III) Rh+','B(III) Rh-','AB(IV) Rh+','AB(IV) Rh-'];
       else if (field === 'maritalStatus') options = ['Одружений(на)','Не одружений(на)','Розлучений(на)','Вдівець/Вдова'];
-      else if (field === 'serviceFor') options = ['За призовом','За контрактом'];
+      else if (field === 'serviceFor') options = ['За мобілізацією','За контрактом'];
+      else if (field === 'personnelStatus') options = ['В особовому складі', 'Не в особовому складі'];
       input.innerHTML = '<option value="">— не вказано —</option>' + options.map(o => `<option value="${o}">${o}</option>`).join('');
       input.value = currentValue;
     } else if (textareaFields.includes(field)) {
@@ -455,7 +416,6 @@
       let newVal = input.value.trim();
       if (newVal === '') newVal = '—';
 
-      // Якщо значення не змінилося – просто закриваємо редактор
       if (newVal === currentValue) {
         el.textContent = currentValue;
         el.classList.add('editable');
@@ -467,21 +427,16 @@
       let isoValue = newVal;
       let displayValue = newVal;
 
-      // Перевірка для полів дати
       if (dateFields.includes(field)) {
-        if (newVal !== '—' && newVal.match(/^\d{2}\.\d{2}\.\d{4}$/)) {
-          let parts = newVal.split('.');
-          isoValue = `${parts[2]}-${parts[1]}-${parts[0]}`;
-          displayValue = newVal;
-        } else if (newVal !== '—' && newVal.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        if (newVal !== '—' && newVal.match(/^\d{4}-\d{2}-\d{2}$/)) {
           isoValue = newVal;
           let parts = newVal.split('-');
           displayValue = `${parts[2]}.${parts[1]}.${parts[0]}`;
-        } else if (newVal === '—' || newVal === '') {
+        } else if (newVal === '—') {
           isoValue = '';
           displayValue = '—';
         } else {
-          showToast('Невірний формат дати (очікується ДД.ММ.РРРР)', 'error');
+          showToast('Невірний формат дати (очікується РРРР-ММ-ДД)', 'error');
           el.textContent = currentValue;
           el.classList.add('editable');
           el.onclick = () => startEdit(el);
@@ -490,13 +445,27 @@
         }
       }
 
-      // Закриваємо редактор, показуємо старе значення до підтвердження
+      // Для числових полів – перетворюємо на число
+      if (field === 'personnelNumber') {
+        const num = parseInt(newVal, 10);
+        if (!isNaN(num)) {
+          isoValue = num;
+          displayValue = num;
+        } else {
+          showToast('Порядковий номер має бути числом', 'error');
+          el.textContent = currentValue;
+          el.classList.add('editable');
+          el.onclick = () => startEdit(el);
+          activeEditor = null;
+          return;
+        }
+      }
+
       el.textContent = currentValue;
       el.classList.add('editable');
       el.onclick = () => startEdit(el);
       activeEditor = null;
 
-      // Відправляємо запит на сервер
       updateField(field, isoValue === '—' ? '' : isoValue, el, displayValue);
     };
 
@@ -530,7 +499,6 @@
         body: JSON.stringify({ [field]: value })
       });
       if (res.ok) {
-        // Успіх – оновлюємо відображення на нове значення
         el.textContent = displayValue;
         showToast(`Поле "${field}" оновлено`, 'success');
         if (field === 'lastName' || field === 'firstName' || field === 'middleName' || field === 'rank') {
@@ -539,11 +507,9 @@
       } else {
         const err = await res.text();
         showToast(`Помилка: ${err}`, 'error');
-        // Залишаємо старе значення (воно вже в el)
       }
     } catch(e) {
       showToast('Помилка мережі', 'error');
-      // Залишаємо старе значення
     }
   }
 
@@ -623,13 +589,12 @@
     const res = await fetch(`/personnel/api/${currentPersonId}/weapons`);
     const list = await res.json();
     const tbody = document.getElementById('weaponList');
-    if (!list.length) { tbody.innerHTML = '<tr><td colspan="5">Немає даних</td></tr>'; return; }
+    if (!list.length) { tbody.innerHTML = '<tr><td colspan="4">Немає даних</td></tr>'; return; }
     tbody.innerHTML = list.map(w => `
             <tr>
                 <td>${escapeHtml(w.weaponType)}</td>
                 <td>${escapeHtml(w.serialNumber)}</td>
                 <td>${escapeHtml(w.issuedDate)}</td>
-                <td>${escapeHtml(w.note)}</td>
                 <td>
                     <button class="btn btn-warning btn-sm hidden-action" onclick="openEditWeapon(${w.id})">✏️</button>
                     <button class="btn btn-danger btn-sm hidden-action" onclick="confirmDeleteWeapon(${w.id})">🗑</button>
@@ -741,7 +706,6 @@
     document.getElementById('weaponType').value = data.weaponType || '';
     document.getElementById('weaponSerial').value = data.serialNumber || '';
     document.getElementById('weaponIssueDate').value = data.issuedDate || '';
-    document.getElementById('weaponNote').value = data.note || '';
     document.querySelector('#weaponModal h3').textContent = '✏️ Редагувати зброю';
     document.getElementById('weaponModal').classList.add('open');
   }
@@ -751,8 +715,7 @@
     const body = {
       weaponType: document.getElementById('weaponType').value,
       serialNumber: document.getElementById('weaponSerial').value,
-      issuedDate: document.getElementById('weaponIssueDate').value,
-      note: document.getElementById('weaponNote').value
+      issuedDate: document.getElementById('weaponIssueDate').value || null
     };
     const url = id ? `/personnel/api/${currentPersonId}/weapons/${id}` : `/personnel/api/${currentPersonId}/weapons`;
     const method = id ? 'PUT' : 'POST';
@@ -826,7 +789,6 @@
     document.getElementById('weaponType').value = '';
     document.getElementById('weaponSerial').value = '';
     document.getElementById('weaponIssueDate').value = '';
-    document.getElementById('weaponNote').value = '';
     document.getElementById('weaponModal').classList.add('open');
   }
 
@@ -860,12 +822,10 @@
   };
   document.getElementById('cancelEditBtn').onclick = cancelEdit;
 
-  // Початкове приховування кнопок (застосовується після завантаження DOM)
   document.addEventListener('DOMContentLoaded', function() {
     hideActionButtons();
   });
 
-  // Закриття модальних вікон при кліку поза ними
   document.querySelectorAll('.modal-overlay').forEach(el => {
     el.addEventListener('click', function(e) {
       if (e.target === this) {

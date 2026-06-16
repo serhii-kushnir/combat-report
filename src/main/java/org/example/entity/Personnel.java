@@ -21,8 +21,20 @@ public class Personnel {
     private Long id;
 
     // ===== ОСНОВНІ =====
+    @Column(unique = true)
+    private Integer personnelNumber;   // Порядковий номер
+
     @Column(nullable = false)
     private String lastName;
+
+    @Column(length = 50)
+    private String vos;                // ВОС
+
+    @Column(length = 30)
+    private String tariffGrade;        // Тарифний розряд
+
+    @Column(length = 100)
+    private String personnelStatus; // Статус
 
     @Column(nullable = false)
     private String firstName;
@@ -57,6 +69,13 @@ public class Personnel {
 
     @Column(length = 50)
     private String bloodGroup;           // Група крові
+
+    // ===== ОСВІТА (рівень) =====
+    @Column(length = 50)
+    private String education;
+
+    @Column(length = 100)
+    private String militaryUnit;      // Військова частина
 
     // ===== ПРИЗВАНИЙ НА ВІЙСЬКОВУ СЛУЖБУ =====
     @Column(length = 100)
@@ -96,7 +115,7 @@ public class Personnel {
 
     @Column(length = 500)
     private String spouseName;           // Дружина/чоловік
-    
+
     // ===== ВІЙСЬКОВІ ДАНІ =====
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate draftDate;         // Дата призову
