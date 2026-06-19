@@ -252,11 +252,49 @@
             transition: background 0.3s;
         }
 
+        /* ===== Ширини колонок ===== */
         .col-num  { width: 32px; min-width: 32px; }
-        .col-name { width: 160px; min-width: 140px; text-align: left !important; padding-left: 8px !important; }
         .col-rank { width: 110px; min-width: 100px; text-align: left !important; padding-left: 6px !important; }
+        .col-name { width: 160px; min-width: 140px; text-align: left !important; padding-left: 8px !important; }
         .col-day  { width: 36px; min-width: 32px; }
 
+        /* ===== ФІКСАЦІЯ ПЕРШИХ ТРЬОХ КОЛОНОК (заголовки та комірки) ===== */
+        .col-num,
+        .col-rank,
+        .col-name,
+        .num-cell,
+        .rank-cell,
+        .name-cell {
+            position: sticky;
+            z-index: 2;
+            background: var(--bg-card);
+        }
+        thead .col-num,
+        thead .col-rank,
+        thead .col-name {
+            z-index: 3;
+        }
+        .col-num,
+        .num-cell {
+            left: 0;
+        }
+        .col-rank,
+        .rank-cell {
+            left: 32px; /* ширина колонки № */
+        }
+        .col-name,
+        .name-cell {
+            left: calc(32px + 110px); /* 32px + 110px */
+        }
+
+        /* Синхронізація фону при ховері */
+        tr:hover td.num-cell,
+        tr:hover td.rank-cell,
+        tr:hover td.name-cell {
+            background: var(--bg-hover);
+        }
+
+        /* ===== СТИЛІ ДЛЯ КОМІРОК ===== */
         td {
             padding: 2px;
             text-align: center;
@@ -514,8 +552,9 @@
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>ПІБ</th>
+                            <!-- ЗМІНА: порядок Звання, ПІБ -->
                             <th>Звання</th>
+                            <th>ПІБ</th>
                             <th>БЧ</th>
                             <th>Бат БЧ</th>
                             <th>БЧ РКП</th>
@@ -634,10 +673,11 @@
             function renderTable() {
                 const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
 
+                // ЗМІНА: порядок №, Звання, ПІБ
                 let headRow1 = `<tr>
         <th class="col-num">#</th>
-        <th class="col-name" style="text-align:left">ПІБ</th>
-        <th class="col-rank" style="text-align:left">Звання</th>`;
+        <th class="col-rank" style="text-align:left">Звання</th>
+        <th class="col-name" style="text-align:left">ПІБ</th>`;
                 for (let d = 1; d <= daysInMonth; d++) {
                     const dow = new Date(currentYear, currentMonth - 1, d).getDay();
                     const isWE = (dow === 0 || dow === 6);
@@ -666,10 +706,11 @@
 
                 let html = '';
                 tableData.forEach((row, idx) => {
+                    // ЗМІНА: порядок №, Звання, ПІБ
                     let rowHtml = `<tr>
             <td class="num-cell">${idx + 1}</td>
-            <td class="name-cell">${escapeHtml(row.shortName)}</td>
-            <td class="rank-cell">${escapeHtml(row.rank)}</td>`;
+            <td class="rank-cell">${escapeHtml(row.rank)}</td>
+            <td class="name-cell">${escapeHtml(row.shortName)}</td>`;
                     for (let d = 1; d <= daysInMonth; d++) {
                         const status = row.days[d] || '';
                         const dow = new Date(currentYear, currentMonth - 1, d).getDay();
@@ -725,10 +766,11 @@
                         }
                     }
 
+                    // ЗМІНА: порядок №, Звання, ПІБ
                     rowsHtml += `<tr>
                         <td class="num-cell">${rowNum++}</td>
-                        <td style="text-align:left;">${escapeHtml(person.shortName)}</td>
                         <td class="rank-cell">${escapeHtml(person.rank)}</td>
+                        <td style="text-align:left;">${escapeHtml(person.shortName)}</td>
                         <td>${counts['БЧ']}</td>
                         <td>${counts['Бат БЧ']}</td>
                         <td>${counts['БЧ РКП']}</td>
@@ -758,6 +800,7 @@
                     cell
                 };
 
+                // Знаходимо ПІБ (тепер третя колонка)
                 const name = cell.closest('tr').querySelector('.name-cell').textContent;
                 const day  = cell.dataset.day;
                 const title = `${name} — ${day} ${UA_MONTHS[currentMonth-1]}`;
