@@ -3,19 +3,17 @@ package org.example.controller;
 import org.example.service.ScheduleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/schedule")
@@ -28,19 +26,16 @@ public class ScheduleController {
         this.service = service;
     }
 
-    /** Сторінка графіку */
     @GetMapping
     public String schedulePage() {
         return "schedule";
     }
 
-    /** REST: дані за місяць */
     @GetMapping("/api")
     @ResponseBody
     public ResponseEntity<?> getMonth(@RequestParam int year,
                                       @RequestParam int month) {
         try {
-            YearMonth.of(year, month); // валідація
             List<Map<String, Object>> data = service.getMonthData(year, month);
             return ResponseEntity.ok(data);
         } catch (Exception e) {
@@ -49,18 +44,17 @@ public class ScheduleController {
         }
     }
 
+    // ===== ЕКСПОРТ (ОДИН ФАЙЛ, МІСЯЦЬ АБО ВЕСЬ РІК) =====
     @GetMapping("/export")
-    public ResponseEntity<byte[]> exportToXlsx(@RequestParam(required = false) Integer year,
-                                               @RequestParam(required = false) Integer month) {
+    public ResponseEntity<byte[]> exportXlsx(@RequestParam(required = false) Integer year,
+                                             @RequestParam(required = false) Integer month) {
         try {
-            // Якщо рік не вказано, використовуємо поточний
-            if (year == null) {
-                year = LocalDate.now().getYear();
-            }
-            byte[] data = service.exportToXlsx(year, month);
-            String suffix = (month != null) ? String.format("_%d_%d", year, month) : String.format("_%d", year);
+            if (year == null) year = LocalDate.now().getYear();
+            // Якщо місяць не вказано – експортуємо весь рік
+            byte[] data = service.exportCombinedXlsx(year, month);
+            String suffix = (month != null) ? "_" + year + "_" + month : "_" + year;
             String filename = URLEncoder.encode(
-                    "Графік_чергувань" + suffix + ".xlsx",
+                    "Графік_чергувань_та_статистика" + suffix + ".xlsx",
                     StandardCharsets.UTF_8).replace("+", "%20");
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -68,10 +62,12 @@ public class ScheduleController {
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(data);
         } catch (Exception e) {
-            log.error("Помилка експорту графіка", e);
+            log.error("Помилка експорту", e);
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    // ===== ІНШІ ENDPOINTИ =====
 
     @GetMapping("/api/years")
     @ResponseBody
@@ -85,15 +81,13 @@ public class ScheduleController {
         return service.getMonths();
     }
 
-    /** REST: встановити статус на клітинку */
     @PostMapping("/api/cell")
     @ResponseBody
     public ResponseEntity<?> setCell(@RequestBody Map<String, Object> body) {
         try {
             Long personnelId = Long.valueOf(body.get("personnelId").toString());
-            LocalDate date   = LocalDate.parse(body.get("date").toString());
-            String status    = body.getOrDefault("status", "").toString();
-
+            LocalDate date = LocalDate.parse(body.get("date").toString());
+            String status = body.getOrDefault("status", "").toString();
             service.setStatus(personnelId, date, status);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
@@ -104,7 +98,6 @@ public class ScheduleController {
         }
     }
 
-    /** REST: підрахунок статусів за місяць */
     @GetMapping("/api/counts")
     @ResponseBody
     public ResponseEntity<?> getCounts(@RequestParam int year,

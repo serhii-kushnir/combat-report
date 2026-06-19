@@ -20,9 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.format.TextStyle;
 import java.util.*;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,7 +31,6 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepo;
     private final PersonnelRepository personnelRepo;
 
-    // Мапа скорочень днів тижня українською
     private static final Map<java.time.DayOfWeek, String> DAY_ABBREVIATIONS = new HashMap<>();
     static {
         DAY_ABBREVIATIONS.put(java.time.DayOfWeek.MONDAY, "Пн");
@@ -43,6 +40,22 @@ public class ScheduleService {
         DAY_ABBREVIATIONS.put(java.time.DayOfWeek.FRIDAY, "Пт");
         DAY_ABBREVIATIONS.put(java.time.DayOfWeek.SATURDAY, "Сб");
         DAY_ABBREVIATIONS.put(java.time.DayOfWeek.SUNDAY, "Нд");
+    }
+
+    private static final Map<String, String> CATEGORY_MAPPING = new HashMap<>();
+    static {
+        CATEGORY_MAPPING.put("БЧ", "БЧ");
+        CATEGORY_MAPPING.put("БЧ БАТ", "Бат БЧ");
+        CATEGORY_MAPPING.put("БЧ РКП", "БЧ РКП");
+        CATEGORY_MAPPING.put("Р-НЯ", "Р-ня");
+        CATEGORY_MAPPING.put("В-НЯ", "В-ня");
+        CATEGORY_MAPPING.put("В-КА", "В-ка");
+        CATEGORY_MAPPING.put("ХВ", "Х-й");
+        CATEGORY_MAPPING.put("СЗЧ", "СЗЧ");
+        CATEGORY_MAPPING.put("ПЛЮ", "Плюс");
+        CATEGORY_MAPPING.put("ППД", "ППД");
+        CATEGORY_MAPPING.put("НАВ", "Навчання");
+        CATEGORY_MAPPING.put("ПЕРЕВ", "Перевівся");
     }
 
     public ScheduleService(ScheduleRepository scheduleRepo,
@@ -137,25 +150,27 @@ public class ScheduleService {
                 .collect(Collectors.toList());
     }
 
-    // ===== ЕКСПОРТ В XLSX =====
+    // ===== ЕКСПОРТ – ОДИН ФАЙЛ, ДВА АРКУШІ ДЛЯ КОЖНОГО МІСЯЦЯ =====
 
-    public byte[] exportToXlsx(Integer year, Integer month) throws Exception {
+    /**
+     * Експорт за місяць або за рік.
+     * Якщо month == null, експортує всі місяці року (кожен місяць – окрема пара аркушів).
+     */
+    public byte[] exportCombinedXlsx(Integer year, Integer month) throws Exception {
         if (month != null) {
-            return exportMonthToXlsx(year, month);
-        } else if (year != null) {
-            return exportYearToXlsx(year);
+            return exportSingleMonth(year, month);
         } else {
-            throw new IllegalArgumentException("Необхідно вказати рік або рік+місяць");
+            return exportWholeYear(year);
         }
     }
 
-    private byte[] exportMonthToXlsx(int year, int month) throws Exception {
+    // Експорт одного місяця (два аркуші: Графік і Статистика)
+    private byte[] exportSingleMonth(int year, int month) throws Exception {
         List<Map<String, Object>> rows = getMonthData(year, month);
         if (rows.isEmpty()) {
             throw new IllegalStateException("Немає даних за вибраний місяць");
         }
 
-        // СОРТУВАННЯ за personnelNumber (від 1 до більшого)
         rows.sort(Comparator.comparingInt(r -> {
             Integer num = (Integer) r.get("personnelNumber");
             return num != null ? num : Integer.MAX_VALUE;
@@ -166,85 +181,21 @@ public class ScheduleService {
         try (XSSFWorkbook wb = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-            XSSFSheet sheet = wb.createSheet(String.format("%d_%02d", year, month));
+            // Аркуш 1: Графік
+            XSSFSheet sheet1 = wb.createSheet("Графік");
+            buildScheduleSheet(sheet1, rows, year, month, daysInMonth);
 
-            XSSFCellStyle headerStyle = createHeaderStyle(wb);
-            XSSFCellStyle dayNameStyle = createDayNameStyle(wb);
-            XSSFCellStyle dataCenterStyle = createDataStyle(wb);
-            XSSFCellStyle dataLeftStyle = createLeftAlignedDataStyle(wb);
-
-            // === ПОРЯДОК: №, Звання, ПІБ, дні ===
-            String[] headers = new String[3 + daysInMonth];
-            headers[0] = "№";
-            headers[1] = "Звання";
-            headers[2] = "ПІБ";
-            for (int d = 1; d <= daysInMonth; d++) {
-                headers[2 + d] = String.valueOf(d);
-            }
-
-            // Ширини колонок
-            sheet.setColumnWidth(0, 8 * 256);
-            sheet.setColumnWidth(1, 18 * 256);
-            sheet.setColumnWidth(2, 24 * 256);
-            for (int d = 1; d <= daysInMonth; d++) {
-                sheet.setColumnWidth(2 + d, 10 * 256);
-            }
-
-            // РЯДОК 0: числа місяця (заголовок)
-            XSSFRow headerRow = sheet.createRow(0);
-            headerRow.setHeightInPoints(20);
-            for (int i = 0; i < headers.length; i++) {
-                XSSFCell cell = headerRow.createCell(i);
-                cell.setCellValue(headers[i]);
-                cell.setCellStyle(headerStyle);
-            }
-
-            // РЯДОК 1: назви днів тижня (під числами)
-            XSSFRow dayNameRow = sheet.createRow(1);
-            dayNameRow.setHeightInPoints(16);
-            // Перші три колонки залишаємо пустими або можна поставити прочерк
-            for (int i = 0; i < 3; i++) {
-                XSSFCell cell = dayNameRow.createCell(i);
-                cell.setCellValue("");
-                cell.setCellStyle(dayNameStyle);
-            }
-            for (int d = 1; d <= daysInMonth; d++) {
-                LocalDate date = LocalDate.of(year, month, d);
-                java.time.DayOfWeek dow = date.getDayOfWeek();
-                String abbr = DAY_ABBREVIATIONS.getOrDefault(dow, "");
-                XSSFCell cell = dayNameRow.createCell(2 + d);
-                cell.setCellValue(abbr);
-                cell.setCellStyle(dayNameStyle);
-            }
-
-            // Дані починаються з рядка 2
-            int rowNum = 2;
-            for (Map<String, Object> rowMap : rows) {
-                XSSFRow dataRow = sheet.createRow(rowNum++);
-                dataRow.setHeightInPoints(18);
-
-                Integer personnelNumber = (Integer) rowMap.get("personnelNumber");
-                Object num = personnelNumber != null ? personnelNumber : rowNum - 2;
-                setCell(dataRow, 0, num, dataCenterStyle);
-                setCell(dataRow, 1, rowMap.get("rank"), dataLeftStyle);
-                setCell(dataRow, 2, rowMap.get("shortName"), dataLeftStyle);
-
-                @SuppressWarnings("unchecked")
-                Map<Integer, String> daysMap = (Map<Integer, String>) rowMap.get("days");
-                for (int d = 1; d <= daysInMonth; d++) {
-                    String statusCode = daysMap.get(d);
-                    String display = mapStatusToLabel(statusCode);
-                    XSSFCellStyle statusStyle = getStatusStyle(statusCode, wb);
-                    setCell(dataRow, 2 + d, display, statusStyle);
-                }
-            }
+            // Аркуш 2: Статистика
+            XSSFSheet sheet2 = wb.createSheet("Статистика");
+            buildStatsSheet(sheet2, rows);
 
             wb.write(out);
             return out.toByteArray();
         }
     }
 
-    private byte[] exportYearToXlsx(int year) throws Exception {
+    // Експорт за весь рік (кожен місяць – окрема пара аркушів)
+    private byte[] exportWholeYear(int year) throws Exception {
         try (XSSFWorkbook wb = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
@@ -252,85 +203,158 @@ public class ScheduleService {
                 List<Map<String, Object>> rows = getMonthData(year, month);
                 if (rows.isEmpty()) continue;
 
-                // СОРТУВАННЯ за personnelNumber
                 rows.sort(Comparator.comparingInt(r -> {
                     Integer num = (Integer) r.get("personnelNumber");
                     return num != null ? num : Integer.MAX_VALUE;
                 }));
 
                 int daysInMonth = LocalDate.of(year, month, 1).lengthOfMonth();
-                XSSFSheet sheet = wb.createSheet(String.format("%d_%02d", year, month));
+                String monthName = new String[]{"Січень","Лютий","Березень","Квітень","Травень","Червень",
+                        "Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"}[month - 1];
 
-                XSSFCellStyle headerStyle = createHeaderStyle(wb);
-                XSSFCellStyle dayNameStyle = createDayNameStyle(wb);
-                XSSFCellStyle dataCenterStyle = createDataStyle(wb);
-                XSSFCellStyle dataLeftStyle = createLeftAlignedDataStyle(wb);
+                // Аркуш: Графік_Місяць
+                XSSFSheet sheet1 = wb.createSheet("Графік " + monthName);
+                buildScheduleSheet(sheet1, rows, year, month, daysInMonth);
 
-                String[] headers = new String[3 + daysInMonth];
-                headers[0] = "№";
-                headers[1] = "Звання";
-                headers[2] = "ПІБ";
-                for (int d = 1; d <= daysInMonth; d++) {
-                    headers[2 + d] = String.valueOf(d);
-                }
-
-                sheet.setColumnWidth(0, 8 * 256);
-                sheet.setColumnWidth(1, 18 * 256);
-                sheet.setColumnWidth(2, 24 * 256);
-                for (int d = 1; d <= daysInMonth; d++) {
-                    sheet.setColumnWidth(2 + d, 10 * 256);
-                }
-
-                // Рядок 0: числа
-                XSSFRow headerRow = sheet.createRow(0);
-                headerRow.setHeightInPoints(20);
-                for (int i = 0; i < headers.length; i++) {
-                    XSSFCell cell = headerRow.createCell(i);
-                    cell.setCellValue(headers[i]);
-                    cell.setCellStyle(headerStyle);
-                }
-
-                // Рядок 1: дні
-                XSSFRow dayNameRow = sheet.createRow(1);
-                dayNameRow.setHeightInPoints(16);
-                for (int i = 0; i < 3; i++) {
-                    XSSFCell cell = dayNameRow.createCell(i);
-                    cell.setCellValue("");
-                    cell.setCellStyle(dayNameStyle);
-                }
-                for (int d = 1; d <= daysInMonth; d++) {
-                    LocalDate date = LocalDate.of(year, month, d);
-                    java.time.DayOfWeek dow = date.getDayOfWeek();
-                    String abbr = DAY_ABBREVIATIONS.getOrDefault(dow, "");
-                    XSSFCell cell = dayNameRow.createCell(2 + d);
-                    cell.setCellValue(abbr);
-                    cell.setCellStyle(dayNameStyle);
-                }
-
-                int rowNum = 2;
-                for (Map<String, Object> rowMap : rows) {
-                    XSSFRow dataRow = sheet.createRow(rowNum++);
-                    dataRow.setHeightInPoints(18);
-
-                    Integer personnelNumber = (Integer) rowMap.get("personnelNumber");
-                    Object num = personnelNumber != null ? personnelNumber : rowNum - 2;
-                    setCell(dataRow, 0, num, dataCenterStyle);
-                    setCell(dataRow, 1, rowMap.get("rank"), dataLeftStyle);
-                    setCell(dataRow, 2, rowMap.get("shortName"), dataLeftStyle);
-
-                    @SuppressWarnings("unchecked")
-                    Map<Integer, String> daysMap = (Map<Integer, String>) rowMap.get("days");
-                    for (int d = 1; d <= daysInMonth; d++) {
-                        String statusCode = daysMap.get(d);
-                        String display = mapStatusToLabel(statusCode);
-                        XSSFCellStyle statusStyle = getStatusStyle(statusCode, wb);
-                        setCell(dataRow, 2 + d, display, statusStyle);
-                    }
-                }
+                // Аркуш: Статистика_Місяць
+                XSSFSheet sheet2 = wb.createSheet("Статистика " + monthName);
+                buildStatsSheet(sheet2, rows);
             }
 
             wb.write(out);
             return out.toByteArray();
+        }
+    }
+
+    // ===== ПОБУДОВА АРКУШІВ (спільний код) =====
+
+    private void buildScheduleSheet(XSSFSheet sheet, List<Map<String, Object>> rows, int year, int month, int daysInMonth) {
+        XSSFCellStyle headerStyle = createHeaderStyle(sheet.getWorkbook());
+        XSSFCellStyle dayNameStyle = createDayNameStyle(sheet.getWorkbook());
+        XSSFCellStyle dataCenterStyle = createDataStyle(sheet.getWorkbook());
+        XSSFCellStyle dataLeftStyle = createLeftAlignedDataStyle(sheet.getWorkbook());
+
+        String[] headers = new String[3 + daysInMonth];
+        headers[0] = "№";
+        headers[1] = "Звання";
+        headers[2] = "ПІБ";
+        for (int d = 1; d <= daysInMonth; d++) {
+            headers[2 + d] = String.valueOf(d);
+        }
+
+        sheet.setColumnWidth(0, 8 * 256);
+        sheet.setColumnWidth(1, 18 * 256);
+        sheet.setColumnWidth(2, 24 * 256);
+        for (int d = 1; d <= daysInMonth; d++) {
+            sheet.setColumnWidth(2 + d, 10 * 256);
+        }
+
+        // Рядок 0: числа
+        XSSFRow headerRow = sheet.createRow(0);
+        headerRow.setHeightInPoints(20);
+        for (int i = 0; i < headers.length; i++) {
+            XSSFCell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
+        // Рядок 1: дні тижня
+        XSSFRow dayNameRow = sheet.createRow(1);
+        dayNameRow.setHeightInPoints(16);
+        for (int i = 0; i < 3; i++) {
+            XSSFCell cell = dayNameRow.createCell(i);
+            cell.setCellValue("");
+            cell.setCellStyle(dayNameStyle);
+        }
+        for (int d = 1; d <= daysInMonth; d++) {
+            LocalDate date = LocalDate.of(year, month, d);
+            java.time.DayOfWeek dow = date.getDayOfWeek();
+            String abbr = DAY_ABBREVIATIONS.getOrDefault(dow, "");
+            XSSFCell cell = dayNameRow.createCell(2 + d);
+            cell.setCellValue(abbr);
+            cell.setCellStyle(dayNameStyle);
+        }
+
+        int rowNum = 2;
+        for (Map<String, Object> rowMap : rows) {
+            XSSFRow dataRow = sheet.createRow(rowNum++);
+            dataRow.setHeightInPoints(18);
+
+            Integer personnelNumber = (Integer) rowMap.get("personnelNumber");
+            Object num = personnelNumber != null ? personnelNumber : rowNum - 2;
+            setCell(dataRow, 0, num, dataCenterStyle);
+            setCell(dataRow, 1, rowMap.get("rank"), dataLeftStyle);
+            setCell(dataRow, 2, rowMap.get("shortName"), dataLeftStyle);
+
+            @SuppressWarnings("unchecked")
+            Map<Integer, String> daysMap = (Map<Integer, String>) rowMap.get("days");
+            for (int d = 1; d <= daysInMonth; d++) {
+                String statusCode = daysMap.get(d);
+                String display = mapStatusToLabel(statusCode);
+                XSSFCellStyle statusStyle = getStatusStyle(statusCode, sheet.getWorkbook());
+                setCell(dataRow, 2 + d, display, statusStyle);
+            }
+        }
+    }
+
+    private void buildStatsSheet(XSSFSheet sheet, List<Map<String, Object>> rows) {
+        XSSFCellStyle headerStyle = createHeaderStyle(sheet.getWorkbook());
+        XSSFCellStyle dataCenterStyle = createDataStyle(sheet.getWorkbook());
+        XSSFCellStyle dataLeftStyle = createLeftAlignedDataStyle(sheet.getWorkbook());
+
+        String[] categories = {"БЧ", "Бат БЧ", "БЧ РКП", "Р-ня", "В-ня", "В-ка", "Х-й", "СЗЧ", "Плюс", "ППД", "Навчання", "Перевівся"};
+        int colCount = 3 + categories.length;
+        String[] headers = new String[colCount];
+        headers[0] = "№";
+        headers[1] = "Звання";
+        headers[2] = "ПІБ";
+        for (int i = 0; i < categories.length; i++) {
+            headers[3 + i] = categories[i];
+        }
+
+        sheet.setColumnWidth(0, 8 * 256);
+        sheet.setColumnWidth(1, 18 * 256);
+        sheet.setColumnWidth(2, 24 * 256);
+        for (int i = 0; i < categories.length; i++) {
+            sheet.setColumnWidth(3 + i, 12 * 256);
+        }
+
+        XSSFRow headerRow = sheet.createRow(0);
+        headerRow.setHeightInPoints(25);
+        for (int i = 0; i < headers.length; i++) {
+            XSSFCell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
+        int rowNum = 1;
+        for (Map<String, Object> rowMap : rows) {
+            XSSFRow dataRow = sheet.createRow(rowNum++);
+            dataRow.setHeightInPoints(18);
+
+            Integer personnelNumber = (Integer) rowMap.get("personnelNumber");
+            Object num = personnelNumber != null ? personnelNumber : rowNum - 1;
+            setCell(dataRow, 0, num, dataCenterStyle);
+            setCell(dataRow, 1, rowMap.get("rank"), dataLeftStyle);
+            setCell(dataRow, 2, rowMap.get("shortName"), dataLeftStyle);
+
+            @SuppressWarnings("unchecked")
+            Map<Integer, String> daysMap = (Map<Integer, String>) rowMap.get("days");
+            Map<String, Integer> counts = new LinkedHashMap<>();
+            for (String cat : categories) counts.put(cat, 0);
+            for (String statusCode : daysMap.values()) {
+                if (statusCode != null && !statusCode.isEmpty()) {
+                    String category = CATEGORY_MAPPING.get(statusCode);
+                    if (category != null && counts.containsKey(category)) {
+                        counts.put(category, counts.get(category) + 1);
+                    }
+                }
+            }
+
+            int col = 3;
+            for (String cat : categories) {
+                setCell(dataRow, col++, counts.getOrDefault(cat, 0), dataCenterStyle);
+            }
         }
     }
 
@@ -367,7 +391,7 @@ public class ScheduleService {
     private XSSFCellStyle createDayNameStyle(XSSFWorkbook wb) {
         XSSFCellStyle style = wb.createCellStyle();
         XSSFFont font = wb.createFont();
-        font.setColor(new XSSFColor(new byte[]{(byte)255, (byte)255, (byte)255}));
+        font.setColor(new XSSFColor(new byte[]{(byte)255, (byte)255, (byte)255}, null));
         font.setBold(false);
         font.setFontHeightInPoints((short) 9);
         font.setFontName("Arial");
