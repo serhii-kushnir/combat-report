@@ -1,6 +1,11 @@
 package org.example.controller;
 
-import org.example.entity.*;
+import org.example.entity.Personnel;
+import org.example.entity.PersonnelChild;
+import org.example.entity.PersonnelEducation;
+import org.example.entity.PersonnelVosTraining;
+import org.example.entity.PersonnelWeapon;
+import org.example.entity.PreviousService;  // ← ДОДАТИ ЯВНИЙ ІМПОРТ
 import org.example.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,15 +23,14 @@ public class PersonnelDetailsController {
     private final PersonnelEducationRepository eduRepo;
     private final PersonnelChildRepository childRepo;
     private final PersonnelWeaponRepository weaponRepo;
-    private final org.example.repository.PersonnelRepository personnelRepo;
+    private final PersonnelRepository personnelRepo;
     private final PersonnelVosTrainingRepository vosTrainingRepo;
     private final PreviousServiceRepository previousServiceRepo;
 
-    // ОНОВЛЕНИЙ КОНСТРУКТОР – додано PersonnelVosTrainingRepository
     public PersonnelDetailsController(PersonnelEducationRepository eduRepo,
                                       PersonnelChildRepository childRepo,
                                       PersonnelWeaponRepository weaponRepo,
-                                      org.example.repository.PersonnelRepository personnelRepo,
+                                      PersonnelRepository personnelRepo,
                                       PersonnelVosTrainingRepository vosTrainingRepo,
                                       PreviousServiceRepository previousServiceRepo) {
         this.eduRepo = eduRepo;
@@ -71,6 +75,8 @@ public class PersonnelDetailsController {
             s.setStartDate(service.getStartDate());
             s.setEndDate(service.getEndDate());
             s.setRank(service.getRank());
+            // ПЕРЕКОНАЙТЕСЬ, ЩО НАЗВА ПОЛЯ ВІДПОВІДАЄ СУТНОСТІ
+            // Якщо в сутності поле називається "militaryUnit", то ок.
             s.setMilitaryUnit(service.getMilitaryUnit());
             return ResponseEntity.ok(previousServiceRepo.save(s));
         }).orElse(ResponseEntity.notFound().build());
@@ -120,7 +126,6 @@ public class PersonnelDetailsController {
         return ResponseEntity.ok().build();
     }
 
-    // ===== ОСВІТА: отримати одну =====
     @GetMapping("/api/{id}/education/{eduId}")
     public ResponseEntity<PersonnelEducation> getEducationById(@PathVariable Long eduId) {
         return eduRepo.findById(eduId)
@@ -129,7 +134,6 @@ public class PersonnelDetailsController {
     }
 
     // ===== ДІТИ =====
-
     @GetMapping("/api/{id}/children")
     public List<PersonnelChild> getChildrenList(@PathVariable Long id) {
         return childRepo.findByPersonnelIdOrderByBirthDateAsc(id);
@@ -162,7 +166,6 @@ public class PersonnelDetailsController {
         return ResponseEntity.ok().build();
     }
 
-    // ===== ДІТИ: отримати одну =====
     @GetMapping("/api/{id}/children/{childId}")
     public ResponseEntity<PersonnelChild> getChildById(@PathVariable Long childId) {
         return childRepo.findById(childId)
@@ -171,7 +174,6 @@ public class PersonnelDetailsController {
     }
 
     // ===== ЗБРОЯ =====
-
     @GetMapping("/api/{id}/weapons")
     public List<PersonnelWeapon> getWeaponsList(@PathVariable Long id) {
         return weaponRepo.findByPersonnelId(id);
@@ -196,9 +198,9 @@ public class PersonnelDetailsController {
             w.setSerialNumber(weapon.getSerialNumber());
             w.setIssuedDate(weapon.getIssuedDate());
             w.setNote(weapon.getNote());
-            w.setBayonet(weapon.getBayonet());       // нове
-            w.setMagazines(weapon.getMagazines());   // нове
-            w.setCaliber(weapon.getCaliber());   // НОВЕ
+            w.setBayonet(weapon.getBayonet());
+            w.setMagazines(weapon.getMagazines());
+            w.setCaliber(weapon.getCaliber());
             return ResponseEntity.ok(weaponRepo.save(w));
         }).orElse(ResponseEntity.notFound().build());
     }
@@ -209,7 +211,6 @@ public class PersonnelDetailsController {
         return ResponseEntity.ok().build();
     }
 
-    // ===== ЗБРОЯ: отримати одну =====
     @GetMapping("/api/{id}/weapons/{weaponId}")
     public ResponseEntity<PersonnelWeapon> getWeaponById(@PathVariable Long weaponId) {
         return weaponRepo.findById(weaponId)
@@ -218,7 +219,6 @@ public class PersonnelDetailsController {
     }
 
     // ===== ВОС НАВЧАННЯ =====
-
     @GetMapping("/api/{id}/vos-training")
     public List<PersonnelVosTraining> getVosTraining(@PathVariable Long id) {
         return vosTrainingRepo.findByPersonnelIdOrderByStartDateAsc(id);
