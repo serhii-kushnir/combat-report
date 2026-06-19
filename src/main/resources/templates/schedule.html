@@ -91,14 +91,6 @@
         }
 
         /* ===== ОСНОВНІ СТИЛІ ===== */
-        .topbar {
-            background: var(--bg-card);
-            padding: 12px 20px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
         body {
             font-family: 'Segoe UI', sans-serif;
             background: var(--bg-body);
@@ -109,7 +101,6 @@
 
         .container { padding: 16px 20px; max-width: 100%; overflow-x: auto; }
 
-        /* ===== ТУЛБАР ===== */
         .toolbar {
             background: var(--bg-toolbar);
             padding: 12px 16px;
@@ -126,7 +117,6 @@
             box-shadow: 0 4px 12px var(--shadow-color);
         }
 
-        /* ===== КНОПКИ ===== */
         .btn {
             padding: 6px 14px;
             border: none;
@@ -188,7 +178,6 @@
             background: var(--btn-warning-hover);
         }
 
-        /* ===== ПОЛЯ ВВОДУ ===== */
         select, input[type="text"] {
             padding: 6px 10px;
             border: 1px solid var(--border-color);
@@ -208,7 +197,6 @@
             box-shadow: 0 0 0 2px rgba(25,118,210,0.2);
         }
 
-        /* ===== ПОТОЧНА ДАТА ===== */
         .current-date {
             font-size: 13px;
             color: var(--current-date-color);
@@ -224,7 +212,6 @@
             transition: color 0.3s;
         }
 
-        /* ===== ТАБЛИЦЯ ===== */
         .table-wrap {
             overflow-x: auto;
             border-radius: 12px;
@@ -254,11 +241,11 @@
 
         /* ===== Ширини колонок ===== */
         .col-num  { width: 32px; min-width: 32px; }
-        .col-rank { width: 110px; min-width: 100px; text-align: left !important; padding-left: 6px !important; }
-        .col-name { width: 160px; min-width: 140px; text-align: left !important; padding-left: 8px !important; }
+        .col-rank { width: 125px; min-width: 125px; text-align: left !important; padding-left: 6px !important; }
+        .col-name { width: 130px; min-width: 130px; text-align: left !important; padding-left: 8px !important; }
         .col-day  { width: 36px; min-width: 32px; }
 
-        /* ===== ФІКСАЦІЯ ПЕРШИХ ТРЬОХ КОЛОНОК (заголовки та комірки) ===== */
+        /* ===== ФІКСАЦІЯ ПЕРШИХ ТРЬОХ КОЛОНОК ===== */
         .col-num,
         .col-rank,
         .col-name,
@@ -275,26 +262,18 @@
             z-index: 3;
         }
         .col-num,
-        .num-cell {
-            left: 0;
-        }
+        .num-cell { left: 0; }
         .col-rank,
-        .rank-cell {
-            left: 32px; /* ширина колонки № */
-        }
+        .rank-cell { left: 32px; }
         .col-name,
-        .name-cell {
-            left: calc(32px + 110px); /* 32px + 110px */
-        }
+        .name-cell { left: calc(32px + 125px); }
 
-        /* Синхронізація фону при ховері */
         tr:hover td.num-cell,
         tr:hover td.rank-cell,
         tr:hover td.name-cell {
             background: var(--bg-hover);
         }
 
-        /* ===== СТИЛІ ДЛЯ КОМІРОК ===== */
         td {
             padding: 2px;
             text-align: center;
@@ -405,7 +384,6 @@
             font-weight: 400;
         }
 
-        /* ===== ЛЕГЕНДА ===== */
         .legend {
             background: var(--bg-legend);
             border-radius: 12px;
@@ -488,16 +466,35 @@
             color: var(--text-primary);
             transition: border-color 0.3s, color 0.3s;
         }
-        .stats-table td:nth-child(2) {
+        .stats-table td.name-cell-stats {
             text-align: left;
             padding-left: 8px;
             font-weight: 500;
         }
+
         .stats-table tr:hover td {
             background: var(--bg-hover);
         }
 
-        /* ===== TOAST ===== */
+        /* Ширина колонок у статистиці: № (32px), Звання (125px), ПІБ (130px) */
+        .stats-table th:nth-child(1),
+        .stats-table td:nth-child(1) { width: 32px; min-width: 32px; }
+        .stats-table th:nth-child(2),
+        .stats-table td:nth-child(2) { width: 125px; min-width: 125px; }
+        .stats-table th:nth-child(3),
+        .stats-table td:nth-child(3) { width: 130px; min-width: 130px; }
+
+        /* Стрілки сортування для обох таблиць */
+        thead th[data-col] {
+            cursor: pointer;
+            user-select: none;
+        }
+        thead th[data-col]:hover {
+            background: var(--bg-header-light, #3a3a4a);
+        }
+        thead th.sort-asc::after  { content: ' ▲'; font-size: 10px; }
+        thead th.sort-desc::after { content: ' ▼'; font-size: 10px; }
+
         .toast {
             position: fixed; bottom: 20px; right: 20px;
             padding: 10px 18px; border-radius: 8px; color: white;
@@ -544,29 +541,27 @@
 
             <div class="legend" id="legend"></div>
 
-            <!-- ТАБЛИЦЯ СТАТИСТИКИ -->
             <div class="stats-container" id="statsContainer">
                 <h3>📊 Статистика за категоріями (поточний місяць)</h3>
                 <div class="stats-table-wrap">
                     <table class="stats-table" id="statsTable">
                         <thead>
                         <tr>
-                            <th>#</th>
-                            <!-- ЗМІНА: порядок Звання, ПІБ -->
-                            <th>Звання</th>
-                            <th>ПІБ</th>
-                            <th>БЧ</th>
-                            <th>Бат БЧ</th>
-                            <th>БЧ РКП</th>
-                            <th>Р-ня</th>
-                            <th>В-ня</th>
-                            <th>В-ка</th>
-                            <th>Х-й</th>
-                            <th>СЗЧ</th>
-                            <th>Плюс</th>
-                            <th>ППД</th>
-                            <th>Навчання</th>
-                            <th>Перевівся</th>
+                            <th data-col="num" onclick="sortStatsBy('num')" style="width:32px;">№</th>
+                            <th data-col="rank" onclick="sortStatsBy('rank')" style="width:125px;">Звання</th>
+                            <th data-col="name" onclick="sortStatsBy('name')" style="width:130px;">ПІБ</th>
+                            <th data-col="БЧ" onclick="sortStatsBy('БЧ')">БЧ</th>
+                            <th data-col="Бат БЧ" onclick="sortStatsBy('Бат БЧ')">Бат БЧ</th>
+                            <th data-col="БЧ РКП" onclick="sortStatsBy('БЧ РКП')">БЧ РКП</th>
+                            <th data-col="Р-ня" onclick="sortStatsBy('Р-ня')">Р-ня</th>
+                            <th data-col="В-ня" onclick="sortStatsBy('В-ня')">В-ня</th>
+                            <th data-col="В-ка" onclick="sortStatsBy('В-ка')">В-ка</th>
+                            <th data-col="Х-й" onclick="sortStatsBy('Х-й')">Х-й</th>
+                            <th data-col="СЗЧ" onclick="sortStatsBy('СЗЧ')">СЗЧ</th>
+                            <th data-col="Плюс" onclick="sortStatsBy('Плюс')">Плюс</th>
+                            <th data-col="ППД" onclick="sortStatsBy('ППД')">ППД</th>
+                            <th data-col="Навчання" onclick="sortStatsBy('Навчання')">Навчання</th>
+                            <th data-col="Перевівся" onclick="sortStatsBy('Перевівся')">Перевівся</th>
                         </tr>
                         </thead>
                         <tbody id="statsTableBody">
@@ -577,14 +572,13 @@
             </div>
         </div>
 
-        <!-- Dropdown меню статусу -->
         <div class="status-menu" id="statusMenu">
             <div class="status-menu-title" id="menuTitle">Обрати статус</div>
         </div>
-
         <div class="toast" id="toast"></div>
 
         <script>
+            // ===== СТАН =====
             const STATUSES = [
                 { code: 'БЧ',      label: 'БЧ',        color: '#ffcdd2', text: '#b71c1c' },
                 { code: 'БЧ БАТ',  label: 'БЧ Бат',    color: '#ef9a9a', text: '#7f0000' },
@@ -599,39 +593,93 @@
                 { code: 'НАВ',     label: 'Навчання',  color: '#fff9c4', text: '#f57f17' },
                 { code: 'ПЕРЕВ',   label: 'Перевівся', color: '#cfd8dc', text: '#37474f' },
             ];
-
             const STATUS_MAP = {};
             STATUSES.forEach(s => STATUS_MAP[s.code] = s);
 
             const CATEGORY_MAPPING = {
-                'БЧ':      'БЧ',
-                'БЧ БАТ':  'Бат БЧ',
-                'БЧ РКП':  'БЧ РКП',
-                'Р-НЯ':    'Р-ня',
-                'В-НЯ':    'В-ня',
-                'В-КА':    'В-ка',
-                'ХВ':      'Х-й',
-                'СЗЧ':     'СЗЧ',
-                'ПЛЮ':     'Плюс',
-                'ППД':     'ППД',
-                'НАВ':     'Навчання',
-                'ПЕРЕВ':   'Перевівся'
+                'БЧ': 'БЧ',
+                'БЧ БАТ': 'Бат БЧ',
+                'БЧ РКП': 'БЧ РКП',
+                'Р-НЯ': 'Р-ня',
+                'В-НЯ': 'В-ня',
+                'В-КА': 'В-ка',
+                'ХВ': 'Х-й',
+                'СЗЧ': 'СЗЧ',
+                'ПЛЮ': 'Плюс',
+                'ППД': 'ППД',
+                'НАВ': 'Навчання',
+                'ПЕРЕВ': 'Перевівся'
             };
-
-            const STAT_CATEGORIES = ['БЧ', 'Бат БЧ', 'БЧ РКП', 'Р-ня', 'В-ня', 'В-ка', 'Х-й', 'СЗЧ', 'Плюс', 'ППД', 'Навчання', 'Перевівся'];
-
+            const STAT_CATEGORIES = ['БЧ','Бат БЧ','БЧ РКП','Р-ня','В-ня','В-ка','Х-й','СЗЧ','Плюс','ППД','Навчання','Перевівся'];
             const UA_MONTHS = ['Січень','Лютий','Березень','Квітень','Травень','Червень',
                 'Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
-            const UA_DAYS   = ['Нд','Пн','Вт','Ср','Чт','Пт','Сб'];
+            const UA_DAYS = ['Нд','Пн','Вт','Ср','Чт','Пт','Сб'];
 
             let currentYear, currentMonth;
             let tableData = [];
+            let filteredData = [];
+            let sortCol = 'num';
+            let sortDir = 1;
+            let statsSortCol = 'num';   // <-- тепер завжди 'num' за замовчуванням
+            let statsSortDir = 1;
             let menuTarget = null;
-
             const today = new Date();
             currentYear  = today.getFullYear();
             currentMonth = today.getMonth() + 1;
 
+            // ===== МАПА ДЛЯ ПОРЯДКОВИХ НОМЕРІВ =====
+            let personnelMap = {};
+            let personnelMapLoaded = false;
+
+            async function loadPersonnelMap() {
+                if (personnelMapLoaded) return;
+                try {
+                    const res = await fetch('/personnel/api');
+                    if (!res.ok) return;
+                    const list = await res.json();
+                    list.forEach(p => {
+                        personnelMap[p.id] = p.personnelNumber;
+                    });
+                    personnelMapLoaded = true;
+                } catch (e) {
+                    console.error('Помилка завантаження personnelMap', e);
+                }
+            }
+
+            function enrichWithPersonnelNumber(data) {
+                return data.map(row => {
+                    const num = personnelMap[row.id];
+                    return { ...row, personnelNumber: num };
+                });
+            }
+
+            // ===== ДОПОМІЖНІ ФУНКЦІЇ =====
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' })[m] || m);
+            }
+
+            function showToast(msg, type) {
+                const t = document.getElementById('toast');
+                t.textContent = msg;
+                t.className = `toast ${type} show`;
+                setTimeout(() => t.classList.remove('show'), 2500);
+            }
+
+            function getSortValue(row, col) {
+                switch(col) {
+                    case 'num':
+                        return row.personnelNumber ?? row.id ?? 0;
+                    case 'rank':
+                        return row.rank || '';
+                    case 'name':
+                        return row.shortName || '';
+                    default:
+                        return '';
+                }
+            }
+
+            // ===== ЗАВАНТАЖЕННЯ ДАНИХ =====
             function updateCurrentDate() {
                 const now = new Date();
                 const day = String(now.getDate()).padStart(2,'0');
@@ -640,24 +688,7 @@
                 document.getElementById('currentDate').textContent = `📅 ${day}.${month}.${year}`;
             }
             updateCurrentDate();
-
             buildLegend();
-            loadMonth();
-
-            document.getElementById('prevBtn').onclick = () => { shiftMonth(-1); };
-            document.getElementById('nextBtn').onclick = () => { shiftMonth(+1); };
-            document.getElementById('todayBtn').onclick = () => {
-                currentYear  = today.getFullYear();
-                currentMonth = today.getMonth() + 1;
-                loadMonth();
-            };
-
-            function shiftMonth(delta) {
-                currentMonth += delta;
-                if (currentMonth > 12) { currentMonth = 1; currentYear++; }
-                if (currentMonth < 1)  { currentMonth = 12; currentYear--; }
-                loadMonth();
-            }
 
             async function loadMonth() {
                 document.getElementById('monthTitle').textContent =
@@ -665,19 +696,100 @@
 
                 const res = await fetch(`/schedule/api?year=${currentYear}&month=${currentMonth}`);
                 if (!res.ok) { showToast('Помилка завантаження', 'err'); return; }
-                tableData = await res.json();
-                renderTable();
+                let data = await res.json();
+
+                await loadPersonnelMap();
+                tableData = enrichWithPersonnelNumber(data);
+
+                // Сортування основної таблиці за замовчуванням: за №, зростання
+                sortCol = 'num';
+                sortDir = 1;
+                // Сортування статистики за замовчуванням: за №, зростання
+                statsSortCol = 'num';
+                statsSortDir = 1;
+                applyFilters();
                 renderStatsTable();
             }
 
+            // ===== СОРТУВАННЯ ОСНОВНОЇ ТАБЛИЦІ =====
+            function sortBy(col) {
+                if (sortCol === col) {
+                    sortDir *= -1;
+                } else {
+                    sortCol = col;
+                    sortDir = 1;
+                }
+                applyFilters();
+            }
+
+            function applyFilters() {
+                if (!tableData) return;
+                let sorted = [...tableData];
+                if (sortCol) {
+                    sorted.sort((a, b) => {
+                        let va = getSortValue(a, sortCol);
+                        let vb = getSortValue(b, sortCol);
+                        if (typeof va === 'number' && typeof vb === 'number') {
+                            return (va - vb) * sortDir;
+                        }
+                        va = String(va).toLowerCase();
+                        vb = String(vb).toLowerCase();
+                        if (va < vb) return -1 * sortDir;
+                        if (va > vb) return 1 * sortDir;
+                        return 0;
+                    });
+                }
+                filteredData = sorted;
+                document.querySelectorAll('#scheduleTable thead th[data-col]').forEach(th => {
+                    th.classList.remove('sort-asc', 'sort-desc');
+                    if (th.dataset.col === sortCol) {
+                        th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+                    }
+                });
+                renderTable();
+            }
+
+            // ===== СОРТУВАННЯ СТАТИСТИКИ =====
+            function sortStatsBy(col) {
+                if (statsSortCol === col) {
+                    statsSortDir *= -1;
+                } else {
+                    statsSortCol = col;
+                    statsSortDir = 1;
+                }
+                renderStatsTable();
+            }
+
+            function getStatsSortValue(row, col) {
+                if (col === 'num') {
+                    return row.personnelNumber ?? row.id ?? 0;
+                }
+                if (col === 'name') {
+                    return row.shortName || '';
+                }
+                if (col === 'rank') {
+                    return row.rank || '';
+                }
+                const counts = {};
+                STAT_CATEGORIES.forEach(cat => counts[cat] = 0);
+                for (const dayNum in row.days) {
+                    const statusCode = row.days[dayNum];
+                    if (statusCode && CATEGORY_MAPPING[statusCode]) {
+                        const category = CATEGORY_MAPPING[statusCode];
+                        counts[category]++;
+                    }
+                }
+                return counts[col] || 0;
+            }
+
+            // ===== РЕНДЕРИНГ ОСНОВНОЇ ТАБЛИЦІ =====
             function renderTable() {
                 const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
 
-                // ЗМІНА: порядок №, Звання, ПІБ
                 let headRow1 = `<tr>
-        <th class="col-num">#</th>
-        <th class="col-rank" style="text-align:left">Звання</th>
-        <th class="col-name" style="text-align:left">ПІБ</th>`;
+                    <th class="col-num" data-col="num" onclick="sortBy('num')">№</th>
+                    <th class="col-rank" data-col="rank" onclick="sortBy('rank')" style="text-align:left">Звання</th>
+                    <th class="col-name" data-col="name" onclick="sortBy('name')" style="text-align:left">ПІБ</th>`;
                 for (let d = 1; d <= daysInMonth; d++) {
                     const dow = new Date(currentYear, currentMonth - 1, d).getDay();
                     const isWE = (dow === 0 || dow === 6);
@@ -695,22 +807,21 @@
                     headRow2 += `<th style="font-size:9px;color:#90caf9">${UA_DAYS[dow]}</th>`;
                 }
                 headRow2 += `</tr>`;
-
                 document.getElementById('tableHead').innerHTML = headRow1 + headRow2;
 
-                if (!tableData.length) {
+                if (!filteredData.length) {
                     document.getElementById('tableBody').innerHTML =
                         `<tr><td colspan="${daysInMonth + 3}" style="text-align:center;padding:32px;color:var(--text-light)">Особовий склад порожній</td></tr>`;
                     return;
                 }
 
                 let html = '';
-                tableData.forEach((row, idx) => {
-                    // ЗМІНА: порядок №, Звання, ПІБ
+                filteredData.forEach((row, idx) => {
+                    const rowNum = row.personnelNumber ?? (idx + 1);
                     let rowHtml = `<tr>
-            <td class="num-cell">${idx + 1}</td>
-            <td class="rank-cell">${escapeHtml(row.rank)}</td>
-            <td class="name-cell">${escapeHtml(row.shortName)}</td>`;
+                        <td class="num-cell">${rowNum}</td>
+                        <td class="rank-cell">${escapeHtml(row.rank)}</td>
+                        <td class="name-cell">${escapeHtml(row.shortName)}</td>`;
                     for (let d = 1; d <= daysInMonth; d++) {
                         const status = row.days[d] || '';
                         const dow = new Date(currentYear, currentMonth - 1, d).getDay();
@@ -731,7 +842,6 @@
                                 badge = `<span class="cell-badge" style="background:#eee;color:#333">${status}</span>`;
                             }
                         }
-
                         rowHtml += `<td class="${cls}"
                             data-pid="${row.id}"
                             data-day="${d}"
@@ -745,6 +855,7 @@
                 document.getElementById('tableBody').innerHTML = html;
             }
 
+            // ===== РЕНДЕРИНГ СТАТИСТИКИ =====
             function renderStatsTable() {
                 const tbody = document.getElementById('statsTableBody');
                 if (!tableData || tableData.length === 0) {
@@ -752,12 +863,34 @@
                     return;
                 }
 
+                let sortedData = [...tableData];
+                if (statsSortCol) {
+                    sortedData.sort((a, b) => {
+                        let va = getStatsSortValue(a, statsSortCol);
+                        let vb = getStatsSortValue(b, statsSortCol);
+                        if (typeof va === 'number' && typeof vb === 'number') {
+                            return (va - vb) * statsSortDir;
+                        }
+                        va = String(va).toLowerCase();
+                        vb = String(vb).toLowerCase();
+                        if (va < vb) return -1 * statsSortDir;
+                        if (va > vb) return 1 * statsSortDir;
+                        return 0;
+                    });
+                }
+
+                document.querySelectorAll('#statsTable thead th[data-col]').forEach(th => {
+                    th.classList.remove('sort-asc', 'sort-desc');
+                    if (th.dataset.col === statsSortCol) {
+                        th.classList.add(statsSortDir === 1 ? 'sort-asc' : 'sort-desc');
+                    }
+                });
+
                 let rowsHtml = '';
-                let rowNum = 1;
-                for (const person of tableData) {
+                sortedData.forEach((person, idx) => {
+                    const rowNum = person.personnelNumber ?? (idx + 1);
                     let counts = {};
                     STAT_CATEGORIES.forEach(cat => counts[cat] = 0);
-
                     for (const dayNum in person.days) {
                         const statusCode = person.days[dayNum];
                         if (statusCode && CATEGORY_MAPPING[statusCode]) {
@@ -765,12 +898,10 @@
                             counts[category]++;
                         }
                     }
-
-                    // ЗМІНА: порядок №, Звання, ПІБ
                     rowsHtml += `<tr>
-                        <td class="num-cell">${rowNum++}</td>
+                        <td class="num-cell">${rowNum}</td>
                         <td class="rank-cell">${escapeHtml(person.rank)}</td>
-                        <td style="text-align:left;">${escapeHtml(person.shortName)}</td>
+                        <td class="name-cell-stats">${escapeHtml(person.shortName)}</td>
                         <td>${counts['БЧ']}</td>
                         <td>${counts['Бат БЧ']}</td>
                         <td>${counts['БЧ РКП']}</td>
@@ -784,63 +915,55 @@
                         <td>${counts['Навчання']}</td>
                         <td>${counts['Перевівся']}</td>
                     </tr>`;
-                }
+                });
                 tbody.innerHTML = rowsHtml;
             }
 
+            // ===== МЕНЮ СТАТУСІВ =====
             const menu = document.getElementById('statusMenu');
             function openMenu(e, cell) {
                 e.stopPropagation();
                 e.preventDefault();
-
                 menuTarget = {
                     personnelId: cell.dataset.pid,
                     date: cell.dataset.date,
                     current: cell.dataset.status,
                     cell
                 };
-
-                // Знаходимо ПІБ (тепер третя колонка)
                 const name = cell.closest('tr').querySelector('.name-cell').textContent;
-                const day  = cell.dataset.day;
+                const day = cell.dataset.day;
                 const title = `${name} — ${day} ${UA_MONTHS[currentMonth-1]}`;
 
                 let html = `<div class="status-menu-title">${escapeHtml(title)}</div>`;
                 STATUSES.forEach(s => {
-                    html += `<div class="status-option"
-            style="background:${s.color};color:${s.text}"
-            onclick="event.stopPropagation();selectStatus('${s.code}')">
-            <span class="dot" style="background:${s.text}"></span>
-            ${s.label}
-        </div>`;
+                    html += `<div class="status-option" style="background:${s.color};color:${s.text}"
+                        onclick="event.stopPropagation();selectStatus('${s.code}')">
+                        <span class="dot" style="background:${s.text}"></span> ${s.label}
+                    </div>`;
                 });
                 html += `<div class="status-option clear" onclick="event.stopPropagation();selectStatus('')">✕ Очистити</div>`;
                 menu.innerHTML = html;
 
                 const rect = cell.getBoundingClientRect();
                 let left = rect.left + window.scrollX;
-                let top  = rect.bottom + window.scrollY + 2;
+                let top = rect.bottom + window.scrollY + 2;
                 if (left + 170 > window.innerWidth) left = window.innerWidth - 175;
                 if (top + 400 > window.innerHeight + window.scrollY) top = rect.top + window.scrollY - 410;
-
                 menu.style.left = left + 'px';
-                menu.style.top  = top + 'px';
+                menu.style.top = top + 'px';
                 menu.classList.add('open');
             }
 
             async function selectStatus(code) {
                 menu.classList.remove('open');
                 if (!menuTarget) return;
-
                 const { personnelId, date, cell } = menuTarget;
-
                 try {
                     const res = await fetch('/schedule/api/cell', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ personnelId, date, status: code })
                     });
-
                     if (!res.ok) { showToast('Помилка збереження', 'err'); return; }
 
                     const row = tableData.find(r => String(r.id) === String(personnelId));
@@ -855,7 +978,6 @@
                     } else {
                         cell.innerHTML = '';
                     }
-
                     renderStatsTable();
                 } catch (err) {
                     showToast('Помилка мережі', 'err');
@@ -864,11 +986,10 @@
             }
 
             document.addEventListener('click', (e) => {
-                if (!menu.contains(e.target)) {
-                    menu.classList.remove('open');
-                }
+                if (!menu.contains(e.target)) menu.classList.remove('open');
             });
 
+            // ===== ЛЕГЕНДА =====
             function buildLegend() {
                 const el = document.getElementById('legend');
                 let html = '<span class="legend-title">Позначення:</span>';
@@ -878,25 +999,7 @@
                 el.innerHTML = html;
             }
 
-            function showToast(msg, type) {
-                const t = document.getElementById('toast');
-                t.textContent = msg;
-                t.className = `toast ${type} show`;
-                setTimeout(() => t.classList.remove('show'), 2500);
-            }
-
-            function escapeHtml(str) {
-                if (!str) return '';
-                return str.replace(/[&<>]/g, function(m) {
-                    if (m === '&') return '&amp;';
-                    if (m === '<') return '&lt;';
-                    if (m === '>') return '&gt;';
-                    return m;
-                });
-            }
-
-            loadFilters();
-
+            // ===== ФІЛЬТРИ (рік/місяць) =====
             async function loadFilters() {
                 const yearsRes = await fetch('/schedule/api/years');
                 if (yearsRes.ok) {
@@ -909,7 +1012,6 @@
                         yearSelect.appendChild(opt);
                     });
                 }
-
                 const monthsRes = await fetch('/schedule/api/months');
                 if (monthsRes.ok) {
                     const months = await monthsRes.json();
@@ -960,6 +1062,25 @@
                 }
                 window.location.href = url;
             });
+
+            document.getElementById('prevBtn').onclick = () => { shiftMonth(-1); };
+            document.getElementById('nextBtn').onclick = () => { shiftMonth(+1); };
+            document.getElementById('todayBtn').onclick = () => {
+                currentYear = today.getFullYear();
+                currentMonth = today.getMonth() + 1;
+                loadMonth();
+            };
+
+            function shiftMonth(delta) {
+                currentMonth += delta;
+                if (currentMonth > 12) { currentMonth = 1; currentYear++; }
+                if (currentMonth < 1)  { currentMonth = 12; currentYear--; }
+                loadMonth();
+            }
+
+            // ===== СТАРТ =====
+            loadFilters();
+            loadMonth();
         </script>
     </div>
 </div>
