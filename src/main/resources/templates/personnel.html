@@ -724,9 +724,10 @@
                     <table>
                         <thead>
                         <tr>
-                            <th style="width:40px" data-col="num" onclick="sortBy('num')">#</th>
+                            <th style="width:40px" data-col="num" onclick="sortBy('num')">№</th>
+                            <!-- ЗМІНА: ширина 125px замість 120px -->
+                            <th style="width:125px;" data-col="rank" onclick="sortBy('rank')">Звання</th>
                             <th data-col="name" onclick="sortBy('name')">ПІБ</th>
-                            <th style="width:160px" data-col="rank" onclick="sortBy('rank')">Звання</th>
                             <th data-col="position" onclick="sortBy('position')">Повна посада</th>
                             <th style="width:80px">Дії</th>
                         </tr>
@@ -743,7 +744,8 @@
                 <div class="table-wrap"><table style="min-width:2800px">
                     <thead>
                     <tr>
-                        <th style="width:36px" data-col="num" onclick="sortBy('num')">#</th>
+                        <th style="width:36px" data-col="num" onclick="sortBy('num')">№</th>
+                        <th style="width:120px" data-col="rank" onclick="sortBy('rank')">Звання</th>
                         <th style="width:180px" data-col="name" onclick="sortBy('name')">ПІБ</th>
                         <th style="width:110px" data-col="phone" onclick="sortBy('phone')">Моб. Телефон</th>
                         <th style="width:100px" data-col="birth" onclick="sortBy('birth')">Дата народження</th>
@@ -765,7 +767,6 @@
                         <th style="width:100px">Дата народження (дитини)</th>
                         <th style="width:60px">Повних років (дитини)</th>
                         <th style="width:160px">Адреса проживання (сім'я)</th>
-                        <th style="width:140px">Звання</th>
                         <th style="width:130px">Посада коротка</th>
                         <th style="width:200px">Посада повна</th>
                         <th style="width:150px">Ким Призваний</th>
@@ -778,7 +779,7 @@
                     </tr>
                     </thead>
                     <tbody id="fullBody">
-                    <tr><td colspan="22" class="empty-state">Завантаження...</td></tr>
+                    <tr><td colspan="32" class="empty-state">Завантаження...</td></tr>
                     </tbody>
                 </table>
                 </div>
@@ -1188,7 +1189,6 @@
                 let weaponCounts     = {};
                 let weaponFirstInfo  = {};
 
-
                 async function loadPersonnel() {
                     try {
                         const res = await fetch('/personnel/api');
@@ -1224,6 +1224,17 @@
                             }
                         }));
 
+                        // ===== ВСТАНОВЛЮЄМО СОРТУВАННЯ ЗА ЗАМОВЧУВАННЯМ =====
+                        sortCol = 'num';
+                        sortDir = 1; // за зростанням
+                        // Додаємо клас сортування на заголовок "№"
+                        document.querySelectorAll('thead th[data-col]').forEach(th => {
+                            th.classList.remove('sort-asc', 'sort-desc');
+                            if (th.dataset.col === 'num') {
+                                th.classList.add('sort-asc');
+                            }
+                        });
+
                         applyFilters();
                     } catch(err) {
                         console.error('Помилка loadPersonnel:', err);
@@ -1240,15 +1251,17 @@
                     document.getElementById('fullTable').classList.toggle('visible', tab === 'full');
                 }
 
+                // КОРОТКА ТАБЛИЦЯ – змінено порядок на №, Звання, ПІБ
                 function renderShortTable(data) {
                     const body = document.getElementById('shortBody');
                     if (!data.length) { body.innerHTML = '<tr><td colspan="5" class="empty-state">Особовий склад порожній</td></tr>'; return; }
                     body.innerHTML = data.map((p, i) => {
                         const fullName = `${p.lastName} ${p.firstName || ''} ${p.middleName || ''}`.trim();
+                        const num = p.personnelNumber ?? (i + 1);
                         return `<tr>
-                        <td style="text-align:center">${i + 1}</td>
-                        <td><strong>${escapeHtml(fullName)}</strong></td>
+                        <td style="text-align:center">${num}</td>
                         <td>${p.rank || '—'}</td>
+                        <td><strong>${escapeHtml(fullName)}</strong></td>
                         <td>${p.fullPosition || p.position || '—'}</td>
                         <td style="white-space:nowrap">
                             <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
@@ -1260,6 +1273,7 @@
                     }).join('');
                 }
 
+                // ПОВНА ТАБЛИЦЯ – змінено порядок на №, Звання, ПІБ, решта без змін
                 function renderFullTable(data) {
                     const body = document.getElementById('fullBody');
                     if (!data.length) { body.innerHTML = '<tr><td colspan="32" class="empty-state">Особовий склад порожній</td></tr>'; return; }
@@ -1267,12 +1281,14 @@
                     const val = v => v || '—';
                     body.innerHTML = data.map((p, i) => {
                         const fullName = `${p.lastName} ${p.firstName || ''} ${p.middleName || ''}`.trim();
+                        const num = p.personnelNumber ?? (i + 1);
                         const passport = [p.passportSeries, p.passportNumber].filter(Boolean).join(' ') || '—';
                         const driverLic = [p.driverLicenseSeries, p.driverLicenseNumber, p.driverLicenseCategory].filter(Boolean).join(' ') || '—';
                         const edu = educationCounts[p.id] > 0;
                         return `<tr>
-                        <td style="text-align:center">${i + 1}</td>
-                        <td><strong>${fullName}</strong></td>
+                        <td style="text-align:center">${num}</td>
+                        <td>${val(p.rank)}</td>
+                        <td><strong>${escapeHtml(fullName)}</strong></td>
                         <td>${val(p.phone)}</td>
                         <td style="text-align:center">${fmtDate(p.birthDate)}</td>
                         <td style="text-align:center">${p.birthDate ? calcAge(p.birthDate) : '—'}</td>
@@ -1293,7 +1309,6 @@
                         <td style="text-align:center">${childFirstBirth[p.id] ? fmtDate(childFirstBirth[p.id]) : '—'}</td>
                         <td style="text-align:center">${childFirstBirth[p.id] ? calcAge(childFirstBirth[p.id]) : '—'}</td>
                         <td style="font-size:11px">${val(p.familyAddress)}</td>
-                        <td>${val(p.rank)}</td>
                         <td>${val(p.position)}</td>
                         <td style="font-size:11px">${val(p.fullPosition)}</td>
                         <td style="font-size:11px">${val(p.draftOrganization)}</td>
@@ -1306,7 +1321,7 @@
                             <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
                             <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="openDetailModal(${p.id})">👁</button>
                             <button class="btn btn-warning btn-sm" onclick="openEditModal(${p.id})">✏️</button>
-                            <button class="btn btn-danger btn-sm" onclick="confirmDelete(${p.id}, '${fullName}')">🗑</button>
+                            <button class="btn btn-danger btn-sm" onclick="confirmDelete(${p.id}, '${escapeHtml(fullName)}')">🗑</button>
                         </td>
                     </tr>`;
                     }).join('');
@@ -1323,14 +1338,12 @@
 
                 function getSortVal(p, col) {
                     switch(col) {
-                        case 'num':      return p.id || 0;
+                        case 'num':      return p.personnelNumber ?? p.id ?? 0;
                         case 'name':     return p.lastName || '';
                         case 'rank':     return p.rank || '';
                         case 'position': return p.position || '';
                         case 'phone':    return p.phone || '';
                         case 'birth':    return p.birthDate || '';
-                        case 'draft':    return p.draftDate || '';
-                        case 'ubd':      return p.ubdNumber || '';
                         default:         return '';
                     }
                 }
@@ -1368,7 +1381,7 @@
                         fromAll;
                 }
 
-                // ===== ДИНАМІЧНІ РЯДКИ У ФОРМІ =====
+                // ===== ДИНАМІЧНІ РЯДКИ У ФОРМІ (залишаємо без змін) =====
                 function addEduRow() {
                     const div = document.createElement('div');
                     div.className = 'dynamic-row';
@@ -1983,6 +1996,7 @@
                     window.location.href = '/personnel/api/export';
                 }
 
+                // Ініціалізація
                 loadPersonnel();
             </script>
         </div>
