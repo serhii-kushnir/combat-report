@@ -72,7 +72,9 @@ public class ScheduleService {
         LocalDate to = ym.atEndOfMonth();
         int daysInMonth = ym.lengthOfMonth();
 
-        List<Personnel> allPersonnel = personnelRepo.findByActiveTrueOrderByLastNameAsc();
+        // Отримуємо тільки осіб зі статусом "В особовому складі"
+        List<Personnel> allPersonnel = personnelRepo.findByPersonnelStatusAndActiveTrueOrderByLastNameAsc("В особовому складі");
+
         List<ScheduleEntry> entries = scheduleRepo.findByMonth(from, to);
 
         Map<Long, Map<Integer, String>> index = new HashMap<>();
