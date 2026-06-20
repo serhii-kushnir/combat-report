@@ -833,15 +833,21 @@
                     }
                 }
 
-                // ===== ФІЛЬТР І ПОШУК =====
+                // ===== ФІЛЬТР І ПОШУК (ТІЛЬКИ ЗІ СТАТУСОМ "В ОСОБОВОМУ СКЛАДІ") =====
                 document.getElementById('searchInput').addEventListener('input', applyFilters);
 
                 function applyFilters() {
                     const q = document.getElementById('searchInput').value.toLowerCase();
-                    let filtered = !q ? activePersonnel : activePersonnel.filter(p =>
-                        p.lastName.toLowerCase().includes(q) ||
-                        (p.firstName || '').toLowerCase().includes(q)
+                    // Фільтруємо тільки тих, хто має статус "В особовому складі" або статус не задано
+                    let filtered = activePersonnel.filter(p =>
+                        p.personnelStatus === 'В особовому складі' || !p.personnelStatus
                     );
+                    if (q) {
+                        filtered = filtered.filter(p =>
+                            p.lastName.toLowerCase().includes(q) ||
+                            (p.firstName || '').toLowerCase().includes(q)
+                        );
+                    }
                     if (sortCol) {
                         filtered = [...filtered].sort((a, b) => {
                             const va = getSortVal(a, sortCol);
@@ -861,13 +867,18 @@
                     renderStats(); // оновлюємо статистику після фільтра
                 }
 
-                // ===== СТАТИСТИКА (повернено категорії) =====
+                // ===== СТАТИСТИКА =====
                 function renderStats() {
                     const q = document.getElementById('searchInput').value.toLowerCase();
-                    let filtered = !q ? activePersonnel : activePersonnel.filter(p =>
-                        p.lastName.toLowerCase().includes(q) ||
-                        (p.firstName || '').toLowerCase().includes(q)
+                    let filtered = activePersonnel.filter(p =>
+                        p.personnelStatus === 'В особовому складі' || !p.personnelStatus
                     );
+                    if (q) {
+                        filtered = filtered.filter(p =>
+                            p.lastName.toLowerCase().includes(q) ||
+                            (p.firstName || '').toLowerCase().includes(q)
+                        );
+                    }
                     const total = filtered.length;
                     const officers = filtered.filter(p => p.rank && /лейтенант|капітан|майор|підполковник|полковник|генерал/i.test(p.rank)).length;
                     const sergeants = filtered.filter(p => p.rank && /сержант|старшина/i.test(p.rank)).length;

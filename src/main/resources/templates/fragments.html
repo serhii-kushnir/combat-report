@@ -61,6 +61,27 @@
             --toast-error: #c62828;
         }
 
+        /* ========== ВИПРАВЛЕННЯ ДЛЯ ТЕМНОЇ ТЕМИ – ПОЛЯ ВВОДУ ========== */
+        body.dark-theme .info-value.editable,
+        body.dark-theme .info-value.editable input,
+        body.dark-theme .info-value.editable select,
+        body.dark-theme .info-value.editable textarea {
+            background: var(--bg-input) !important;
+            color: var(--text-primary) !important;
+        }
+        /* Додатково для input, щоб перекрити браузерні стилі */
+        body.dark-theme .info-value.editable input,
+        body.dark-theme .info-value.editable select,
+        body.dark-theme .info-value.editable textarea {
+            background-color: var(--bg-input) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+        }
+        /* Для плейсхолдера – зробити світлішим */
+        body.dark-theme .info-value.editable input::placeholder {
+            color: #88888f;
+        }
+
         /* ========== LAYOUT ========== */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
