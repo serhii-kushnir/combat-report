@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
 import java.util.Map;
@@ -94,7 +95,22 @@ public class PersonnelController {
                 return ResponseEntity.badRequest().body("Прізвище обов'язкове");
             if (personnel.getFirstName() == null || personnel.getFirstName().isBlank())
                 return ResponseEntity.badRequest().body("Ім'я обов'язкове");
-            return ResponseEntity.ok(service.create(personnel));
+
+            Personnel saved = service.create(personnel);
+            return ResponseEntity.ok(saved);
+
+        } catch (DataIntegrityViolationException e) {
+            // Перевіряємо, чи це помилка унікальності поля personnel_number
+            // Оскільки personnel доступний, використовуємо його для логування
+            String message = e.getMessage();
+            if (message != null && message.contains("personnel_number")) {
+                Integer duplicateNumber = personnel != null ? personnel.getPersonnelNumber() : null;
+                log.warn("Спроба додати особу з вже існуючим порядковим номером: {}", duplicateNumber);
+                return ResponseEntity.badRequest().body("Порядковий номер вже зайнятий");
+            }
+            log.error("Помилка цілісності даних при додаванні особи: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body("Помилка даних: " + e.getMessage());
+
         } catch (Exception e) {
             log.error("Помилка додавання особи: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
