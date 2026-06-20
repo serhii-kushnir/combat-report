@@ -124,16 +124,34 @@
     .info-value.editable input,
     .info-value.editable select,
     .info-value.editable textarea {
-      width: 100%;
-      padding: 8px 10px;
-      border: none;
-      font-size: 14px;
+      padding: 7px 9px;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      font-size: 13px;
       font-family: inherit;
-      background: transparent;
+      background: var(--bg-input);
       color: var(--text-primary);
-      border-radius: 8px;
+      width: 100%;
+      box-sizing: border-box;
       outline: none;
+      transition: border-color 0.2s, background 0.3s, color 0.3s;
     }
+    /* Додаткове вирівнювання для select */
+    .info-value.editable select {
+      appearance: auto;
+      -webkit-appearance: auto;
+    }
+    .info-value.editable textarea {
+      height: 60px;
+      resize: vertical;
+    }
+    .info-value.editable input:focus,
+    .info-value.editable select:focus,
+    .info-value.editable textarea:focus {
+      border-color: var(--bg-btn-primary);
+      box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+    }
+
     .info-value:empty::before { content: "—"; color: var(--text-light, #bbb); }
 
     /* Для обов'язкових полів – підсвічування */
