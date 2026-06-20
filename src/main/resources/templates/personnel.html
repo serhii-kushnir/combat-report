@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Особовий склад</title>
     <style>
-        /* ===== CSS ЗМІННІ (узгоджено з fragments) ===== */
+        /* ===== CSS ЗМІННІ ===== */
         :root {
             --bg-body: #f0f2f5;
             --bg-card: #ffffff;
@@ -51,13 +51,13 @@
             --bg-body: #1e1e24;
             --bg-card: #2d2d35;
             --bg-toolbar: #2d2d35;
-            --bg-header: #2a2a3a;
+            --bg-header: #919191;
             --bg-input: #3a3a44;
             --bg-editable: #3a3a44;
             --bg-hover: #3a3a44;
             --bg-modal: rgba(0,0,0,0.7);
             --bg-detail: #2d2d35;
-            --bg-detail-header: #2a2a3a;
+            --bg-detail-header: #919191;
             --bg-add-row: #3a3a44;
             --bg-dynamic: #3a3a44;
             --bg-stat: #2d2d35;
@@ -342,218 +342,6 @@
         thead th.sort-asc::after  { content: ' ▲'; font-size: 10px; }
         thead th.sort-desc::after { content: ' ▼'; font-size: 10px; }
 
-        .sub-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 8px;
-            font-size: 12px;
-        }
-        .sub-table th {
-            background: var(--bg-header);
-            color: var(--text-white);
-            padding: 6px 8px;
-            text-align: left;
-            font-size: 11px;
-            transition: background 0.3s;
-        }
-        .sub-table td {
-            padding: 5px 8px;
-            border-bottom: 1px solid var(--border-light);
-            color: var(--text-primary);
-            transition: border-color 0.3s, color 0.3s;
-        }
-        .sub-table tr:hover td {
-            background: var(--bg-hover);
-        }
-        .sub-table .actions { white-space: nowrap; }
-        .add-row {
-            display: grid;
-            gap: 8px;
-            margin-top: 10px;
-            padding: 10px;
-            background: var(--bg-add-row);
-            border-radius: 6px;
-            transition: background 0.3s;
-        }
-        .add-row input,
-        .add-row select {
-            padding: 5px 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 12px;
-            font-family: inherit;
-            background: var(--bg-input);
-            color: var(--text-primary);
-        }
-        .add-row-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
-        .btn-xs {
-            padding: 3px 8px;
-            font-size: 11px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        .btn-xs-primary { background: var(--btn-primary-bg); color: white; }
-        .btn-xs-danger { background: var(--btn-danger-bg); color: white; }
-
-        .dynamic-row {
-            display: grid;
-            gap: 6px;
-            align-items: end;
-            margin-bottom: 6px;
-            padding: 8px;
-            background: var(--bg-dynamic);
-            border-radius: 5px;
-            border-left: 3px solid #90caf9;
-            width: 100%;
-            overflow: hidden;
-            transition: background 0.3s;
-        }
-        .dynamic-row input,
-        .dynamic-row select {
-            padding: 5px 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 12px;
-            font-family: inherit;
-            width: 100%;
-            box-sizing: border-box;
-            min-width: 0;
-            background: var(--bg-input);
-            color: var(--text-primary);
-        }
-        .dynamic-section { margin-bottom: 14px; }
-        .dynamic-section-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 14px 0 8px;
-            padding-bottom: 4px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: color 0.3s, border-color 0.3s;
-        }
-
-        /* Детальна інформація */
-        .detail-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: var(--bg-modal);
-            z-index: 1200;
-            align-items: center;
-            justify-content: center;
-        }
-        .detail-overlay.open { display: flex; }
-        .detail-modal {
-            background: var(--bg-detail);
-            border-radius: 10px;
-            width: 720px;
-            max-width: 96vw;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 8px 32px var(--shadow-strong);
-            transition: background 0.3s, box-shadow 0.3s;
-        }
-        .detail-header {
-            background: var(--bg-detail-header);
-            color: var(--text-white);
-            padding: 16px 24px;
-            border-radius: 10px 10px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.3s;
-        }
-        .detail-header h2 { margin: 0; font-size: 17px; }
-        .detail-close {
-            background: none;
-            border: none;
-            color: var(--detail-close-color);
-            font-size: 22px;
-            cursor: pointer;
-            line-height: 1;
-        }
-        .detail-body { padding: 20px 24px; }
-        .detail-tabs {
-            display: flex;
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 16px;
-            gap: 4px;
-        }
-        .detail-tab {
-            padding: 7px 16px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--detail-tab-color);
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
-            transition: color 0.2s, border-color 0.2s;
-        }
-        .detail-tab.active {
-            color: var(--detail-tab-active);
-            border-bottom-color: var(--detail-tab-active);
-        }
-        .detail-tab-content { display: none; }
-        .detail-tab-content.active { display: block; }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        .info-group { margin-bottom: 4px; }
-        .info-group.full { grid-column: 1 / -1; }
-        .info-label {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--detail-label-color);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 3px;
-        }
-        .info-value {
-            font-size: 13px;
-            color: var(--text-primary);
-            padding: 6px 10px;
-            background: var(--detail-value-bg);
-            border-radius: 5px;
-            min-height: 30px;
-            transition: background 0.3s, color 0.3s;
-        }
-        .info-value.empty {
-            color: var(--text-light);
-            font-style: italic;
-        }
-        .section-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 16px 0 10px;
-            padding-bottom: 4px;
-            border-bottom: 1px solid var(--border-color);
-            grid-column: 1 / -1;
-            transition: color 0.3s, border-color 0.3s;
-        }
-        .detail-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            padding: 12px 24px;
-            border-top: 1px solid var(--border-color);
-        }
-
         .stats {
             display: flex;
             gap: 10px;
@@ -580,31 +368,26 @@
             color: var(--text-secondary);
         }
 
-        /* Додаткові стилі для темної теми */
         .dark-theme .btn-primary {
             background: var(--btn-primary-bg);
             color: white;
         }
         .dark-theme .btn-primary:hover { background: var(--btn-primary-hover); }
-
         .dark-theme .btn-success {
             background: var(--btn-success-bg);
             color: white;
         }
         .dark-theme .btn-success:hover { background: var(--btn-success-hover); }
-
         .dark-theme .btn-warning {
             background: var(--btn-warning-bg);
             color: white;
         }
         .dark-theme .btn-warning:hover { background: var(--btn-warning-hover); }
-
         .dark-theme .btn-danger {
             background: var(--btn-danger-bg);
             color: white;
         }
         .dark-theme .btn-danger:hover { background: var(--btn-danger-hover); }
-
         .dark-theme .toolbar input {
             background: var(--bg-input);
             color: var(--text-primary);
@@ -614,32 +397,6 @@
         }
         .dark-theme .modal h2 {
             color: var(--text-primary);
-        }
-        .dark-theme .detail-modal {
-            background: var(--bg-detail);
-        }
-        .dark-theme .detail-header {
-            background: var(--bg-detail-header);
-        }
-        .dark-theme .sub-table th {
-            background: var(--bg-header);
-        }
-        .dark-theme .sub-table td {
-            color: var(--text-primary);
-        }
-        .dark-theme .add-row {
-            background: var(--bg-add-row);
-        }
-        .dark-theme .dynamic-row {
-            background: var(--bg-dynamic);
-        }
-        .dark-theme .info-value {
-            background: var(--detail-value-bg);
-            color: var(--text-primary);
-        }
-        .dark-theme .section-title {
-            color: var(--text-primary);
-            border-bottom-color: var(--border-color);
         }
         .dark-theme .stat-card {
             background: var(--bg-stat);
@@ -653,34 +410,9 @@
         .dark-theme .confirm-box p {
             color: var(--text-primary);
         }
-        .dark-theme .detail-tabs {
-            border-bottom-color: var(--border-color);
-        }
-        .dark-theme .detail-tab {
-            color: var(--detail-tab-color);
-        }
-        .dark-theme .detail-tab.active {
-            color: var(--detail-tab-active);
-            border-bottom-color: var(--detail-tab-active);
-        }
-        .dark-theme .detail-close {
-            color: var(--detail-close-color);
-        }
-        .dark-theme .btn-xs-primary {
-            background: var(--btn-primary-bg);
-        }
-        .dark-theme .btn-xs-danger {
-            background: var(--btn-danger-bg);
-        }
-        .dark-theme .dynamic-row {
-            border-left-color: #4a7ab5;
-        }
-        .dark-theme .empty-state {
-            color: var(--text-light);
-        }
         .dark-theme .tab-btn {
             background: var(--bg-card);
-            color: var(--bg-header);
+            color: #919191;
         }
         .dark-theme .tab-btn.active {
             background: var(--bg-header);
@@ -725,11 +457,10 @@
                         <thead>
                         <tr>
                             <th style="width:40px" data-col="num" onclick="sortBy('num')">№</th>
-                            <!-- ЗМІНА: ширина 125px замість 120px -->
                             <th style="width:125px;" data-col="rank" onclick="sortBy('rank')">Звання</th>
                             <th data-col="name" onclick="sortBy('name')">ПІБ</th>
                             <th data-col="position" onclick="sortBy('position')">Повна посада</th>
-                            <th style="width:80px">Дії</th>
+                            <th style="width:60px">Дії</th>
                         </tr>
                         </thead>
                         <tbody id="shortBody">
@@ -775,7 +506,7 @@
                         <th style="width:150px">Зарахування (дата, наказ)</th>
                         <th style="width:110px">Військова служба за</th>
                         <th style="width:180px">Зброя (модель, номер, дата видачі)</th>
-                        <th style="width:70px">Дії</th>
+                        <th style="width:60px">Дії</th>
                     </tr>
                     </thead>
                     <tbody id="fullBody">
@@ -785,19 +516,33 @@
                 </div>
             </div>
 
-            <!-- Форма -->
+            <!-- ===== ФОРМА З ОБОВ'ЯЗКОВИМИ ПОЛЯМИ "Порядковий номер" та "Статус" ===== -->
             <div class="modal-overlay" id="formModal">
                 <div class="modal">
                     <h2 id="modalTitle">Додати особу</h2>
                     <input type="hidden" id="editId">
                     <div class="form-row">
                         <div class="form-group">
+                            <label>Порядковий номер *</label>
+                            <input type="number" id="fPersonnelNumber" placeholder="1" required min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Статус *</label>
+                            <select id="fPersonnelStatus" required>
+                                <option value="">— оберіть —</option>
+                                <option value="В особовому складі">В особовому складі</option>
+                                <option value="Не в особовому складі">Не в особовому складі</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
                             <label>Прізвище *</label>
-                            <input type="text" id="fLastName" placeholder="Шепрук">
+                            <input type="text" id="fLastName" placeholder="Шепрук" required>
                         </div>
                         <div class="form-group">
                             <label>Ім'я *</label>
-                            <input type="text" id="fFirstName" placeholder="Олександр">
+                            <input type="text" id="fFirstName" placeholder="Олександр" required>
                         </div>
                     </div>
                     <div class="form-group">
@@ -832,181 +577,6 @@
                         <label>Повна посада</label>
                         <textarea id="fFullPosition" placeholder="Оператор безпілотних літальних апаратів..."></textarea>
                     </div>
-                    <div class="form-group">
-                        <label>Телефон</label>
-                        <input type="text" id="fPhone" placeholder="+380...">
-                    </div>
-
-                    <!-- Особові дані -->
-                    <div style="font-size:12px;font-weight:700;color:var(--text-primary);margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border-color);">👤 Особові дані</div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Дата народження</label>
-                            <input type="date" id="fBirthDate">
-                        </div>
-                        <div class="form-group">
-                            <label>Група крові</label>
-                            <select id="fBloodGroup">
-                                <option value="">— не вказано —</option>
-                                <option>O(I) Rh+</option><option>O(I) Rh-</option>
-                                <option>A(II) Rh+</option><option>A(II) Rh-</option>
-                                <option>B(III) Rh+</option><option>B(III) Rh-</option>
-                                <option>AB(IV) Rh+</option><option>AB(IV) Rh-</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>ІПН</label>
-                            <input type="text" id="fTaxId" placeholder="1234567890">
-                        </div>
-                        <div class="form-group">
-                            <label>Вод. посв. серія</label>
-                            <input type="text" id="fDriverLicenseSeries" placeholder="АА">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Вод. посв. номер</label>
-                            <input type="text" id="fDriverLicenseNumber" placeholder="123456">
-                        </div>
-                        <div class="form-group">
-                            <label>Категорія</label>
-                            <input type="text" id="fDriverLicenseCategory" placeholder="B, C">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Паспорт серія</label>
-                            <input type="text" id="fPassportSeries" placeholder="АА">
-                        </div>
-                        <div class="form-group">
-                            <label>Паспорт номер</label>
-                            <input type="text" id="fPassportNumber" placeholder="123456">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Освіта</label>
-                            <select id="fEducation">
-                                <option value="">— не вказано —</option>
-                                <option>Вища</option>
-                                <option>Неповна вища</option>
-                                <option>Середня спеціальна</option>
-                                <option>Середня</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Заклад освіти</label>
-                            <input type="text" id="fEducationInstitution" placeholder="КПІ ім. Сікорського">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Спеціальність</label>
-                        <input type="text" id="fEduSpeciality" placeholder="Інженер-механік">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Початок навчання</label>
-                            <input type="date" id="fEducationStart">
-                        </div>
-                        <div class="form-group">
-                            <label>Закінчення навчання</label>
-                            <input type="date" id="fEducationEnd">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                    </div>
-
-                    <!-- Освіта -->
-                    <div class="dynamic-section">
-                        <div class="dynamic-section-title">
-                            <span>🎓 Освіта</span>
-                            <button type="button" class="btn-xs btn-xs-primary" onclick="addEduRow()">+ Додати</button>
-                        </div>
-                        <div id="eduRows"></div>
-                    </div>
-
-                    <!-- Адреса -->
-                    <div style="font-size:12px;font-weight:700;color:var(--text-primary);margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border-color);">🏠 Адреса</div>
-                    <div class="form-group">
-                        <label>Адреса реєстрації</label>
-                        <input type="text" id="fRegAddress" placeholder="м. Одеса, вул. ...">
-                    </div>
-                    <div class="form-group">
-                        <label>Адреса проживання</label>
-                        <input type="text" id="fLiveAddress" placeholder="м. Одеса, вул. ...">
-                    </div>
-
-                    <!-- Сім'я -->
-                    <div style="font-size:12px;font-weight:700;color:var(--text-primary);margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border-color);">👨‍👩‍👧 Сім'я</div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Сімейний стан</label>
-                            <select id="fMaritalStatus">
-                                <option value="">— не вказано —</option>
-                                <option>Одружений</option>
-                                <option>Незаміжній</option>
-                                <option>Розлучений</option>
-                                <option>Вдівець/Вдова</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Дружина / Чоловік</label>
-                            <input type="text" id="fSpouseName" placeholder="ПІБ">
-                        </div>
-                    </div>
-
-                    <!-- Діти -->
-                    <div class="dynamic-section">
-                        <div class="dynamic-section-title">
-                            <span>👨‍👩‍👧 Діти</span>
-                            <button type="button" class="btn-xs btn-xs-primary" onclick="addChildRow()">+ Додати</button>
-                        </div>
-                        <div id="childRows"></div>
-                    </div>
-
-                    <!-- Військові дані -->
-                    <div style="font-size:12px;font-weight:700;color:var(--text-primary);margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border-color);">🎖 Військові дані</div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Дата призову</label>
-                            <input type="date" id="fDraftDate">
-                        </div>
-                        <div class="form-group">
-                            <label>Вид служби</label>
-                            <select id="fServiceType">
-                                <option value="">— не вказано —</option>
-                                <option>Мобілізація</option>
-                                <option>Контракт</option>
-                                <option>Добровольці</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Ким призваний (ТЦК)</label>
-                            <input type="text" id="fDraftOrg" placeholder="Одеський ТЦК">
-                        </div>
-                        <div class="form-group">
-                            <label>УБД №</label>
-                            <input type="text" id="fUbdNumber" placeholder="УБД-12345">
-                        </div>
-                    </div>
-
-                    <!-- Зброя -->
-                    <div class="dynamic-section">
-                        <div class="dynamic-section-title">
-                            <span>🎖 Озброєння</span>
-                            <button type="button" class="btn-xs btn-xs-primary" onclick="addWeaponRow()">+ Додати</button>
-                        </div>
-                        <div id="weaponRows"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Примітка</label>
-                        <textarea id="fNote" placeholder="Коментар..."></textarea>
-                    </div>
 
                     <div class="modal-actions">
                         <button class="btn" onclick="closeModal('formModal')" style="background:#eee">Скасувати</button>
@@ -1022,140 +592,6 @@
                     <div class="confirm-actions">
                         <button class="btn" onclick="closeModal('confirmModal')" style="background:#eee">Скасувати</button>
                         <button class="btn btn-danger" id="confirmBtn">Видалити</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Детальна інформація -->
-            <div class="detail-overlay" id="detailModal">
-                <div class="detail-modal">
-                    <div class="detail-header">
-                        <h2 id="detailTitle">Детальна інформація</h2>
-                        <button class="detail-close" onclick="closeDetail()">×</button>
-                    </div>
-                    <div class="detail-body">
-                        <div class="detail-tabs">
-                            <button class="detail-tab active" onclick="switchDetailTab('main')">👤 Особові дані</button>
-                            <button class="detail-tab" onclick="switchDetailTab('education')">🎓 Освіта</button>
-                            <button class="detail-tab" onclick="switchDetailTab('address')">🏠 Адреса</button>
-                            <button class="detail-tab" onclick="switchDetailTab('family')">👨‍👩‍👧 Сім'я</button>
-                            <button class="detail-tab" onclick="switchDetailTab('military')">🎖 Військові дані</button>
-                        </div>
-
-                        <!-- Особові дані -->
-                        <div class="detail-tab-content active" id="tab-main">
-                            <div class="info-grid">
-                                <div class="section-title">Загальні дані</div>
-                                <div class="info-group full"><div class="info-label">ПІБ</div><div class="info-value" id="d-fullname"></div></div>
-                                <div class="info-group"><div class="info-label">Звання</div><div class="info-value" id="d-rank"></div></div>
-                                <div class="info-group"><div class="info-label">Посада</div><div class="info-value" id="d-position"></div></div>
-                                <div class="info-group full"><div class="info-label">Повна посада</div><div class="info-value" id="d-fullposition"></div></div>
-                                <div class="info-group"><div class="info-label">Телефон</div><div class="info-value" id="d-phone"></div></div>
-                                <div class="section-title">Особові дані</div>
-                                <div class="info-group"><div class="info-label">Дата народження</div><div class="info-value" id="d-birthdate"></div></div>
-                                <div class="info-group"><div class="info-label">ІПН</div><div class="info-value" id="d-taxid"></div></div>
-                                <div class="info-group"><div class="info-label">Паспорт серія</div><div class="info-value" id="d-passport-s"></div></div>
-                                <div class="info-group"><div class="info-label">Паспорт номер</div><div class="info-value" id="d-passport-n"></div></div>
-                                <div class="info-group"><div class="info-label">Група крові</div><div class="info-value" id="d-blood"></div></div>
-                                <div class="info-group"><div class="info-label">Водійське посвідчення</div><div class="info-value" id="d-driver"></div></div>
-                                <div class="info-group full"><div class="info-label">Примітка</div><div class="info-value" id="d-note"></div></div>
-                            </div>
-                        </div>
-
-                        <!-- Освіта -->
-                        <div class="detail-tab-content" id="tab-education">
-                            <table class="sub-table">
-                                <thead>
-                                <tr>
-                                    <th style="width:110px">Рівень</th>
-                                    <th>Заклад</th>
-                                    <th>Спеціальність</th>
-                                    <th style="width:100px;text-align:center">Початок</th>
-                                    <th style="width:100px;text-align:center">Кінець</th>
-                                    <th style="width:100px;text-align:center">Диплом №</th>
-                                    <th style="width:36px"></th>
-                                </tr>
-                                </thead>
-                                <tbody id="eduList"><tr><td colspan="7" style="text-align:center;color:var(--text-light)">Завантаження...</td></tr></tbody>
-                            </table>
-                            <div class="add-row" style="grid-template-columns:1fr 2fr 2fr 1fr 1fr 1fr auto;margin-top:10px">
-                                <div><div class="add-row-title">Рівень</div>
-                                    <select id="newEduLevel"><option value="">—</option><option>Вища</option><option>Неповна вища</option><option>Середня спеціальна</option><option>Середня</option></select>
-                                </div>
-                                <div><div class="add-row-title">Заклад</div><input type="text" id="newEduInst" placeholder="КПІ"></div>
-                                <div><div class="add-row-title">Спеціальність</div><input type="text" id="newEduSpec" placeholder="Інженер"></div>
-                                <div><div class="add-row-title">Початок</div><input type="date" id="newEduStart"></div>
-                                <div><div class="add-row-title">Кінець</div><input type="date" id="newEduEnd"></div>
-                                <div><div class="add-row-title">Диплом №</div><input type="text" id="newEduDiploma" placeholder="АА123456"></div>
-                                <div style="display:flex;align-items:flex-end"><button class="btn-xs btn-xs-primary" onclick="addEducation()">+ Додати</button></div>
-                            </div>
-                        </div>
-
-                        <!-- Адреса -->
-                        <div class="detail-tab-content" id="tab-address">
-                            <div class="info-grid">
-                                <div class="info-group full"><div class="info-label">Адреса реєстрації</div><div class="info-value" id="d-reg-address"></div></div>
-                                <div class="info-group full"><div class="info-label">Адреса проживання</div><div class="info-value" id="d-live-address"></div></div>
-                            </div>
-                        </div>
-
-                        <!-- Сім'я -->
-                        <div class="detail-tab-content" id="tab-family">
-                            <div class="info-grid">
-                                <div class="info-group"><div class="info-label">Сімейний стан</div><div class="info-value" id="d-marital"></div></div>
-                                <div class="info-group"><div class="info-label">Дружина / Чоловік</div><div class="info-value" id="d-spouse"></div></div>
-                            </div>
-                            <div class="section-title" style="margin-top:14px;font-size:12px;font-weight:700;color:var(--text-primary);border-bottom:1px solid var(--border-color);padding-bottom:4px">Діти</div>
-                            <table class="sub-table">
-                                <thead>
-                                <tr>
-                                    <th>ПІБ дитини</th>
-                                    <th style="width:130px;text-align:center">Дата народження</th>
-                                    <th style="width:36px"></th>
-                                </tr>
-                                </thead>
-                                <tbody id="childList"><tr><td colspan="3" style="text-align:center;color:var(--text-light)">Завантаження...</td></tr></tbody>
-                            </table>
-                            <div class="add-row" style="grid-template-columns:2fr 1fr auto;margin-top:10px">
-                                <div><div class="add-row-title">ПІБ дитини</div><input type="text" id="newChildName" placeholder="Іванов Іван Іванович"></div>
-                                <div><div class="add-row-title">Дата народження</div><input type="date" id="newChildBirth"></div>
-                                <div style="display:flex;align-items:flex-end"><button class="btn-xs btn-xs-primary" onclick="addChild()">+ Додати</button></div>
-                            </div>
-                        </div>
-
-                        <!-- Військові дані -->
-                        <div class="detail-tab-content" id="tab-military">
-                            <div class="info-grid">
-                                <div class="info-group"><div class="info-label">Дата призову</div><div class="info-value" id="d-draft-date"></div></div>
-                                <div class="info-group"><div class="info-label">Ким призваний</div><div class="info-value" id="d-draft-org"></div></div>
-                                <div class="info-group"><div class="info-label">Вид служби</div><div class="info-value" id="d-service-type"></div></div>
-                                <div class="info-group"><div class="info-label">УБД №</div><div class="info-value" id="d-ubd"></div></div>
-                            </div>
-                            <div class="section-title" style="margin-top:14px;font-size:12px;font-weight:700;color:var(--text-primary);border-bottom:1px solid var(--border-color);padding-bottom:4px">Озброєння</div>
-                            <table class="sub-table">
-                                <thead>
-                                <tr>
-                                    <th style="width:140px">Тип зброї</th>
-                                    <th style="width:120px;text-align:center">Серійний №</th>
-                                    <th style="width:110px;text-align:center">Дата видачі</th>
-                                    <th>Примітка</th>
-                                    <th style="width:36px"></th>
-                                </tr>
-                                </thead>
-                                <tbody id="weaponList"><tr><td colspan="5" style="text-align:center;color:var(--text-light)">Завантаження...</td></tr></tbody>
-                            </table>
-                            <div class="add-row" style="grid-template-columns:1fr 1fr 1fr 1fr auto;margin-top:10px">
-                                <div><div class="add-row-title">Тип</div><input type="text" id="newWeaponType" placeholder="АК-74"></div>
-                                <div><div class="add-row-title">Серійний №</div><input type="text" id="newWeaponSerial" placeholder="1234567"></div>
-                                <div><div class="add-row-title">Дата видачі</div><input type="text" id="newWeaponDate" placeholder="01.01.2024"></div>
-                                <div><div class="add-row-title">Примітка</div><input type="text" id="newWeaponNote"></div>
-                                <div style="display:flex;align-items:flex-end"><button class="btn-xs btn-xs-primary" onclick="addWeapon()">+ Додати</button></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="detail-actions">
-                        <button class="btn btn-warning" onclick="openEditFromDetail()">✏️ Редагувати</button>
-                        <button class="btn" onclick="closeDetail()" style="background:#eee">Закрити</button>
                     </div>
                 </div>
             </div>
@@ -1178,56 +614,14 @@
                     });
                 }
 
-                let educationCounts = {};
-                let eduFirstLevel = {};
-                let eduFirstInst  = {};
-                let eduFirstSpec  = {};
-                let eduFirstStart = {};
-                let eduFirstEnd   = {};
-                let childCounts      = {};
-                let childFirstBirth  = {};
-                let weaponCounts     = {};
-                let weaponFirstInfo  = {};
-
                 async function loadPersonnel() {
                     try {
                         const res = await fetch('/personnel/api');
                         if (!res.ok) { showToast('Помилка завантаження: ' + res.status, 'error'); return; }
                         allPersonnel = await res.json();
 
-                        await Promise.all(allPersonnel.map(async p => {
-                            try {
-                                const [edus, childs, weapons] = await Promise.all([
-                                    fetch(`/personnel/api/${p.id}/education`).then(r => r.json()),
-                                    fetch(`/personnel/api/${p.id}/children`).then(r => r.json()),
-                                    fetch(`/personnel/api/${p.id}/weapons`).then(r => r.json()),
-                                ]);
-                                educationCounts[p.id] = edus.length;
-                                childCounts[p.id]     = childs.length;
-                                weaponCounts[p.id]    = weapons.length;
-                                if (edus.length > 0) {
-                                    eduFirstLevel[p.id] = edus[0].level || '';
-                                    eduFirstInst[p.id]  = edus[0].institution || '';
-                                    eduFirstSpec[p.id]  = edus[0].speciality || '';
-                                    eduFirstStart[p.id] = edus[0].startDate || '';
-                                    eduFirstEnd[p.id]   = edus[0].endDate || '';
-                                }
-                                if (childs.length > 0) {
-                                    childFirstBirth[p.id] = childs[0].birthDate || '';
-                                }
-                                if (weapons.length > 0) {
-                                    const w = weapons[0];
-                                    weaponFirstInfo[p.id] = [w.weaponType, w.serialNumber, w.issuedDate].filter(Boolean).join(', ');
-                                }
-                            } catch(err) {
-                                console.error('Помилка завантаження деталей особи id=' + p.id, err);
-                            }
-                        }));
-
-                        // ===== ВСТАНОВЛЮЄМО СОРТУВАННЯ ЗА ЗАМОВЧУВАННЯМ =====
                         sortCol = 'num';
-                        sortDir = 1; // за зростанням
-                        // Додаємо клас сортування на заголовок "№"
+                        sortDir = 1;
                         document.querySelectorAll('thead th[data-col]').forEach(th => {
                             th.classList.remove('sort-asc', 'sort-desc');
                             if (th.dataset.col === 'num') {
@@ -1251,7 +645,6 @@
                     document.getElementById('fullTable').classList.toggle('visible', tab === 'full');
                 }
 
-                // КОРОТКА ТАБЛИЦЯ – змінено порядок на №, Звання, ПІБ
                 function renderShortTable(data) {
                     const body = document.getElementById('shortBody');
                     if (!data.length) { body.innerHTML = '<tr><td colspan="5" class="empty-state">Особовий склад порожній</td></tr>'; return; }
@@ -1265,15 +658,11 @@
                         <td>${p.fullPosition || p.position || '—'}</td>
                         <td style="white-space:nowrap">
                             <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
-                            <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="openDetailModal(${p.id})">👁</button>
-                            <button class="btn btn-warning btn-sm" onclick="openEditModal(${p.id})">✏️</button>
-                            <button class="btn btn-danger btn-sm" onclick="confirmDelete(${p.id}, '${escapeHtml(fullName)}')">🗑</button>
                         </td>
                     </tr>`;
                     }).join('');
                 }
 
-                // ПОВНА ТАБЛИЦЯ – змінено порядок на №, Звання, ПІБ, решта без змін
                 function renderFullTable(data) {
                     const body = document.getElementById('fullBody');
                     if (!data.length) { body.innerHTML = '<tr><td colspan="32" class="empty-state">Особовий склад порожній</td></tr>'; return; }
@@ -1284,7 +673,7 @@
                         const num = p.personnelNumber ?? (i + 1);
                         const passport = [p.passportSeries, p.passportNumber].filter(Boolean).join(' ') || '—';
                         const driverLic = [p.driverLicenseSeries, p.driverLicenseNumber, p.driverLicenseCategory].filter(Boolean).join(' ') || '—';
-                        const edu = educationCounts[p.id] > 0;
+                        const edu = p.education ? true : false;
                         return `<tr>
                         <td style="text-align:center">${num}</td>
                         <td>${val(p.rank)}</td>
@@ -1296,18 +685,18 @@
                         <td style="text-align:center">${passport}</td>
                         <td style="text-align:center">${val(p.bloodGroup)}</td>
                         <td style="font-size:11px">${driverLic}</td>
-                        <td>${edu ? eduFirstLevel[p.id] || '—' : '—'}</td>
-                        <td style="font-size:11px">${edu ? eduFirstInst[p.id] || '—' : '—'}</td>
-                        <td style="text-align:center">${edu ? eduFirstStart[p.id] || '—' : '—'}</td>
-                        <td style="text-align:center">${edu ? eduFirstEnd[p.id] || '—' : '—'}</td>
-                        <td style="font-size:11px">${edu ? eduFirstSpec[p.id] || '—' : '—'}</td>
+                        <td>${val(p.education)}</td>
+                        <td style="font-size:11px">${val(p.educationInstitution)}</td>
+                        <td style="text-align:center">${val(p.educationStart)}</td>
+                        <td style="text-align:center">${val(p.educationEnd)}</td>
+                        <td style="font-size:11px">${val(p.educationSpeciality)}</td>
                         <td style="font-size:11px">${val(p.registrationAddress)}</td>
                         <td style="font-size:11px">${val(p.livingAddress)}</td>
                         <td>${val(p.maritalStatus)}</td>
                         <td>${val(p.spouseName)}</td>
-                        <td style="text-align:center">${childCounts[p.id] > 0 ? childCounts[p.id] : '—'}</td>
-                        <td style="text-align:center">${childFirstBirth[p.id] ? fmtDate(childFirstBirth[p.id]) : '—'}</td>
-                        <td style="text-align:center">${childFirstBirth[p.id] ? calcAge(childFirstBirth[p.id]) : '—'}</td>
+                        <td style="text-align:center">${val(p.childrenCount)}</td>
+                        <td style="text-align:center">${val(p.childBirthDate)}</td>
+                        <td style="text-align:center">${val(p.childAge)}</td>
                         <td style="font-size:11px">${val(p.familyAddress)}</td>
                         <td>${val(p.position)}</td>
                         <td style="font-size:11px">${val(p.fullPosition)}</td>
@@ -1316,12 +705,9 @@
                         <td style="font-size:11px">${val(p.admissionForm)}</td>
                         <td style="font-size:11px">${val(p.enrollmentInfo)}</td>
                         <td>${val(p.serviceFor)}</td>
-                        <td style="font-size:11px">${weaponCounts[p.id] > 0 ? weaponFirstInfo[p.id] || weaponCounts[p.id] : '—'}</td>
+                        <td style="font-size:11px">${val(p.weaponInfo)}</td>
                         <td style="white-space:nowrap">
                             <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
-                            <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="openDetailModal(${p.id})">👁</button>
-                            <button class="btn btn-warning btn-sm" onclick="openEditModal(${p.id})">✏️</button>
-                            <button class="btn btn-danger btn-sm" onclick="confirmDelete(${p.id}, '${escapeHtml(fullName)}')">🗑</button>
                         </td>
                     </tr>`;
                     }).join('');
@@ -1381,97 +767,22 @@
                         fromAll;
                 }
 
-                // ===== ДИНАМІЧНІ РЯДКИ У ФОРМІ (залишаємо без змін) =====
-                function addEduRow() {
-                    const div = document.createElement('div');
-                    div.className = 'dynamic-row';
-                    div.style.gridTemplateColumns = '1fr 1fr 1fr auto';
-                    div.innerHTML = `
-                    <select class="edu-level"><option value="">Рівень</option><option>Вища</option><option>Неповна вища</option><option>Середня спеціальна</option><option>Середня</option></select>
-                    <input type="text" class="edu-inst" placeholder="Заклад освіти">
-                    <input type="text" class="edu-spec" placeholder="Спеціальність">
-                    <button type="button" class="btn-xs btn-xs-danger" style="width:28px" onclick="this.closest('.dynamic-row').remove()">✕</button>
-                    <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:6px">
-                        <input type="date" class="edu-start" title="Початок навчання">
-                        <input type="date" class="edu-end" title="Закінчення навчання">
-                    </div>
-                `;
-                    document.getElementById('eduRows').appendChild(div);
-                }
-
-                function addChildRow() {
-                    const div = document.createElement('div');
-                    div.className = 'dynamic-row';
-                    div.style.gridTemplateColumns = '2fr 1fr auto';
-                    div.innerHTML = `
-                    <input type="text" class="child-name" placeholder="ПІБ дитини">
-                    <input type="date" class="child-birth" title="Дата народження">
-                    <button type="button" class="btn-xs btn-xs-danger" onclick="this.closest('.dynamic-row').remove()">✕</button>
-                `;
-                    document.getElementById('childRows').appendChild(div);
-                }
-
-                function addWeaponRow() {
-                    const div = document.createElement('div');
-                    div.className = 'dynamic-row';
-                    div.style.gridTemplateColumns = '1fr 1fr 1fr auto';
-                    div.innerHTML = `
-                    <input type="text" class="weapon-type" placeholder="Тип (АК-74)">
-                    <input type="text" class="weapon-serial" placeholder="Серійний №">
-                    <input type="text" class="weapon-date" placeholder="Дата видачі">
-                    <button type="button" class="btn-xs btn-xs-danger" style="width:28px" onclick="this.closest('.dynamic-row').remove()">✕</button>
-                    <div style="grid-column:1/-1">
-                        <input type="text" class="weapon-note" placeholder="Примітка" style="width:100%">
-                    </div>
-                `;
-                    document.getElementById('weaponRows').appendChild(div);
-                }
-
-                function getEduRows() {
-                    return [...document.querySelectorAll('#eduRows .dynamic-row')].map(r => ({
-                        level:       r.querySelector('.edu-level').value,
-                        institution: r.querySelector('.edu-inst').value.trim(),
-                        speciality:  r.querySelector('.edu-spec').value.trim(),
-                        startDate:   r.querySelector('.edu-start').value || null,
-                        endDate:     r.querySelector('.edu-end').value   || null,
-                        diploma: '',
-                    })).filter(e => e.institution);
-                }
-
-                function getChildRows() {
-                    return [...document.querySelectorAll('#childRows .dynamic-row')].map(r => ({
-                        fullName:  r.querySelector('.child-name').value.trim(),
-                        birthDate: r.querySelector('.child-birth').value || null,
-                    })).filter(c => c.fullName);
-                }
-
-                function getWeaponRows() {
-                    return [...document.querySelectorAll('#weaponRows .dynamic-row')].map(r => ({
-                        weaponType:   r.querySelector('.weapon-type').value.trim(),
-                        serialNumber: r.querySelector('.weapon-serial').value.trim(),
-                        issuedDate:   r.querySelector('.weapon-date').value.trim(),
-                        note:         r.querySelector('.weapon-note').value.trim(),
-                    })).filter(w => w.weaponType);
-                }
-
+                // ===== ФУНКЦІЇ ДЛЯ ФОРМИ =====
                 function openAddModal() {
                     document.getElementById('modalTitle').textContent = 'Додати особу';
                     document.getElementById('editId').value = '';
-                    ['fLastName','fFirstName','fMiddleName','fPosition','fFullPosition','fPhone','fNote',
-                        'fTaxId','fPassportSeries','fPassportNumber','fDriverLicense',
-                        'fRegAddress','fLiveAddress','fFamilyAddress','fSpouseName',
-                        'fDraftOrg','fUbdNumber','fAdmissionForm','fEnrollmentInfo',
-                        'fDriverLicenseSeries','fDriverLicenseNumber','fDriverLicenseCategory',
-                        'fBirthDate','fDraftDate']
-                        .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
-                    document.getElementById('fRank').value = '';
-                    document.getElementById('eduRows').innerHTML = '';
-                    document.getElementById('childRows').innerHTML = '';
-                    document.getElementById('weaponRows').innerHTML = '';
-                    document.getElementById('fBloodGroup').value = '';
-                    document.getElementById('fMaritalStatus').value = '';
-                    document.getElementById('fServiceType').value = '';
-                    document.getElementById('fServiceFor').value = '';
+                    const fields = [
+                        'fPersonnelNumber', 'fPersonnelStatus',
+                        'fLastName', 'fFirstName', 'fMiddleName',
+                        'fRank', 'fPosition', 'fFullPosition'
+                    ];
+                    fields.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            if (el.tagName === 'SELECT') el.value = '';
+                            else el.value = '';
+                        }
+                    });
                     openModal('formModal');
                 }
 
@@ -1480,110 +791,65 @@
                     if (!p) return;
                     document.getElementById('modalTitle').textContent = 'Редагувати особу';
                     document.getElementById('editId').value = id;
+                    document.getElementById('fPersonnelNumber').value = p.personnelNumber || '';
+                    document.getElementById('fPersonnelStatus').value = p.personnelStatus || '';
                     document.getElementById('fLastName').value     = p.lastName || '';
                     document.getElementById('fFirstName').value    = p.firstName || '';
                     document.getElementById('fMiddleName').value   = p.middleName || '';
                     document.getElementById('fRank').value         = p.rank || '';
                     document.getElementById('fPosition').value     = p.position || '';
                     document.getElementById('fFullPosition').value = p.fullPosition || '';
-                    document.getElementById('fPhone').value          = p.phone || '';
-                    document.getElementById('fBirthDate').value      = p.birthDate ? p.birthDate.substring(0,10) : '';
-                    document.getElementById('fTaxId').value           = p.taxId || '';
-                    document.getElementById('fPassportSeries').value  = p.passportSeries || '';
-                    document.getElementById('fPassportNumber').value  = p.passportNumber || '';
-                    document.getElementById('fBloodGroup').value      = p.bloodGroup || '';
-                    document.getElementById('fDriverLicenseSeries').value   = p.driverLicenseSeries || '';
-                    document.getElementById('fDriverLicenseNumber').value   = p.driverLicenseNumber || '';
-                    document.getElementById('fDriverLicenseCategory').value = p.driverLicenseCategory || '';
-                    document.getElementById('fRegAddress').value      = p.registrationAddress || '';
-                    document.getElementById('fLiveAddress').value     = p.livingAddress || '';
-                    document.getElementById('fMaritalStatus').value   = p.maritalStatus || '';
-                    document.getElementById('fSpouseName').value      = p.spouseName || '';
-                    document.getElementById('fDraftDate').value       = p.draftDate ? p.draftDate.substring(0,10) : '';
-                    document.getElementById('fDraftOrg').value        = p.draftOrganization || '';
-                    document.getElementById('fServiceType').value     = p.serviceType || '';
-                    document.getElementById('fUbdNumber').value       = p.ubdNumber || '';
-                    document.getElementById('fAdmissionForm').value   = p.admissionForm || '';
-                    document.getElementById('fEnrollmentInfo').value  = p.enrollmentInfo || '';
-                    document.getElementById('fServiceFor').value      = p.serviceFor || '';
-                    document.getElementById('fFamilyAddress').value   = p.familyAddress || '';
-                    document.getElementById('fNote').value            = p.note || '';
                     openModal('formModal');
                 }
 
                 async function savePerson() {
                     const id = document.getElementById('editId').value;
+
+                    // Отримуємо значення полів
+                    const personnelNumber = parseInt(document.getElementById('fPersonnelNumber').value);
+                    const personnelStatus = document.getElementById('fPersonnelStatus').value;
+                    const lastName = document.getElementById('fLastName').value.trim();
+                    const firstName = document.getElementById('fFirstName').value.trim();
+
+                    // === ВАЛІДАЦІЯ ОБОВ'ЯЗКОВИХ ПОЛІВ ===
+                    if (!personnelNumber || personnelNumber < 1) {
+                        showToast('Порядковий номер обов\'язковий і має бути більше 0', 'error');
+                        return;
+                    }
+                    if (!personnelStatus) {
+                        showToast('Оберіть статус особи', 'error');
+                        return;
+                    }
+                    if (!lastName) {
+                        showToast('Прізвище обов\'язкове', 'error');
+                        return;
+                    }
+                    if (!firstName) {
+                        showToast('Ім\'я обов\'язкове', 'error');
+                        return;
+                    }
+
                     const body = {
-                        lastName:     document.getElementById('fLastName').value.trim(),
-                        firstName:    document.getElementById('fFirstName').value.trim(),
-                        middleName:   document.getElementById('fMiddleName').value.trim(),
-                        rank:         document.getElementById('fRank').value,
-                        position:     document.getElementById('fPosition').value.trim(),
+                        personnelNumber: personnelNumber,
+                        personnelStatus: personnelStatus,
+                        lastName: lastName,
+                        firstName: firstName,
+                        middleName: document.getElementById('fMiddleName').value.trim(),
+                        rank: document.getElementById('fRank').value,
+                        position: document.getElementById('fPosition').value.trim(),
                         fullPosition: document.getElementById('fFullPosition').value.trim(),
-                        phone:                document.getElementById('fPhone').value.trim(),
-                        birthDate:            document.getElementById('fBirthDate').value || null,
-                        taxId:                document.getElementById('fTaxId').value.trim(),
-                        passportSeries:       document.getElementById('fPassportSeries').value.trim(),
-                        passportNumber:       document.getElementById('fPassportNumber').value.trim(),
-                        bloodGroup:           document.getElementById('fBloodGroup').value,
-                        driverLicenseSeries:   document.getElementById('fDriverLicenseSeries').value.trim(),
-                        driverLicenseNumber:   document.getElementById('fDriverLicenseNumber').value.trim(),
-                        driverLicenseCategory: document.getElementById('fDriverLicenseCategory').value.trim(),
-                        registrationAddress:  document.getElementById('fRegAddress').value.trim(),
-                        livingAddress:        document.getElementById('fLiveAddress').value.trim(),
-                        maritalStatus:        document.getElementById('fMaritalStatus').value,
-                        spouseName:           document.getElementById('fSpouseName').value.trim(),
-                        draftDate:            document.getElementById('fDraftDate').value || null,
-                        draftOrganization:    document.getElementById('fDraftOrg').value.trim(),
-                        serviceType:          document.getElementById('fServiceType').value,
-                        ubdNumber:            document.getElementById('fUbdNumber').value.trim(),
-                        admissionForm:        document.getElementById('fAdmissionForm').value.trim(),
-                        enrollmentInfo:       document.getElementById('fEnrollmentInfo').value.trim(),
-                        serviceFor:           document.getElementById('fServiceFor').value,
-                        familyAddress:        document.getElementById('fFamilyAddress').value.trim(),
-                        note:                 document.getElementById('fNote').value.trim(),
                     };
-                    if (!body.lastName)  { showToast('Прізвище обов\'язкове', 'error'); return; }
-                    if (!body.firstName) { showToast('Ім\'я обов\'язкове', 'error'); return; }
+
                     const url    = id ? `/personnel/api/${id}` : '/personnel/api';
                     const method = id ? 'PUT' : 'POST';
                     const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
                     if (res.ok) {
-                        const saved = await res.json();
-                        const pid = saved.id;
-
-                        if (id) {
-                            const oldEdus    = [...document.querySelectorAll('#eduRows .dynamic-row[data-edu-id]')].map(r => r.dataset.eduId);
-                            const oldChilds  = [...document.querySelectorAll('#childRows .dynamic-row[data-child-id]')].map(r => r.dataset.childId);
-                            const oldWeapons = [...document.querySelectorAll('#weaponRows .dynamic-row[data-weapon-id]')].map(r => r.dataset.weaponId);
-                            await Promise.all([
-                                ...oldEdus.map(eid    => fetch(`/personnel/api/${pid}/education/${eid}`, {method:'DELETE'})),
-                                ...oldChilds.map(cid  => fetch(`/personnel/api/${pid}/children/${cid}`, {method:'DELETE'})),
-                                ...oldWeapons.map(wid => fetch(`/personnel/api/${pid}/weapons/${wid}`,   {method:'DELETE'})),
-                            ]);
-                        }
-
-                        const eduList    = getEduRows();
-                        const childList  = getChildRows();
-                        const weaponList = getWeaponRows();
-
-                        await Promise.all([
-                            ...eduList.map(e => fetch(`/personnel/api/${pid}/education`, {
-                                method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(e)
-                            })),
-                            ...childList.map(c => fetch(`/personnel/api/${pid}/children`, {
-                                method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(c)
-                            })),
-                            ...weaponList.map(w => fetch(`/personnel/api/${pid}/weapons`, {
-                                method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(w)
-                            })),
-                        ]);
-
                         closeModal('formModal');
                         await loadPersonnel();
                         showToast(id ? 'Дані оновлено' : 'Особу додано', 'success');
                     } else {
-                        showToast('Помилка: ' + await res.text(), 'error');
+                        const errorText = await res.text();
+                        showToast('Помилка: ' + errorText, 'error');
                     }
                 }
 
@@ -1609,182 +875,6 @@
                     setTimeout(() => t.classList.remove('show'), 3000);
                 }
 
-
-                let currentDetailId = null;
-
-                function openDetailModal(id) {
-                    const p = allPersonnel.find(x => x.id === id);
-                    if (!p) return;
-                    currentDetailId = id;
-                    const fullName = `${p.lastName} ${p.firstName || ''} ${p.middleName || ''}`.trim();
-                    document.getElementById('detailTitle').textContent = fullName;
-
-                    const val = (v) => v || '—';
-                    const fmtDate = (d) => d ? d.substring(0,10).split('-').reverse().join('.') : '—';
-
-                    document.getElementById('d-fullname').textContent        = val(fullName);
-                    document.getElementById('d-rank').textContent             = val(p.rank);
-                    document.getElementById('d-position').textContent         = val(p.position);
-                    document.getElementById('d-fullposition').textContent     = val(p.fullPosition);
-                    document.getElementById('d-phone').textContent            = val(p.phone);
-                    document.getElementById('d-birthdate').textContent        = fmtDate(p.birthDate);
-                    document.getElementById('d-taxid').textContent            = val(p.taxId);
-                    document.getElementById('d-passport-s').textContent       = val(p.passportSeries);
-                    document.getElementById('d-passport-n').textContent       = val(p.passportNumber);
-                    document.getElementById('d-blood').textContent            = val(p.bloodGroup);
-                    document.getElementById('d-driver').textContent           = [p.driverLicenseSeries, p.driverLicenseNumber, p.driverLicenseCategory].filter(Boolean).join(' ') || '—';
-                    document.getElementById('d-note').textContent             = val(p.note);
-                    document.getElementById('d-reg-address').textContent      = val(p.registrationAddress);
-                    document.getElementById('d-live-address').textContent     = val(p.livingAddress);
-                    document.getElementById('d-marital').textContent          = val(p.maritalStatus);
-                    document.getElementById('d-spouse').textContent           = val(p.spouseName);
-                    document.getElementById('d-draft-date').textContent       = fmtDate(p.draftDate);
-                    document.getElementById('d-draft-org').textContent        = val(p.draftOrganization);
-                    document.getElementById('d-service-type').textContent     = val(p.serviceType);
-                    document.getElementById('d-ubd').textContent              = val(p.ubdNumber);
-
-                    switchDetailTab('main');
-                    document.getElementById('detailModal').classList.add('open');
-                }
-
-                function closeDetail() {
-                    document.getElementById('detailModal').classList.remove('open');
-                }
-
-                function switchDetailTab(tab) {
-                    document.querySelectorAll('.detail-tab').forEach((b, i) => {
-                        const tabs = ['main','education','address','family','military'];
-                        b.classList.toggle('active', tabs[i] === tab);
-                    });
-                    document.querySelectorAll('.detail-tab-content').forEach(c => c.classList.remove('active'));
-                    document.getElementById('tab-' + tab).classList.add('active');
-                    if (tab === 'education') loadEducation();
-                    if (tab === 'family')    loadChildren();
-                    if (tab === 'military')  loadWeapons();
-                }
-
-
-                // ===== ОСВІТА =====
-                async function loadEducation() {
-                    const res = await fetch(`/personnel/api/${currentDetailId}/education`);
-                    const list = await res.json();
-                    const tbody = document.getElementById('eduList');
-                    const fmtDate = d => d ? d.substring(0,10).split('-').reverse().join('.') : '—';
-                    tbody.innerHTML = list.length ? list.map(e => `
-                    <tr>
-                        <td>${e.level || '—'}</td>
-                        <td>${e.institution || '—'}</td>
-                        <td>${e.speciality || '—'}</td>
-                        <td style="text-align:center">${fmtDate(e.startDate)}</td>
-                        <td style="text-align:center">${fmtDate(e.endDate)}</td>
-                        <td style="text-align:center">${e.diploma || '—'}</td>
-                        <td class="actions"><button class="btn-xs btn-xs-danger" onclick="deleteEducation(${e.id})">🗑</button></td>
-                    </tr>`).join('') :
-                        '<tr><td colspan="7" style="text-align:center;color:var(--text-light)">Записів немає</td></tr>';
-                }
-
-                async function addEducation() {
-                    const body = {
-                        level:       document.getElementById('newEduLevel').value,
-                        institution: document.getElementById('newEduInst').value.trim(),
-                        speciality:  document.getElementById('newEduSpec').value.trim(),
-                        startDate:   document.getElementById('newEduStart').value || null,
-                        endDate:     document.getElementById('newEduEnd').value   || null,
-                        diploma:     document.getElementById('newEduDiploma').value.trim(),
-                    };
-                    await fetch(`/personnel/api/${currentDetailId}/education`, {
-                        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
-                    });
-                    ['newEduLevel','newEduInst','newEduSpec','newEduStart','newEduEnd','newEduDiploma']
-                        .forEach(id => document.getElementById(id).value = '');
-                    loadEducation();
-                }
-
-                async function deleteEducation(eduId) {
-                    await fetch(`/personnel/api/${currentDetailId}/education/${eduId}`, {method:'DELETE'});
-                    loadEducation();
-                }
-
-                // ===== ДІТИ =====
-                async function loadChildren() {
-                    const res = await fetch(`/personnel/api/${currentDetailId}/children`);
-                    const list = await res.json();
-                    const tbody = document.getElementById('childList');
-                    const fmtDate = d => d ? d.substring(0,10).split('-').reverse().join('.') : '—';
-                    tbody.innerHTML = list.length ? list.map(c => `
-                    <tr>
-                        <td>${c.fullName || '—'}</td>
-                        <td style="text-align:center">${fmtDate(c.birthDate)}</td>
-                        <td class="actions"><button class="btn-xs btn-xs-danger" onclick="deleteChild(${c.id})">🗑</button></td>
-                    </tr>`).join('') :
-                        '<tr><td colspan="3" style="text-align:center;color:var(--text-light)">Дітей немає</td></tr>';
-                }
-
-                async function addChild() {
-                    const body = {
-                        fullName:  document.getElementById('newChildName').value.trim(),
-                        birthDate: document.getElementById('newChildBirth').value || null,
-                    };
-                    if (!body.fullName) return;
-                    await fetch(`/personnel/api/${currentDetailId}/children`, {
-                        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
-                    });
-                    document.getElementById('newChildName').value = '';
-                    document.getElementById('newChildBirth').value = '';
-                    loadChildren();
-                }
-
-                async function deleteChild(childId) {
-                    await fetch(`/personnel/api/${currentDetailId}/children/${childId}`, {method:'DELETE'});
-                    loadChildren();
-                }
-
-                // ===== ЗБРОЯ =====
-                async function loadWeapons() {
-                    const res = await fetch(`/personnel/api/${currentDetailId}/weapons`);
-                    const list = await res.json();
-                    const tbody = document.getElementById('weaponList');
-                    tbody.innerHTML = list.length ? list.map(w => `
-                    <tr>
-                        <td>${w.weaponType || '—'}</td>
-                        <td style="text-align:center">${w.serialNumber || '—'}</td>
-                        <td style="text-align:center">${w.issuedDate || '—'}</td>
-                        <td>${w.note || '—'}</td>
-                        <td class="actions"><button class="btn-xs btn-xs-danger" onclick="deleteWeapon(${w.id})">🗑</button></td>
-                    </tr>`).join('') :
-                        '<tr><td colspan="5" style="text-align:center;color:var(--text-light)">Зброї немає</td></tr>';
-                }
-
-                async function addWeapon() {
-                    const body = {
-                        weaponType:   document.getElementById('newWeaponType').value.trim(),
-                        serialNumber: document.getElementById('newWeaponSerial').value.trim(),
-                        issuedDate:   document.getElementById('newWeaponDate').value.trim(),
-                        note:         document.getElementById('newWeaponNote').value.trim(),
-                    };
-                    if (!body.weaponType) return;
-                    await fetch(`/personnel/api/${currentDetailId}/weapons`, {
-                        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
-                    });
-                    ['newWeaponType','newWeaponSerial','newWeaponDate','newWeaponNote']
-                        .forEach(id => document.getElementById(id).value = '');
-                    loadWeapons();
-                }
-
-                async function deleteWeapon(weaponId) {
-                    await fetch(`/personnel/api/${currentDetailId}/weapons/${weaponId}`, {method:'DELETE'});
-                    loadWeapons();
-                }
-
-                function openEditFromDetail() {
-                    closeDetail();
-                    openEditModal(currentDetailId);
-                }
-
-                document.getElementById('detailModal').addEventListener('click', e => {
-                    if (e.target === document.getElementById('detailModal')) closeDetail();
-                });
-
                 function calcAge(dateStr) {
                     if (!dateStr) return '—';
                     const birth = new Date(dateStr);
@@ -1795,208 +885,10 @@
                     return age;
                 }
 
-                function openAddModal() {
-                    document.getElementById('modalTitle').textContent = 'Додати особу';
-                    document.getElementById('editId').value = '';
-                    ['fLastName','fFirstName','fMiddleName','fPosition','fFullPosition','fPhone','fNote',
-                        'fRegAddress','fLiveAddress','fFamilyAddress','fSpouseName',
-                        'fDraftOrg','fUbdNumber','fAdmissionForm','fEnrollmentInfo',
-                        'fDriverLicenseSeries','fDriverLicenseNumber','fDriverLicenseCategory',
-                        'fBirthDate','fDraftDate','fTaxId','fPassportSeries','fPassportNumber']
-                        .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
-                    const rank = document.getElementById('fRank');
-                    if (rank) rank.value = '';
-                    const blood = document.getElementById('fBloodGroup');
-                    if (blood) blood.value = '';
-                    const edu = document.getElementById('fEducation');
-                    if (edu) edu.value = '';
-                    const marital = document.getElementById('fMaritalStatus');
-                    if (marital) marital.value = '';
-                    const service = document.getElementById('fServiceType');
-                    if (service) service.value = '';
-                    const serviceFor = document.getElementById('fServiceFor');
-                    if (serviceFor) serviceFor.value = '';
-                    document.getElementById('eduRows').innerHTML = '';
-                    document.getElementById('childRows').innerHTML = '';
-                    document.getElementById('weaponRows').innerHTML = '';
-                    document.getElementById('formModal').classList.add('open');
-                }
-
-                function openEditModal(id) {
-                    const p = allPersonnel.find(x => x.id === id);
-                    if (!p) return;
-                    document.getElementById('modalTitle').textContent = 'Редагувати особу';
-                    document.getElementById('editId').value = id;
-                    const s = (fid, val) => { const el = document.getElementById(fid); if(el) el.value = val || ''; };
-                    s('fLastName',   p.lastName);
-                    s('fFirstName',  p.firstName);
-                    s('fMiddleName', p.middleName);
-                    s('fPosition',   p.position);
-                    s('fFullPosition', p.fullPosition);
-                    s('fPhone',      p.phone);
-                    s('fNote',       p.note);
-                    s('fBirthDate',  p.birthDate ? p.birthDate.substring(0,10) : '');
-                    s('fTaxId',      p.taxId);
-                    s('fPassportSeries',  p.passportSeries);
-                    s('fPassportNumber',  p.passportNumber);
-                    s('fDriverLicenseSeries',   p.driverLicenseSeries);
-                    s('fDriverLicenseNumber',   p.driverLicenseNumber);
-                    s('fDriverLicenseCategory', p.driverLicenseCategory);
-                    s('fRegAddress',   p.registrationAddress);
-                    s('fLiveAddress',  p.livingAddress);
-                    s('fFamilyAddress', p.familyAddress);
-                    s('fSpouseName',   p.spouseName);
-                    s('fDraftDate',    p.draftDate ? p.draftDate.substring(0,10) : '');
-                    s('fDraftOrg',     p.draftOrganization);
-                    s('fUbdNumber',    p.ubdNumber);
-                    s('fAdmissionForm',  p.admissionForm);
-                    s('fEnrollmentInfo', p.enrollmentInfo);
-                    const sel = (fid, val) => { const el = document.getElementById(fid); if(el) el.value = val || ''; };
-                    sel('fRank',        p.rank);
-                    sel('fBloodGroup',  p.bloodGroup);
-                    sel('fEducation',   p.education);
-                    sel('fMaritalStatus', p.maritalStatus);
-                    sel('fServiceType', p.serviceType);
-                    sel('fServiceFor',  p.serviceFor);
-
-                    document.getElementById('eduRows').innerHTML = '';
-                    document.getElementById('childRows').innerHTML = '';
-                    document.getElementById('weaponRows').innerHTML = '';
-
-                    fetch(`/personnel/api/${id}/education`).then(r => r.json()).then(list => {
-                        list.forEach(e => {
-                            addEduRow();
-                            const row = document.getElementById('eduRows').lastElementChild;
-                            row.querySelector('.edu-level').value = e.level || '';
-                            row.querySelector('.edu-inst').value  = e.institution || '';
-                            row.querySelector('.edu-spec').value  = e.speciality || '';
-                            const dates = row.querySelectorAll('input[type=date]');
-                            if (dates[0]) dates[0].value = e.startDate ? e.startDate.substring(0,10) : '';
-                            if (dates[1]) dates[1].value = e.endDate   ? e.endDate.substring(0,10)   : '';
-                            row.dataset.eduId = e.id;
-                        });
-                    });
-                    fetch(`/personnel/api/${id}/children`).then(r => r.json()).then(list => {
-                        list.forEach(c => {
-                            addChildRow();
-                            const row = document.getElementById('childRows').lastElementChild;
-                            row.querySelector('.child-name').value  = c.fullName || '';
-                            row.querySelector('.child-birth').value = c.birthDate ? c.birthDate.substring(0,10) : '';
-                            row.dataset.childId = c.id;
-                        });
-                    });
-                    fetch(`/personnel/api/${id}/weapons`).then(r => r.json()).then(list => {
-                        list.forEach(w => {
-                            addWeaponRow();
-                            const row = document.getElementById('weaponRows').lastElementChild;
-                            row.querySelector('.weapon-type').value   = w.weaponType   || '';
-                            row.querySelector('.weapon-serial').value = w.serialNumber  || '';
-                            row.querySelector('.weapon-date').value   = w.issuedDate    || '';
-                            row.querySelector('.weapon-note').value   = w.note          || '';
-                            row.dataset.weaponId = w.id;
-                        });
-                    });
-
-                    document.getElementById('formModal').classList.add('open');
-                }
-
-                async function savePerson() {
-                    const id = document.getElementById('editId').value;
-                    const g = fid => { const el = document.getElementById(fid); return el ? el.value.trim() : ''; };
-                    const gv = fid => { const el = document.getElementById(fid); return el ? el.value : ''; };
-                    const body = {
-                        lastName:     g('fLastName'),
-                        firstName:    g('fFirstName'),
-                        middleName:   g('fMiddleName'),
-                        rank:         gv('fRank'),
-                        position:     g('fPosition'),
-                        fullPosition: g('fFullPosition'),
-                        phone:        g('fPhone'),
-                        birthDate:    gv('fBirthDate') || null,
-                        taxId:        g('fTaxId'),
-                        passportSeries:  g('fPassportSeries'),
-                        passportNumber:  g('fPassportNumber'),
-                        bloodGroup:      gv('fBloodGroup'),
-                        driverLicenseSeries:   g('fDriverLicenseSeries'),
-                        driverLicenseNumber:   g('fDriverLicenseNumber'),
-                        driverLicenseCategory: g('fDriverLicenseCategory'),
-                        registrationAddress: g('fRegAddress'),
-                        livingAddress:       g('fLiveAddress'),
-                        familyAddress:       g('fFamilyAddress'),
-                        maritalStatus:       gv('fMaritalStatus'),
-                        spouseName:          g('fSpouseName'),
-                        draftDate:           gv('fDraftDate') || null,
-                        draftOrganization:   g('fDraftOrg'),
-                        serviceType:         gv('fServiceType'),
-                        ubdNumber:           g('fUbdNumber'),
-                        admissionForm:       g('fAdmissionForm'),
-                        enrollmentInfo:      g('fEnrollmentInfo'),
-                        serviceFor:          gv('fServiceFor'),
-                        note:                g('fNote'),
-                    };
-                    if (!body.lastName)  { showToast('Прізвище обов\'язкове', 'error'); return; }
-                    if (!body.firstName) { showToast('Ім\'я обов\'язкове', 'error'); return; }
-
-                    const url    = id ? `/personnel/api/${id}` : '/personnel/api';
-                    const method = id ? 'PUT' : 'POST';
-                    const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
-
-                    if (res.ok) {
-                        const saved = await res.json();
-                        const pid = saved.id;
-                        if (id) {
-                            const oldEdus    = [...document.querySelectorAll('#eduRows .dynamic-row[data-edu-id]')].map(r => r.dataset.eduId);
-                            const oldChilds  = [...document.querySelectorAll('#childRows .dynamic-row[data-child-id]')].map(r => r.dataset.childId);
-                            const oldWeapons = [...document.querySelectorAll('#weaponRows .dynamic-row[data-weapon-id]')].map(r => r.dataset.weaponId);
-                            await Promise.all([
-                                ...oldEdus.map(eid    => fetch(`/personnel/api/${pid}/education/${eid}`, {method:'DELETE'})),
-                                ...oldChilds.map(cid  => fetch(`/personnel/api/${pid}/children/${cid}`, {method:'DELETE'})),
-                                ...oldWeapons.map(wid => fetch(`/personnel/api/${pid}/weapons/${wid}`,   {method:'DELETE'})),
-                            ]);
-                        }
-                        const eduList    = getEduRows();
-                        const childList  = getChildRows();
-                        const weaponList = getWeaponRows();
-                        await Promise.all([
-                            ...eduList.map(e => fetch(`/personnel/api/${pid}/education`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(e)})),
-                            ...childList.map(c => fetch(`/personnel/api/${pid}/children`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(c)})),
-                            ...weaponList.map(w => fetch(`/personnel/api/${pid}/weapons`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(w)})),
-                        ]);
-                        document.getElementById('formModal').classList.remove('open');
-                        await loadPersonnel();
-                        showToast(id ? 'Дані оновлено' : 'Особу додано', 'success');
-                    } else {
-                        showToast('Помилка: ' + await res.text(), 'error');
-                    }
-                }
-
-                function confirmDelete(id, name) {
-                    document.getElementById('confirmText').textContent = `Видалити особу "${name}"?`;
-                    document.getElementById('confirmBtn').onclick = async () => {
-                        const res = await fetch(`/personnel/api/${id}`, {method:'DELETE'});
-                        document.getElementById('confirmModal').classList.remove('open');
-                        if (res.ok) { await loadPersonnel(); showToast('Особу видалено', 'success'); }
-                        else showToast('Помилка видалення', 'error');
-                    };
-                    document.getElementById('confirmModal').classList.add('open');
-                }
-
-                function openModal(id)  { document.getElementById(id).classList.add('open'); }
-                function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-                document.querySelectorAll('.modal-overlay').forEach(el =>
-                    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
-                );
-                function showToast(msg, type = 'success') {
-                    const t = document.getElementById('toast');
-                    t.textContent = msg; t.className = `toast ${type} show`;
-                    setTimeout(() => t.classList.remove('show'), 3000);
-                }
-
                 function exportXlsx() {
                     window.location.href = '/personnel/api/export';
                 }
 
-                // Ініціалізація
                 loadPersonnel();
             </script>
         </div>
