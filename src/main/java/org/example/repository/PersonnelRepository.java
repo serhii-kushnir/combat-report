@@ -17,4 +17,6 @@ public interface PersonnelRepository extends JpaRepository<Personnel, Long> {
 
     // Пошук за прізвищем (нечіткий, регістронезалежний)
     List<Personnel> findByLastNameContainingIgnoreCaseAndActiveTrue(String lastName);
+
+    List<Personnel> findByPersonnelStatus(String personnelStatus);
 }

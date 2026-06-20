@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Особовий склад</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
         /* ===== CSS ЗМІННІ ===== */
         :root {
@@ -157,6 +156,7 @@
             display: flex;
             gap: 8px;
             margin-bottom: 12px;
+            flex-wrap: wrap;
         }
         .tab-btn {
             padding: 7px 18px;
@@ -449,6 +449,7 @@
             <div class="table-tabs">
                 <button class="tab-btn active" onclick="switchTab('short')">📋 Коротка таблиця</button>
                 <button class="tab-btn" onclick="switchTab('full')">📄 Повна таблиця</button>
+                <button class="tab-btn" onclick="switchTab('archived')">📁 Архів</button>
             </div>
 
             <!-- КОРОТКА ТАБЛИЦЯ -->
@@ -517,7 +518,27 @@
                 </div>
             </div>
 
-            <!-- ===== ФОРМА З ОБОВ'ЯЗКОВИМИ ПОЛЯМИ "Порядковий номер" та "Статус" ===== -->
+            <!-- АРХІВНА ТАБЛИЦЯ -->
+            <div class="table-section" id="archivedTable">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th style="width:40px" data-col="num" onclick="sortArchivedBy('num')">№</th>
+                            <th style="width:125px;" data-col="rank" onclick="sortArchivedBy('rank')">Звання</th>
+                            <th data-col="name" onclick="sortArchivedBy('name')">ПІБ</th>
+                            <th data-col="position" onclick="sortArchivedBy('position')">Повна посада</th>
+                            <th style="width:60px">Дії</th>
+                        </tr>
+                        </thead>
+                        <tbody id="archivedBody">
+                        <tr><td colspan="5" class="empty-state">Завантаження...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ===== ФОРМА ===== -->
             <div class="modal-overlay" id="formModal">
                 <div class="modal">
                     <h2 id="modalTitle">Додати особу</h2>
@@ -600,9 +621,13 @@
             <div class="toast" id="toast"></div>
 
             <script>
-                let allPersonnel = [];
-                let sortCol = null;
+                // ===== ГЛОБАЛЬНІ ЗМІННІ =====
+                let activePersonnel = [];
+                let archivedPersonnel = [];
+                let sortCol = 'num';
                 let sortDir = 1;
+                let sortArchivedCol = 'num';
+                let sortArchivedDir = 1;
                 let currentTab = 'short';
 
                 function escapeHtml(str) {
@@ -615,58 +640,73 @@
                     });
                 }
 
+                // ===== ЗАВАНТАЖЕННЯ ДАНИХ =====
                 async function loadPersonnel() {
                     try {
-                        const res = await fetch('/personnel/api');
-                        if (!res.ok) { showToast('Помилка завантаження: ' + res.status, 'error'); return; }
-                        allPersonnel = await res.json();
+                        const [activeRes, archivedRes] = await Promise.all([
+                            fetch('/personnel/api'),
+                            fetch('/personnel/api/status/Не%20в%20особовому%20складі')
+                        ]);
+                        if (!activeRes.ok) { showToast('Помилка завантаження активних', 'error'); return; }
+                        if (!archivedRes.ok) { showToast('Помилка завантаження архіву', 'error'); return; }
+                        activePersonnel = await activeRes.json();
+                        archivedPersonnel = await archivedRes.json();
 
                         sortCol = 'num';
                         sortDir = 1;
-                        document.querySelectorAll('thead th[data-col]').forEach(th => {
-                            th.classList.remove('sort-asc', 'sort-desc');
-                            if (th.dataset.col === 'num') {
-                                th.classList.add('sort-asc');
-                            }
-                        });
+                        sortArchivedCol = 'num';
+                        sortArchivedDir = 1;
 
                         applyFilters();
+                        renderArchivedTable();
+                        renderStats();
                     } catch(err) {
-                        console.error('Помилка loadPersonnel:', err);
-                        showToast('Помилка: ' + err.message, 'error');
+                        console.error(err);
+                        showToast('Помилка завантаження', 'error');
                     }
                 }
 
+                // ===== ПЕРЕМИКАННЯ ВКЛАДОК =====
                 function switchTab(tab) {
                     currentTab = tab;
-                    document.querySelectorAll('.tab-btn').forEach((b, i) => {
-                        b.classList.toggle('active', (i === 0 && tab === 'short') || (i === 1 && tab === 'full'));
+                    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+                        const tabs = ['short', 'full', 'archived'];
+                        btn.classList.toggle('active', tabs[i] === tab);
                     });
                     document.getElementById('shortTable').classList.toggle('visible', tab === 'short');
                     document.getElementById('fullTable').classList.toggle('visible', tab === 'full');
+                    document.getElementById('archivedTable').classList.toggle('visible', tab === 'archived');
                 }
 
+                // ===== РЕНДЕРИНГ АКТИВНИХ (КОРОТКА) =====
                 function renderShortTable(data) {
                     const body = document.getElementById('shortBody');
-                    if (!data.length) { body.innerHTML = '<tr><td colspan="5" class="empty-state">Особовий склад порожній</td></tr>'; return; }
+                    if (!data || !data.length) {
+                        body.innerHTML = '<tr><td colspan="5" class="empty-state">Особовий склад порожній</td></tr>';
+                        return;
+                    }
                     body.innerHTML = data.map((p, i) => {
                         const fullName = `${p.lastName} ${p.firstName || ''} ${p.middleName || ''}`.trim();
                         const num = p.personnelNumber ?? (i + 1);
                         return `<tr>
-                        <td style="text-align:center">${num}</td>
-                        <td>${p.rank || '—'}</td>
-                        <td><strong>${escapeHtml(fullName)}</strong></td>
-                        <td>${p.fullPosition || p.position || '—'}</td>
-                        <td style="white-space:nowrap">
-                            <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
-                        </td>
-                    </tr>`;
+                            <td style="text-align:center">${num}</td>
+                            <td>${p.rank || '—'}</td>
+                            <td><strong>${escapeHtml(fullName)}</strong></td>
+                            <td>${p.fullPosition || p.position || '—'}</td>
+                            <td style="white-space:nowrap">
+                                <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
+                            </td>
+                        </tr>`;
                     }).join('');
                 }
 
+                // ===== РЕНДЕРИНГ АКТИВНИХ (ПОВНА) =====
                 function renderFullTable(data) {
                     const body = document.getElementById('fullBody');
-                    if (!data.length) { body.innerHTML = '<tr><td colspan="32" class="empty-state">Особовий склад порожній</td></tr>'; return; }
+                    if (!data || !data.length) {
+                        body.innerHTML = '<tr><td colspan="32" class="empty-state">Особовий склад порожній</td></tr>';
+                        return;
+                    }
                     const fmtDate = d => d ? d.substring(0,10).split('-').reverse().join('.') : '—';
                     const val = v => v || '—';
                     body.innerHTML = data.map((p, i) => {
@@ -674,72 +714,131 @@
                         const num = p.personnelNumber ?? (i + 1);
                         const passport = [p.passportSeries, p.passportNumber].filter(Boolean).join(' ') || '—';
                         const driverLic = [p.driverLicenseSeries, p.driverLicenseNumber, p.driverLicenseCategory].filter(Boolean).join(' ') || '—';
-                        const edu = p.education ? true : false;
                         return `<tr>
-                        <td style="text-align:center">${num}</td>
-                        <td>${val(p.rank)}</td>
-                        <td><strong>${escapeHtml(fullName)}</strong></td>
-                        <td>${val(p.phone)}</td>
-                        <td style="text-align:center">${fmtDate(p.birthDate)}</td>
-                        <td style="text-align:center">${p.birthDate ? calcAge(p.birthDate) : '—'}</td>
-                        <td style="text-align:center">${val(p.taxId)}</td>
-                        <td style="text-align:center">${passport}</td>
-                        <td style="text-align:center">${val(p.bloodGroup)}</td>
-                        <td style="font-size:11px">${driverLic}</td>
-                        <td>${val(p.education)}</td>
-                        <td style="font-size:11px">${val(p.educationInstitution)}</td>
-                        <td style="text-align:center">${val(p.educationStart)}</td>
-                        <td style="text-align:center">${val(p.educationEnd)}</td>
-                        <td style="font-size:11px">${val(p.educationSpeciality)}</td>
-                        <td style="font-size:11px">${val(p.registrationAddress)}</td>
-                        <td style="font-size:11px">${val(p.livingAddress)}</td>
-                        <td>${val(p.maritalStatus)}</td>
-                        <td>${val(p.spouseName)}</td>
-                        <td style="text-align:center">${val(p.childrenCount)}</td>
-                        <td style="text-align:center">${val(p.childBirthDate)}</td>
-                        <td style="text-align:center">${val(p.childAge)}</td>
-                        <td style="font-size:11px">${val(p.familyAddress)}</td>
-                        <td>${val(p.position)}</td>
-                        <td style="font-size:11px">${val(p.fullPosition)}</td>
-                        <td style="font-size:11px">${val(p.draftOrganization)}</td>
-                        <td>${val(p.ubdNumber)}</td>
-                        <td style="font-size:11px">${val(p.admissionForm)}</td>
-                        <td style="font-size:11px">${val(p.enrollmentInfo)}</td>
-                        <td>${val(p.serviceFor)}</td>
-                        <td style="font-size:11px">${val(p.weaponInfo)}</td>
-                        <td style="white-space:nowrap">
-                            <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
-                        </td>
-                    </tr>`;
+                            <td style="text-align:center">${num}</td>
+                            <td>${val(p.rank)}</td>
+                            <td><strong>${escapeHtml(fullName)}</strong></td>
+                            <td>${val(p.phone)}</td>
+                            <td style="text-align:center">${fmtDate(p.birthDate)}</td>
+                            <td style="text-align:center">${p.birthDate ? calcAge(p.birthDate) : '—'}</td>
+                            <td style="text-align:center">${val(p.taxId)}</td>
+                            <td style="text-align:center">${passport}</td>
+                            <td style="text-align:center">${val(p.bloodGroup)}</td>
+                            <td style="font-size:11px">${driverLic}</td>
+                            <td>${val(p.education)}</td>
+                            <td style="font-size:11px">${val(p.educationInstitution)}</td>
+                            <td style="text-align:center">${val(p.educationStart)}</td>
+                            <td style="text-align:center">${val(p.educationEnd)}</td>
+                            <td style="font-size:11px">${val(p.educationSpeciality)}</td>
+                            <td style="font-size:11px">${val(p.registrationAddress)}</td>
+                            <td style="font-size:11px">${val(p.livingAddress)}</td>
+                            <td>${val(p.maritalStatus)}</td>
+                            <td>${val(p.spouseName)}</td>
+                            <td style="text-align:center">${val(p.childrenCount)}</td>
+                            <td style="text-align:center">${val(p.childBirthDate)}</td>
+                            <td style="text-align:center">${val(p.childAge)}</td>
+                            <td style="font-size:11px">${val(p.familyAddress)}</td>
+                            <td>${val(p.position)}</td>
+                            <td style="font-size:11px">${val(p.fullPosition)}</td>
+                            <td style="font-size:11px">${val(p.draftOrganization)}</td>
+                            <td>${val(p.ubdNumber)}</td>
+                            <td style="font-size:11px">${val(p.admissionForm)}</td>
+                            <td style="font-size:11px">${val(p.enrollmentInfo)}</td>
+                            <td>${val(p.serviceFor)}</td>
+                            <td style="font-size:11px">${val(p.weaponInfo)}</td>
+                            <td style="white-space:nowrap">
+                                <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
+                            </td>
+                        </tr>`;
                     }).join('');
                 }
 
+                // ===== РЕНДЕРИНГ АРХІВУ =====
+                function renderArchivedTable() {
+                    const body = document.getElementById('archivedBody');
+                    if (!archivedPersonnel || !archivedPersonnel.length) {
+                        body.innerHTML = '<tr><td colspan="5" class="empty-state">Архів порожній</td></tr>';
+                        return;
+                    }
+                    let sorted = [...archivedPersonnel];
+                    if (sortArchivedCol) {
+                        sorted.sort((a, b) => {
+                            let va = getSortValArchived(a, sortArchivedCol);
+                            let vb = getSortValArchived(b, sortArchivedCol);
+                            if (typeof va === 'number' && typeof vb === 'number') {
+                                return (va - vb) * sortArchivedDir;
+                            }
+                            va = String(va).toLowerCase();
+                            vb = String(vb).toLowerCase();
+                            if (va < vb) return -1 * sortArchivedDir;
+                            if (va > vb) return 1 * sortArchivedDir;
+                            return 0;
+                        });
+                    }
+                    body.innerHTML = sorted.map((p, i) => {
+                        const fullName = `${p.lastName} ${p.firstName || ''} ${p.middleName || ''}`.trim();
+                        const num = p.personnelNumber ?? (i + 1);
+                        return `<tr>
+                            <td style="text-align:center">${num}</td>
+                            <td>${p.rank || '—'}</td>
+                            <td><strong>${escapeHtml(fullName)}</strong></td>
+                            <td>${p.fullPosition || p.position || '—'}</td>
+                            <td style="white-space:nowrap">
+                                <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
+                            </td>
+                        </tr>`;
+                    }).join('');
+                }
+
+                // ===== СОРТУВАННЯ =====
                 function sortBy(col) {
-                    if (sortCol === col) { sortDir *= -1; } else { sortCol = col; sortDir = 1; }
-                    document.querySelectorAll('thead th[data-col]').forEach(th => {
-                        th.classList.remove('sort-asc', 'sort-desc');
-                        if (th.dataset.col === col) th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
-                    });
+                    if (sortCol === col) {
+                        sortDir *= -1;
+                    } else {
+                        sortCol = col;
+                        sortDir = 1;
+                    }
                     applyFilters();
+                }
+
+                function sortArchivedBy(col) {
+                    if (sortArchivedCol === col) {
+                        sortArchivedDir *= -1;
+                    } else {
+                        sortArchivedCol = col;
+                        sortArchivedDir = 1;
+                    }
+                    renderArchivedTable();
                 }
 
                 function getSortVal(p, col) {
                     switch(col) {
-                        case 'num':      return p.personnelNumber ?? p.id ?? 0;
-                        case 'name':     return p.lastName || '';
-                        case 'rank':     return p.rank || '';
+                        case 'num': return p.personnelNumber ?? p.id ?? 0;
+                        case 'name': return p.lastName || '';
+                        case 'rank': return p.rank || '';
                         case 'position': return p.position || '';
-                        case 'phone':    return p.phone || '';
-                        case 'birth':    return p.birthDate || '';
-                        default:         return '';
+                        case 'phone': return p.phone || '';
+                        case 'birth': return p.birthDate || '';
+                        default: return '';
                     }
                 }
 
+                function getSortValArchived(p, col) {
+                    switch(col) {
+                        case 'num': return p.personnelNumber ?? p.id ?? 0;
+                        case 'name': return p.lastName || '';
+                        case 'rank': return p.rank || '';
+                        case 'position': return p.position || '';
+                        default: return '';
+                    }
+                }
+
+                // ===== ФІЛЬТР І ПОШУК =====
                 document.getElementById('searchInput').addEventListener('input', applyFilters);
 
                 function applyFilters() {
                     const q = document.getElementById('searchInput').value.toLowerCase();
-                    let filtered = !q ? allPersonnel : allPersonnel.filter(p =>
+                    let filtered = !q ? activePersonnel : activePersonnel.filter(p =>
                         p.lastName.toLowerCase().includes(q) ||
                         (p.firstName || '').toLowerCase().includes(q)
                     );
@@ -747,28 +846,42 @@
                         filtered = [...filtered].sort((a, b) => {
                             const va = getSortVal(a, sortCol);
                             const vb = getSortVal(b, sortCol);
-                            if (va < vb) return -1 * sortDir;
-                            if (va > vb) return  1 * sortDir;
+                            if (typeof va === 'number' && typeof vb === 'number') {
+                                return (va - vb) * sortDir;
+                            }
+                            const sa = String(va).toLowerCase();
+                            const sb = String(vb).toLowerCase();
+                            if (sa < sb) return -1 * sortDir;
+                            if (sa > sb) return 1 * sortDir;
                             return 0;
                         });
                     }
                     renderShortTable(filtered);
                     renderFullTable(filtered);
-                    const total    = filtered.length;
+                    renderStats(); // оновлюємо статистику після фільтра
+                }
+
+                // ===== СТАТИСТИКА (повернено категорії) =====
+                function renderStats() {
+                    const q = document.getElementById('searchInput').value.toLowerCase();
+                    let filtered = !q ? activePersonnel : activePersonnel.filter(p =>
+                        p.lastName.toLowerCase().includes(q) ||
+                        (p.firstName || '').toLowerCase().includes(q)
+                    );
+                    const total = filtered.length;
                     const officers = filtered.filter(p => p.rank && /лейтенант|капітан|майор|підполковник|полковник|генерал/i.test(p.rank)).length;
-                    const sergeants= filtered.filter(p => p.rank && /сержант|старшина/i.test(p.rank)).length;
+                    const sergeants = filtered.filter(p => p.rank && /сержант|старшина/i.test(p.rank)).length;
                     const soldiers = filtered.filter(p => p.rank && /солдат|рядовий/i.test(p.rank)).length;
-                    const fromAll  = filtered.length !== allPersonnel.length
-                        ? `<div class="stat-card"><div class="num" style="color:#555">${allPersonnel.length}</div><div class="lbl">Всього в базі</div></div>` : '';
+                    const archived = archivedPersonnel.length;
                     document.getElementById('statsBar').innerHTML =
-                        `<div class="stat-card"><div class="num">${total}</div><div class="lbl">Осіб</div></div>` +
+                        `<div class="stat-card"><div class="num">${total}</div><div class="lbl">В особовому складі</div></div>` +
                         `<div class="stat-card"><div class="num" style="color:#1565c0">${officers}</div><div class="lbl">Офіцерів</div></div>` +
                         `<div class="stat-card"><div class="num" style="color:#6a1b9a">${sergeants}</div><div class="lbl">Сержантів</div></div>` +
                         `<div class="stat-card"><div class="num" style="color:#2e7d32">${soldiers}</div><div class="lbl">Солдат</div></div>` +
-                        fromAll;
+                        `<div class="stat-card"><div class="num" style="color:#888">${archived}</div><div class="lbl">Архів</div></div>`;
                 }
 
-                // ===== ФУНКЦІЇ ДЛЯ ФОРМИ =====
+                // ===== ФОРМА =====
                 function openAddModal() {
                     document.getElementById('modalTitle').textContent = 'Додати особу';
                     document.getElementById('editId').value = '';
@@ -788,7 +901,7 @@
                 }
 
                 function openEditModal(id) {
-                    const p = allPersonnel.find(x => x.id === id);
+                    const p = activePersonnel.find(x => x.id === id);
                     if (!p) return;
                     document.getElementById('modalTitle').textContent = 'Редагувати особу';
                     document.getElementById('editId').value = id;
@@ -806,13 +919,11 @@
                 async function savePerson() {
                     const id = document.getElementById('editId').value;
 
-                    // Отримуємо значення полів
                     const personnelNumber = parseInt(document.getElementById('fPersonnelNumber').value);
                     const personnelStatus = document.getElementById('fPersonnelStatus').value;
                     const lastName = document.getElementById('fLastName').value.trim();
                     const firstName = document.getElementById('fFirstName').value.trim();
 
-                    // === ВАЛІДАЦІЯ ОБОВ'ЯЗКОВИХ ПОЛІВ ===
                     if (!personnelNumber || personnelNumber < 1) {
                         showToast('Порядковий номер обов\'язковий і має бути більше 0', 'error');
                         return;
@@ -843,14 +954,18 @@
 
                     const url    = id ? `/personnel/api/${id}` : '/personnel/api';
                     const method = id ? 'PUT' : 'POST';
-                    const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
-                    if (res.ok) {
-                        closeModal('formModal');
-                        await loadPersonnel();
-                        showToast(id ? 'Дані оновлено' : 'Особу додано', 'success');
-                    } else {
-                        const errorText = await res.text();
-                        showToast('Помилка: ' + errorText, 'error');
+                    try {
+                        const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+                        if (res.ok) {
+                            closeModal('formModal');
+                            await loadPersonnel();
+                            showToast(id ? 'Дані оновлено' : 'Особу додано', 'success');
+                        } else {
+                            const errorText = await res.text();
+                            showToast('Помилка: ' + errorText, 'error');
+                        }
+                    } catch (e) {
+                        showToast('Помилка мережі', 'error');
                     }
                 }
 
@@ -859,8 +974,12 @@
                     document.getElementById('confirmBtn').onclick = async () => {
                         const res = await fetch(`/personnel/api/${id}`, {method:'DELETE'});
                         closeModal('confirmModal');
-                        if (res.ok) { await loadPersonnel(); showToast('Особу видалено', 'success'); }
-                        else showToast('Помилка видалення', 'error');
+                        if (res.ok) {
+                            await loadPersonnel();
+                            showToast('Особу переміщено в архів', 'success');
+                        } else {
+                            showToast('Помилка видалення', 'error');
+                        }
                     };
                     openModal('confirmModal');
                 }
@@ -870,9 +989,11 @@
                 document.querySelectorAll('.modal-overlay').forEach(el =>
                     el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
                 );
+
                 function showToast(msg, type = 'success') {
                     const t = document.getElementById('toast');
-                    t.textContent = msg; t.className = `toast ${type} show`;
+                    t.textContent = msg;
+                    t.className = `toast ${type} show`;
                     setTimeout(() => t.classList.remove('show'), 3000);
                 }
 
@@ -890,6 +1011,7 @@
                     window.location.href = '/personnel/api/export';
                 }
 
+                // ===== ІНІЦІАЛІЗАЦІЯ =====
                 loadPersonnel();
             </script>
         </div>

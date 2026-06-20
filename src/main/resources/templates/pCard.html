@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:text="'Картка: ' + ${person.fullName}">Картка особи</title>
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link th:replace="~{fragments :: sidebar-css}">
   <style>
     /* ===== ОСНОВНІ СТИЛІ З ВИКОРИСТАННЯМ ЗМІННИХ ===== */
@@ -136,6 +135,17 @@
       outline: none;
     }
     .info-value:empty::before { content: "—"; color: var(--text-light, #bbb); }
+
+    /* Для обов'язкових полів – підсвічування */
+    .info-value.required::after {
+      content: " *";
+      color: #d32f2f;
+      font-weight: bold;
+    }
+    .info-value.error {
+      border-color: #d32f2f !important;
+      background: #ffebee !important;
+    }
 
     .section-title {
       font-size: 18px;
@@ -285,6 +295,10 @@
     .dark-theme .btn-outline:hover {
       background: rgba(255,255,255,0.1);
     }
+    .dark-theme .info-value.error {
+      border-color: #ef9a9a !important;
+      background: #3a1a1a !important;
+    }
   </style>
 </head>
 <body>
@@ -314,12 +328,12 @@
           <div class="section-title">№ Порядковий номер та Статус</div>
           <div class="info-grid">
             <div class="info-field">
-              <div class="info-label">Порядковий номер</div>
-              <div class="info-value" data-field="personnelNumber" th:text="${person.personnelNumber}">—</div>
+              <div class="info-label">Порядковий номер <span style="color:#d32f2f;">*</span></div>
+              <div class="info-value required" data-field="personnelNumber" th:text="${person.personnelNumber}">—</div>
             </div>
             <div class="info-field">
-              <div class="info-label">Статус</div>
-              <div class="info-value" data-field="personnelStatus" th:text="${person.personnelStatus}">—</div>
+              <div class="info-label">Статус <span style="color:#d32f2f;">*</span></div>
+              <div class="info-value required" data-field="personnelStatus" th:text="${person.personnelStatus}">—</div>
             </div>
           </div>
           <hr>
@@ -358,7 +372,7 @@
             <div class="info-field"><div class="info-label">Адреса проживання</div><div class="info-value" data-field="livingAddress" th:text="${person.livingAddress}">—</div></div>
           </div>
 
-          <!-- Таблиця освіти -->
+          <!-- Освіта -->
           <div class="section-title">🎓 Освіта</div>
           <div class="sub-section">
             <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
@@ -378,7 +392,7 @@
             <div class="info-field"><div class="info-label">Адреса проживання (сім'я)</div><div class="info-value" data-field="familyAddress" th:text="${person.familyAddress}">—</div></div>
           </div>
 
-          <!-- Таблиця дітей -->
+          <!-- Діти -->
           <div class="section-title">👶 Діти</div>
           <div class="sub-section">
             <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
@@ -442,7 +456,7 @@
             <div class="info-field"><div class="info-label">Розмір головного убору</div><div class="info-value" data-field="headwearSize" th:text="${person.headwearSize}">—</div></div>
           </div>
 
-          <!-- Таблиця зброї -->
+          <!-- Зброя -->
           <div class="section-title">🔫 Закріплена зброя</div>
           <div class="sub-section">
             <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
@@ -489,7 +503,7 @@
             </table>
           </div>
 
-          <!-- Попередня військова служба (таблиця) -->
+          <!-- Попередня військова служба -->
           <div class="section-title">🪖 Попередня військова служба</div>
           <div class="sub-section">
             <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
@@ -699,7 +713,7 @@
     window.location.reload();
   }
 
-  // ===== РЕДАГУВАННЯ ПОЛІВ =====
+  // ===== РЕДАГУВАННЯ ПОЛІВ (з валідацією для обов'язкових) =====
   function startEdit(el) {
     if (activeEditor && activeEditor !== el) finishEdit(activeEditor);
     if (activeEditor === el) return;
@@ -712,8 +726,22 @@
     const dateFields = ['birthDate', 'draftDate', 'ubdDate', 'admissionDate', 'enrollmentDate'];
     const selectFields = ['rank', 'bloodGroup', 'maritalStatus', 'serviceFor', 'personnelStatus'];
     const textareaFields = ['fullPosition', 'note'];
+    const numberFields = ['personnelNumber', 'shoeSize', 'uniformSize', 'headwearSize'];
 
-    if (dateFields.includes(field)) {
+    if (field === 'personnelNumber') {
+      input = document.createElement('input');
+      input.type = 'number';
+      input.step = '1';
+      input.min = '1';
+      input.required = true;
+      input.value = currentValue;
+    } else if (field === 'personnelStatus') {
+      input = document.createElement('select');
+      input.required = true;
+      const options = ['В особовому складі', 'Не в особовому складі'];
+      input.innerHTML = '<option value="">— оберіть —</option>' + options.map(o => `<option value="${o}">${o}</option>`).join('');
+      input.value = currentValue;
+    } else if (dateFields.includes(field)) {
       input = document.createElement('input');
       input.type = 'date';
       if (currentValue && currentValue.match(/^\d{2}\.\d{2}\.\d{4}$/)) {
@@ -725,17 +753,12 @@
       input = document.createElement('input');
       input.type = 'tel';
       input.value = currentValue;
-    } else if (field === 'personnelNumber') {
-      input = document.createElement('input');
-      input.type = 'number';
-      input.step = '1';
-      input.value = currentValue;
     } else if (field === 'taxId') {
       input = document.createElement('input');
       input.type = 'text';
       input.inputMode = 'numeric';
       input.value = currentValue;
-    } else if (field === 'shoeSize' || field === 'uniformSize' || field === 'headwearSize') {
+    } else if (numberFields.includes(field)) {
       input = document.createElement('input');
       input.type = 'number';
       input.step = '0.5';
@@ -745,9 +768,8 @@
       let options = [];
       if (field === 'rank') options = ['Солдат','Старший солдат','Молодший сержант','Сержант','Старший сержант','Головний сержант','Штаб-сержант','Майстер-сержант','Молодший лейтенант','Лейтенант','Старший лейтенант','Капітан'];
       else if (field === 'bloodGroup') options = ['O(I) Rh+','O(I) Rh-','A(II) Rh+','A(II) Rh-','B(III) Rh+','B(III) Rh-','AB(IV) Rh+','AB(IV) Rh-'];
-      else if (field === 'maritalStatus') options = ['Одружений(на)','Не одружений(на)','Розлучений(на)','Вдівець/Вдова'];
+      else if (field === 'maritalStatus') options = ['Одружений','Незаміжній','Розлучений','Вдівець/Вдова'];
       else if (field === 'serviceFor') options = ['За мобілізацією','За контрактом'];
-      else if (field === 'personnelStatus') options = ['В особовому складі', 'Не в особовому складі'];
       input.innerHTML = '<option value="">— не вказано —</option>' + options.map(o => `<option value="${o}">${o}</option>`).join('');
       input.value = currentValue;
     } else if (textareaFields.includes(field)) {
@@ -775,6 +797,26 @@
     const save = () => {
       if (activeEditor !== el) return;
       let newVal = input.value.trim();
+
+      // === ВАЛІДАЦІЯ ДЛЯ ОБОВ'ЯЗКОВИХ ПОЛІВ ===
+      if (field === 'personnelNumber') {
+        const num = parseInt(newVal);
+        if (isNaN(num) || num < 1) {
+          showToast('Порядковий номер має бути числом більше 0', 'error');
+          el.classList.add('error');
+          setTimeout(() => el.classList.remove('error'), 2000);
+          return;
+        }
+      }
+      if (field === 'personnelStatus') {
+        if (!newVal) {
+          showToast('Оберіть статус особи', 'error');
+          el.classList.add('error');
+          setTimeout(() => el.classList.remove('error'), 2000);
+          return;
+        }
+      }
+
       if (newVal === '') newVal = '—';
 
       if (newVal === currentValue) {
@@ -806,7 +848,7 @@
         }
       }
 
-      if (field === 'personnelNumber' || field === 'shoeSize' || field === 'uniformSize' || field === 'headwearSize') {
+      if (numberFields.includes(field) && newVal !== '—') {
         const num = parseFloat(newVal);
         if (!isNaN(num)) {
           isoValue = num;
@@ -1022,7 +1064,7 @@
     if (isEditMode) showActionButtons();
   }
 
-  // ===== ОСВІТА =====
+  // ===== ОСВІТА (CRUD) =====
   async function openEditEducation(id) {
     const res = await fetch(`/personnel/api/${currentPersonId}/education/${id}`);
     const data = await res.json();
@@ -1073,7 +1115,7 @@
     });
   }
 
-  // ===== ДІТИ =====
+  // ===== ДІТИ (CRUD) =====
   async function openEditChild(id) {
     const res = await fetch(`/personnel/api/${currentPersonId}/children/${id}`);
     const data = await res.json();
@@ -1116,7 +1158,7 @@
     });
   }
 
-  // ===== ЗБРОЯ =====
+  // ===== ЗБРОЯ (CRUD) =====
   async function openEditWeapon(id) {
     const res = await fetch(`/personnel/api/${currentPersonId}/weapons/${id}`);
     const data = await res.json();
@@ -1167,7 +1209,7 @@
     });
   }
 
-  // ===== ВОС НАВЧАННЯ =====
+  // ===== ВОС НАВЧАННЯ (CRUD) =====
   async function openEditVosTraining(id) {
     const res = await fetch(`/personnel/api/${currentPersonId}/vos-training/${id}`);
     const data = await res.json();
@@ -1236,7 +1278,7 @@
     });
   }
 
-  // ===== ПОПЕРЕДНЯ ВІЙСЬКОВА СЛУЖБА =====
+  // ===== ПОПЕРЕДНЯ ВІЙСЬКОВА СЛУЖБА (CRUD) =====
   async function openEditPrevService(id) {
     const res = await fetch(`/personnel/api/${currentPersonId}/previous-service/${id}`);
     const data = await res.json();

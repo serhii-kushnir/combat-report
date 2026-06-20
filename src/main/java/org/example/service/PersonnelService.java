@@ -17,6 +17,10 @@ public class PersonnelService {
     private static final Logger log = LoggerFactory.getLogger(PersonnelService.class);
     private final PersonnelRepository repository;
 
+    public List<Personnel> getByStatus(String status) {
+        return repository.findByPersonnelStatus(status);
+    }
+
     public PersonnelService(PersonnelRepository repository) {
         this.repository = repository;
     }

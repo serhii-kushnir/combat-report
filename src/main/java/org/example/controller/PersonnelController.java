@@ -117,6 +117,12 @@ public class PersonnelController {
         }
     }
 
+    @GetMapping("/api/status/{status}")
+    @ResponseBody
+    public List<Personnel> getByStatus(@PathVariable String status) {
+        return service.getByStatus(status);
+    }
+
     @PutMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Personnel personnel) {

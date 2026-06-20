@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="uk" xmlns:th="http://www.thymeleaf.org">
 <th:block th:fragment="sidebar-css">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         /* ========== CSS ЗМІННІ ДЛЯ ТЕМ ========== */
         :root {
-            /* Світла тема (за замовчуванням) */
             --bg-body: #f0f2f5;
             --bg-card: #ffffff;
             --bg-header: #1a237e;
@@ -33,7 +33,6 @@
             --toast-error: #c62828;
         }
 
-        /* Темна тема – темно-сіра, без чорного */
         body.dark-theme {
             --bg-body: #1e1e24;
             --bg-card: #2d2d35;
@@ -89,30 +88,67 @@
         }
         .sidebar.collapsed { width: 52px; min-width: 52px; }
 
+        /* --- ЛОГОТИП ТА КНОПКА --- */
         .sidebar-logo {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 10px;
-            padding: 14px 14px 12px;
+            padding: 14px 0 6px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            white-space: nowrap;
-            overflow: hidden;
             flex-shrink: 0;
         }
-        .sidebar-logo .logo-text { transition: opacity 0.2s; overflow: hidden; }
+        .sidebar-logo .logo-icon {
+            flex-shrink: 0;
+            height: 32px;
+            width: 32px;
+            object-fit: contain;
+            margin-bottom: 4px;
+        }
+        .sidebar-logo .logo-text-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: opacity 0.2s, height 0.2s;
+            overflow: hidden;
+        }
         .sidebar-logo .unit { font-size: 15px; font-weight: bold; color: white; }
         .sidebar-logo .sub  { font-size: 11px; color: #90caf9; margin-top: 2px; }
-        .sidebar.collapsed .logo-text { opacity: 0; width: 0; pointer-events: none; }
 
+        /* Кнопка перемикання – на всю ширину */
         .toggle-btn {
-            background: none; border: none; color: #90caf9;
-            cursor: pointer; font-size: 18px; padding: 0;
-            flex-shrink: 0; line-height: 1;
-            margin-left: auto;
+            background: none;
+            border: none;
+            color: #90caf9;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 6px 0;
+            width: 100%;
+            text-align: center;
+            transition: background 0.2s, color 0.2s;
+            line-height: 1;
+            margin-top: 4px;
         }
-        .toggle-btn:hover { color: white; }
-        .sidebar.collapsed .toggle-btn { margin-left: 0; }
+        .toggle-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
 
+        /* --- СТАН ЗГОРНУТОГО САЙДБАРУ --- */
+        .sidebar.collapsed .sidebar-logo {
+            padding: 14px 0 6px;
+        }
+        .sidebar.collapsed .logo-text-block {
+            opacity: 0;
+            height: 0;
+            pointer-events: none;
+            margin: 0;
+        }
+        .sidebar.collapsed .toggle-btn {
+            font-size: 20px;
+            padding: 8px 0;
+        }
+
+        /* ========== НАВІГАЦІЯ ========== */
         .sidebar-nav { flex: 1; padding: 8px 0; overflow-y: auto; overflow-x: hidden; }
 
         .nav-section-title {
@@ -175,25 +211,30 @@
             transition: background 0.2s;
             margin-bottom: 6px;
             display: inline-block;
+            width: 100%;
         }
         .theme-toggle:hover {
             background: rgba(255,255,255,0.1);
         }
 
+        /* Версія – показуємо повний текст або тільки номер */
         .version {
             display: block;
             font-size: 11px;
             color: #5c6bc0;
             margin-top: 6px;
-            transition: opacity 0.2s, height 0.2s, margin 0.2s;
             white-space: nowrap;
             overflow: hidden;
+            transition: opacity 0.2s, height 0.2s, margin 0.2s;
         }
-        .sidebar.collapsed .version {
-            opacity: 0;
-            height: 0;
-            margin-top: 0;
-            pointer-events: none;
+        .version .version-short {
+            display: none;
+        }
+        .sidebar.collapsed .version .version-full {
+            display: none;
+        }
+        .sidebar.collapsed .version .version-short {
+            display: inline;
         }
 
         .logout-form {
@@ -233,7 +274,7 @@
         }
         .main-content.collapsed { margin-left: 52px; }
 
-        /* ========== ГЛОБАЛЬНІ СТИЛІ ДЛЯ ЕЛЕМЕНТІВ ========== */
+        /* ========== ГЛОБАЛЬНІ СТИЛІ ========== */
         .btn-primary {
             background: var(--bg-btn-primary);
             color: white;
@@ -307,7 +348,6 @@
         .btn-secondary { background: #6c757d; color: white; }
         .btn-secondary:hover { background: #5a6268; }
 
-        /* Стилі для темної теми – додаткові */
         .dark-theme .btn-secondary {
             background: #4a4a55;
             color: white;
@@ -337,16 +377,17 @@
             background: rgba(255,255,255,0.1);
         }
 
-
-        /* ===== АДАПТИВНІСТЬ ===== */
         @media (max-width: 768px) {
             .sidebar { width: 52px; min-width: 52px; }
-            .sidebar .logo-text { opacity: 0; width: 0; pointer-events: none; }
+            .sidebar .logo-text-block { opacity: 0; height: 0; pointer-events: none; margin:0; }
+            .sidebar .sidebar-logo { padding: 14px 0 6px; }
+            .sidebar .toggle-btn { font-size: 20px; padding: 8px 0; }
+            .sidebar .version .version-full { display: none; }
+            .sidebar .version .version-short { display: inline; }
             .sidebar .nav-item .label { opacity: 0; width: 0; overflow: hidden; }
             .sidebar .nav-item { justify-content: center; padding: 10px 0; }
             .sidebar .nav-item.active { border-left-color: transparent; border-right: 3px solid #90caf9; }
             .sidebar .nav-section-title { opacity: 0; height: 0; padding: 0; }
-            .sidebar .version { opacity: 0; height: 0; margin-top: 0; pointer-events: none; }
             .sidebar .logout-text { display: none; }
             .sidebar .logout-icon { font-size: 18px; }
             .main-content { margin-left: 52px; }
@@ -357,10 +398,14 @@
 <!-- ===== SIDEBAR HTML ===== -->
 <div th:fragment="sidebar(activePage)" id="sidebar" class="sidebar">
     <div class="sidebar-logo">
-        <span class="logo-text">
-            <div class="unit">⚔️ БпЛА "СКОПА"</div>
+        <!-- Іконка завжди видима -->
+        <img src="/favicon.png" alt="Логотип" class="logo-icon">
+        <!-- Текстовий блок -->
+        <span class="logo-text-block">
+            <div class="unit">БпЛА "СКОПА"</div>
             <div class="sub">Система управління</div>
         </span>
+        <!-- Кнопка згортання/розгортання – на всю ширину -->
         <button class="toggle-btn" id="toggleBtn" title="Згорнути меню">☰</button>
     </div>
 
@@ -400,7 +445,10 @@
                 <span class="logout-text">Вийти</span>
             </button>
         </form>
-        <span class="version">v1.1 - by Serhii Kushnir</span>
+        <span class="version">
+            <span class="version-full">v1.1 - by Serhii Kushnir</span>
+            <span class="version-short">v1.1</span>
+        </span>
     </div>
 </div>
 
@@ -412,6 +460,9 @@
             var btn     = document.getElementById('toggleBtn');
             var main    = document.querySelector('.main-content');
             var KEY     = 'sidebar_collapsed';
+
+            if (!sidebar) { console.error('Сайдбар не знайдено!'); return; }
+            if (!btn) { console.error('Кнопка toggle не знайдена!'); return; }
 
             function applyState(collapsed) {
                 if (collapsed) {
@@ -427,23 +478,29 @@
                     if (main) { main.classList.remove('collapsed'); main.style.marginLeft = '220px'; }
                     btn.title = 'Згорнути меню';
                 }
+                console.log('Стан сайдбару:', collapsed ? 'згорнуто' : 'розгорнуто');
             }
+
+            // За замовчуванням – згорнуто, якщо в localStorage немає значення
+            var stored = localStorage.getItem(KEY);
+            var initialCollapsed = (stored === null) ? '1' : stored;
 
             sidebar.style.transition = 'none';
             if (main) main.style.transition = 'none';
-            applyState(localStorage.getItem(KEY) === '1');
+            applyState(initialCollapsed === '1');
             setTimeout(function() {
                 sidebar.style.transition = '';
                 if (main) main.style.transition = '';
             }, 50);
 
             btn.addEventListener('click', function() {
+                console.log('Клік по кнопці!');
                 var collapsed = !sidebar.classList.contains('collapsed');
                 localStorage.setItem(KEY, collapsed ? '1' : '0');
                 applyState(collapsed);
             });
 
-            // ===== ПЕРЕМИКАННЯ ТЕМИ =====
+            // ===== ТЕМА =====
             var themeToggle = document.getElementById('themeToggle');
             if (themeToggle) {
                 var savedTheme = localStorage.getItem('theme');
@@ -461,5 +518,4 @@
         })();
     </script>
 </th:block>
-
 </html>
