@@ -165,6 +165,20 @@
       background: #ffebee !important;
     }
 
+    .btn-success {
+      background: var(--btn-success-bg, #388e3c);
+      color: white;
+    }
+    .btn-success:hover {
+      background: var(--btn-success-hover, #2e7d32);
+    }
+    .dark-theme .btn-success {
+      background: var(--btn-success-bg, #3a6a3a);
+    }
+    .dark-theme .btn-success:hover {
+      background: var(--btn-success-hover, #4a7a4a);
+    }
+
     .section-title {
       font-size: 18px;
       font-weight: 700;
@@ -354,7 +368,7 @@
             <button class="btn btn-warning" id="saveAllBtn" style="display:none;">💾 Зберегти всі</button>
             <button class="btn btn-secondary" id="cancelEditBtn" style="display:none;">❌ Скасувати</button>
             <button class="btn btn-danger" id="deleteBtn" onclick="confirmDeletePerson()" style="display:none;">🗑 Видалити особу</button>
-            <!-- НОВА КНОПКА ЕКСПОРТУ / ДРУК -->
+            <button class="btn btn-success" onclick="exportPersonXlsx()">📤 Експорт xlsx</button>
             <button class="btn btn-secondary" onclick="window.print()">
               <i class="fas fa-print"></i> Друк
             </button>
@@ -701,6 +715,17 @@
   let isEditMode = false;
   let activeEditor = null;
   let confirmCallback = null;
+
+  // ===== ЕКСПОРТ ОДНІЄЇ ОСОБИ В XLSX =====
+  function exportPersonXlsx() {
+    const id = currentPersonId; // глобальна змінна, встановлена в pCard
+    if (!id) {
+      showToast('ID особи не знайдено', 'error');
+      return;
+    }
+    // Відкриваємо URL для завантаження
+    window.location.href = `/personnel/api/${id}/export`;
+  }
 
   // ===== ДОПОМІЖНІ ФУНКЦІЇ =====
   function showToast(msg, type) {

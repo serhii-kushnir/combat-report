@@ -123,6 +123,25 @@ public class PersonnelController {
         return service.getByStatus(status);
     }
 
+    @GetMapping("/api/{id}/export")
+    public ResponseEntity<byte[]> exportPersonXlsx(@PathVariable Long id) {
+        try {
+            byte[] data = exportService.exportPersonToXlsx(id);
+            String filename = URLEncoder.encode(
+                    "Особа_" + id + ".xlsx",
+                    StandardCharsets.UTF_8
+            ).replace("+", "%20");
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + filename + "\"; filename*=UTF-8''" + filename)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(data);
+        } catch (Exception e) {
+            log.error("Помилка експорту особи id={}", id, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     @PutMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Personnel personnel) {

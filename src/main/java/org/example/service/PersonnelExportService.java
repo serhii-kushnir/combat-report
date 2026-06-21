@@ -293,4 +293,112 @@ public class PersonnelExportService {
         s.setBorderLeft(BorderStyle.THIN);
         s.setBorderRight(BorderStyle.THIN);
     }
+
+    public byte[] exportPersonToXlsx(Long id) throws Exception {
+        Personnel p = personnelService.getById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Особу не знайдено: " + id));
+
+        // Завантажуємо пов'язані дані (освіта, діти, зброя)
+        List<PersonnelEducation> edus = eduRepo.findByPersonnelIdOrderByStartDateAsc(id);
+        List<PersonnelChild> children = childRepo.findByPersonnelIdOrderByBirthDateAsc(id);
+        List<PersonnelWeapon> weapons = weaponRepo.findByPersonnelId(id);
+
+        try (XSSFWorkbook wb = new XSSFWorkbook();
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+            // Створюємо один аркуш з даними особи
+            XSSFSheet sheet = wb.createSheet("Особа");
+
+            XSSFCellStyle headerStyle = createHeaderStyle(wb);
+            XSSFCellStyle dataStyle = createDataStyle(wb);
+            XSSFCellStyle centerStyle = createCenterStyle(wb);
+
+            // Заголовки (можна взяти з відомості ОС)
+            String[] headers = {
+                    "№", "Прізвище", "Ім'я", "По батькові", "Звання", "Коротка посада", "Повна посада",
+                    "Телефон", "Дата народження", "ІПН", "Паспорт (серія, номер)", "Група крові",
+                    "Водійське посвідчення", "Освіта", "Заклад освіти", "Спеціальність",
+                    "Початок", "Кінець", "Диплом", "Адреса реєстрації", "Адреса проживання",
+                    "Сімейний стан", "Дружина/Чоловік", "Діти", "Адреса сім'ї",
+                    "Дата призову", "Ким призваний", "Вид служби", "УБД №",
+                    "Форма допуску", "Зарахування", "Військова служба за",
+                    "Зброя (модель, №, дата)", "Примітка"
+            };
+
+            // Заповнюємо заголовки
+            XSSFRow headerRow = sheet.createRow(0);
+            headerRow.setHeightInPoints(25);
+            for (int i = 0; i < headers.length; i++) {
+                sheet.setColumnWidth(i, (headers[i].length() + 6) * 256);
+                XSSFCell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            // Заповнюємо дані однієї особи
+            XSSFRow dataRow = sheet.createRow(1);
+            dataRow.setHeightInPoints(20);
+
+            int col = 0;
+            setCell(dataRow, col++, 1, centerStyle); // №
+            setCell(dataRow, col++, p.getLastName(), dataStyle);
+            setCell(dataRow, col++, p.getFirstName(), dataStyle);
+            setCell(dataRow, col++, p.getMiddleName(), dataStyle);
+            setCell(dataRow, col++, p.getRank(), dataStyle);
+            setCell(dataRow, col++, p.getPosition(), dataStyle);
+            setCell(dataRow, col++, p.getFullPosition(), dataStyle);
+            setCell(dataRow, col++, p.getPhone(), centerStyle);
+            setCell(dataRow, col++, fmt(p.getBirthDate()), centerStyle);
+            setCell(dataRow, col++, p.getTaxId(), centerStyle);
+            String passport = Stream.of(p.getPassportSeries(), p.getPassportNumber())
+                    .filter(s -> s != null && !s.isBlank())
+                    .collect(Collectors.joining(" "));
+            setCell(dataRow, col++, passport, centerStyle);
+            setCell(dataRow, col++, p.getBloodGroup(), centerStyle);
+            String driver = Stream.of(p.getDriverLicenseSeries(), p.getDriverLicenseNumber(), p.getDriverLicenseCategory())
+                    .filter(s -> s != null && !s.isBlank())
+                    .collect(Collectors.joining(" "));
+            setCell(dataRow, col++, driver, centerStyle);
+
+            // Освіта (беремо перший запис)
+            PersonnelEducation firstEdu = edus.isEmpty() ? null : edus.get(0);
+            setCell(dataRow, col++, firstEdu != null ? firstEdu.getLevel() : "", dataStyle);
+            setCell(dataRow, col++, firstEdu != null ? firstEdu.getInstitution() : "", dataStyle);
+            setCell(dataRow, col++, firstEdu != null ? firstEdu.getSpeciality() : "", dataStyle);
+            setCell(dataRow, col++, firstEdu != null ? fmt(firstEdu.getStartDate()) : "", centerStyle);
+            setCell(dataRow, col++, firstEdu != null ? fmt(firstEdu.getEndDate()) : "", centerStyle);
+            setCell(dataRow, col++, firstEdu != null ? firstEdu.getDiploma() : "", centerStyle);
+
+            setCell(dataRow, col++, p.getRegistrationAddress(), dataStyle);
+            setCell(dataRow, col++, p.getLivingAddress(), dataStyle);
+            setCell(dataRow, col++, p.getMaritalStatus(), centerStyle);
+            setCell(dataRow, col++, p.getSpouseName(), dataStyle);
+
+            // Діти (перелік через кому)
+            String childrenList = children.stream()
+                    .map(c -> c.getFullName() + " (" + fmt(c.getBirthDate()) + ")")
+                    .collect(Collectors.joining(", "));
+            setCell(dataRow, col++, childrenList, dataStyle);
+
+            setCell(dataRow, col++, p.getFamilyAddress(), dataStyle);
+            setCell(dataRow, col++, fmt(p.getDraftDate()), centerStyle);
+            setCell(dataRow, col++, p.getDraftOrganization(), dataStyle);
+            setCell(dataRow, col++, p.getServiceType(), centerStyle);
+            setCell(dataRow, col++, p.getUbdNumber(), centerStyle);
+            setCell(dataRow, col++, p.getAdmissionForm(), dataStyle);
+            setCell(dataRow, col++, p.getEnrollmentInfo(), dataStyle);
+            setCell(dataRow, col++, p.getServiceFor(), centerStyle);
+
+            // Зброя (перелік через кому)
+            String weaponList = weapons.stream()
+                    .map(w -> w.getWeaponType() + " №" + w.getSerialNumber() + (w.getIssuedDate() != null ? " (" + w.getIssuedDate() + ")" : ""))
+                    .collect(Collectors.joining(", "));
+            setCell(dataRow, col++, weaponList, dataStyle);
+
+            setCell(dataRow, col++, p.getNote(), dataStyle);
+
+            wb.write(out);
+            return out.toByteArray();
+        }
+    }
 }
