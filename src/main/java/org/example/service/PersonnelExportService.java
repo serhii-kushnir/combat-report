@@ -26,7 +26,7 @@ public class PersonnelExportService {
     private final PersonnelChildRepository childRepo;
     private final PersonnelWeaponRepository weaponRepo;
 
-    // Конструктор – тепер тільки три репозиторії (без VosTraining та PreviousService)
+    // Конструктор – тільки три репозиторії
     public PersonnelExportService(PersonnelService personnelService,
                                   PersonnelEducationRepository eduRepo,
                                   PersonnelChildRepository childRepo,
@@ -37,17 +37,13 @@ public class PersonnelExportService {
         this.weaponRepo = weaponRepo;
     }
 
-    // ======================================================================
-    //                         ЕКСПОРТ ВСІХ ОСІБ (ВІДОМІСТЬ)
-    // ======================================================================
-
+    // ===== ЕКСПОРТ ВСІХ ОСІБ (ВІДОМІСТЬ) =====
     public byte[] exportToXlsx() throws Exception {
         List<Personnel> list = personnelService.getAll();
 
         try (XSSFWorkbook wb = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-            // ===== ЛИСТ 1: Розширена відомість =====
             XSSFSheet sheet = wb.createSheet("Відомість ОС");
 
             XSSFCellStyle headerStyle = createHeaderStyle(wb);
@@ -148,87 +144,12 @@ public class PersonnelExportService {
                 setCell(row, col++, p.getNote(), dataStyle);
             }
 
-            // ===== Лист 2: Освіта (всі записи) =====
-            XSSFSheet eduSheet = wb.createSheet("Освіта");
-            String[] EDU_HEADERS = {"№", "ПІБ", "Рівень", "Заклад", "Спеціальність", "Початок", "Кінець", "Диплом №"};
-            int[] EDU_WIDTHS = {6, 25, 16, 30, 25, 14, 14, 16};
-            XSSFRow eduHead = eduSheet.createRow(0);
-            for (int c = 0; c < EDU_HEADERS.length; c++) {
-                eduSheet.setColumnWidth(c, EDU_WIDTHS[c] * 256);
-                XSSFCell cell = eduHead.createCell(c);
-                cell.setCellValue(EDU_HEADERS[c]);
-                cell.setCellStyle(headerStyle);
-            }
-            int eduRow = 1;
-            for (Personnel p : list) {
-                List<PersonnelEducation> edus = eduRepo.findByPersonnelIdOrderByStartDateAsc(p.getId());
-                for (PersonnelEducation e : edus) {
-                    XSSFRow row = eduSheet.createRow(eduRow++);
-                    setCell(row, 0, eduRow - 1, centerStyle);
-                    setCell(row, 1, p.getFullName(), dataStyle);
-                    setCell(row, 2, e.getLevel(), dataStyle);
-                    setCell(row, 3, e.getInstitution(), dataStyle);
-                    setCell(row, 4, e.getSpeciality(), dataStyle);
-                    setCell(row, 5, fmt(e.getStartDate()), centerStyle);
-                    setCell(row, 6, fmt(e.getEndDate()), centerStyle);
-                    setCell(row, 7, e.getDiploma(), centerStyle);
-                }
-            }
-
-            // ===== Лист 3: Діти =====
-            XSSFSheet childSheet = wb.createSheet("Діти");
-            String[] CHILD_HEADERS = {"№", "ПІБ батька/матері", "ПІБ дитини", "Дата народження"};
-            int[] CHILD_WIDTHS = {6, 30, 30, 16};
-            XSSFRow childHead = childSheet.createRow(0);
-            for (int c = 0; c < CHILD_HEADERS.length; c++) {
-                childSheet.setColumnWidth(c, CHILD_WIDTHS[c] * 256);
-                XSSFCell cell = childHead.createCell(c);
-                cell.setCellValue(CHILD_HEADERS[c]);
-                cell.setCellStyle(headerStyle);
-            }
-            int childRow = 1;
-            for (Personnel p : list) {
-                List<PersonnelChild> children = childRepo.findByPersonnelIdOrderByBirthDateAsc(p.getId());
-                for (PersonnelChild c : children) {
-                    XSSFRow row = childSheet.createRow(childRow++);
-                    setCell(row, 0, childRow - 1, centerStyle);
-                    setCell(row, 1, p.getFullName(), dataStyle);
-                    setCell(row, 2, c.getFullName(), dataStyle);
-                    setCell(row, 3, fmt(c.getBirthDate()), centerStyle);
-                }
-            }
-
-            // ===== Лист 4: Озброєння =====
-            XSSFSheet weaponSheet = wb.createSheet("Озброєння");
-            String[] WEAPON_HEADERS = {"№", "ПІБ", "Тип зброї", "Серійний №", "Дата видачі", "Примітка"};
-            int[] WEAPON_WIDTHS = {6, 30, 18, 16, 14, 25};
-            XSSFRow weaponHead = weaponSheet.createRow(0);
-            for (int c = 0; c < WEAPON_HEADERS.length; c++) {
-                weaponSheet.setColumnWidth(c, WEAPON_WIDTHS[c] * 256);
-                XSSFCell cell = weaponHead.createCell(c);
-                cell.setCellValue(WEAPON_HEADERS[c]);
-                cell.setCellStyle(headerStyle);
-            }
-            int weaponRow = 1;
-            for (Personnel p : list) {
-                List<PersonnelWeapon> weapons = weaponRepo.findByPersonnelId(p.getId());
-                for (PersonnelWeapon w : weapons) {
-                    XSSFRow row = weaponSheet.createRow(weaponRow++);
-                    setCell(row, 0, weaponRow - 1, centerStyle);
-                    setCell(row, 1, p.getFullName(), dataStyle);
-                    setCell(row, 2, w.getWeaponType(), dataStyle);
-                    setCell(row, 3, w.getSerialNumber(), centerStyle);
-                    setCell(row, 4, w.getIssuedDate(), centerStyle);
-                    setCell(row, 5, w.getNote(), dataStyle);
-                }
-            }
-
             wb.write(out);
             return out.toByteArray();
         }
     }
 
-    // ==================== ДОПОМІЖНІ МЕТОДИ (стилі, форматування) ====================
+    // ==================== ДОПОМІЖНІ МЕТОДИ ====================
 
     private void setCell(XSSFRow row, int col, Object value, XSSFCellStyle style) {
         XSSFCell cell = row.createCell(col);
