@@ -127,10 +127,9 @@ public class PersonnelController {
     public ResponseEntity<byte[]> exportPersonXlsx(@PathVariable Long id) {
         try {
             byte[] data = exportService.exportPersonToXlsx(id);
-            String filename = URLEncoder.encode(
-                    "Особа_" + id + ".xlsx",
-                    StandardCharsets.UTF_8
-            ).replace("+", "%20");
+            Personnel p = service.getById(id).orElse(null);
+            String name = p != null ? p.getLastName() + "_" + p.getFirstName() : "Особа_" + id;
+            String filename = URLEncoder.encode(name + ".xlsx", StandardCharsets.UTF_8).replace("+", "%20");
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION,
                             "attachment; filename=\"" + filename + "\"; filename*=UTF-8''" + filename)
