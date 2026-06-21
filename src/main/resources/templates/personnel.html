@@ -221,7 +221,7 @@
             font-size: 12px;
             border-bottom: 1px solid var(--border-light);
             color: var(--text-primary);
-            vertical-align: top;
+            /*vertical-align: top;*/
             transition: border-color 0.3s, color 0.3s;
         }
         tr:hover td {
@@ -572,7 +572,7 @@
                             <th style="width:125px;" data-col="rank" onclick="sortBy('rank')">Звання</th>
                             <th data-col="name" onclick="sortBy('name')">ПІБ</th>
                             <th data-col="position" onclick="sortBy('position')">Повна посада</th>
-                            <th style="width:60px">Дії</th>
+                            <th style="width:60px" class="no-print">Дії</th>
                         </tr>
                         </thead>
                         <tbody id="shortBody">
@@ -618,7 +618,7 @@
                         <th style="width:150px">Зарахування (дата, наказ)</th>
                         <th style="width:110px">Військова служба за</th>
                         <th style="width:180px">Зброя (модель, номер, дата видачі)</th>
-                        <th style="width:60px">Дії</th>
+                        <th style="width:60px" class="no-print">Дії</th>
                     </tr>
                     </thead>
                     <tbody id="fullBody">
@@ -638,7 +638,7 @@
                             <th style="width:125px;" data-col="rank" onclick="sortArchivedBy('rank')">Звання</th>
                             <th data-col="name" onclick="sortArchivedBy('name')">ПІБ</th>
                             <th data-col="position" onclick="sortArchivedBy('position')">Повна посада</th>
-                            <th style="width:60px">Дії</th>
+                            <th style="width:60px" class="no-print">Дії</th>
                         </tr>
                         </thead>
                         <tbody id="archivedBody">

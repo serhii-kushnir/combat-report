@@ -506,9 +506,14 @@
         .toast.show { opacity: 1; }
         .toast.ok  { background: var(--toast-success); }
         .toast.err { background: var(--toast-error); }
-        /* ===== СТИЛІ ДЛЯ ДРУКУ (ОБИДВІ ТАБЛИЦІ) ===== */
+        /* ===== СТИЛІ ДЛЯ ДРУКУ – ДО 30 ДНІВ ===== */
         @media print {
-            /* Ховаємо всі елементи інтерфейсу */
+            @page {
+                size: landscape;
+                margin: 4mm 3mm 4mm 3mm;
+            }
+
+            /* Ховаємо інтерфейс */
             .sidebar,
             .toolbar,
             .legend,
@@ -524,72 +529,159 @@
             .status-menu {
                 display: none !important;
             }
+
             body {
                 background: white !important;
                 color: black !important;
+                font-size: 7px !important;
             }
             .main-content {
                 margin-left: 0 !important;
                 padding: 0 !important;
             }
             .container {
-                padding: 10px !important;
+                padding: 4px !important;
                 max-width: 100% !important;
+                margin: 0 !important;
             }
+
             .table-wrap {
+                overflow: visible !important;
                 box-shadow: none !important;
                 border: 1px solid #ccc !important;
                 border-radius: 0 !important;
-                overflow-x: visible !important;
-                margin-bottom: 20px !important;
+                margin-bottom: 6px !important;
             }
             table {
                 background: white !important;
                 width: 100% !important;
                 border-collapse: collapse;
+                font-size: 6px !important;
+                table-layout: fixed !important;
             }
-            thead {
-                background: #1a237e !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            thead th {
-                background: #1a237e !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                padding: 6px 4px;
-                font-size: 10px;
-            }
-            td {
-                color: black !important;
-                border-bottom: 1px solid #ddd !important;
-                font-size: 10px;
-                padding: 4px 2px;
-            }
-            tr {
-                page-break-inside: avoid;
-            }
-            /* Скасовуємо sticky-позицію для друку */
+
+            /* ===== ОСНОВНІ КОЛОНКИ ===== */
             .col-num,
             .col-rank,
             .col-name,
             .num-cell,
             .rank-cell,
             .name-cell {
+                display: table-cell !important;
                 position: static !important;
-                background: white !important;
                 left: auto !important;
                 z-index: auto !important;
+                background: white !important;
+                padding: 1px 2px !important;
+                font-size: 6px !important;
+                text-align: left !important;
+                vertical-align: middle !important;
+                border: 1px solid #ccc !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
             }
-            /* Кольори статусів – друкуємо як заливку */
-            .cell-badge {
-                background: #eee !important;
-                color: #333 !important;
+            .col-num,
+            .num-cell {
+                width: 20px !important;
+                min-width: 20px !important;
+                max-width: 20px !important;
+                text-align: center !important;
+            }
+            .col-rank,
+            .rank-cell {
+                width: 40px !important;
+                min-width: 40px !important;
+                max-width: 40px !important;
+                padding-left: 3px !important;
+            }
+            .col-name,
+            .name-cell {
+                width: 50px !important;
+                min-width: 50px !important;
+                max-width: 50px !important;
+                padding-left: 4px !important;
+                font-size: 5.5px !important;
+            }
+
+            /* ===== ДНІ ===== */
+            .col-day {
+                width: 18px !important;
+                min-width: 18px !important;
+                max-width: 18px !important;
+                padding: 1px 0 !important;
+                font-size: 5px !important;
+                text-align: center !important;
+                border: 1px solid #ccc !important;
+            }
+            td.col-day {
+                padding: 0 !important;
+                height: auto !important;
+                font-size: 5px !important;
+            }
+            .col-day .cell-badge {
+                font-size: 4.5px !important;
+                padding: 0 1px !important;
+                line-height: 1.2 !important;
+                border-radius: 2px !important;
+                display: inline-block !important;
+                width: 100% !important;
+                text-align: center !important;
+            }
+
+            /* Заголовки днів */
+            thead th.col-day {
+                font-size: 5px !important;
+                padding: 1px 0 !important;
+            }
+            /* Дні тижня */
+            thead tr:last-child th {
+                font-size: 4.5px !important;
+                padding: 1px 0 !important;
+            }
+
+            /* Заголовки перших трьох */
+            thead th.col-num,
+            thead th.col-rank,
+            thead th.col-name {
+                background: #1a237e !important;
+                color: white !important;
+                border: 1px solid #1a237e !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
+                padding: 1px 2px !important;
+                font-size: 6px !important;
+                text-align: center !important;
             }
+            thead th.col-num { width: 20px !important; }
+            thead th.col-rank { width: 40px !important; }
+            thead th.col-name { width: 50px !important; }
+
+            /* Інші комірки */
+            td {
+                color: black !important;
+                border: 1px solid #ddd !important;
+                font-size: 5px !important;
+                padding: 1px 0 !important;
+                line-height: 1.2 !important;
+                background: white !important;
+                text-align: center !important;
+            }
+            thead th {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                padding: 1px 2px !important;
+                font-size: 6px !important;
+                border: 1px solid #1a237e !important;
+                text-align: center !important;
+            }
+            tr {
+                page-break-inside: avoid;
+            }
+
+            /* Кольори статусів */
             .s-БЧ { background: #ffcdd2 !important; color: #b71c1c !important; }
             .s-БЧ_БАТ { background: #ef9a9a !important; color: #7f0000 !important; }
             .s-БЧ_РКП { background: #ffab91 !important; color: #bf360c !important; }
@@ -609,43 +701,69 @@
                 background: #fffde7 !important;
             }
 
-            /* --- ПОКАЗУЄМО ОБИДВІ ТАБЛИЦІ --- */
+            /* ===== СТАТИСТИКА ===== */
             .stats-container {
                 display: block !important;
-                margin-top: 20px !important;
+                margin-top: 4px !important;
                 box-shadow: none !important;
                 border: 1px solid #ccc !important;
                 border-radius: 0 !important;
                 background: white !important;
+                page-break-inside: avoid !important;
             }
             .stats-container h3 {
-                color: #222 !important;
-                font-size: 14px !important;
-                padding: 8px 12px !important;
+                font-size: 8px !important;
+                padding: 2px 6px !important;
                 margin: 0 !important;
                 border-bottom: 1px solid #ddd !important;
+                color: #222 !important;
             }
             .stats-table-wrap {
-                overflow-x: visible !important;
+                overflow: visible !important;
             }
             .stats-table {
                 background: white !important;
                 width: 100% !important;
                 border-collapse: collapse;
+                font-size: 5.5px !important;
+                table-layout: fixed !important;
             }
             .stats-table thead th {
                 background: #1a237e !important;
                 color: white !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
-                padding: 6px 4px;
-                font-size: 10px;
+                padding: 1px 2px !important;
+                font-size: 5.5px !important;
+                border: 1px solid #1a237e !important;
+                text-align: center !important;
             }
             .stats-table td {
                 color: black !important;
-                border-bottom: 1px solid #ddd !important;
-                font-size: 10px;
-                padding: 4px 2px;
+                border: 1px solid #ddd !important;
+                font-size: 5px !important;
+                padding: 1px 2px !important;
+                text-align: center !important;
+                background: white !important;
+            }
+            .stats-table td:first-child {
+                width: 20px !important;
+                text-align: center !important;
+            }
+            .stats-table td:nth-child(2) {
+                width: 40px !important;
+                text-align: left !important;
+                padding-left: 4px !important;
+            }
+            .stats-table td:nth-child(3) {
+                width: 50px !important;
+                text-align: left !important;
+                padding-left: 4px !important;
+            }
+            .stats-table td:not(:first-child):not(:nth-child(2)):not(:nth-child(3)) {
+                width: 18px !important;
+                min-width: 18px !important;
+                max-width: 18px !important;
             }
             .stats-table .num-cell,
             .stats-table .rank-cell,
@@ -657,30 +775,27 @@
             }
 
             /* Темна тема – перевизначення */
-            .dark-theme td {
+            .dark-theme td,
+            .dark-theme .num-cell,
+            .dark-theme .rank-cell,
+            .dark-theme .name-cell,
+            .dark-theme .col-day {
                 color: black !important;
-            }
-            .dark-theme thead {
-                background: #1a237e !important;
-                color: white !important;
+                background: white !important;
             }
             .dark-theme thead th {
                 background: #1a237e !important;
                 color: white !important;
-            }
-            .dark-theme .col-num,
-            .dark-theme .col-rank,
-            .dark-theme .col-name,
-            .dark-theme .num-cell,
-            .dark-theme .rank-cell,
-            .dark-theme .name-cell {
-                background: white !important;
             }
             .dark-theme .stats-container {
                 background: white !important;
             }
             .dark-theme .stats-container h3 {
                 color: #222 !important;
+            }
+            .dark-theme .stats-table td {
+                color: black !important;
+                background: white !important;
             }
         }
     </style>
