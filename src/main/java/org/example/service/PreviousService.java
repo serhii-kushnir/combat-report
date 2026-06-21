@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
 
 @Entity
@@ -13,7 +12,6 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 public class PreviousService {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,20 +22,20 @@ public class PreviousService {
     private Personnel personnel;
 
     @Column(length = 100)
-    private String serviceType;           // Служба (строкова, контрактна тощо)
+    private String serviceType;
 
     @Column(length = 200)
-    private String draftedBy;             // Ким призваний
+    private String draftedBy;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate startDate;          // Початок періоду
+    private LocalDate startDate;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate endDate;            // Кінець періоду
+    private LocalDate endDate;
 
     @Column(length = 50)
-    private String rank;                  // Звання
+    private String rank;
 
     @Column(length = 100)
-    private String militaryUnit;          // Військова частина
+    private String militaryUnit;
 }

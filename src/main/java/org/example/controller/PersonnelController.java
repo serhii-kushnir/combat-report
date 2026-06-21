@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.example.service.PCardExportService;
 
 import java.util.List;
 import java.util.Map;
@@ -25,10 +26,13 @@ public class PersonnelController {
     private static final Logger log = LoggerFactory.getLogger(PersonnelController.class);
     private final PersonnelService service;
     private final PersonnelExportService exportService;
+    private final PCardExportService pCardExportService;
 
-    public PersonnelController(PersonnelService service, PersonnelExportService exportService) {
+    public PersonnelController(PersonnelService service, PersonnelExportService exportService,
+                               PCardExportService pCardExportService) {
         this.service = service;
         this.exportService = exportService;
+        this.pCardExportService = pCardExportService;
     }
 
     @PatchMapping("/api/{id}")
@@ -126,7 +130,7 @@ public class PersonnelController {
     @GetMapping("/api/{id}/export")
     public ResponseEntity<byte[]> exportPersonXlsx(@PathVariable Long id) {
         try {
-            byte[] data = exportService.exportPersonToXlsx(id);
+            byte[] data = pCardExportService.exportPersonToXlsx(id);  // <-- ВИКОРИСТАННЯ НОВОГО СЕРВІСУ
             Personnel p = service.getById(id).orElse(null);
             String name = p != null ? p.getLastName() + "_" + p.getFirstName() : "Особа_" + id;
             String filename = URLEncoder.encode(name + ".xlsx", StandardCharsets.UTF_8).replace("+", "%20");
