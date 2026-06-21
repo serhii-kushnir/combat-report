@@ -506,6 +506,183 @@
         .toast.show { opacity: 1; }
         .toast.ok  { background: var(--toast-success); }
         .toast.err { background: var(--toast-error); }
+        /* ===== СТИЛІ ДЛЯ ДРУКУ (ОБИДВІ ТАБЛИЦІ) ===== */
+        @media print {
+            /* Ховаємо всі елементи інтерфейсу */
+            .sidebar,
+            .toolbar,
+            .legend,
+            .no-print,
+            .btn,
+            .btn-print,
+            .btn-primary,
+            .btn-success,
+            .btn-nav,
+            .btn-today,
+            select,
+            input,
+            .status-menu {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            .container {
+                padding: 10px !important;
+                max-width: 100% !important;
+            }
+            .table-wrap {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                border-radius: 0 !important;
+                overflow-x: visible !important;
+                margin-bottom: 20px !important;
+            }
+            table {
+                background: white !important;
+                width: 100% !important;
+                border-collapse: collapse;
+            }
+            thead {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            thead th {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                padding: 6px 4px;
+                font-size: 10px;
+            }
+            td {
+                color: black !important;
+                border-bottom: 1px solid #ddd !important;
+                font-size: 10px;
+                padding: 4px 2px;
+            }
+            tr {
+                page-break-inside: avoid;
+            }
+            /* Скасовуємо sticky-позицію для друку */
+            .col-num,
+            .col-rank,
+            .col-name,
+            .num-cell,
+            .rank-cell,
+            .name-cell {
+                position: static !important;
+                background: white !important;
+                left: auto !important;
+                z-index: auto !important;
+            }
+            /* Кольори статусів – друкуємо як заливку */
+            .cell-badge {
+                background: #eee !important;
+                color: #333 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .s-БЧ { background: #ffcdd2 !important; color: #b71c1c !important; }
+            .s-БЧ_БАТ { background: #ef9a9a !important; color: #7f0000 !important; }
+            .s-БЧ_РКП { background: #ffab91 !important; color: #bf360c !important; }
+            .s-Р-НЯ { background: #c8e6c9 !important; color: #1b5e20 !important; }
+            .s-В-НЯ { background: #bbdefb !important; color: #0d47a1 !important; }
+            .s-В-КА { background: #b3e5fc !important; color: #01579b !important; }
+            .s-ХВ { background: #f8bbd0 !important; color: #880e4f !important; }
+            .s-СЗЧ { background: #ffe0b2 !important; color: #e65100 !important; }
+            .s-ПЛЮ { background: #e1bee7 !important; color: #4a148c !important; }
+            .s-ППД { background: #dcedc8 !important; color: #33691e !important; }
+            .s-НАВ { background: #fff9c4 !important; color: #f57f17 !important; }
+            .s-ПЕРЕВ { background: #cfd8dc !important; color: #37474f !important; }
+            .weekend {
+                background: #f5f5f5 !important;
+            }
+            .today-col {
+                background: #fffde7 !important;
+            }
+
+            /* --- ПОКАЗУЄМО ОБИДВІ ТАБЛИЦІ --- */
+            .stats-container {
+                display: block !important;
+                margin-top: 20px !important;
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                border-radius: 0 !important;
+                background: white !important;
+            }
+            .stats-container h3 {
+                color: #222 !important;
+                font-size: 14px !important;
+                padding: 8px 12px !important;
+                margin: 0 !important;
+                border-bottom: 1px solid #ddd !important;
+            }
+            .stats-table-wrap {
+                overflow-x: visible !important;
+            }
+            .stats-table {
+                background: white !important;
+                width: 100% !important;
+                border-collapse: collapse;
+            }
+            .stats-table thead th {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                padding: 6px 4px;
+                font-size: 10px;
+            }
+            .stats-table td {
+                color: black !important;
+                border-bottom: 1px solid #ddd !important;
+                font-size: 10px;
+                padding: 4px 2px;
+            }
+            .stats-table .num-cell,
+            .stats-table .rank-cell,
+            .stats-table td:first-child,
+            .stats-table td:nth-child(2) {
+                position: static !important;
+                background: white !important;
+                left: auto !important;
+            }
+
+            /* Темна тема – перевизначення */
+            .dark-theme td {
+                color: black !important;
+            }
+            .dark-theme thead {
+                background: #1a237e !important;
+                color: white !important;
+            }
+            .dark-theme thead th {
+                background: #1a237e !important;
+                color: white !important;
+            }
+            .dark-theme .col-num,
+            .dark-theme .col-rank,
+            .dark-theme .col-name,
+            .dark-theme .num-cell,
+            .dark-theme .rank-cell,
+            .dark-theme .name-cell {
+                background: white !important;
+            }
+            .dark-theme .stats-container {
+                background: white !important;
+            }
+            .dark-theme .stats-container h3 {
+                color: #222 !important;
+            }
+        }
     </style>
     <link th:replace="~{fragments :: sidebar-css}">
 </head>
@@ -529,6 +706,9 @@
                 </select>
                 <button class="btn btn-primary" id="applyFilterBtn">Показати</button>
                 <button class="btn btn-success" id="exportXlsxBtn">📊 Експорт XLSX</button>
+                <button class="btn btn-print" onclick="window.print()">
+                    <i class="fas fa-print"></i> Друк
+                </button>
             </div>
 
             <div class="table-wrap">

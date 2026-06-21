@@ -404,6 +404,93 @@
         .dark-theme .btn-edit, .dark-theme .btn-delete {
             color: white;
         }
+        /* ===== КНОПКА ДРУК ===== */
+        .btn-print {
+            background: #607d8b;
+            color: white;
+        }
+        .btn-print:hover {
+            background: #546e7a;
+        }
+        .dark-theme .btn-print {
+            background: #4a5a6a;
+            color: white;
+        }
+        .dark-theme .btn-print:hover {
+            background: #5a6a7a;
+        }
+
+        /* ===== СТИЛІ ДЛЯ ДРУКУ ===== */
+        @media print {
+            /* Ховаємо всі елементи інтерфейсу */
+            .sidebar,
+            .toolbar,
+            .no-print,
+            .btn,
+            .btn-print,
+            .btn-success,
+            .btn-warning {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            .container {
+                padding: 10px !important;
+                max-width: 100% !important;
+            }
+            .table-wrap {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                border-radius: 0 !important;
+            }
+            table {
+                background: white !important;
+                width: 100% !important;
+            }
+            thead {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            thead th {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            td {
+                color: black !important;
+                border-bottom: 1px solid #ddd !important;
+            }
+            tr {
+                page-break-inside: avoid;
+            }
+            /* Для темної теми – перевизначення кольорів */
+            .dark-theme td {
+                color: black !important;
+            }
+            .dark-theme thead {
+                background: #1a237e !important;
+                color: white !important;
+            }
+            .dark-theme thead th {
+                background: #1a237e !important;
+                color: white !important;
+            }
+        }
+        @media print {
+            .modal-overlay,
+            .modal {
+                display: none !important;
+            }
+        }
     </style>
     <link th:replace="~{fragments :: sidebar-css}">
 </head>
@@ -417,6 +504,10 @@
                 <input type="text" id="searchInput" class="search-input" placeholder="🔍 Пошук...">
                 <button class="btn btn-success" onclick="openAddModal()">+ Додати позицію</button>
                 <button class="btn btn-warning" onclick="exportToXlsx()">📊 Експорт XLSX</button>
+                <!-- НОВА КНОПКА ДРУК -->
+                <button class="btn btn-print" onclick="window.print()">
+                    <i class="fas fa-print"></i> Друк
+                </button>
             </div>
             <div class="table-wrap">
                 <table id="equipmentTable">
@@ -429,7 +520,7 @@
                         <th data-col="crew" onclick="sortBy('crew')" class="col-crew">Екіпаж</th>
                         <th data-col="location" onclick="sortBy('location')" class="col-location">Локація</th>
                         <th data-col="category" onclick="sortBy('category')" class="col-category">Категорія</th>
-                        <th class="col-actions">Дії</th>
+                        <th class="col-actions no-print">Дії</th>
                     </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -611,8 +702,8 @@
                             <td class="col-location"><span class="${locClass}" style="cursor:default;">${escapeHtml(locVal) || '—'}</span></td>
                             <td class="col-category"><span class="${catClass}" style="cursor:default;">${escapeHtml(catVal) || '—'}</span></td>
                             <td class="col-actions">
-                                <button class="btn-edit" onclick="openEditItemModal(${item.id})" title="Редагувати">✏️</button>
-                                <button class="btn-delete" onclick="deleteItem(${item.id})" title="Видалити">🗑</button>
+                                <button class="btn-edit no-print" onclick="openEditItemModal(${item.id})" title="Редагувати">✏️</button>
+                                <button class="btn-delete no-print" onclick="deleteItem(${item.id})" title="Видалити">🗑</button>
                             </td>
                         </tr>
                     `;
