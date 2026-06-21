@@ -19,4 +19,5 @@ public interface PersonnelRepository extends JpaRepository<Personnel, Long> {
     List<Personnel> findByLastNameContainingIgnoreCaseAndActiveTrue(String lastName);
 
     List<Personnel> findByPersonnelStatus(String personnelStatus);
+
 }

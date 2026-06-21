@@ -17,16 +17,16 @@ public class PersonnelService {
     private static final Logger log = LoggerFactory.getLogger(PersonnelService.class);
     private final PersonnelRepository repository;
 
-    public List<Personnel> getByStatus(String status) {
-        return repository.findByPersonnelStatus(status);
-    }
-
     public PersonnelService(PersonnelRepository repository) {
         this.repository = repository;
     }
 
     public List<Personnel> getAll() {
         return repository.findByActiveTrueOrderByLastNameAsc();
+    }
+
+    public List<Personnel> getByStatus(String status) {
+        return repository.findByPersonnelStatus(status);
     }
 
     public Optional<Personnel> getById(Long id) {
@@ -82,6 +82,23 @@ public class PersonnelService {
         e.setEnrollmentInfo(updated.getEnrollmentInfo());
         e.setServiceFor(updated.getServiceFor());
 
+        // Додаткові поля (нові)
+        e.setPersonnelNumber(updated.getPersonnelNumber());
+        e.setPersonnelStatus(updated.getPersonnelStatus());
+        e.setVos(updated.getVos());
+        e.setTariffGrade(updated.getTariffGrade());
+        e.setShoeSize(updated.getShoeSize());
+        e.setUniformSize(updated.getUniformSize());
+        e.setHeadwearSize(updated.getHeadwearSize());
+        e.setMilitaryUnit(updated.getMilitaryUnit());
+        e.setDrafObl(updated.getDrafObl());
+        e.setDraftLoc(updated.getDraftLoc());
+        e.setEnrollmentDate(updated.getEnrollmentDate());
+        e.setEnrollmentNakaz(updated.getEnrollmentNakaz());
+        e.setUbdDate(updated.getUbdDate());
+        e.setAdmissionNakaz(updated.getAdmissionNakaz());
+        e.setAdmissionDate(updated.getAdmissionDate());
+
         Personnel saved = repository.save(e);
         log.info("Оновлено особу: {} (id={})", saved.getFullName(), saved.getId());
         return saved;
@@ -116,13 +133,13 @@ public class PersonnelService {
                 case "birthDate":
                     p.setBirthDate(value != null ? LocalDate.parse((String) value) : null);
                     break;
-                case "taxId": p.setTaxId((String) value); break;
-                case "passportSeries": p.setPassportSeries((String) value); break;
-                case "passportNumber": p.setPassportNumber((String) value); break;
+                case "taxId": p.setTaxId(value != null ? String.valueOf(value) : null); break;
+                case "passportSeries": p.setPassportSeries(value != null ? String.valueOf(value) : null); break;
+                case "passportNumber": p.setPassportNumber(value != null ? String.valueOf(value) : null); break;
                 case "bloodGroup": p.setBloodGroup((String) value); break;
-                case "driverLicenseSeries": p.setDriverLicenseSeries((String) value); break;
-                case "driverLicenseNumber": p.setDriverLicenseNumber((String) value); break;
-                case "driverLicenseCategory": p.setDriverLicenseCategory((String) value); break;
+                case "driverLicenseSeries": p.setDriverLicenseSeries(value != null ? String.valueOf(value) : null); break;
+                case "driverLicenseNumber": p.setDriverLicenseNumber(value != null ? String.valueOf(value) : null); break;
+                case "driverLicenseCategory": p.setDriverLicenseCategory(value != null ? String.valueOf(value) : null); break;
                 case "registrationAddress": p.setRegistrationAddress((String) value); break;
                 case "livingAddress": p.setLivingAddress((String) value); break;
                 case "maritalStatus": p.setMaritalStatus((String) value); break;
@@ -130,9 +147,9 @@ public class PersonnelService {
                 case "personnelStatus": p.setPersonnelStatus((String) value); break;
                 case "vos": p.setVos((String) value); break;
                 case "tariffGrade": p.setTariffGrade((String) value); break;
-                case "shoeSize": p.setShoeSize((String) value); break;
-                case "uniformSize": p.setUniformSize((String) value); break;
-                case "headwearSize": p.setHeadwearSize((String) value); break;
+                case "shoeSize": p.setShoeSize(value != null ? String.valueOf(value) : null); break;
+                case "uniformSize": p.setUniformSize(value != null ? String.valueOf(value) : null); break;
+                case "headwearSize": p.setHeadwearSize(value != null ? String.valueOf(value) : null); break;
                 case "familyAddress": p.setFamilyAddress((String) value); break;
                 case "draftDate":
                     p.setDraftDate(value != null ? LocalDate.parse((String) value) : null);
@@ -144,8 +161,6 @@ public class PersonnelService {
                 case "enrollmentInfo": p.setEnrollmentInfo((String) value); break;
                 case "serviceFor": p.setServiceFor((String) value); break;
                 case "note": p.setNote((String) value); break;
-
-                // Нові поля
                 case "personnelNumber":
                     if (value instanceof Integer) {
                         p.setPersonnelNumber((Integer) value);
@@ -159,9 +174,7 @@ public class PersonnelService {
                         p.setPersonnelNumber(null);
                     }
                     break;
-                case "militaryUnit":
-                    p.setMilitaryUnit((String) value);
-                    break;
+                case "militaryUnit": p.setMilitaryUnit((String) value); break;
                 case "drafObl": p.setDrafObl((String) value); break;
                 case "draftLoc": p.setDraftLoc((String) value); break;
                 case "enrollmentDate":
@@ -175,7 +188,6 @@ public class PersonnelService {
                 case "admissionDate":
                     p.setAdmissionDate(value != null ? LocalDate.parse((String) value) : null);
                     break;
-
                 default: log.warn("Невідоме поле для оновлення: {}", key);
             }
         });
