@@ -407,6 +407,169 @@
         .dark-theme .stat-card .num[style*="color:#d32f2f"] { color: var(--stat-num-loss) !important; }
         .dark-theme td[style*="color:#c62828"] { color: var(--text-loss-reason) !important; }
         .dark-theme td[style*="color:#666"] { color: var(--text-note) !important; }
+        /* ===== КНОПКА ДРУК ===== */
+        .btn-print {
+            background: #607d8b;
+            color: white;
+            padding: 7px 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-print:hover {
+            background: #546e7a;
+        }
+        .dark-theme .btn-print {
+            background: #4a5a6a;
+            color: white;
+        }
+        .dark-theme .btn-print:hover {
+            background: #5a6a7a;
+        }
+
+        /* ===== СТИЛІ ДЛЯ ДРУКУ ===== */
+        @media print {
+            /* Ховаємо всі елементи інтерфейсу */
+            .sidebar,
+            .toolbar,
+            .stats,
+            .no-print,
+            .btn,
+            .btn-print,
+            .btn-success,
+            .btn-warning,
+            select,
+            input,
+            .status-menu {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+                font-size: 10px !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            .container {
+                padding: 10px !important;
+                max-width: 100% !important;
+            }
+            .table-wrap {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                border-radius: 0 !important;
+                overflow-x: visible !important;
+            }
+            table {
+                background: white !important;
+                width: 100% !important;
+                border-collapse: collapse;
+                font-size: 8px !important;
+            }
+            thead {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            thead th {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                padding: 4px 4px !important;
+                font-size: 8px !important;
+                border: 1px solid #1a237e !important;
+                text-align: center !important;
+            }
+            td {
+                color: black !important;
+                border: 1px solid #ddd !important;
+                font-size: 7px !important;
+                padding: 3px 3px !important;
+                line-height: 1.3 !important;
+                background: white !important;
+                text-align: center !important;
+            }
+            tr {
+                page-break-inside: avoid;
+            }
+            /* Скасовуємо sticky для друку */
+            .col-num,
+            .col-rank,
+            .col-name,
+            .num-cell,
+            .rank-cell,
+            .name-cell {
+                position: static !important;
+                background: white !important;
+                left: auto !important;
+                z-index: auto !important;
+                font-size: 7px !important;
+                padding: 3px 3px !important;
+                text-align: center !important;
+            }
+            /* Рядки зі статусом "знищення" – зелений фон */
+            .row-success td {
+                background: #e8f5e9 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .badge-success {
+                background: #c8e6c9 !important;
+                color: #2e7d32 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                padding: 1px 4px !important;
+                border-radius: 3px !important;
+            }
+            .badge-warning {
+                background: #fff3e0 !important;
+                color: #e65100 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                padding: 1px 4px !important;
+                border-radius: 3px !important;
+            }
+            .note-cell {
+                max-height: none !important;
+                -webkit-line-clamp: unset !important;
+                display: block !important;
+                overflow: visible !important;
+                white-space: normal !important;
+            }
+            /* Колонка "Дії" – ховаємо */
+            .actions-col,
+            td:last-child,
+            th:last-child {
+                display: none !important;
+            }
+            /* Для темної теми */
+            .dark-theme td {
+                color: black !important;
+                background: white !important;
+            }
+            .dark-theme thead {
+                background: #1a237e !important;
+                color: white !important;
+            }
+            .dark-theme thead th {
+                background: #1a237e !important;
+                color: white !important;
+            }
+            .dark-theme .row-success td {
+                background: #e8f5e9 !important;
+            }
+            @page {
+                size: landscape;
+                margin: 5mm 4mm 5mm 4mm;
+            }
+        }
     </style>
     <link th:replace="~{fragments :: sidebar-css}">
 </head>
@@ -425,6 +588,9 @@
                 <input type="text" id="searchInput" placeholder="🔍 Пошук..." style="width:180px">
                 <button class="btn btn-success" onclick="openAddModal()">+ Додати запис</button>
                 <button class="btn btn-warning" onclick="exportXlsx()">📤 Експорт xlsx</button>
+                <button class="btn btn-print" onclick="window.print()">
+                    <i class="fas fa-print"></i> Друк
+                </button>
             </div>
 
             <div class="stats" id="statsBar"></div>
@@ -749,10 +915,10 @@
                     ${r.note ?? ''}
                 </div>
              </td>
-            <td class="actions-col">
+            <td class="actions-col no-print">
                 <button class="btn btn-warning btn-sm" onclick="openEditModal(${r.id})">✏️</button>
                 <button class="btn btn-danger btn-sm" onclick="confirmDelete(${r.id})">🗑</button>
-             </td>
+            </td>
          </tr>`;
                 }).join('');
             }
