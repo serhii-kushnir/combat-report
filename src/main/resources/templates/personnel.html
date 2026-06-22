@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Особовий склад</title>
     <style>
-        /* ===== CSS ЗМІННІ ===== */
+        /* ===== CSS ЗМІННІ (узгоджено з fragments) ===== */
         :root {
             --bg-body: #f0f2f5;
             --bg-card: #ffffff;
@@ -51,13 +51,13 @@
             --bg-body: #1e1e24;
             --bg-card: #2d2d35;
             --bg-toolbar: #2d2d35;
-            --bg-header: #919191;
+            --bg-header: #2a2a3a;
             --bg-input: #3a3a44;
             --bg-editable: #3a3a44;
             --bg-hover: #3a3a44;
             --bg-modal: rgba(0,0,0,0.7);
             --bg-detail: #2d2d35;
-            --bg-detail-header: #919191;
+            --bg-detail-header: #2a2a3a;
             --bg-add-row: #3a3a44;
             --bg-dynamic: #3a3a44;
             --bg-stat: #2d2d35;
@@ -95,18 +95,6 @@
             color: var(--text-primary);
             transition: background 0.3s, color 0.3s;
         }
-
-        .btn-print {
-            background: #607d8b;
-            color: white;
-        }
-        .btn-print:hover { background: #546e7a; }
-
-        .dark-theme .btn-print {
-            background: #4a5a6a;
-            color: white;
-        }
-        .dark-theme .btn-print:hover { background: #5a6a7a; }
 
         .container { padding: 16px 20px; }
 
@@ -221,7 +209,7 @@
             font-size: 12px;
             border-bottom: 1px solid var(--border-light);
             color: var(--text-primary);
-            /*vertical-align: top;*/
+            vertical-align: top;
             transition: border-color 0.3s, color 0.3s;
         }
         tr:hover td {
@@ -442,103 +430,6 @@
         .dark-theme thead th[data-col]:hover {
             background: var(--bg-header-light, #3a3a4a);
         }
-        @media print {
-            /* Ховаємо всі елементи інтерфейсу */
-            .sidebar,
-            .toolbar,
-            .table-tabs,
-            .stats,
-            .no-print,
-            .btn,
-            .btn-print,
-            .btn-success,
-            .btn-primary {
-                display: none !important;
-            }
-            body {
-                background: white !important;
-                color: black !important;
-            }
-            .main-content {
-                margin-left: 0 !important;
-                padding: 0 !important;
-            }
-            .container {
-                padding: 10px !important;
-            }
-            .table-wrap {
-                box-shadow: none !important;
-                border: 1px solid #ccc !important;
-                border-radius: 0 !important;
-            }
-            table {
-                background: white !important;
-            }
-            thead {
-                background: #1a237e !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            thead th {
-                background: #1a237e !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            td {
-                color: black !important;
-                border-bottom: 1px solid #ddd !important;
-            }
-            tr {
-                page-break-inside: avoid;
-            }
-
-            /* === ГОЛОВНЕ: показуємо ТІЛЬКИ АКТИВНУ ТАБЛИЦЮ === */
-            .table-section {
-                display: none !important;
-            }
-            .table-section.visible {
-                display: block !important;
-            }
-
-            .stat-card {
-                background: #f5f5f5 !important;
-                border: 1px solid #ddd !important;
-                box-shadow: none !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            .stat-card .num {
-                color: #1976d2 !important;
-            }
-            .stat-card .lbl {
-                color: #555 !important;
-            }
-            .dark-theme .stat-card {
-                background: #f5f5f5 !important;
-            }
-            .dark-theme .stat-card .num {
-                color: #1976d2 !important;
-            }
-            .dark-theme .stat-card .lbl {
-                color: #555 !important;
-            }
-            .dark-theme td {
-                color: black !important;
-            }
-            .dark-theme thead {
-                background: #1a237e !important;
-                color: white !important;
-            }
-            .dark-theme thead th {
-                background: #1a237e !important;
-                color: white !important;
-            }
-            .tab-btn {
-                display: none !important;
-            }
-        }
     </style>
     <link th:replace="~{fragments :: sidebar-css}">
 </head>
@@ -551,12 +442,12 @@
                 <input type="text" id="searchInput" placeholder="🔍 Пошук за прізвищем...">
                 <button class="btn btn-success" onclick="openAddModal()">+ Додати особу</button>
                 <button class="btn" style="background:#1976d2;color:white" onclick="exportXlsx()">📤 Експорт xlsx</button>
-                <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> Друк</button>
+                <button class="btn btn-print" onclick="window.print()">🖨 Друк</button>
             </div>
 
             <div class="stats" id="statsBar"></div>
 
-            <div class="table-tabs">
+            <div class="table-tabs no-print">
                 <button class="tab-btn active" onclick="switchTab('short')">📋 Коротка таблиця</button>
                 <button class="tab-btn" onclick="switchTab('full')">📄 Повна таблиця</button>
                 <button class="tab-btn" onclick="switchTab('archived')">📁 Архів</button>
@@ -582,47 +473,63 @@
                 </div>
             </div>
 
-            <!-- ПОВНА ТАБЛИЦЯ -->
+            <!-- ПОВНА ТАБЛИЦЯ (оновлена з усіма полями pCard) -->
             <div class="table-section" id="fullTable">
-                <div class="table-wrap"><table style="min-width:2800px">
+                <div class="table-wrap"><table style="min-width:4200px">
                     <thead>
                     <tr>
                         <th style="width:36px" data-col="num" onclick="sortBy('num')">№</th>
-                        <th style="width:120px" data-col="rank" onclick="sortBy('rank')">Звання</th>
-                        <th style="width:180px" data-col="name" onclick="sortBy('name')">ПІБ</th>
-                        <th style="width:110px" data-col="phone" onclick="sortBy('phone')">Моб. Телефон</th>
-                        <th style="width:100px" data-col="birth" onclick="sortBy('birth')">Дата народження</th>
-                        <th style="width:60px">Повних років</th>
-                        <th style="width:100px">Ідентифікаційний код</th>
-                        <th style="width:130px">Паспорт (серія, номер)</th>
-                        <th style="width:80px">Група Крові</th>
-                        <th style="width:160px">Водійське посвідчення (серія, номер, категорія)</th>
-                        <th style="width:80px">Здобута освіта</th>
-                        <th style="width:160px">Заклад освіти</th>
-                        <th style="width:100px">Дата початку</th>
-                        <th style="width:100px">Дата завершення</th>
-                        <th style="width:140px">Спеціальність</th>
-                        <th style="width:160px">Адреса місця реєстрації</th>
+                        <th style="width:90px" data-col="status" onclick="sortBy('status')">Статус</th>
+                        <th style="width:100px" data-col="rank" onclick="sortBy('rank')">Звання</th>
+                        <th style="width:160px" data-col="name" onclick="sortBy('name')">ПІБ</th>
+                        <th style="width:100px" data-col="phone" onclick="sortBy('phone')">Телефон</th>
+                        <th style="width:100px" data-col="birth" onclick="sortBy('birth')">Дата народж.</th>
+                        <th style="width:50px">Вік</th>
+                        <th style="width:100px" data-col="taxId" onclick="sortBy('taxId')">ІПН</th>
+                        <th style="width:80px" data-col="blood" onclick="sortBy('blood')">Група крові</th>
+                        <th style="width:90px">Паспорт серія</th>
+                        <th style="width:90px">Паспорт №</th>
+                        <th style="width:80px">Вод. серія</th>
+                        <th style="width:90px">Вод. №</th>
+                        <th style="width:90px">Вод. категорія</th>
+                        <th style="width:160px">Адреса реєстрації</th>
                         <th style="width:160px">Адреса проживання</th>
-                        <th style="width:100px">Сімейний стан</th>
-                        <th style="width:150px">Дружина/Чоловік</th>
-                        <th style="width:160px">Діти</th>
-                        <th style="width:100px">Дата народження (дитини)</th>
-                        <th style="width:60px">Повних років (дитини)</th>
-                        <th style="width:160px">Адреса проживання (сім'я)</th>
-                        <th style="width:130px">Посада коротка</th>
-                        <th style="width:200px">Посада повна</th>
-                        <th style="width:150px">Ким Призваний</th>
-                        <th style="width:140px">Учасник бойових дій (номер, дата)</th>
-                        <th style="width:160px">Форма допуску (Ф-No, наказ, дата)</th>
-                        <th style="width:150px">Зарахування (дата, наказ)</th>
-                        <th style="width:110px">Військова служба за</th>
-                        <th style="width:180px">Зброя (модель, номер, дата видачі)</th>
-                        <th style="width:60px" class="no-print">Дії</th>
+                        <th style="width:100px" data-col="marital" onclick="sortBy('marital')">Сімейний стан</th>
+                        <th style="width:120px">Дружина/Чоловік</th>
+                        <th style="width:160px">Адреса сім'ї</th>
+                        <th style="width:80px">Освіта рівень</th>
+                        <th style="width:140px">Заклад освіти</th>
+                        <th style="width:120px">Спеціальність</th>
+                        <th style="width:90px">Початок</th>
+                        <th style="width:90px">Кінець</th>
+                        <th style="width:90px">Диплом №</th>
+                        <th style="width:120px" data-col="position" onclick="sortBy('position')">Посада кор.</th>
+                        <th style="width:180px">Посада повна</th>
+                        <th style="width:120px">Військова частина</th>
+                        <th style="width:60px" data-col="vos" onclick="sortBy('vos')">ВОС</th>
+                        <th style="width:80px">Тариф</th>
+                        <th style="width:100px" data-col="draftDate" onclick="sortBy('draftDate')">Дата призову</th>
+                        <th style="width:140px">Ким призваний</th>
+                        <th style="width:120px">Область призову</th>
+                        <th style="width:120px">Місто/Сел. призову</th>
+                        <th style="width:100px">Дата зарахув.</th>
+                        <th style="width:120px">Наказ зарахув.</th>
+                        <th style="width:100px">УБД №</th>
+                        <th style="width:100px">УБД дата</th>
+                        <th style="width:100px">Форма допуску</th>
+                        <th style="width:100px">Ф-Наказ</th>
+                        <th style="width:100px">Ф-Дата</th>
+                        <th style="width:100px" data-col="serviceFor" onclick="sortBy('serviceFor')">Служба за</th>
+                        <th style="width:70px">Розм. взуття</th>
+                        <th style="width:70px">Розм. форми</th>
+                        <th style="width:70px">Розм. гол. убору</th>
+                        <th style="width:180px">Зброя (модель, №, дата)</th>
+                        <th style="width:200px">Примітка</th>
+                        <th style="width:60px">Дії</th>
                     </tr>
                     </thead>
                     <tbody id="fullBody">
-                    <tr><td colspan="32" class="empty-state">Завантаження...</td></tr>
+                    <tr><td colspan="48" class="empty-state">Завантаження...</td></tr>
                     </tbody>
                 </table>
                 </div>
@@ -648,7 +555,7 @@
                 </div>
             </div>
 
-            <!-- ===== ФОРМА ===== -->
+            <!-- ===== ФОРМА ДОДАВАННЯ/РЕДАГУВАННЯ ===== -->
             <div class="modal-overlay" id="formModal">
                 <div class="modal">
                     <h2 id="modalTitle">Додати особу</h2>
@@ -740,6 +647,18 @@
                 let sortArchivedDir = 1;
                 let currentTab = 'short';
 
+                // Кеш для пов'язаних даних (освіта, діти, зброя)
+                let educationCounts = {};
+                let eduFirstLevel = {};
+                let eduFirstInst  = {};
+                let eduFirstSpec  = {};
+                let eduFirstStart = {};
+                let eduFirstEnd   = {};
+                let childCounts      = {};
+                let childFirstBirth  = {};
+                let weaponCounts     = {};
+                let weaponFirstInfo  = {};
+
                 function escapeHtml(str) {
                     if (!str) return '';
                     return str.replace(/[&<>]/g, function(m) {
@@ -761,6 +680,36 @@
                         if (!archivedRes.ok) { showToast('Помилка завантаження архіву', 'error'); return; }
                         activePersonnel = await activeRes.json();
                         archivedPersonnel = await archivedRes.json();
+
+                        // Завантажуємо деталі для активних
+                        await Promise.all(activePersonnel.map(async p => {
+                            try {
+                                const [edus, childs, weapons] = await Promise.all([
+                                    fetch(`/personnel/api/${p.id}/education`).then(r => r.json()),
+                                    fetch(`/personnel/api/${p.id}/children`).then(r => r.json()),
+                                    fetch(`/personnel/api/${p.id}/weapons`).then(r => r.json()),
+                                ]);
+                                educationCounts[p.id] = edus.length;
+                                childCounts[p.id]     = childs.length;
+                                weaponCounts[p.id]    = weapons.length;
+                                if (edus.length > 0) {
+                                    eduFirstLevel[p.id] = edus[0].level || '';
+                                    eduFirstInst[p.id]  = edus[0].institution || '';
+                                    eduFirstSpec[p.id]  = edus[0].speciality || '';
+                                    eduFirstStart[p.id] = edus[0].startDate || '';
+                                    eduFirstEnd[p.id]   = edus[0].endDate || '';
+                                }
+                                if (childs.length > 0) {
+                                    childFirstBirth[p.id] = childs[0].birthDate || '';
+                                }
+                                if (weapons.length > 0) {
+                                    const w = weapons[0];
+                                    weaponFirstInfo[p.id] = [w.weaponType, w.serialNumber, w.issuedDate].filter(Boolean).join(', ');
+                                }
+                            } catch(err) {
+                                console.error('Помилка завантаження деталей особи id=' + p.id, err);
+                            }
+                        }));
 
                         sortCol = 'num';
                         sortDir = 1;
@@ -788,7 +737,7 @@
                     document.getElementById('archivedTable').classList.toggle('visible', tab === 'archived');
                 }
 
-                // ===== РЕНДЕРИНГ АКТИВНИХ (КОРОТКА) =====
+                // ===== РЕНДЕРИНГ КОРОТКОЇ ТАБЛИЦІ =====
                 function renderShortTable(data) {
                     const body = document.getElementById('shortBody');
                     if (!data || !data.length) {
@@ -803,18 +752,18 @@
                             <td>${p.rank || '—'}</td>
                             <td><strong>${escapeHtml(fullName)}</strong></td>
                             <td>${p.fullPosition || p.position || '—'}</td>
-                            <td style="white-space:nowrap">
+                            <td class="no-print" style="white-space:nowrap">
                                 <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
                             </td>
                         </tr>`;
                     }).join('');
                 }
 
-                // ===== РЕНДЕРИНГ АКТИВНИХ (ПОВНА) =====
+                // ===== РЕНДЕРИНГ ПОВНОЇ ТАБЛИЦІ (оновлено з усіма полями) =====
                 function renderFullTable(data) {
                     const body = document.getElementById('fullBody');
                     if (!data || !data.length) {
-                        body.innerHTML = '<tr><td colspan="32" class="empty-state">Особовий склад порожній</td></tr>';
+                        body.innerHTML = '<tr><td colspan="48" class="empty-state">Особовий склад порожній</td></tr>';
                         return;
                     }
                     const fmtDate = d => d ? d.substring(0,10).split('-').reverse().join('.') : '—';
@@ -822,41 +771,73 @@
                     body.innerHTML = data.map((p, i) => {
                         const fullName = `${p.lastName} ${p.firstName || ''} ${p.middleName || ''}`.trim();
                         const num = p.personnelNumber ?? (i + 1);
-                        const passport = [p.passportSeries, p.passportNumber].filter(Boolean).join(' ') || '—';
-                        const driverLic = [p.driverLicenseSeries, p.driverLicenseNumber, p.driverLicenseCategory].filter(Boolean).join(' ') || '—';
+                        const edu = educationCounts[p.id] > 0;
+                        // Отримуємо перші записи
+                        const firstEduLevel = eduFirstLevel[p.id] || '';
+                        const firstEduInst = eduFirstInst[p.id] || '';
+                        const firstEduSpec = eduFirstSpec[p.id] || '';
+                        const firstEduStart = eduFirstStart[p.id] || '';
+                        const firstEduEnd = eduFirstEnd[p.id] || '';
+                        const weaponInfo = weaponFirstInfo[p.id] || '—';
+                        // Кількість дітей
+                        const childCount = childCounts[p.id] || 0;
+                        const firstChildBirth = childFirstBirth[p.id] || '';
+                        // Вік дитини (якщо є)
+                        let childAge = '';
+                        if (firstChildBirth) {
+                            const age = calcAge(firstChildBirth);
+                            childAge = age !== '—' ? String(age) : '';
+                        }
+
                         return `<tr>
                             <td style="text-align:center">${num}</td>
-                            <td>${val(p.rank)}</td>
+                            <td style="text-align:center">${val(p.personnelStatus)}</td>
+                            <td style="text-align:center">${val(p.rank)}</td>
                             <td><strong>${escapeHtml(fullName)}</strong></td>
                             <td>${val(p.phone)}</td>
                             <td style="text-align:center">${fmtDate(p.birthDate)}</td>
                             <td style="text-align:center">${p.birthDate ? calcAge(p.birthDate) : '—'}</td>
                             <td style="text-align:center">${val(p.taxId)}</td>
-                            <td style="text-align:center">${passport}</td>
                             <td style="text-align:center">${val(p.bloodGroup)}</td>
-                            <td style="font-size:11px">${driverLic}</td>
-                            <td>${val(p.education)}</td>
-                            <td style="font-size:11px">${val(p.educationInstitution)}</td>
-                            <td style="text-align:center">${val(p.educationStart)}</td>
-                            <td style="text-align:center">${val(p.educationEnd)}</td>
-                            <td style="font-size:11px">${val(p.educationSpeciality)}</td>
+                            <td style="text-align:center">${val(p.passportSeries)}</td>
+                            <td style="text-align:center">${val(p.passportNumber)}</td>
+                            <td style="text-align:center">${val(p.driverLicenseSeries)}</td>
+                            <td style="text-align:center">${val(p.driverLicenseNumber)}</td>
+                            <td style="text-align:center">${val(p.driverLicenseCategory)}</td>
                             <td style="font-size:11px">${val(p.registrationAddress)}</td>
                             <td style="font-size:11px">${val(p.livingAddress)}</td>
-                            <td>${val(p.maritalStatus)}</td>
+                            <td style="text-align:center">${val(p.maritalStatus)}</td>
                             <td>${val(p.spouseName)}</td>
-                            <td style="text-align:center">${val(p.childrenCount)}</td>
-                            <td style="text-align:center">${val(p.childBirthDate)}</td>
-                            <td style="text-align:center">${val(p.childAge)}</td>
                             <td style="font-size:11px">${val(p.familyAddress)}</td>
+                            <td style="text-align:center">${firstEduLevel}</td>
+                            <td style="font-size:11px">${firstEduInst}</td>
+                            <td style="font-size:11px">${firstEduSpec}</td>
+                            <td style="text-align:center">${firstEduStart ? fmtDate(firstEduStart) : '—'}</td>
+                            <td style="text-align:center">${firstEduEnd ? fmtDate(firstEduEnd) : '—'}</td>
+                            <td style="text-align:center">${val(p.diploma)}</td>
                             <td>${val(p.position)}</td>
                             <td style="font-size:11px">${val(p.fullPosition)}</td>
-                            <td style="font-size:11px">${val(p.draftOrganization)}</td>
+                            <td>${val(p.militaryUnit)}</td>
+                            <td style="text-align:center">${val(p.vos)}</td>
+                            <td style="text-align:center">${val(p.tariffGrade)}</td>
+                            <td style="text-align:center">${fmtDate(p.draftDate)}</td>
+                            <td>${val(p.draftOrganization)}</td>
+                            <td>${val(p.drafObl)}</td>
+                            <td>${val(p.draftLoc)}</td>
+                            <td style="text-align:center">${fmtDate(p.enrollmentDate)}</td>
+                            <td>${val(p.enrollmentNakaz)}</td>
                             <td>${val(p.ubdNumber)}</td>
-                            <td style="font-size:11px">${val(p.admissionForm)}</td>
-                            <td style="font-size:11px">${val(p.enrollmentInfo)}</td>
+                            <td style="text-align:center">${fmtDate(p.ubdDate)}</td>
+                            <td>${val(p.admissionForm)}</td>
+                            <td>${val(p.admissionNakaz)}</td>
+                            <td style="text-align:center">${fmtDate(p.admissionDate)}</td>
                             <td>${val(p.serviceFor)}</td>
-                            <td style="font-size:11px">${val(p.weaponInfo)}</td>
-                            <td style="white-space:nowrap">
+                            <td style="text-align:center">${val(p.shoeSize)}</td>
+                            <td style="text-align:center">${val(p.uniformSize)}</td>
+                            <td style="text-align:center">${val(p.headwearSize)}</td>
+                            <td style="font-size:11px">${weaponInfo}</td>
+                            <td style="font-size:11px; max-width:200px; white-space:normal; word-wrap:break-word;">${val(p.note)}</td>
+                            <td class="no-print" style="white-space:nowrap">
                                 <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
                             </td>
                         </tr>`;
@@ -893,7 +874,7 @@
                             <td>${p.rank || '—'}</td>
                             <td><strong>${escapeHtml(fullName)}</strong></td>
                             <td>${p.fullPosition || p.position || '—'}</td>
-                            <td style="white-space:nowrap">
+                            <td class="no-print" style="white-space:nowrap">
                                 <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
                             </td>
                         </tr>`;
@@ -924,11 +905,18 @@
                 function getSortVal(p, col) {
                     switch(col) {
                         case 'num': return p.personnelNumber ?? p.id ?? 0;
-                        case 'name': return p.lastName || '';
+                        case 'status': return p.personnelStatus || '';
                         case 'rank': return p.rank || '';
-                        case 'position': return p.position || '';
+                        case 'name': return p.lastName || '';
                         case 'phone': return p.phone || '';
                         case 'birth': return p.birthDate || '';
+                        case 'taxId': return p.taxId || '';
+                        case 'blood': return p.bloodGroup || '';
+                        case 'marital': return p.maritalStatus || '';
+                        case 'position': return p.position || '';
+                        case 'vos': return p.vos || '';
+                        case 'draftDate': return p.draftDate || '';
+                        case 'serviceFor': return p.serviceFor || '';
                         default: return '';
                     }
                 }
@@ -943,21 +931,16 @@
                     }
                 }
 
-                // ===== ФІЛЬТР І ПОШУК (ТІЛЬКИ ЗІ СТАТУСОМ "В ОСОБОВОМУ СКЛАДІ") =====
+                // ===== ФІЛЬТР І ПОШУК =====
                 document.getElementById('searchInput').addEventListener('input', applyFilters);
 
                 function applyFilters() {
                     const q = document.getElementById('searchInput').value.toLowerCase();
-                    // Фільтруємо тільки тих, хто має статус "В особовому складі" або статус не задано
-                    let filtered = activePersonnel.filter(p =>
-                        p.personnelStatus === 'В особовому складі' || !p.personnelStatus
-                    );
-                    if (q) {
-                        filtered = filtered.filter(p =>
-                            p.lastName.toLowerCase().includes(q) ||
-                            (p.firstName || '').toLowerCase().includes(q)
-                        );
-                    }
+                    let filtered = activePersonnel.filter(p => {
+                        const matchName = p.lastName.toLowerCase().includes(q) ||
+                            (p.firstName || '').toLowerCase().includes(q);
+                        return matchName;
+                    });
                     if (sortCol) {
                         filtered = [...filtered].sort((a, b) => {
                             const va = getSortVal(a, sortCol);
@@ -974,21 +957,17 @@
                     }
                     renderShortTable(filtered);
                     renderFullTable(filtered);
-                    renderStats(); // оновлюємо статистику після фільтра
+                    renderStats();
                 }
 
                 // ===== СТАТИСТИКА =====
                 function renderStats() {
                     const q = document.getElementById('searchInput').value.toLowerCase();
-                    let filtered = activePersonnel.filter(p =>
-                        p.personnelStatus === 'В особовому складі' || !p.personnelStatus
-                    );
-                    if (q) {
-                        filtered = filtered.filter(p =>
-                            p.lastName.toLowerCase().includes(q) ||
-                            (p.firstName || '').toLowerCase().includes(q)
-                        );
-                    }
+                    let filtered = activePersonnel.filter(p => {
+                        const matchName = p.lastName.toLowerCase().includes(q) ||
+                            (p.firstName || '').toLowerCase().includes(q);
+                        return matchName;
+                    });
                     const total = filtered.length;
                     const officers = filtered.filter(p => p.rank && /лейтенант|капітан|майор|підполковник|полковник|генерал/i.test(p.rank)).length;
                     const sergeants = filtered.filter(p => p.rank && /сержант|старшина/i.test(p.rank)).length;
@@ -1126,18 +1105,6 @@
                     const m = today.getMonth() - birth.getMonth();
                     if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
                     return age;
-                }
-
-                function printActiveTable() {
-                    // Знаходимо активну вкладку
-                    const activeTab = document.querySelector('.tab-btn.active');
-                    let title = 'Особовий склад';
-                    if (activeTab) {
-                        title = activeTab.textContent.trim();
-                    }
-                    // Встановлюємо тимчасовий заголовок сторінки для друку
-                    document.title = title;
-                    window.print();
                 }
 
                 function exportXlsx() {
