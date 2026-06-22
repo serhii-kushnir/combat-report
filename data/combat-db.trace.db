@@ -11939,6 +11939,3 @@ Caused by: org.h2.jdbc.JdbcSQLInvalidAuthorizationSpecException: Wrong user name
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:522)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
 	... 100 more
-2026-06-21 21:11:51.430469+03:00 jdbc[5]: exception
-org.h2.jdbc.JdbcSQLDataException: Value too long for column "UNIFORM_SIZE CHARACTER VARYING(10)": "'4534534.3234' (12)"; SQL statement:
-update personnel set active=?,admission_date=?,admission_form=?,admission_nakaz=?,birth_date=?,blood_group=?,draf_obl=?,draft_date=?,draft_loc=?,draft_organization=?,driver_license_category=?,driver_license_number=?,driver_license_series=?,education=?,enrollment_date=?,enrollment_info=?,enrollment_nakaz=?,family_address=?,first_name=?,full_position=?,headwear_size=?,last_name=?,living_address=?,marital_status=?,middle_name=?,military_unit=?,note=?,passport_number=?,passport_series=?,personnel_number=?,personnel_status=?,phone=?,position=?,rank=?,registration_address=?,service_for=?,service_type=?,shoe_size=?,spouse_name=?,tariff_grade=?,tax_id=?,ubd_date=?,ubd_number=?,uniform_size=?,vos=? where id=? [22001-232]
