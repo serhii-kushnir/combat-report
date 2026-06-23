@@ -184,17 +184,17 @@ public class NoteController {
             for (Note note : notes) {
                 // Створюємо аркуш для кожної нотатки
                 String sheetName = "Нотатка " + sheetIndex++;
-                if (sheetName.length() > 31) { // обмеження Excel
+                if (sheetName.length() > 31) {
                     sheetName = sheetName.substring(0, 31);
                 }
                 XSSFSheet sheet = wb.createSheet(sheetName);
 
                 // Стилі
                 XSSFCellStyle headerStyle = createHeaderStyle(wb);
-                XSSFCellStyle dataStyle = createDataStyle(wb);
+                XSSFCellStyle dataStyle = createDataStyle(wb);   // wrap text = true
                 XSSFCellStyle centerStyle = createCenterStyle(wb);
 
-                // Заголовки (без "Колір" та "Закріплено")
+                // Заголовки: №, Заголовок, Текст, Створено, Оновлено
                 String[] headers = {"№", "Заголовок", "Текст", "Створено", "Оновлено"};
                 int[] widths = {6, 30, 60, 18, 18};
 
@@ -209,9 +209,11 @@ public class NoteController {
 
                 // Дані – один рядок на нотатку
                 XSSFRow row = sheet.createRow(1);
-                row.setHeightInPoints(20);
 
-                setCell(row, 0, 1, centerStyle); // № завжди 1, бо один аркуш – одна нотатка
+                // Встановлюємо автоматичну висоту рядка (залежить від вмісту)
+                row.setHeight((short)-1);
+
+                setCell(row, 0, 1, centerStyle);
                 setCell(row, 1, note.getTitle(), dataStyle);
                 setCell(row, 2, note.getContent(), dataStyle);
                 setCell(row, 3, note.getCreatedAt() != null ? note.getCreatedAt().format(fmt) : "", centerStyle);
@@ -256,8 +258,8 @@ public class NoteController {
         f.setFontName("Arial");
         s.setFont(f);
         s.setAlignment(HorizontalAlignment.LEFT);
-        s.setVerticalAlignment(VerticalAlignment.CENTER);
-        s.setWrapText(true);
+        s.setVerticalAlignment(VerticalAlignment.TOP);  // вирівнювання по верхньому краю
+        s.setWrapText(true);   // перенесення тексту
         setBorders(s);
         return s;
     }
