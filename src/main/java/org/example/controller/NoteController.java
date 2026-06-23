@@ -180,12 +180,22 @@ public class NoteController {
         try (XSSFWorkbook wb = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-            int sheetIndex = 1;
             for (Note note : notes) {
-                String sheetName = "Нотатка " + sheetIndex++;
+                // Назва аркуша = заголовок нотатки
+                String sheetName = note.getTitle();
+                if (sheetName == null || sheetName.isBlank()) {
+                    sheetName = "Без назви";
+                }
+                // Видаляємо недопустимі символи для назви аркуша
+                sheetName = sheetName.replaceAll("[\\\\/*?:\\[\\]]", "");
+                // Обрізаємо до 31 символа
                 if (sheetName.length() > 31) {
                     sheetName = sheetName.substring(0, 31);
                 }
+                if (sheetName.isBlank()) {
+                    sheetName = "Нотатка";
+                }
+
                 XSSFSheet sheet = wb.createSheet(sheetName);
 
                 XSSFCellStyle headerStyle = createHeaderStyle(wb);
@@ -219,45 +229,7 @@ public class NoteController {
         }
     }
 
-    private XSSFCellStyle createTextLeftStyle(XSSFWorkbook wb) {
-        XSSFCellStyle s = wb.createCellStyle();
-        XSSFFont f = wb.createFont();
-        f.setFontHeightInPoints((short) 10);
-        f.setFontName("Arial");
-        s.setFont(f);
-        s.setAlignment(HorizontalAlignment.LEFT);    // ліворуч
-        s.setVerticalAlignment(VerticalAlignment.CENTER); // по центру вертикально
-        s.setWrapText(true);                         // перенесення тексту
-        setBorders(s);
-        return s;
-    }
-
-    private XSSFCellStyle createCenterStyle(XSSFWorkbook wb) {
-        XSSFCellStyle s = wb.createCellStyle();
-        XSSFFont f = wb.createFont();
-        f.setFontHeightInPoints((short) 10);
-        f.setFontName("Arial");
-        s.setFont(f);
-        s.setAlignment(HorizontalAlignment.CENTER);
-        s.setVerticalAlignment(VerticalAlignment.CENTER);
-        s.setWrapText(false);
-        setBorders(s);
-        return s;
-    }
-
-    // Для колонки "Текст" – центрування + перенесення
-    private XSSFCellStyle createTextStyle(XSSFWorkbook wb) {
-        XSSFCellStyle s = wb.createCellStyle();
-        XSSFFont f = wb.createFont();
-        f.setFontHeightInPoints((short) 10);
-        f.setFontName("Arial");
-        s.setFont(f);
-        s.setAlignment(HorizontalAlignment.CENTER);
-        s.setVerticalAlignment(VerticalAlignment.CENTER);
-        s.setWrapText(true);
-        setBorders(s);
-        return s;
-    }
+    // ==================== ДОПОМІЖНІ МЕТОДИ ====================
 
     private void setCell(XSSFRow row, int col, Object value, XSSFCellStyle style) {
         XSSFCell cell = row.createCell(col);
@@ -285,15 +257,28 @@ public class NoteController {
         return s;
     }
 
-    private XSSFCellStyle createDataStyle(XSSFWorkbook wb) {
+    private XSSFCellStyle createCenterStyle(XSSFWorkbook wb) {
+        XSSFCellStyle s = wb.createCellStyle();
+        XSSFFont f = wb.createFont();
+        f.setFontHeightInPoints((short) 10);
+        f.setFontName("Arial");
+        s.setFont(f);
+        s.setAlignment(HorizontalAlignment.CENTER);
+        s.setVerticalAlignment(VerticalAlignment.CENTER);
+        s.setWrapText(false);
+        setBorders(s);
+        return s;
+    }
+
+    private XSSFCellStyle createTextLeftStyle(XSSFWorkbook wb) {
         XSSFCellStyle s = wb.createCellStyle();
         XSSFFont f = wb.createFont();
         f.setFontHeightInPoints((short) 10);
         f.setFontName("Arial");
         s.setFont(f);
         s.setAlignment(HorizontalAlignment.LEFT);
-        s.setVerticalAlignment(VerticalAlignment.TOP);  // вирівнювання по верхньому краю
-        s.setWrapText(true);   // перенесення тексту
+        s.setVerticalAlignment(VerticalAlignment.CENTER);
+        s.setWrapText(true);
         setBorders(s);
         return s;
     }

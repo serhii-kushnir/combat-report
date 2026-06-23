@@ -54,7 +54,7 @@
             --btn-danger-hover: #b04050;
         }
 
-        /* ===== КОЛЬОРИ НОТАТОК ===== */
+        /* ===== КОЛЬОРИ НОТАТОК (для зворотної сумісності) ===== */
         .note-color-default { background: var(--bg-card); }
         .note-color-red { background: #f28b82; }
         .note-color-orange { background: #fbbc04; }
@@ -353,8 +353,8 @@
             background: var(--bg-card);
             border-radius: 16px;
             padding: 28px 32px;
-            width: 700px;           /* було 560px */
-            max-width: 96vw;        /* додаємо адаптивність */
+            width: 700px;
+            max-width: 96vw;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 8px 32px var(--shadow-strong);
@@ -395,36 +395,42 @@
             border-color: var(--btn-primary-bg);
         }
         .modal textarea {
-            height: 150px;
+            height: 400px;
             resize: vertical;
-        }
-
-        .color-picker {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .color-picker .color-option {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 2px solid var(--border-color);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .color-picker .color-option:hover {
-            transform: scale(1.1);
-        }
-        .color-picker .color-option.active {
-            border-color: var(--btn-primary-bg);
-            box-shadow: 0 0 0 2px var(--btn-primary-bg);
         }
 
         .modal-actions {
             display: flex;
-            gap: 10px;
-            justify-content: flex-end;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
             margin-top: 18px;
+        }
+        .modal-actions .color-block {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-actions .color-block label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+        .modal-actions .color-block input[type="color"] {
+            width: 40px;
+            height: 32px;
+            padding: 2px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            background: var(--bg-input);
+            flex-shrink: 0;
+        }
+        .modal-actions .btn-group {
+            display: flex;
+            gap: 10px;
         }
 
         /* ===== TOAST ===== */
@@ -524,6 +530,16 @@
             .modal {
                 padding: 20px;
             }
+            .modal-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .modal-actions .color-block {
+                justify-content: center;
+            }
+            .modal-actions .btn-group {
+                justify-content: center;
+            }
         }
     </style>
     <link th:replace="~{fragments :: sidebar-css}">
@@ -588,22 +604,16 @@
             <label>Текст</label>
             <textarea id="noteContent" placeholder="Введіть текст нотатки..."></textarea>
         </div>
-        <div class="form-group">
-            <label>Колір</label>
-            <div class="color-picker" id="colorPicker">
-                <div class="color-option active" data-color="default" style="background:#ffffff;border-color:#ccc;" onclick="selectColor(this)"></div>
-                <div class="color-option" data-color="red" style="background:#f28b82;" onclick="selectColor(this)"></div>
-                <div class="color-option" data-color="orange" style="background:#fbbc04;" onclick="selectColor(this)"></div>
-                <div class="color-option" data-color="yellow" style="background:#fff475;" onclick="selectColor(this)"></div>
-                <div class="color-option" data-color="green" style="background:#ccff90;" onclick="selectColor(this)"></div>
-                <div class="color-option" data-color="teal" style="background:#a7ffeb;" onclick="selectColor(this)"></div>
-                <div class="color-option" data-color="blue" style="background:#cbf0f8;" onclick="selectColor(this)"></div>
-                <div class="color-option" data-color="purple" style="background:#d2b3ff;" onclick="selectColor(this)"></div>
-            </div>
-        </div>
+
         <div class="modal-actions">
-            <button class="btn" onclick="closeModal('noteModal')" style="background:#eee;color:#333;">Скасувати</button>
-            <button class="btn btn-primary" onclick="saveNote()">Зберегти</button>
+            <div class="color-block">
+                <label for="noteColor">Колір фону</label>
+                <input type="color" id="noteColor" value="#ffffff">
+            </div>
+            <div class="btn-group">
+                <button class="btn" onclick="closeModal('noteModal')" style="background:#eee;color:#333;">Скасувати</button>
+                <button class="btn btn-primary" onclick="saveNote()">Зберегти</button>
+            </div>
         </div>
     </div>
 </div>
@@ -627,7 +637,6 @@
     // ===== ГЛОБАЛЬНІ ЗМІННІ =====
     let notes = [];
     let archivedNotes = [];
-    let selectedColor = 'default';
     let deleteTargetId = null;
     let showArchived = false;
 
@@ -647,14 +656,11 @@
         return d.toLocaleDateString('uk-UA') + ' ' + d.toLocaleTimeString('uk-UA', {hour:'2-digit', minute:'2-digit'});
     }
 
+    // Функція для визначення класу кольору (для зворотної сумісності)
     function getColorClass(color) {
-        return color && color !== 'default' ? 'note-color-' + color : 'note-color-default';
-    }
-
-    function selectColor(el) {
-        document.querySelectorAll('.color-option').forEach(c => c.classList.remove('active'));
-        el.classList.add('active');
-        selectedColor = el.dataset.color;
+        if (!color) return 'note-color-default';
+        if (color.startsWith('#')) return ''; // hex – не використовуємо клас
+        return 'note-color-' + color;
     }
 
     // ===== ЗАВАНТАЖЕННЯ =====
@@ -689,21 +695,29 @@
             </div>`;
             return;
         }
-        grid.innerHTML = notes.map(n => `
-            <div class="note-card ${getColorClass(n.color)} ${n.pinned ? 'pinned' : ''}" onclick="openEditModal(${n.id})">
-                <span class="pin-icon"><i class="fas fa-thumbtack"></i></span>
-                <div class="note-title">${escapeHtml(n.title)}</div>
-                <div class="note-content">${escapeHtml(n.content) || '<span style="color:var(--text-light);font-style:italic;">Порожньо</span>'}</div>
-                <div class="note-meta">
-                    <span>${n.updatedAt ? formatDate(n.updatedAt) : ''}</span>
-                    <div class="note-actions" onclick="event.stopPropagation();">
-                        <button class="btn btn-xs" onclick="togglePin(${n.id})" title="Закріпити"><i class="fas fa-thumbtack"></i></button>
-                        <button class="btn btn-xs" onclick="archiveNote(${n.id})" title="В архів"><i class="fas fa-archive"></i></button>
-                        <button class="btn btn-xs" onclick="deleteNote(${n.id})" title="Видалити" style="color:var(--btn-danger-bg);"><i class="fas fa-trash"></i></button>
+        grid.innerHTML = notes.map(n => {
+            let bgStyle = '';
+            let colorClass = getColorClass(n.color);
+            if (n.color && n.color.startsWith('#')) {
+                bgStyle = `style="background-color: ${n.color};"`;
+                colorClass = ''; // клас не потрібен, використовуємо inline
+            }
+            return `
+                <div class="note-card ${colorClass} ${n.pinned ? 'pinned' : ''}" ${bgStyle} onclick="openEditModal(${n.id})">
+                    <span class="pin-icon"><i class="fas fa-thumbtack"></i></span>
+                    <div class="note-title">${escapeHtml(n.title)}</div>
+                    <div class="note-content">${escapeHtml(n.content) || '<span style="color:var(--text-light);font-style:italic;">Порожньо</span>'}</div>
+                    <div class="note-meta">
+                        <span>${n.updatedAt ? formatDate(n.updatedAt) : ''}</span>
+                        <div class="note-actions" onclick="event.stopPropagation();">
+                            <button class="btn btn-xs" onclick="togglePin(${n.id})" title="Закріпити"><i class="fas fa-thumbtack"></i></button>
+                            <button class="btn btn-xs" onclick="archiveNote(${n.id})" title="В архів"><i class="fas fa-archive"></i></button>
+                            <button class="btn btn-xs" onclick="deleteNote(${n.id})" title="Видалити" style="color:var(--btn-danger-bg);"><i class="fas fa-trash"></i></button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     function renderArchived() {
@@ -718,19 +732,27 @@
             return;
         }
         section.style.display = showArchived ? 'block' : 'none';
-        grid.innerHTML = archivedNotes.map(n => `
-            <div class="note-card ${getColorClass(n.color)}" onclick="openEditModal(${n.id})">
-                <div class="note-title">${escapeHtml(n.title)}</div>
-                <div class="note-content">${escapeHtml(n.content) || '<span style="color:var(--text-light);font-style:italic;">Порожньо</span>'}</div>
-                <div class="note-meta">
-                    <span>${n.updatedAt ? formatDate(n.updatedAt) : ''}</span>
-                    <div class="note-actions" onclick="event.stopPropagation();">
-                        <button class="btn btn-xs" onclick="unarchiveNote(${n.id})" title="Відновити"><i class="fas fa-undo"></i></button>
-                        <button class="btn btn-xs" onclick="deleteNote(${n.id})" title="Видалити" style="color:var(--btn-danger-bg);"><i class="fas fa-trash"></i></button>
+        grid.innerHTML = archivedNotes.map(n => {
+            let bgStyle = '';
+            let colorClass = getColorClass(n.color);
+            if (n.color && n.color.startsWith('#')) {
+                bgStyle = `style="background-color: ${n.color};"`;
+                colorClass = '';
+            }
+            return `
+                <div class="note-card ${colorClass}" ${bgStyle} onclick="openEditModal(${n.id})">
+                    <div class="note-title">${escapeHtml(n.title)}</div>
+                    <div class="note-content">${escapeHtml(n.content) || '<span style="color:var(--text-light);font-style:italic;">Порожньо</span>'}</div>
+                    <div class="note-meta">
+                        <span>${n.updatedAt ? formatDate(n.updatedAt) : ''}</span>
+                        <div class="note-actions" onclick="event.stopPropagation();">
+                            <button class="btn btn-xs" onclick="unarchiveNote(${n.id})" title="Відновити"><i class="fas fa-undo"></i></button>
+                            <button class="btn btn-xs" onclick="deleteNote(${n.id})" title="Видалити" style="color:var(--btn-danger-bg);"><i class="fas fa-trash"></i></button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     function renderStats() {
@@ -775,9 +797,7 @@
         document.getElementById('editId').value = '';
         document.getElementById('noteTitle').value = '';
         document.getElementById('noteContent').value = '';
-        document.querySelectorAll('.color-option').forEach(c => c.classList.remove('active'));
-        document.querySelector('.color-option[data-color="default"]').classList.add('active');
-        selectedColor = 'default';
+        document.getElementById('noteColor').value = '#ffffff';
         openModal('noteModal');
     }
 
@@ -788,11 +808,9 @@
         document.getElementById('editId').value = id;
         document.getElementById('noteTitle').value = note.title || '';
         document.getElementById('noteContent').value = note.content || '';
-        document.querySelectorAll('.color-option').forEach(c => c.classList.remove('active'));
-        const color = note.color || 'default';
-        const target = document.querySelector(`.color-option[data-color="${color}"]`);
-        if (target) target.classList.add('active');
-        selectedColor = color;
+        // Якщо колір є hex-кодом – використовуємо його, інакше – білий
+        const color = note.color && note.color.startsWith('#') ? note.color : '#ffffff';
+        document.getElementById('noteColor').value = color;
         openModal('noteModal');
     }
 
@@ -800,16 +818,20 @@
         const id = document.getElementById('editId').value;
         const title = document.getElementById('noteTitle').value.trim();
         const content = document.getElementById('noteContent').value.trim();
+        const color = document.getElementById('noteColor').value.trim();
 
         if (!title) {
             showToast('Заголовок обов\'язковий', 'error');
             return;
         }
 
+        // Якщо колір білий – зберігаємо null, щоб використовувати дефолтний фон
+        const finalColor = (color && color !== '#ffffff') ? color : null;
+
         const body = {
             title: title,
             content: content,
-            color: selectedColor === 'default' ? null : selectedColor
+            color: finalColor
         };
 
         const url = id ? `/notes/api/${id}` : '/notes/api';
