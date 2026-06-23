@@ -182,19 +182,16 @@ public class NoteController {
 
             int sheetIndex = 1;
             for (Note note : notes) {
-                // Створюємо аркуш для кожної нотатки
                 String sheetName = "Нотатка " + sheetIndex++;
                 if (sheetName.length() > 31) {
                     sheetName = sheetName.substring(0, 31);
                 }
                 XSSFSheet sheet = wb.createSheet(sheetName);
 
-                // Стилі
                 XSSFCellStyle headerStyle = createHeaderStyle(wb);
-                XSSFCellStyle dataStyle = createDataStyle(wb);   // wrap text = true
                 XSSFCellStyle centerStyle = createCenterStyle(wb);
+                XSSFCellStyle textStyle = createTextStyle(wb);
 
-                // Заголовки: №, Заголовок, Текст, Створено, Оновлено
                 String[] headers = {"№", "Заголовок", "Текст", "Створено", "Оновлено"};
                 int[] widths = {6, 30, 60, 18, 18};
 
@@ -207,15 +204,12 @@ public class NoteController {
                     cell.setCellStyle(headerStyle);
                 }
 
-                // Дані – один рядок на нотатку
                 XSSFRow row = sheet.createRow(1);
-
-                // Встановлюємо автоматичну висоту рядка (залежить від вмісту)
                 row.setHeight((short)-1);
 
                 setCell(row, 0, 1, centerStyle);
-                setCell(row, 1, note.getTitle(), dataStyle);
-                setCell(row, 2, note.getContent(), dataStyle);
+                setCell(row, 1, note.getTitle(), centerStyle);
+                setCell(row, 2, note.getContent(), textStyle); // ← тепер по центру
                 setCell(row, 3, note.getCreatedAt() != null ? note.getCreatedAt().format(fmt) : "", centerStyle);
                 setCell(row, 4, note.getUpdatedAt() != null ? note.getUpdatedAt().format(fmt) : "", centerStyle);
             }
@@ -223,6 +217,30 @@ public class NoteController {
             wb.write(out);
             return out.toByteArray();
         }
+    }
+
+    // Для всіх колонок, крім "Текст" – центрування без перенесення
+    private XSSFCellStyle createCenterStyle(XSSFWorkbook wb) {
+        XSSFCellStyle s = createDataStyle(wb); // або базовий
+        s.setAlignment(HorizontalAlignment.CENTER);
+        s.setVerticalAlignment(VerticalAlignment.CENTER);
+        s.setWrapText(false);
+        setBorders(s);
+        return s;
+    }
+
+    // Для колонки "Текст" – центрування + перенесення
+    private XSSFCellStyle createTextStyle(XSSFWorkbook wb) {
+        XSSFCellStyle s = wb.createCellStyle();
+        XSSFFont f = wb.createFont();
+        f.setFontHeightInPoints((short) 10);
+        f.setFontName("Arial");
+        s.setFont(f);
+        s.setAlignment(HorizontalAlignment.CENTER);
+        s.setVerticalAlignment(VerticalAlignment.CENTER);
+        s.setWrapText(true);
+        setBorders(s);
+        return s;
     }
 
     private void setCell(XSSFRow row, int col, Object value, XSSFCellStyle style) {
@@ -261,12 +279,6 @@ public class NoteController {
         s.setVerticalAlignment(VerticalAlignment.TOP);  // вирівнювання по верхньому краю
         s.setWrapText(true);   // перенесення тексту
         setBorders(s);
-        return s;
-    }
-
-    private XSSFCellStyle createCenterStyle(XSSFWorkbook wb) {
-        XSSFCellStyle s = createDataStyle(wb);
-        s.setAlignment(HorizontalAlignment.CENTER);
         return s;
     }
 
