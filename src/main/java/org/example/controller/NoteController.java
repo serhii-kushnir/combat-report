@@ -180,36 +180,42 @@ public class NoteController {
         try (XSSFWorkbook wb = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-            XSSFSheet sheet = wb.createSheet("Нотатки");
-
-            XSSFCellStyle headerStyle = createHeaderStyle(wb);
-            XSSFCellStyle dataStyle = createDataStyle(wb);
-            XSSFCellStyle centerStyle = createCenterStyle(wb);
-
-            String[] headers = {"№", "Заголовок", "Текст", "Колір", "Закріплено", "Створено", "Оновлено"};
-            int[] widths = {6, 30, 60, 12, 10, 18, 18};
-
-            XSSFRow headerRow = sheet.createRow(0);
-            headerRow.setHeightInPoints(25);
-            for (int i = 0; i < headers.length; i++) {
-                sheet.setColumnWidth(i, widths[i] * 256);
-                XSSFCell cell = headerRow.createCell(i);
-                cell.setCellValue(headers[i]);
-                cell.setCellStyle(headerStyle);
-            }
-
-            int rowNum = 1;
+            int sheetIndex = 1;
             for (Note note : notes) {
-                XSSFRow row = sheet.createRow(rowNum++);
+                // Створюємо аркуш для кожної нотатки
+                String sheetName = "Нотатка " + sheetIndex++;
+                if (sheetName.length() > 31) { // обмеження Excel
+                    sheetName = sheetName.substring(0, 31);
+                }
+                XSSFSheet sheet = wb.createSheet(sheetName);
+
+                // Стилі
+                XSSFCellStyle headerStyle = createHeaderStyle(wb);
+                XSSFCellStyle dataStyle = createDataStyle(wb);
+                XSSFCellStyle centerStyle = createCenterStyle(wb);
+
+                // Заголовки (без "Колір" та "Закріплено")
+                String[] headers = {"№", "Заголовок", "Текст", "Створено", "Оновлено"};
+                int[] widths = {6, 30, 60, 18, 18};
+
+                XSSFRow headerRow = sheet.createRow(0);
+                headerRow.setHeightInPoints(25);
+                for (int i = 0; i < headers.length; i++) {
+                    sheet.setColumnWidth(i, widths[i] * 256);
+                    XSSFCell cell = headerRow.createCell(i);
+                    cell.setCellValue(headers[i]);
+                    cell.setCellStyle(headerStyle);
+                }
+
+                // Дані – один рядок на нотатку
+                XSSFRow row = sheet.createRow(1);
                 row.setHeightInPoints(20);
 
-                setCell(row, 0, rowNum - 1, centerStyle);
+                setCell(row, 0, 1, centerStyle); // № завжди 1, бо один аркуш – одна нотатка
                 setCell(row, 1, note.getTitle(), dataStyle);
                 setCell(row, 2, note.getContent(), dataStyle);
-                setCell(row, 3, note.getColor(), centerStyle);
-                setCell(row, 4, note.isPinned() ? "Так" : "", centerStyle);
-                setCell(row, 5, note.getCreatedAt() != null ? note.getCreatedAt().format(fmt) : "", centerStyle);
-                setCell(row, 6, note.getUpdatedAt() != null ? note.getUpdatedAt().format(fmt) : "", centerStyle);
+                setCell(row, 3, note.getCreatedAt() != null ? note.getCreatedAt().format(fmt) : "", centerStyle);
+                setCell(row, 4, note.getUpdatedAt() != null ? note.getUpdatedAt().format(fmt) : "", centerStyle);
             }
 
             wb.write(out);
