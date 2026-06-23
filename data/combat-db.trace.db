@@ -11939,3 +11939,6 @@ Caused by: org.h2.jdbc.JdbcSQLInvalidAuthorizationSpecException: Wrong user name
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:522)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
 	... 100 more
+2026-06-23 20:31:30.846536+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "CONTENT CHARACTER VARYING(5000)": "U&'#26\\000a\\000a\\000a\\000a________________________________________________ \\000a... (19902)"; SQL statement:
+insert into notes (archived,color,content,created_at,pinned,title,updated_at,id) values (?,?,?,?,?,?,?,default) [22001-232]
