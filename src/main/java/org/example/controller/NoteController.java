@@ -190,7 +190,7 @@ public class NoteController {
 
                 XSSFCellStyle headerStyle = createHeaderStyle(wb);
                 XSSFCellStyle centerStyle = createCenterStyle(wb);
-                XSSFCellStyle textStyle = createTextStyle(wb);
+                XSSFCellStyle textLeftStyle = createTextLeftStyle(wb);
 
                 String[] headers = {"№", "Заголовок", "Текст", "Створено", "Оновлено"};
                 int[] widths = {6, 30, 60, 18, 18};
@@ -209,7 +209,7 @@ public class NoteController {
 
                 setCell(row, 0, 1, centerStyle);
                 setCell(row, 1, note.getTitle(), centerStyle);
-                setCell(row, 2, note.getContent(), textStyle); // ← тепер по центру
+                setCell(row, 2, note.getContent(), textLeftStyle);
                 setCell(row, 3, note.getCreatedAt() != null ? note.getCreatedAt().format(fmt) : "", centerStyle);
                 setCell(row, 4, note.getUpdatedAt() != null ? note.getUpdatedAt().format(fmt) : "", centerStyle);
             }
@@ -219,9 +219,25 @@ public class NoteController {
         }
     }
 
-    // Для всіх колонок, крім "Текст" – центрування без перенесення
+    private XSSFCellStyle createTextLeftStyle(XSSFWorkbook wb) {
+        XSSFCellStyle s = wb.createCellStyle();
+        XSSFFont f = wb.createFont();
+        f.setFontHeightInPoints((short) 10);
+        f.setFontName("Arial");
+        s.setFont(f);
+        s.setAlignment(HorizontalAlignment.LEFT);    // ліворуч
+        s.setVerticalAlignment(VerticalAlignment.CENTER); // по центру вертикально
+        s.setWrapText(true);                         // перенесення тексту
+        setBorders(s);
+        return s;
+    }
+
     private XSSFCellStyle createCenterStyle(XSSFWorkbook wb) {
-        XSSFCellStyle s = createDataStyle(wb); // або базовий
+        XSSFCellStyle s = wb.createCellStyle();
+        XSSFFont f = wb.createFont();
+        f.setFontHeightInPoints((short) 10);
+        f.setFontName("Arial");
+        s.setFont(f);
         s.setAlignment(HorizontalAlignment.CENTER);
         s.setVerticalAlignment(VerticalAlignment.CENTER);
         s.setWrapText(false);
