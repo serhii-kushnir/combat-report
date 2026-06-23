@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Нотатки</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* ===== CSS ЗМІННІ ===== */
+        :root {
+            --bg-body: #f5f5f5;
+            --bg-card: #ffffff;
+            --bg-toolbar: #ffffff;
+            --bg-input: #ffffff;
+            --bg-modal: rgba(0,0,0,0.5);
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --text-light: #9aa0a6;
+            --text-white: #ffffff;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0,0,0,0.08);
+            --shadow-strong: rgba(0,0,0,0.2);
+            --btn-primary-bg: #1a73e8;
+            --btn-primary-hover: #1557b0;
+            --btn-success-bg: #34a853;
+            --btn-success-hover: #2d9248;
+            --btn-danger-bg: #ea4335;
+            --btn-danger-hover: #c5221f;
+            --toast-success: #2e7d32;
+            --toast-error: #c62828;
+            --note-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 2px 6px 2px rgba(60,64,67,0.15);
+            --note-shadow-hover: 0 4px 8px 0 rgba(60,64,67,0.3), 0 8px 16px 4px rgba(60,64,67,0.15);
+            --radius: 12px;
+        }
+
+        /* Темна тема */
+        body.dark-theme {
+            --bg-body: #202124;
+            --bg-card: #2d2d35;
+            --bg-toolbar: #2d2d35;
+            --bg-input: #3a3a44;
+            --text-primary: #e8eaed;
+            --text-secondary: #9aa0a6;
+            --text-light: #5f6368;
+            --border-color: #3d3d48;
+            --shadow-color: rgba(0,0,0,0.4);
+            --shadow-strong: rgba(0,0,0,0.5);
+            --note-shadow: 0 1px 2px 0 rgba(0,0,0,0.4), 0 2px 6px 2px rgba(0,0,0,0.3);
+            --note-shadow-hover: 0 4px 8px 0 rgba(0,0,0,0.5), 0 8px 16px 4px rgba(0,0,0,0.4);
+            --btn-primary-bg: #4a7ab5;
+            --btn-primary-hover: #5a8ac5;
+            --btn-success-bg: #3a6a3a;
+            --btn-success-hover: #4a7a4a;
+            --btn-danger-bg: #a03040;
+            --btn-danger-hover: #b04050;
+        }
+
+        /* ===== КОЛЬОРИ НОТАТОК (для зворотної сумісності) ===== */
+        .note-color-default { background: var(--bg-card); }
+        .note-color-red { background: #f28b82; }
+        .note-color-orange { background: #fbbc04; }
+        .note-color-yellow { background: #fff475; }
+        .note-color-green { background: #ccff90; }
+        .note-color-teal { background: #a7ffeb; }
+        .note-color-blue { background: #cbf0f8; }
+        .note-color-purple { background: #d2b3ff; }
+
+        body.dark-theme .note-color-red { background: #5c2b2a; }
+        body.dark-theme .note-color-orange { background: #5c3d1a; }
+        body.dark-theme .note-color-yellow { background: #5c4d1a; }
+        body.dark-theme .note-color-green { background: #1a3d1a; }
+        body.dark-theme .note-color-teal { background: #1a3d3a; }
+        body.dark-theme .note-color-blue { background: #1a2d3d; }
+        body.dark-theme .note-color-purple { background: #2a1a3d; }
+
+        /* ===== ОСНОВНІ СТИЛІ ===== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 20px;
+        }
+
+        /* ===== ТУЛБАР ===== */
+        .toolbar {
+            background: var(--bg-toolbar);
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            box-shadow: 0 1px 4px var(--shadow-color);
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .toolbar h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            flex: 1;
+            transition: color 0.3s;
+        }
+        .toolbar input {
+            padding: 8px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            width: 220px;
+            transition: border-color 0.2s, background 0.3s, color 0.3s;
+        }
+        .toolbar input:focus {
+            outline: none;
+            border-color: var(--btn-primary-bg);
+        }
+        .toolbar .btn-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 7px 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 2px 8px var(--shadow-color); }
+        .btn:active { transform: translateY(0); }
+
+        .btn-primary {
+            background: var(--btn-primary-bg);
+            color: white;
+        }
+        .btn-primary:hover { background: var(--btn-primary-hover); }
+
+        .btn-success {
+            background: var(--btn-success-bg);
+            color: white;
+        }
+        .btn-success:hover { background: var(--btn-success-hover); }
+
+        .btn-danger {
+            background: var(--btn-danger-bg);
+            color: white;
+        }
+        .btn-danger:hover { background: var(--btn-danger-hover); }
+
+        .btn-print {
+            background: #607d8b;
+            color: white;
+        }
+        .btn-print:hover { background: #546e7a; }
+        .dark-theme .btn-print { background: #4a5a6a; }
+        .dark-theme .btn-print:hover { background: #5a6a7a; }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        .btn-outline:hover {
+            background: var(--bg-input);
+        }
+
+        .btn-sm { padding: 4px 10px; font-size: 12px; }
+        .btn-xs { padding: 3px 6px; font-size: 11px; border-radius: 6px; }
+
+        /* ===== СТАТИСТИКА ===== */
+        .stats {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 8px 16px;
+            text-align: center;
+            box-shadow: 0 1px 4px var(--shadow-color);
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .stat-card .num {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--btn-primary-bg);
+        }
+        .stat-card .lbl {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* ===== СІТКА НОТАТОК ===== */
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .note-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--note-shadow);
+            padding: 16px 18px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+            border: 1px solid transparent;
+            display: flex;
+            flex-direction: column;
+            min-height: 120px;
+        }
+        .note-card:hover {
+            box-shadow: var(--note-shadow-hover);
+            transform: translateY(-2px);
+        }
+        .note-card.pinned {
+            border-left: 4px solid var(--btn-primary-bg);
+        }
+        .note-card .pin-icon {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            color: var(--text-light);
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .note-card:hover .pin-icon,
+        .note-card.pinned .pin-icon {
+            opacity: 1;
+        }
+        .note-card.pinned .pin-icon {
+            color: var(--btn-primary-bg);
+            opacity: 1;
+        }
+
+        .note-card .note-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            padding-right: 28px;
+            word-break: break-word;
+        }
+        .note-card .note-content {
+            font-size: 13px;
+            color: var(--text-secondary);
+            flex: 1;
+            word-break: break-word;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+            line-height: 1.5;
+        }
+        .note-card .note-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+            font-size: 11px;
+            color: var(--text-light);
+        }
+        .note-card .note-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .note-card:hover .note-actions {
+            opacity: 1;
+        }
+        .note-card .note-actions .btn {
+            padding: 2px 6px;
+            font-size: 12px;
+            background: transparent;
+            color: var(--text-secondary);
+        }
+        .note-card .note-actions .btn:hover {
+            background: var(--bg-hover, rgba(0,0,0,0.05));
+            color: var(--text-primary);
+        }
+        .dark-theme .note-card .note-actions .btn:hover {
+            background: rgba(255,255,255,0.08);
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+            font-size: 16px;
+        }
+        .empty-state i {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* ===== АРХІВ ===== */
+        .archived-section {
+            margin-top: 24px;
+        }
+        .archived-section .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* ===== МОДАЛЬНЕ ВІКНО ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--bg-modal);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 28px 32px;
+            width: 700px;
+            max-width: 96vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px var(--shadow-strong);
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .modal h2 {
+            margin: 0 0 16px;
+            font-size: 20px;
+            color: var(--text-primary);
+            transition: color 0.3s;
+        }
+        .modal .form-group {
+            margin-bottom: 14px;
+        }
+        .modal label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            transition: color 0.3s;
+        }
+        .modal input,
+        .modal textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            transition: border-color 0.2s, background 0.3s, color 0.3s;
+        }
+        .modal input:focus,
+        .modal textarea:focus {
+            outline: none;
+            border-color: var(--btn-primary-bg);
+        }
+        .modal textarea {
+            height: 400px;
+            resize: vertical;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+        .modal-actions .color-block {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-actions .color-block label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+        .modal-actions .color-block input[type="color"] {
+            width: 40px;
+            height: 32px;
+            padding: 2px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            background: var(--bg-input);
+            flex-shrink: 0;
+        }
+        .modal-actions .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 9999;
+        }
+        .toast.show { opacity: 1; }
+        .toast.success { background: var(--toast-success); }
+        .toast.error { background: var(--toast-error); }
+
+        /* ===== ДРУК ===== */
+        @media print {
+            .sidebar,
+            .toolbar,
+            .stats,
+            .no-print,
+            .btn,
+            .modal-overlay {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            .container {
+                padding: 10px !important;
+            }
+            .notes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+                gap: 12px !important;
+            }
+            .note-card {
+                box-shadow: 0 0 0 1px #ddd !important;
+                break-inside: avoid;
+                page-break-inside: avoid;
+                background: white !important;
+                color: black !important;
+            }
+            .note-card .note-title {
+                color: black !important;
+            }
+            .note-card .note-content {
+                color: #333 !important;
+            }
+            .note-card .note-meta {
+                border-top-color: #ddd !important;
+            }
+            .note-card .note-actions {
+                display: none !important;
+            }
+            .note-card .pin-icon {
+                display: none !important;
+            }
+            .dark-theme .note-card {
+                background: white !important;
+            }
+            .note-color-red,
+            .note-color-orange,
+            .note-color-yellow,
+            .note-color-green,
+            .note-color-teal,
+            .note-color-blue,
+            .note-color-purple {
+                background: white !important;
+            }
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .toolbar input {
+                width: 100%;
+            }
+            .toolbar .btn-group {
+                justify-content: center;
+            }
+            .notes-grid {
+                grid-template-columns: 1fr;
+            }
+            .modal {
+                padding: 20px;
+            }
+            .modal-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .modal-actions .color-block {
+                justify-content: center;
+            }
+            .modal-actions .btn-group {
+                justify-content: center;
+            }
+        }
+    </style>
+    <link th:replace="~{fragments :: sidebar-css}">
+</head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments :: sidebar('notes')}"></div>
+    <div class="main-content">
+        <div class="container">
+            <!-- ТУЛБАР -->
+            <div class="toolbar">
+                <h2><i class="fas fa-sticky-note"></i> Нотатки</h2>
+                <input type="text" id="searchInput" placeholder="🔍 Пошук нотаток...">
+                <div class="btn-group">
+                    <button class="btn btn-success" onclick="openAddModal()"><i class="fas fa-plus"></i> Додати</button>
+                    <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> Друк</button>
+                    <button class="btn btn-primary" onclick="exportXlsx()"><i class="fas fa-file-excel"></i> Експорт</button>
+                    <button class="btn btn-outline" onclick="toggleArchived()" id="archiveToggleBtn">
+                        <i class="fas fa-archive"></i> Архів
+                    </button>
+                </div>
+            </div>
+
+            <!-- СТАТИСТИКА -->
+            <div class="stats" id="statsBar"></div>
+
+            <!-- НОТАТКИ -->
+            <div class="notes-grid" id="notesGrid">
+                <div class="empty-state">
+                    <i class="fas fa-sticky-note"></i>
+                    <span>Немає нотаток. Створіть першу!</span>
+                </div>
+            </div>
+
+            <!-- АРХІВ -->
+            <div class="archived-section" id="archivedSection" style="display:none;">
+                <div class="section-title">
+                    <span><i class="fas fa-archive"></i> Архів</span>
+                    <button class="btn btn-sm btn-outline" onclick="toggleArchived()">Сховати</button>
+                </div>
+                <div class="notes-grid" id="archivedGrid">
+                    <div class="empty-state">
+                        <i class="fas fa-archive"></i>
+                        <span>Архів порожній</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== МОДАЛЬНЕ ВІКНО ===== -->
+<div class="modal-overlay" id="noteModal">
+    <div class="modal">
+        <h2 id="modalTitle">Нова нотатка</h2>
+        <input type="hidden" id="editId">
+        <div class="form-group">
+            <label>Заголовок *</label>
+            <input type="text" id="noteTitle" placeholder="Введіть заголовок...">
+        </div>
+        <div class="form-group">
+            <label>Текст</label>
+            <textarea id="noteContent" placeholder="Введіть текст нотатки..."></textarea>
+        </div>
+
+        <div class="modal-actions">
+            <div class="color-block">
+                <label for="noteColor">Колір фону</label>
+                <input type="color" id="noteColor" value="#ffffff">
+            </div>
+            <div class="btn-group">
+                <button class="btn" onclick="closeModal('noteModal')" style="background:#eee;color:#333;">Скасувати</button>
+                <button class="btn btn-primary" onclick="saveNote()">Зберегти</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== ПІДТВЕРДЖЕННЯ ВИДАЛЕННЯ ===== -->
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal" style="width:360px;">
+        <h2 style="color:var(--btn-danger-bg);">⚠️ Підтвердження</h2>
+        <p style="margin:12px 0;color:var(--text-secondary);">Ви впевнені, що хочете видалити цю нотатку?</p>
+        <div class="modal-actions">
+            <button class="btn" onclick="closeModal('confirmModal')" style="background:#eee;color:#333;">Скасувати</button>
+            <button class="btn btn-danger" id="confirmDeleteBtn">Видалити</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script th:replace="~{fragments :: sidebar-js}"></script>
+<script>
+    // ===== ГЛОБАЛЬНІ ЗМІННІ =====
+    let notes = [];
+    let archivedNotes = [];
+    let deleteTargetId = null;
+    let showArchived = false;
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('uk-UA') + ' ' + d.toLocaleTimeString('uk-UA', {hour:'2-digit', minute:'2-digit'});
+    }
+
+    // Функція для визначення класу кольору (для зворотної сумісності)
+    function getColorClass(color) {
+        if (!color) return 'note-color-default';
+        if (color.startsWith('#')) return ''; // hex – не використовуємо клас
+        return 'note-color-' + color;
+    }
+
+    // ===== ЗАВАНТАЖЕННЯ =====
+    async function loadNotes() {
+        try {
+            const [activeRes, archivedRes] = await Promise.all([
+                fetch('/notes/api'),
+                fetch('/notes/api/archived')
+            ]);
+            if (!activeRes.ok || !archivedRes.ok) {
+                showToast('Помилка завантаження', 'error');
+                return;
+            }
+            notes = await activeRes.json();
+            archivedNotes = await archivedRes.json();
+            renderNotes();
+            renderArchived();
+            renderStats();
+        } catch (e) {
+            console.error(e);
+            showToast('Помилка завантаження', 'error');
+        }
+    }
+
+    // ===== РЕНДЕРИНГ =====
+    function renderNotes() {
+        const grid = document.getElementById('notesGrid');
+        if (!notes || !notes.length) {
+            grid.innerHTML = `<div class="empty-state">
+                <i class="fas fa-sticky-note"></i>
+                <span>Немає нотаток. Створіть першу!</span>
+            </div>`;
+            return;
+        }
+        grid.innerHTML = notes.map(n => {
+            let bgStyle = '';
+            let colorClass = getColorClass(n.color);
+            if (n.color && n.color.startsWith('#')) {
+                bgStyle = `style="background-color: ${n.color};"`;
+                colorClass = ''; // клас не потрібен, використовуємо inline
+            }
+            return `
+                <div class="note-card ${colorClass} ${n.pinned ? 'pinned' : ''}" ${bgStyle} onclick="openEditModal(${n.id})">
+                    <span class="pin-icon"><i class="fas fa-thumbtack"></i></span>
+                    <div class="note-title">${escapeHtml(n.title)}</div>
+                    <div class="note-content">${escapeHtml(n.content) || '<span style="color:var(--text-light);font-style:italic;">Порожньо</span>'}</div>
+                    <div class="note-meta">
+                        <span>${n.updatedAt ? formatDate(n.updatedAt) : ''}</span>
+                        <div class="note-actions" onclick="event.stopPropagation();">
+                            <button class="btn btn-xs" onclick="togglePin(${n.id})" title="Закріпити"><i class="fas fa-thumbtack"></i></button>
+                            <button class="btn btn-xs" onclick="archiveNote(${n.id})" title="В архів"><i class="fas fa-archive"></i></button>
+                            <button class="btn btn-xs" onclick="deleteNote(${n.id})" title="Видалити" style="color:var(--btn-danger-bg);"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderArchived() {
+        const grid = document.getElementById('archivedGrid');
+        const section = document.getElementById('archivedSection');
+        if (!archivedNotes || !archivedNotes.length) {
+            grid.innerHTML = `<div class="empty-state">
+                <i class="fas fa-archive"></i>
+                <span>Архів порожній</span>
+            </div>`;
+            section.style.display = showArchived ? 'block' : 'none';
+            return;
+        }
+        section.style.display = showArchived ? 'block' : 'none';
+        grid.innerHTML = archivedNotes.map(n => {
+            let bgStyle = '';
+            let colorClass = getColorClass(n.color);
+            if (n.color && n.color.startsWith('#')) {
+                bgStyle = `style="background-color: ${n.color};"`;
+                colorClass = '';
+            }
+            return `
+                <div class="note-card ${colorClass}" ${bgStyle} onclick="openEditModal(${n.id})">
+                    <div class="note-title">${escapeHtml(n.title)}</div>
+                    <div class="note-content">${escapeHtml(n.content) || '<span style="color:var(--text-light);font-style:italic;">Порожньо</span>'}</div>
+                    <div class="note-meta">
+                        <span>${n.updatedAt ? formatDate(n.updatedAt) : ''}</span>
+                        <div class="note-actions" onclick="event.stopPropagation();">
+                            <button class="btn btn-xs" onclick="unarchiveNote(${n.id})" title="Відновити"><i class="fas fa-undo"></i></button>
+                            <button class="btn btn-xs" onclick="deleteNote(${n.id})" title="Видалити" style="color:var(--btn-danger-bg);"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderStats() {
+        const total = notes.length;
+        const pinned = notes.filter(n => n.pinned).length;
+        const archived = archivedNotes.length;
+        document.getElementById('statsBar').innerHTML = `
+            <div class="stat-card"><div class="num">${total}</div><div class="lbl">Всього</div></div>
+            <div class="stat-card"><div class="num" style="color:#fbbc04;">${pinned}</div><div class="lbl">Закріплено</div></div>
+            <div class="stat-card"><div class="num" style="color:#888;">${archived}</div><div class="lbl">Архів</div></div>
+        `;
+    }
+
+    // ===== ПОШУК =====
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const q = this.value.trim();
+        if (!q) {
+            loadNotes();
+            return;
+        }
+        fetch(`/notes/api/search?q=${encodeURIComponent(q)}`)
+            .then(r => r.json())
+            .then(data => {
+                notes = data;
+                renderNotes();
+                renderStats();
+            })
+            .catch(e => console.error(e));
+    });
+
+    // ===== ТОГЛ АРХІВ =====
+    function toggleArchived() {
+        showArchived = !showArchived;
+        document.getElementById('archiveToggleBtn').innerHTML =
+            `<i class="fas fa-archive"></i> ${showArchived ? 'Сховати архів' : 'Архів'}`;
+        renderArchived();
+    }
+
+    // ===== МОДАЛЬНІ ВІКНА =====
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent = '📝 Нова нотатка';
+        document.getElementById('editId').value = '';
+        document.getElementById('noteTitle').value = '';
+        document.getElementById('noteContent').value = '';
+        document.getElementById('noteColor').value = '#ffffff';
+        openModal('noteModal');
+    }
+
+    function openEditModal(id) {
+        const note = notes.find(n => n.id === id) || archivedNotes.find(n => n.id === id);
+        if (!note) return;
+        document.getElementById('modalTitle').textContent = '✏️ Редагувати нотатку';
+        document.getElementById('editId').value = id;
+        document.getElementById('noteTitle').value = note.title || '';
+        document.getElementById('noteContent').value = note.content || '';
+        // Якщо колір є hex-кодом – використовуємо його, інакше – білий
+        const color = note.color && note.color.startsWith('#') ? note.color : '#ffffff';
+        document.getElementById('noteColor').value = color;
+        openModal('noteModal');
+    }
+
+    async function saveNote() {
+        const id = document.getElementById('editId').value;
+        const title = document.getElementById('noteTitle').value.trim();
+        const content = document.getElementById('noteContent').value.trim();
+        const color = document.getElementById('noteColor').value.trim();
+
+        if (!title) {
+            showToast('Заголовок обов\'язковий', 'error');
+            return;
+        }
+
+        // Якщо колір білий – зберігаємо null, щоб використовувати дефолтний фон
+        const finalColor = (color && color !== '#ffffff') ? color : null;
+
+        const body = {
+            title: title,
+            content: content,
+            color: finalColor
+        };
+
+        const url = id ? `/notes/api/${id}` : '/notes/api';
+        const method = id ? 'PUT' : 'POST';
+
+        try {
+            const res = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if (res.ok) {
+                closeModal('noteModal');
+                await loadNotes();
+                showToast(id ? 'Нотатку оновлено' : 'Нотатку додано', 'success');
+            } else {
+                const err = await res.text();
+                showToast('Помилка: ' + err, 'error');
+            }
+        } catch (e) {
+            showToast('Помилка мережі', 'error');
+        }
+    }
+
+    // ===== ДІЇ З НОТАТКАМИ =====
+    async function togglePin(id) {
+        try {
+            const res = await fetch(`/notes/api/${id}/pin`, { method: 'PATCH' });
+            if (res.ok) await loadNotes();
+        } catch (e) { showToast('Помилка', 'error'); }
+    }
+
+    async function archiveNote(id) {
+        try {
+            const res = await fetch(`/notes/api/${id}/archive`, { method: 'PATCH' });
+            if (res.ok) {
+                await loadNotes();
+                showToast('Нотатку архівовано', 'success');
+            }
+        } catch (e) { showToast('Помилка', 'error'); }
+    }
+
+    async function unarchiveNote(id) {
+        try {
+            const res = await fetch(`/notes/api/${id}/unarchive`, { method: 'PATCH' });
+            if (res.ok) {
+                await loadNotes();
+                showToast('Нотатку відновлено', 'success');
+            }
+        } catch (e) { showToast('Помилка', 'error'); }
+    }
+
+    function deleteNote(id) {
+        deleteTargetId = id;
+        document.getElementById('confirmDeleteBtn').onclick = async () => {
+            try {
+                const res = await fetch(`/notes/api/${deleteTargetId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    closeModal('confirmModal');
+                    await loadNotes();
+                    showToast('Нотатку видалено', 'success');
+                }
+            } catch (e) { showToast('Помилка', 'error'); }
+        };
+        openModal('confirmModal');
+    }
+
+    // ===== ЕКСПОРТ =====
+    function exportXlsx() {
+        window.location.href = '/notes/api/export';
+    }
+
+    // ===== ДОПОМІЖНІ =====
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    document.querySelectorAll('.modal-overlay').forEach(el => {
+        el.addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('open');
+        });
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay.open').forEach(el => el.classList.remove('open'));
+        }
+    });
+
+    function showToast(msg, type) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = `toast ${type} show`;
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // ===== ІНІЦІАЛІЗАЦІЯ =====
+    loadNotes();
+</script>
+</body>
+</html>
