@@ -9,15 +9,15 @@ import java.util.List;
 @Repository
 public interface PersonnelRepository extends JpaRepository<Personnel, Long> {
 
-    // Повертає всіх активних осіб, відсортованих за прізвищем (використовується в інших місцях)
-    List<Personnel> findByActiveTrueOrderByLastNameAsc();
+    // Основний список (активні + статус "В особовому складі")
+    List<Personnel> findByActiveTrueAndPersonnelStatusOrderByLastNameAsc(String personnelStatus);
 
-    // НОВИЙ МЕТОД – повертає активних осіб із зазначеним статусом, відсортованих за прізвищем
-    List<Personnel> findByPersonnelStatusAndActiveTrueOrderByLastNameAsc(String personnelStatus);
+    // Всі неактивні (для повного приховування)
+    List<Personnel> findByActiveFalseOrderByLastNameAsc();
 
-    // Пошук за прізвищем (нечіткий, регістронезалежний)
+    // Пошук за прізвищем серед активних
     List<Personnel> findByLastNameContainingIgnoreCaseAndActiveTrue(String lastName);
 
+    // За статусом (будь-які)
     List<Personnel> findByPersonnelStatus(String personnelStatus);
-
 }

@@ -68,6 +68,12 @@ public class PersonnelController {
         return service.getAll();
     }
 
+    @GetMapping("/api/archived")
+    @ResponseBody
+    public List<Personnel> getArchived() {
+        return service.getArchived();
+    }
+
     @GetMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<Personnel> getById(@PathVariable Long id) {
@@ -100,12 +106,14 @@ public class PersonnelController {
             if (personnel.getFirstName() == null || personnel.getFirstName().isBlank())
                 return ResponseEntity.badRequest().body("Ім'я обов'язкове");
 
+            if (personnel.getPersonnelStatus() == null || personnel.getPersonnelStatus().isEmpty()) {
+                personnel.setPersonnelStatus("В особовому складі");
+            }
+
             Personnel saved = service.create(personnel);
             return ResponseEntity.ok(saved);
 
         } catch (DataIntegrityViolationException e) {
-            // Перевіряємо, чи це помилка унікальності поля personnel_number
-            // Оскільки personnel доступний, використовуємо його для логування
             String message = e.getMessage();
             if (message != null && message.contains("personnel_number")) {
                 Integer duplicateNumber = personnel != null ? personnel.getPersonnelNumber() : null;
@@ -130,7 +138,7 @@ public class PersonnelController {
     @GetMapping("/api/{id}/export")
     public ResponseEntity<byte[]> exportPersonXlsx(@PathVariable Long id) {
         try {
-            byte[] data = pCardExportService.exportPersonToXlsx(id);  // <-- ВИКОРИСТАННЯ НОВОГО СЕРВІСУ
+            byte[] data = pCardExportService.exportPersonToXlsx(id);
             Personnel p = service.getById(id).orElse(null);
             String name = p != null ? p.getLastName() + "_" + p.getFirstName() : "Особа_" + id;
             String filename = URLEncoder.encode(name + ".xlsx", StandardCharsets.UTF_8).replace("+", "%20");

@@ -5,6 +5,7 @@ import org.example.repository.PersonnelRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,10 +22,22 @@ public class PersonnelService {
         this.repository = repository;
     }
 
+    // ===== ОСНОВНИЙ СПИСОК (активні + статус "В особовому складі") =====
     public List<Personnel> getAll() {
-        return repository.findByActiveTrueOrderByLastNameAsc();
+        return repository.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("В особовому складі");
     }
 
+    // ===== АРХІВ (активні + статус "Не в особовому складі") =====
+    public List<Personnel> getArchived() {
+        return repository.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("Не в особовому складі");
+    }
+
+    // ===== ВСІ НЕАКТИВНІ (для повного видалення) =====
+    public List<Personnel> getInactive() {
+        return repository.findByActiveFalseOrderByLastNameAsc();
+    }
+
+    // ===== ПОШУК ЗА СТАТУСОМ (для інших потреб) =====
     public List<Personnel> getByStatus(String status) {
         return repository.findByPersonnelStatus(status);
     }
@@ -33,18 +46,23 @@ public class PersonnelService {
         return repository.findById(id);
     }
 
+    @Transactional
     public Personnel create(Personnel p) {
+        if (p.getPersonnelStatus() == null || p.getPersonnelStatus().isEmpty()) {
+            p.setPersonnelStatus("В особовому складі");
+        }
         p.setActive(true);
         Personnel saved = repository.save(p);
         log.info("Додано особу: {} (id={})", saved.getFullName(), saved.getId());
         return saved;
     }
 
+    @Transactional
     public Personnel update(Long id, Personnel updated) {
         Personnel e = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Особу не знайдено: " + id));
 
-        // Основні
+        // Копіювання всіх полів
         e.setLastName(updated.getLastName());
         e.setFirstName(updated.getFirstName());
         e.setMiddleName(updated.getMiddleName());
@@ -53,23 +71,15 @@ public class PersonnelService {
         e.setFullPosition(updated.getFullPosition());
         e.setPhone(updated.getPhone());
         e.setNote(updated.getNote());
-
-        // Особові дані
         e.setBirthDate(updated.getBirthDate());
         e.setTaxId(updated.getTaxId());
         e.setPassportSeries(updated.getPassportSeries());
         e.setPassportNumber(updated.getPassportNumber());
         e.setBloodGroup(updated.getBloodGroup());
-
-        // Адреса
         e.setRegistrationAddress(updated.getRegistrationAddress());
         e.setLivingAddress(updated.getLivingAddress());
-
-        // Сімейний стан
         e.setMaritalStatus(updated.getMaritalStatus());
         e.setSpouseName(updated.getSpouseName());
-
-        // Військові дані
         e.setDraftDate(updated.getDraftDate());
         e.setDraftOrganization(updated.getDraftOrganization());
         e.setServiceType(updated.getServiceType());
@@ -81,8 +91,6 @@ public class PersonnelService {
         e.setAdmissionForm(updated.getAdmissionForm());
         e.setEnrollmentInfo(updated.getEnrollmentInfo());
         e.setServiceFor(updated.getServiceFor());
-
-        // Додаткові поля (нові)
         e.setPersonnelNumber(updated.getPersonnelNumber());
         e.setPersonnelStatus(updated.getPersonnelStatus());
         e.setVos(updated.getVos());
@@ -99,25 +107,28 @@ public class PersonnelService {
         e.setAdmissionNakaz(updated.getAdmissionNakaz());
         e.setAdmissionDate(updated.getAdmissionDate());
 
+        // active не чіпаємо при оновленні (керуємо окремо)
         Personnel saved = repository.save(e);
         log.info("Оновлено особу: {} (id={})", saved.getFullName(), saved.getId());
         return saved;
     }
 
+    @Transactional
     public void deactivate(Long id) {
         Personnel p = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Особу не знайдено: " + id));
         p.setActive(false);
+        p.setPersonnelStatus("Не в особовому складі");
         repository.save(p);
         log.info("Деактивовано особу: {} (id={})", p.getFullName(), id);
     }
 
+    @Transactional
     public Personnel patch(Long id, Map<String, Object> updates) {
         Personnel p = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Особу не знайдено: " + id));
 
         updates.forEach((key, value) -> {
-            // Якщо значення – порожній рядок, замінюємо на null
             if (value instanceof String && ((String) value).isEmpty()) {
                 value = null;
             }
@@ -144,7 +155,9 @@ public class PersonnelService {
                 case "livingAddress": p.setLivingAddress((String) value); break;
                 case "maritalStatus": p.setMaritalStatus((String) value); break;
                 case "spouseName": p.setSpouseName((String) value); break;
-                case "personnelStatus": p.setPersonnelStatus((String) value); break;
+                case "personnelStatus":
+                    p.setPersonnelStatus((String) value);
+                    break;
                 case "vos": p.setVos((String) value); break;
                 case "tariffGrade": p.setTariffGrade((String) value); break;
                 case "shoeSize": p.setShoeSize(value != null ? String.valueOf(value) : null); break;
@@ -191,6 +204,7 @@ public class PersonnelService {
                 default: log.warn("Невідоме поле для оновлення: {}", key);
             }
         });
+
         return repository.save(p);
     }
 
