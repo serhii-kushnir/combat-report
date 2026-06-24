@@ -772,7 +772,7 @@
                     try {
                         const [activeRes, archivedRes] = await Promise.all([
                             fetch('/personnel/api'),
-                            fetch('/personnel/api/status/Не%20в%20особовому%20складі')
+                            fetch('/personnel/api/archived')
                         ]);
                         if (!activeRes.ok) { showToast('Помилка завантаження активних', 'error'); return; }
                         if (!archivedRes.ok) { showToast('Помилка завантаження архіву', 'error'); return; }

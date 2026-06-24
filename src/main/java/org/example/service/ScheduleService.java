@@ -73,7 +73,8 @@ public class ScheduleService {
         int daysInMonth = ym.lengthOfMonth();
 
         // Отримуємо тільки осіб зі статусом "В особовому складі"
-        List<Personnel> allPersonnel = personnelRepo.findByPersonnelStatusAndActiveTrueOrderByLastNameAsc("В особовому складі");
+        // ВИПРАВЛЕНО: правильна назва методу
+        List<Personnel> allPersonnel = personnelRepo.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("В особовому складі");
 
         List<ScheduleEntry> entries = scheduleRepo.findByMonth(from, to);
 

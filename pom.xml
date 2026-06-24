@@ -8,9 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <!-- [ВИПРАВЛЕННЯ #11] Актуальна стабільна версія (3.5.14, квітень 2026) -->
-        <!-- Версія 3.3.5 не існувала — виправлено правильний номер -->
-        <version>3.5.14</version>
+        <version>3.3.5</version>
         <relativePath/>
     </parent>
 
@@ -21,18 +19,20 @@
 
     <properties>
         <java.version>17</java.version>
-        <!-- Кирилиця в логах тестів на Windows -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <argLine>-Dfile.encoding=UTF-8</argLine>
     </properties>
 
     <dependencies>
+        <!-- POI -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>5.2.5</version>
         </dependency>
+
+        <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -49,22 +49,15 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>5.2.5</version>
-        </dependency>
 
-        <!-- [ВИПРАВЛЕННЯ #1] Видалено itext7-core — бібліотека не використовується -->
-
-        <!-- [ВИПРАВЛЕННЯ #9] Lombok — версія керується Spring Boot BOM, вказувати вручну не треба -->
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <!-- База даних H2 + Spring Data JPA -->
+        <!-- JPA + H2 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -75,6 +68,7 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Test & Security -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -84,6 +78,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+
+        <!-- Flyway (тільки core, H2 підтримується автоматично) -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <!-- версія автоматично керується Spring Boot BOM -->
+        </dependency>
     </dependencies>
 
     <build>
@@ -92,7 +93,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <!-- Lombok потрібен тільки під час компіляції, не в JAR -->
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
