@@ -833,7 +833,7 @@
       let options = [];
       if (field === 'rank') options = ['Солдат','Старший солдат','Молодший сержант','Сержант','Старший сержант','Головний сержант','Штаб-сержант','Майстер-сержант','Молодший лейтенант','Лейтенант','Старший лейтенант','Капітан'];
       else if (field === 'bloodGroup') options = ['O(I) Rh+','O(I) Rh-','A(II) Rh+','A(II) Rh-','B(III) Rh+','B(III) Rh-','AB(IV) Rh+','AB(IV) Rh-'];
-      else if (field === 'maritalStatus') options = ['Одружений','Незаміжній','Розлучений','Вдівець/Вдова'];
+      else if (field === 'maritalStatus') options = ['Одружений(на)','Не Одружений/Не заміжння','Розлучений(на)','Вдівець(ва)'];
       else if (field === 'serviceFor') options = ['За мобілізацією','За контрактом'];
       input.innerHTML = '<option value="">— не вказано —</option>' + options.map(o => `<option value="${o}">${o}</option>`).join('');
       input.value = currentValue;
