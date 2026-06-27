@@ -1175,7 +1175,14 @@
                 }
 
                 function exportXlsx() {
-                    window.location.href = '/personnel/api/export';
+                    const searchQuery = document.getElementById('searchInput').value.trim();
+                    let url = '/personnel/api/export?q=' + encodeURIComponent(searchQuery);
+                    // Додаємо параметри сортування
+                    if (sortCol) {
+                        url += '&sortCol=' + sortCol;
+                        url += '&sortDir=' + (sortDir === 1 ? 'asc' : 'desc');
+                    }
+                    window.location.href = url;
                 }
 
                 // ===== ІНІЦІАЛІЗАЦІЯ =====

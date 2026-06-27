@@ -1,11 +1,6 @@
 package org.example.controller;
 
-import org.example.entity.Personnel;
-import org.example.entity.PersonnelChild;
-import org.example.entity.PersonnelEducation;
-import org.example.entity.PersonnelVosTraining;
-import org.example.entity.PersonnelWeapon;
-import org.example.entity.PreviousService;  // ← ДОДАТИ ЯВНИЙ ІМПОРТ
+import org.example.entity.*;
 import org.example.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

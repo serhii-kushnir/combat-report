@@ -37,7 +37,7 @@ public class PersonnelService {
         this.weaponRepository = weaponRepository;
     }
 
-    // ===== ОСНОВНИЙ СПИСОК =====
+    // ===== ОСНОВНИЙ СПИСОК (активні + статус "В особовому складі") =====
     public List<Personnel> getAll() {
         List<Personnel> list = repository.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("В особовому складі");
         for (Personnel p : list) {
@@ -46,7 +46,7 @@ public class PersonnelService {
         return list;
     }
 
-    // ===== АРХІВ =====
+    // ===== АРХІВ (активні + статус "Не в особовому складі") =====
     public List<Personnel> getArchived() {
         List<Personnel> list = repository.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("Не в особовому складі");
         for (Personnel p : list) {
@@ -58,6 +58,15 @@ public class PersonnelService {
     // ===== ВСІ НЕАКТИВНІ =====
     public List<Personnel> getInactive() {
         return repository.findByActiveFalseOrderByLastNameAsc();
+    }
+
+    // ===== ВСІ ОСОБИ (для експорту / повної таблиці) =====
+    public List<Personnel> getAllPersonnel() {
+        List<Personnel> all = repository.findAll();
+        for (Personnel p : all) {
+            enrichPersonnel(p);
+        }
+        return all;
     }
 
     // ===== ПОШУК ЗА СТАТУСОМ =====
@@ -85,7 +94,7 @@ public class PersonnelService {
         Personnel e = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Особу не знайдено: " + id));
 
-        // Копіювання всіх полів (як у вашому коді)
+        // Копіювання всіх полів
         e.setLastName(updated.getLastName());
         e.setFirstName(updated.getFirstName());
         e.setMiddleName(updated.getMiddleName());

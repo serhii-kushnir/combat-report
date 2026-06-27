@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.example.service.PCardExportService;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -181,9 +182,40 @@ public class PersonnelController {
     }
 
     @GetMapping("/api/export")
-    public ResponseEntity<byte[]> exportXlsx() {
+    public ResponseEntity<byte[]> exportXlsx(@RequestParam(required = false) String q,
+                                             @RequestParam(required = false) String sortCol,
+                                             @RequestParam(required = false) String sortDir) {
         try {
-            byte[] data = exportService.exportToXlsx();
+            // Отримуємо список
+            List<Personnel> list;
+            if (q != null && !q.isEmpty()) {
+                list = service.search(q);
+            } else {
+                list = service.getAll(); // або getAllPersonnel() – залежить від ваших потреб
+            }
+
+            // Сортуємо відповідно до параметрів
+            if (sortCol != null && !sortCol.isEmpty()) {
+                boolean ascending = !"desc".equalsIgnoreCase(sortDir);
+                Comparator<Personnel> comparator = switch (sortCol) {
+                    case "num" -> Comparator.comparing(Personnel::getPersonnelNumber,
+                            Comparator.nullsLast(Comparator.naturalOrder()));
+                    case "rank" -> Comparator.comparing(Personnel::getRank, Comparator.nullsLast(Comparator.naturalOrder()));
+                    case "name" -> Comparator.comparing(Personnel::getLastName, Comparator.nullsLast(Comparator.naturalOrder()));
+                    case "position" -> Comparator.comparing(Personnel::getPosition, Comparator.nullsLast(Comparator.naturalOrder()));
+                    case "phone" -> Comparator.comparing(Personnel::getPhone, Comparator.nullsLast(Comparator.naturalOrder()));
+                    case "birth" -> Comparator.comparing(Personnel::getBirthDate, Comparator.nullsLast(Comparator.naturalOrder()));
+                    case "age" -> Comparator.comparingInt(Personnel::getAge);
+                    case "status" -> Comparator.comparing(Personnel::getPersonnelStatus, Comparator.nullsLast(Comparator.naturalOrder()));
+                    default -> Comparator.comparing(Personnel::getPersonnelNumber, Comparator.nullsLast(Comparator.naturalOrder()));
+                };
+                list.sort(ascending ? comparator : comparator.reversed());
+            } else {
+                // Сортування за замовчуванням – за personnelNumber
+                list.sort(Comparator.comparing(Personnel::getPersonnelNumber, Comparator.nullsLast(Comparator.naturalOrder())));
+            }
+
+            byte[] data = exportService.exportToXlsx(list);
             String filename = URLEncoder.encode("Відомість_ОС.xlsx", StandardCharsets.UTF_8).replace("+", "%20");
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION,
