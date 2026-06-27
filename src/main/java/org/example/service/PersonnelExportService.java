@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -56,26 +57,33 @@ public class PersonnelExportService {
             List<PersonnelEducation> eduList = eduRepo.findAll().stream()
                     .filter(e -> personnelIds.contains(e.getPersonnel().getId()))
                     .collect(Collectors.toList());
+            // Сортуємо за порядковим номером особи
+            eduList.sort(Comparator.comparing(e -> e.getPersonnel().getPersonnelNumber(),
+                    Comparator.nullsLast(Comparator.naturalOrder())));
             if (!eduList.isEmpty()) {
                 XSSFSheet eduSheet = wb.createSheet("Освіта");
                 eduSheet.setDefaultRowHeightInPoints(50);
                 buildEducationSheet(eduSheet, eduList);
             }
 
-            // ==================== АРКУШ 3: Діти ====================
+            // ==================== АРКУШ 3: Діти (з колонкою "Вік") ====================
             List<PersonnelChild> childList = childRepo.findAll().stream()
                     .filter(c -> personnelIds.contains(c.getPersonnel().getId()))
                     .collect(Collectors.toList());
+            childList.sort(Comparator.comparing(c -> c.getPersonnel().getPersonnelNumber(),
+                    Comparator.nullsLast(Comparator.naturalOrder())));
             if (!childList.isEmpty()) {
                 XSSFSheet childSheet = wb.createSheet("Діти");
                 childSheet.setDefaultRowHeightInPoints(50);
-                buildChildSheet(childSheet, childList);
+                buildChildSheet(childSheet, childList); // тепер містить колонку "Вік"
             }
 
             // ==================== АРКУШ 4: Зброя ====================
             List<PersonnelWeapon> weaponList = weaponRepo.findAll().stream()
                     .filter(w -> personnelIds.contains(w.getPersonnel().getId()))
                     .collect(Collectors.toList());
+            weaponList.sort(Comparator.comparing(w -> w.getPersonnel().getPersonnelNumber(),
+                    Comparator.nullsLast(Comparator.naturalOrder())));
             if (!weaponList.isEmpty()) {
                 XSSFSheet weaponSheet = wb.createSheet("Озброєння");
                 weaponSheet.setDefaultRowHeightInPoints(50);
@@ -86,6 +94,8 @@ public class PersonnelExportService {
             List<PersonnelVosTraining> vosList = vosTrainingRepo.findAll().stream()
                     .filter(v -> personnelIds.contains(v.getPersonnel().getId()))
                     .collect(Collectors.toList());
+            vosList.sort(Comparator.comparing(v -> v.getPersonnel().getPersonnelNumber(),
+                    Comparator.nullsLast(Comparator.naturalOrder())));
             if (!vosList.isEmpty()) {
                 XSSFSheet vosSheet = wb.createSheet("ВОС Навчання");
                 vosSheet.setDefaultRowHeightInPoints(50);
@@ -96,6 +106,8 @@ public class PersonnelExportService {
             List<PreviousService> prevList = previousServiceRepo.findAll().stream()
                     .filter(p -> personnelIds.contains(p.getPersonnel().getId()))
                     .collect(Collectors.toList());
+            prevList.sort(Comparator.comparing(p -> p.getPersonnel().getPersonnelNumber(),
+                    Comparator.nullsLast(Comparator.naturalOrder())));
             if (!prevList.isEmpty()) {
                 XSSFSheet prevSheet = wb.createSheet("Попередня служба");
                 prevSheet.setDefaultRowHeightInPoints(50);
@@ -111,7 +123,6 @@ public class PersonnelExportService {
 
     private void buildMainSheet(XSSFSheet sheet, List<Personnel> list) {
         sheet.setDefaultRowHeightInPoints(50);
-
         XSSFCellStyle headerStyle = createHeaderStyle(sheet.getWorkbook());
         XSSFCellStyle dataStyle = createDataStyle(sheet.getWorkbook());
         XSSFCellStyle centerStyle = createCenterStyle(sheet.getWorkbook());
@@ -229,13 +240,12 @@ public class PersonnelExportService {
 
     private void buildEducationSheet(XSSFSheet sheet, List<PersonnelEducation> list) {
         sheet.setDefaultRowHeightInPoints(50);
-
         XSSFCellStyle headerStyle = createHeaderStyle(sheet.getWorkbook());
         XSSFCellStyle dataStyle = createDataStyle(sheet.getWorkbook());
         XSSFCellStyle centerStyle = createCenterStyle(sheet.getWorkbook());
 
-        String[] headers = {"№", "ПІБ особи", "Рівень", "Ступінь", "Заклад", "Спеціальність", "Початок", "Кінець", "Диплом №"};
-        int[] widths = {6, 30, 16, 16, 30, 24, 14, 14, 16};
+        String[] headers = {"№", "Пор.№", "ПІБ особи", "Рівень", "Ступінь", "Заклад", "Спеціальність", "Початок", "Кінець", "Диплом №"};
+        int[] widths = {6, 10, 30, 16, 16, 30, 24, 14, 14, 16};
 
         XSSFRow headerRow = sheet.createRow(0);
         headerRow.setHeightInPoints(50);
@@ -253,26 +263,26 @@ public class PersonnelExportService {
             row.setHeightInPoints(50);
             Personnel p = e.getPersonnel();
             setCell(row, 0, seq++, centerStyle);
-            setCell(row, 1, p != null ? p.getFullName() : "", dataStyle);
-            setCell(row, 2, e.getLevel(), dataStyle);
-            setCell(row, 3, e.getAcademicDegree(), dataStyle);
-            setCell(row, 4, e.getInstitution(), dataStyle);
-            setCell(row, 5, e.getSpeciality(), dataStyle);
-            setCell(row, 6, fmt(e.getStartDate()), centerStyle);
-            setCell(row, 7, fmt(e.getEndDate()), centerStyle);
-            setCell(row, 8, e.getDiploma(), centerStyle);
+            setCell(row, 1, p != null ? p.getPersonnelNumber() : "", centerStyle);
+            setCell(row, 2, p != null ? p.getFullName() : "", dataStyle);
+            setCell(row, 3, e.getLevel(), dataStyle);
+            setCell(row, 4, e.getAcademicDegree(), dataStyle);
+            setCell(row, 5, e.getInstitution(), dataStyle);
+            setCell(row, 6, e.getSpeciality(), dataStyle);
+            setCell(row, 7, fmt(e.getStartDate()), centerStyle);
+            setCell(row, 8, fmt(e.getEndDate()), centerStyle);
+            setCell(row, 9, e.getDiploma(), centerStyle);
         }
     }
 
     private void buildChildSheet(XSSFSheet sheet, List<PersonnelChild> list) {
         sheet.setDefaultRowHeightInPoints(50);
-
         XSSFCellStyle headerStyle = createHeaderStyle(sheet.getWorkbook());
         XSSFCellStyle dataStyle = createDataStyle(sheet.getWorkbook());
         XSSFCellStyle centerStyle = createCenterStyle(sheet.getWorkbook());
 
-        String[] headers = {"№", "ПІБ особи", "ПІБ дитини", "Дата народження"};
-        int[] widths = {6, 30, 30, 16};
+        String[] headers = {"№", "Пор.№", "ПІБ особи", "ПІБ дитини", "Дата народження", "Вік"};
+        int[] widths = {6, 10, 30, 30, 16, 10};
 
         XSSFRow headerRow = sheet.createRow(0);
         headerRow.setHeightInPoints(50);
@@ -289,22 +299,24 @@ public class PersonnelExportService {
             XSSFRow row = sheet.createRow(rowNum++);
             row.setHeightInPoints(50);
             Personnel p = c.getPersonnel();
+            int age = c.getBirthDate() != null ? (int) java.time.temporal.ChronoUnit.YEARS.between(c.getBirthDate(), LocalDate.now()) : 0;
             setCell(row, 0, seq++, centerStyle);
-            setCell(row, 1, p != null ? p.getFullName() : "", dataStyle);
-            setCell(row, 2, c.getFullName(), dataStyle);
-            setCell(row, 3, fmt(c.getBirthDate()), centerStyle);
+            setCell(row, 1, p != null ? p.getPersonnelNumber() : "", centerStyle);
+            setCell(row, 2, p != null ? p.getFullName() : "", dataStyle);
+            setCell(row, 3, c.getFullName(), dataStyle);
+            setCell(row, 4, fmt(c.getBirthDate()), centerStyle);
+            setCell(row, 5, age > 0 ? String.valueOf(age) : "", centerStyle);
         }
     }
 
     private void buildWeaponSheet(XSSFSheet sheet, List<PersonnelWeapon> list) {
         sheet.setDefaultRowHeightInPoints(50);
-
         XSSFCellStyle headerStyle = createHeaderStyle(sheet.getWorkbook());
         XSSFCellStyle dataStyle = createDataStyle(sheet.getWorkbook());
         XSSFCellStyle centerStyle = createCenterStyle(sheet.getWorkbook());
 
-        String[] headers = {"№", "ПІБ особи", "Модель", "Серійний №", "Штик-багнет", "Магазини", "Калібр", "Дата видачі"};
-        int[] widths = {6, 30, 18, 16, 16, 16, 16, 16};
+        String[] headers = {"№", "Пор.№", "ПІБ особи", "Модель", "Серійний №", "Штик-багнет", "Магазини", "Калібр", "Дата видачі"};
+        int[] widths = {6, 10, 30, 18, 16, 16, 16, 16, 16};
 
         XSSFRow headerRow = sheet.createRow(0);
         headerRow.setHeightInPoints(50);
@@ -322,25 +334,25 @@ public class PersonnelExportService {
             row.setHeightInPoints(50);
             Personnel p = w.getPersonnel();
             setCell(row, 0, seq++, centerStyle);
-            setCell(row, 1, p != null ? p.getFullName() : "", dataStyle);
-            setCell(row, 2, w.getWeaponType(), dataStyle);
-            setCell(row, 3, w.getSerialNumber(), centerStyle);
-            setCell(row, 4, w.getBayonet(), centerStyle);
-            setCell(row, 5, w.getMagazines(), centerStyle);
-            setCell(row, 6, w.getCaliber(), centerStyle);
-            setCell(row, 7, w.getIssuedDate(), centerStyle);
+            setCell(row, 1, p != null ? p.getPersonnelNumber() : "", centerStyle);
+            setCell(row, 2, p != null ? p.getFullName() : "", dataStyle);
+            setCell(row, 3, w.getWeaponType(), dataStyle);
+            setCell(row, 4, w.getSerialNumber(), centerStyle);
+            setCell(row, 5, w.getBayonet(), centerStyle);
+            setCell(row, 6, w.getMagazines(), centerStyle);
+            setCell(row, 7, w.getCaliber(), centerStyle);
+            setCell(row, 8, w.getIssuedDate(), centerStyle);
         }
     }
 
     private void buildVosSheet(XSSFSheet sheet, List<PersonnelVosTraining> list) {
         sheet.setDefaultRowHeightInPoints(50);
-
         XSSFCellStyle headerStyle = createHeaderStyle(sheet.getWorkbook());
         XSSFCellStyle dataStyle = createDataStyle(sheet.getWorkbook());
         XSSFCellStyle centerStyle = createCenterStyle(sheet.getWorkbook());
 
-        String[] headers = {"№", "ПІБ особи", "Найменування", "Спеціальність", "ВОС №", "Розпочато", "Закінчено", "№ наказу", "Дата наказу", "№ В/Ч"};
-        int[] widths = {6, 30, 24, 24, 16, 14, 14, 16, 16, 16};
+        String[] headers = {"№", "Пор.№", "ПІБ особи", "Найменування", "Спеціальність", "ВОС №", "Розпочато", "Закінчено", "№ наказу", "Дата наказу", "№ В/Ч"};
+        int[] widths = {6, 10, 30, 24, 24, 16, 14, 14, 16, 16, 16};
 
         XSSFRow headerRow = sheet.createRow(0);
         headerRow.setHeightInPoints(50);
@@ -358,27 +370,27 @@ public class PersonnelExportService {
             row.setHeightInPoints(50);
             Personnel p = t.getPersonnel();
             setCell(row, 0, seq++, centerStyle);
-            setCell(row, 1, p != null ? p.getFullName() : "", dataStyle);
-            setCell(row, 2, t.getName(), dataStyle);
-            setCell(row, 3, t.getSpeciality(), dataStyle);
-            setCell(row, 4, t.getVosNumber(), centerStyle);
-            setCell(row, 5, fmt(t.getStartDate()), centerStyle);
-            setCell(row, 6, fmt(t.getEndDate()), centerStyle);
-            setCell(row, 7, t.getOrderNumber(), centerStyle);
-            setCell(row, 8, fmt(t.getOrderDate()), centerStyle);
-            setCell(row, 9, t.getMilitaryUnit(), centerStyle);
+            setCell(row, 1, p != null ? p.getPersonnelNumber() : "", centerStyle);
+            setCell(row, 2, p != null ? p.getFullName() : "", dataStyle);
+            setCell(row, 3, t.getName(), dataStyle);
+            setCell(row, 4, t.getSpeciality(), dataStyle);
+            setCell(row, 5, t.getVosNumber(), centerStyle);
+            setCell(row, 6, fmt(t.getStartDate()), centerStyle);
+            setCell(row, 7, fmt(t.getEndDate()), centerStyle);
+            setCell(row, 8, t.getOrderNumber(), centerStyle);
+            setCell(row, 9, fmt(t.getOrderDate()), centerStyle);
+            setCell(row, 10, t.getMilitaryUnit(), centerStyle);
         }
     }
 
     private void buildPrevServiceSheet(XSSFSheet sheet, List<PreviousService> list) {
         sheet.setDefaultRowHeightInPoints(50);
-
         XSSFCellStyle headerStyle = createHeaderStyle(sheet.getWorkbook());
         XSSFCellStyle dataStyle = createDataStyle(sheet.getWorkbook());
         XSSFCellStyle centerStyle = createCenterStyle(sheet.getWorkbook());
 
-        String[] headers = {"№", "ПІБ особи", "Служба", "Ким призваний", "Початок", "Кінець", "Звання", "Військова частина"};
-        int[] widths = {6, 30, 24, 24, 14, 14, 16, 20};
+        String[] headers = {"№", "Пор.№", "ПІБ особи", "Служба", "Ким призваний", "Початок", "Кінець", "Звання", "Військова частина"};
+        int[] widths = {6, 10, 30, 24, 24, 14, 14, 16, 20};
 
         XSSFRow headerRow = sheet.createRow(0);
         headerRow.setHeightInPoints(50);
@@ -396,13 +408,14 @@ public class PersonnelExportService {
             row.setHeightInPoints(50);
             Personnel p = s.getPersonnel();
             setCell(row, 0, seq++, centerStyle);
-            setCell(row, 1, p != null ? p.getFullName() : "", dataStyle);
-            setCell(row, 2, s.getServiceType(), dataStyle);
-            setCell(row, 3, s.getDraftedBy(), dataStyle);
-            setCell(row, 4, fmt(s.getStartDate()), centerStyle);
-            setCell(row, 5, fmt(s.getEndDate()), centerStyle);
-            setCell(row, 6, s.getRank(), centerStyle);
-            setCell(row, 7, s.getMilitaryUnit(), dataStyle);
+            setCell(row, 1, p != null ? p.getPersonnelNumber() : "", centerStyle);
+            setCell(row, 2, p != null ? p.getFullName() : "", dataStyle);
+            setCell(row, 3, s.getServiceType(), dataStyle);
+            setCell(row, 4, s.getDraftedBy(), dataStyle);
+            setCell(row, 5, fmt(s.getStartDate()), centerStyle);
+            setCell(row, 6, fmt(s.getEndDate()), centerStyle);
+            setCell(row, 7, s.getRank(), centerStyle);
+            setCell(row, 8, s.getMilitaryUnit(), dataStyle);
         }
     }
 
