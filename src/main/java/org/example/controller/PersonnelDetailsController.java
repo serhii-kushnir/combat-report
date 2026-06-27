@@ -111,6 +111,7 @@ public class PersonnelDetailsController {
                                              @RequestBody PersonnelEducation edu) {
         return eduRepo.findById(eduId).map(e -> {
             e.setLevel(edu.getLevel());
+            e.setAcademicDegree(edu.getAcademicDegree()); // ДОДАНО
             e.setInstitution(edu.getInstitution());
             e.setSpeciality(edu.getSpeciality());
             e.setStartDate(edu.getStartDate());

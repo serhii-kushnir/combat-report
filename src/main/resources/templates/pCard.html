@@ -400,6 +400,10 @@
             <div class="info-field"><div class="info-label">По батькові</div><div class="info-value" data-field="middleName" th:text="${person.middleName}">—</div></div>
             <div class="info-field"><div class="info-label">Телефон</div><div class="info-value" data-field="phone" th:text="${person.phone}">—</div></div>
             <div class="info-field"><div class="info-label">Дата народження</div><div class="info-value" data-field="birthDate" th:text="${#temporals.format(person.birthDate, 'dd.MM.yyyy')}">—</div></div>
+            <div class="info-field">
+              <div class="info-label">Повних років</div>
+              <div class="info-value" th:text="${person.age > 0 ? person.age : '—'}">—</div>
+            </div>
             <div class="info-field"><div class="info-label">ІПН</div><div class="info-value" data-field="taxId" th:text="${person.taxId}">—</div></div>
             <div class="info-field"><div class="info-label">Група крові</div><div class="info-value" data-field="bloodGroup" th:text="${person.bloodGroup}">—</div></div>
           </div>
@@ -433,7 +437,14 @@
               <button class="btn btn-primary btn-sm hidden-action" id="addEducationBtn" onclick="openAddEducationModal()">+ Додати освіту</button>
             </div>
             <table class="sub-table" id="educationTable">
-              <thead><tr><th>Рівень</th><th>Заклад</th><th>Спеціальність</th><th>Початок</th><th>Кінець</th><th>Диплом</th><th>Дії</th></tr></thead>
+              <thead><tr><th>Рівень</th>
+                <th>Ступінь</th>
+                <th>Заклад</th>
+                <th>Спеціальність</th>
+                <th>Початок</th>
+                <th>Кінець</th>
+                <th>Диплом</th>
+                <th>Дії</th></tr></thead>
               <tbody id="educationList"></tbody>
             </table>
           </div>
@@ -453,7 +464,12 @@
               <button class="btn btn-primary btn-sm hidden-action" id="addChildBtn" onclick="openAddChildModal()">+ Додати дитину</button>
             </div>
             <table class="sub-table" id="childrenTable">
-              <thead><tr><th>ПІБ дитини</th><th>Дата народження</th><th>Дії</th></tr></thead>
+              <thead><tr>
+                <th>ПІБ дитини</th>
+                <th>Дата народження</th>
+                <th>Повних років</th>   <!-- НОВА КОЛОНКА -->
+                <th>Дії</th>
+              </tr></thead>
               <tbody id="childrenList"></tbody>
             </table>
           </div>
@@ -619,6 +635,7 @@
         <option value="Середня">Середня</option>
       </select>
     </div>
+    <div class="form-group"><label>Ступінь</label><input type="text" id="eduDegree" placeholder="Кандидат наук, доктор..."></div>
     <div class="form-group"><label>Заклад</label><input type="text" id="eduInstitution"></div>
     <div class="form-group"><label>Спеціальність</label><input type="text" id="eduSpeciality"></div>
     <div class="form-group"><label>Початок</label><input type="date" id="eduStartDate"></div>
@@ -749,12 +766,16 @@
 
   // ===== КЕРУВАННЯ ВИДИМІСТЮ КНОПОК =====
   function showActionButtons() {
-    document.querySelectorAll('.hidden-action').forEach(el => el.classList.remove('hidden-action'));
+    document.querySelectorAll('.hidden-action').forEach(el => {
+      el.classList.remove('hidden-action');
+    });
     document.getElementById('deleteBtn').style.display = 'inline-block';
   }
 
   function hideActionButtons() {
-    document.querySelectorAll('.hidden-action').forEach(el => el.classList.add('hidden-action'));
+    document.querySelectorAll('.hidden-action').forEach(el => {
+      el.classList.add('hidden-action');
+    });
     document.getElementById('deleteBtn').style.display = 'none';
   }
 
@@ -766,7 +787,7 @@
       el.classList.add('editable');
       el.onclick = () => startEdit(el);
     });
-    showActionButtons();
+    showActionButtons(); // <-- додано
     document.getElementById('enableEditBtn').style.display = 'none';
     document.getElementById('saveAllBtn').style.display = 'inline-block';
     document.getElementById('cancelEditBtn').style.display = 'inline-block';
@@ -1016,40 +1037,65 @@
     const res = await fetch(`/personnel/api/${currentPersonId}/education`);
     const list = await res.json();
     const tbody = document.getElementById('educationList');
-    if (!list.length) { tbody.innerHTML = '<tr><td colspan="7">Немає даних</td></tr>'; return; }
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="8">Немає даних</td></tr>';
+      return;
+    }
     tbody.innerHTML = list.map(e => `
-            <tr>
-                <td>${escapeHtml(e.level)}</td>
-                <td>${escapeHtml(e.institution)}</td>
-                <td>${escapeHtml(e.speciality)}</td>
-                <td>${formatDateForDisplay(e.startDate)}</td>
-                <td>${formatDateForDisplay(e.endDate)}</td>
-                <td>${escapeHtml(e.diploma)}</td>
-                <td>
-                    <button class="btn btn-warning btn-sm hidden-action" onclick="openEditEducation(${e.id})">✏️</button>
-                    <button class="btn btn-danger btn-sm hidden-action" onclick="confirmDeleteEducation(${e.id})">🗑</button>
-                </td>
-            </tr>
-        `).join('');
-    if (isEditMode) showActionButtons();
+        <tr>
+            <td>${escapeHtml(e.level)}</td>
+            <td>${escapeHtml(e.academicDegree) || '—'}</td>
+            <td>${escapeHtml(e.institution)}</td>
+            <td>${escapeHtml(e.speciality)}</td>
+            <td>${formatDateForDisplay(e.startDate)}</td>
+            <td>${formatDateForDisplay(e.endDate)}</td>
+            <td>${escapeHtml(e.diploma)}</td>
+            <td>
+                <button class="btn btn-warning btn-sm hidden-action" onclick="openEditEducation(${e.id})">✏️</button>
+                <button class="btn btn-danger btn-sm hidden-action" onclick="confirmDeleteEducation(${e.id})">🗑</button>
+            </td>
+        </tr>
+    `).join('');
+    if (isEditMode) {
+      showActionButtons();
+    }
   }
 
   async function loadChildren() {
     const res = await fetch(`/personnel/api/${currentPersonId}/children`);
     const list = await res.json();
     const tbody = document.getElementById('childrenList');
-    if (!list.length) { tbody.innerHTML = '<tr><td colspan="3">Немає даних</td></tr>'; return; }
-    tbody.innerHTML = list.map(c => `
-            <tr>
-                <td>${escapeHtml(c.fullName)}</td>
-                <td>${formatDateForDisplay(c.birthDate)}</td>
-                <td>
-                    <button class="btn btn-warning btn-sm hidden-action" onclick="openEditChild(${c.id})">✏️</button>
-                    <button class="btn btn-danger btn-sm hidden-action" onclick="confirmDeleteChild(${c.id})">🗑</button>
-                </td>
-            </tr>
-        `).join('');
-    if (isEditMode) showActionButtons();
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="4">Немає даних</td></tr>';
+      return;
+    }
+    tbody.innerHTML = list.map(c => {
+      // Обчислюємо вік на фронтенді, якщо бекенд не повертає
+      const age = c.birthDate ? calcAge(c.birthDate) : '—';
+      return `
+        <tr>
+            <td>${escapeHtml(c.fullName)}</td>
+            <td>${formatDateForDisplay(c.birthDate)}</td>
+            <td>${age}</td>
+            <td>
+                <button class="btn btn-warning btn-sm hidden-action" onclick="openEditChild(${c.id})">✏️</button>
+                <button class="btn btn-danger btn-sm hidden-action" onclick="confirmDeleteChild(${c.id})">🗑</button>
+            </td>
+        </tr>
+    `}).join('');
+    if (isEditMode) {
+      showActionButtons();
+    }
+  }
+
+  function calcAge(dateStr) {
+    if (!dateStr) return '—';
+    const birth = new Date(dateStr);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+    return age;
   }
 
   async function loadWeapons() {
@@ -1130,11 +1176,14 @@
   }
 
   // ===== ОСВІТА (CRUD) =====
+  // ===== ОСВІТА (CRUD) =====
+
   async function openEditEducation(id) {
     const res = await fetch(`/personnel/api/${currentPersonId}/education/${id}`);
     const data = await res.json();
     document.getElementById('eduId').value = id;
     document.getElementById('eduLevel').value = data.level || '';
+    document.getElementById('eduDegree').value = data.academicDegree || '';
     document.getElementById('eduInstitution').value = data.institution || '';
     document.getElementById('eduSpeciality').value = data.speciality || '';
     document.getElementById('eduStartDate').value = data.startDate ? data.startDate.substring(0,10) : '';
@@ -1148,6 +1197,7 @@
     const id = document.getElementById('eduId').value;
     const body = {
       level: document.getElementById('eduLevel').value,
+      academicDegree: document.getElementById('eduDegree').value,
       institution: document.getElementById('eduInstitution').value,
       speciality: document.getElementById('eduSpeciality').value,
       startDate: document.getElementById('eduStartDate').value || null,
@@ -1170,14 +1220,6 @@
     } else {
       showToast('Помилка', 'error');
     }
-  }
-
-  async function confirmDeleteEducation(id) {
-    showConfirm('Видалити запис про освіту?', async function() {
-      await fetch(`/personnel/api/${currentPersonId}/education/${id}`, {method: 'DELETE'});
-      loadEducation();
-      showToast('Освіту видалено', 'success');
-    });
   }
 
   // ===== ДІТИ (CRUD) =====
@@ -1515,6 +1557,25 @@
   loadWeapons();
   loadVosTraining();
   loadPrevServices();
+
+  // Видалення освіти
+  async function confirmDeleteEducation(id) {
+    console.log('Видалення освіти, id:', id);
+    showConfirm('Видалити запис про освіту?', async function() {
+      try {
+        const response = await fetch(`/personnel/api/${currentPersonId}/education/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+          await loadEducation();
+          showToast('Освіту видалено', 'success');
+        } else {
+          showToast('Помилка видалення', 'error');
+        }
+      } catch (e) {
+        console.error(e);
+        showToast('Помилка мережі', 'error');
+      }
+    });
+  }
 </script>
 <div th:replace="~{fragments :: sidebar-js}"></div>
 </body>

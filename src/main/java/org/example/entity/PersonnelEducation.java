@@ -25,6 +25,7 @@ public class PersonnelEducation {
     private String level;             // Вища, Середня спеціальна тощо
     private String institution;       // Заклад освіти
     private String speciality;        // Спеціальність
+    private String academicDegree;    // НОВЕ ПОЛЕ: Ступінь (кандидат, доктор тощо)
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;

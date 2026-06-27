@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 @Entity
 @Table(name = "personnel_child")
@@ -26,4 +27,10 @@ public class PersonnelChild {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;      // Дата народження
+
+    // ===== НОВИЙ МЕТОД ДЛЯ ОБЧИСЛЕННЯ ВІКУ =====
+    public int getAge() {
+        if (birthDate == null) return 0;
+        return Period.between(birthDate, LocalDate.now()).getYears();
+    }
 }

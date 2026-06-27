@@ -1,7 +1,13 @@
 package org.example.service;
 
 import org.example.entity.Personnel;
+import org.example.entity.PersonnelChild;
+import org.example.entity.PersonnelEducation;
+import org.example.entity.PersonnelWeapon;
+import org.example.repository.PersonnelChildRepository;
+import org.example.repository.PersonnelEducationRepository;
 import org.example.repository.PersonnelRepository;
+import org.example.repository.PersonnelWeaponRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,27 +23,44 @@ public class PersonnelService {
 
     private static final Logger log = LoggerFactory.getLogger(PersonnelService.class);
     private final PersonnelRepository repository;
+    private final PersonnelEducationRepository educationRepository;
+    private final PersonnelChildRepository childRepository;
+    private final PersonnelWeaponRepository weaponRepository;
 
-    public PersonnelService(PersonnelRepository repository) {
+    public PersonnelService(PersonnelRepository repository,
+                            PersonnelEducationRepository educationRepository,
+                            PersonnelChildRepository childRepository,
+                            PersonnelWeaponRepository weaponRepository) {
         this.repository = repository;
+        this.educationRepository = educationRepository;
+        this.childRepository = childRepository;
+        this.weaponRepository = weaponRepository;
     }
 
-    // ===== ОСНОВНИЙ СПИСОК (активні + статус "В особовому складі") =====
+    // ===== ОСНОВНИЙ СПИСОК =====
     public List<Personnel> getAll() {
-        return repository.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("В особовому складі");
+        List<Personnel> list = repository.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("В особовому складі");
+        for (Personnel p : list) {
+            enrichPersonnel(p);
+        }
+        return list;
     }
 
-    // ===== АРХІВ (активні + статус "Не в особовому складі") =====
+    // ===== АРХІВ =====
     public List<Personnel> getArchived() {
-        return repository.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("Не в особовому складі");
+        List<Personnel> list = repository.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("Не в особовому складі");
+        for (Personnel p : list) {
+            enrichPersonnel(p);
+        }
+        return list;
     }
 
-    // ===== ВСІ НЕАКТИВНІ (для повного видалення) =====
+    // ===== ВСІ НЕАКТИВНІ =====
     public List<Personnel> getInactive() {
         return repository.findByActiveFalseOrderByLastNameAsc();
     }
 
-    // ===== ПОШУК ЗА СТАТУСОМ (для інших потреб) =====
+    // ===== ПОШУК ЗА СТАТУСОМ =====
     public List<Personnel> getByStatus(String status) {
         return repository.findByPersonnelStatus(status);
     }
@@ -62,7 +85,7 @@ public class PersonnelService {
         Personnel e = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Особу не знайдено: " + id));
 
-        // Копіювання всіх полів
+        // Копіювання всіх полів (як у вашому коді)
         e.setLastName(updated.getLastName());
         e.setFirstName(updated.getFirstName());
         e.setMiddleName(updated.getMiddleName());
@@ -107,7 +130,6 @@ public class PersonnelService {
         e.setAdmissionNakaz(updated.getAdmissionNakaz());
         e.setAdmissionDate(updated.getAdmissionDate());
 
-        // active не чіпаємо при оновленні (керуємо окремо)
         Personnel saved = repository.save(e);
         log.info("Оновлено особу: {} (id={})", saved.getFullName(), saved.getId());
         return saved;
@@ -155,9 +177,7 @@ public class PersonnelService {
                 case "livingAddress": p.setLivingAddress((String) value); break;
                 case "maritalStatus": p.setMaritalStatus((String) value); break;
                 case "spouseName": p.setSpouseName((String) value); break;
-                case "personnelStatus":
-                    p.setPersonnelStatus((String) value);
-                    break;
+                case "personnelStatus": p.setPersonnelStatus((String) value); break;
                 case "vos": p.setVos((String) value); break;
                 case "tariffGrade": p.setTariffGrade((String) value); break;
                 case "shoeSize": p.setShoeSize(value != null ? String.valueOf(value) : null); break;
@@ -210,5 +230,37 @@ public class PersonnelService {
 
     public List<Personnel> search(String query) {
         return repository.findByLastNameContainingIgnoreCaseAndActiveTrue(query);
+    }
+
+    // ===== ДОПОМІЖНИЙ МЕТОД ДЛЯ ЗБАГАЧЕННЯ =====
+    private void enrichPersonnel(Personnel p) {
+        // 1. Освіта (перший запис)
+        List<PersonnelEducation> eduList = educationRepository.findByPersonnelIdOrderByStartDateAsc(p.getId());
+        if (!eduList.isEmpty()) {
+            PersonnelEducation first = eduList.get(0);
+            p.setEducation(first.getLevel());
+            p.setAcademicDegree(first.getAcademicDegree());
+            p.setEducationInstitution(first.getInstitution());
+            p.setEducationSpeciality(first.getSpeciality());
+            p.setEducationStart(first.getStartDate() != null ? first.getStartDate().toString() : null);
+            p.setEducationEnd(first.getEndDate() != null ? first.getEndDate().toString() : null);
+            p.setDiploma(first.getDiploma());
+        }
+
+        // 2. Зброя (перший запис)
+        List<PersonnelWeapon> weaponList = weaponRepository.findByPersonnelId(p.getId());
+        if (!weaponList.isEmpty()) {
+            PersonnelWeapon first = weaponList.get(0);
+            p.setWeaponType(first.getWeaponType());
+            p.setWeaponSerial(first.getSerialNumber());
+            p.setWeaponBayonet(first.getBayonet());
+            p.setWeaponMagazines(first.getMagazines());
+            p.setWeaponCaliber(first.getCaliber());
+            p.setWeaponIssuedDate(first.getIssuedDate());
+        }
+
+        // 3. Кількість дітей
+        List<PersonnelChild> children = childRepository.findByPersonnelIdOrderByBirthDateAsc(p.getId());
+        p.setChildrenCount(children.size());
     }
 }

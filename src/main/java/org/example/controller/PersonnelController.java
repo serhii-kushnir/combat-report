@@ -98,9 +98,6 @@ public class PersonnelController {
                 log.error("Тіло запиту порожнє або не вдалось десеріалізувати");
                 return ResponseEntity.badRequest().body("Тіло запиту порожнє");
             }
-            log.info("Отримано запит на додавання: lastName={}, firstName={}, birthDate={}, draftDate={}",
-                    personnel.getLastName(), personnel.getFirstName(),
-                    personnel.getBirthDate(), personnel.getDraftDate());
             if (personnel.getLastName() == null || personnel.getLastName().isBlank())
                 return ResponseEntity.badRequest().body("Прізвище обов'язкове");
             if (personnel.getFirstName() == null || personnel.getFirstName().isBlank())

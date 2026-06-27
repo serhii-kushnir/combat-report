@@ -221,7 +221,6 @@
             font-size: 12px;
             border-bottom: 1px solid var(--border-light);
             color: var(--text-primary);
-            /*vertical-align: top;*/
             transition: border-color 0.3s, color 0.3s;
         }
         tr:hover td {
@@ -443,7 +442,6 @@
             background: var(--bg-header-light, #3a3a4a);
         }
         @media print {
-            /* Ховаємо всі елементи інтерфейсу */
             .sidebar,
             .toolbar,
             .table-tabs,
@@ -494,7 +492,6 @@
                 page-break-inside: avoid;
             }
 
-            /* === ГОЛОВНЕ: показуємо ТІЛЬКИ АКТИВНУ ТАБЛИЦЮ === */
             .table-section {
                 display: none !important;
             }
@@ -582,10 +579,10 @@
                 </div>
             </div>
 
-            <!-- ===== ОНОВЛЕНА ПОВНА ТАБЛИЦЯ (з усіма полями pCard) ===== -->
+            <!-- ПОВНА ТАБЛИЦЯ (оновлена — додано Вік та Ступінь) -->
             <div class="table-section" id="fullTable">
                 <div class="table-wrap">
-                    <table style="min-width:4200px">
+                    <table style="min-width:4400px">
                         <thead>
                         <tr>
                             <th style="width:36px" data-col="num" onclick="sortBy('num')">№</th>
@@ -594,7 +591,7 @@
                             <th style="width:160px" data-col="name" onclick="sortBy('name')">ПІБ</th>
                             <th style="width:100px" data-col="phone" onclick="sortBy('phone')">Телефон</th>
                             <th style="width:100px" data-col="birth" onclick="sortBy('birth')">Дата народж.</th>
-                            <th style="width:50px">Вік</th>
+                            <th style="width:50px" data-col="age" onclick="sortBy('age')">Вік</th>
                             <th style="width:100px" data-col="taxId" onclick="sortBy('taxId')">ІПН</th>
                             <th style="width:80px" data-col="blood" onclick="sortBy('blood')">Група крові</th>
                             <th style="width:90px">Паспорт серія</th>
@@ -608,6 +605,7 @@
                             <th style="width:120px">Дружина/Чоловік</th>
                             <th style="width:160px">Адреса сім'ї</th>
                             <th style="width:80px">Освіта рівень</th>
+                            <th style="width:100px" data-col="degree" onclick="sortBy('degree')">Ступінь</th>
                             <th style="width:140px">Заклад освіти</th>
                             <th style="width:120px">Спеціальність</th>
                             <th style="width:90px">Початок</th>
@@ -633,13 +631,19 @@
                             <th style="width:70px">Розм. взуття</th>
                             <th style="width:70px">Розм. форми</th>
                             <th style="width:70px">Розм. гол. убору</th>
-                            <th style="width:180px">Зброя (модель, №, дата)</th>
+                            <th style="width:120px">Модель зброї</th>
+                            <th style="width:100px">Серійний №</th>
+                            <th style="width:80px">Штик-багнет</th>
+                            <th style="width:80px">Магазини</th>
+                            <th style="width:80px">Калібр</th>
+                            <th style="width:100px">Дата видачі</th>
+                            <th style="width:50px" data-col="children" onclick="sortBy('children')">Діти</th>
                             <th style="width:200px">Примітка</th>
                             <th style="width:60px" class="no-print">Дії</th>
                         </tr>
                         </thead>
                         <tbody id="fullBody">
-                        <tr><td colspan="48" class="empty-state">Завантаження...</td></tr>
+                        <tr><td colspan="50" class="empty-state">Завантаження...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -767,6 +771,20 @@
                     });
                 }
 
+                function val(v) {
+                    return v || '—';
+                }
+
+                function calcAge(dateStr) {
+                    if (!dateStr) return '—';
+                    const birth = new Date(dateStr);
+                    const today = new Date();
+                    let age = today.getFullYear() - birth.getFullYear();
+                    const m = today.getMonth() - birth.getMonth();
+                    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+                    return age;
+                }
+
                 // ===== ЗАВАНТАЖЕННЯ ДАНИХ =====
                 async function loadPersonnel() {
                     try {
@@ -827,29 +845,25 @@
                     }).join('');
                 }
 
-                // ===== РЕНДЕРИНГ АКТИВНИХ (ПОВНА) – розширена =====
+                // ===== РЕНДЕРИНГ АКТИВНИХ (ПОВНА) – додано "Вік" та "Ступінь" =====
                 function renderFullTable(data) {
                     const body = document.getElementById('fullBody');
                     if (!data || !data.length) {
-                        body.innerHTML = '<tr><td colspan="48" class="empty-state">Особовий склад порожній</td></tr>';
+                        body.innerHTML = '<tr><td colspan="56" class="empty-state">Особовий склад порожній</td></tr>';
                         return;
                     }
                     const fmtDate = d => d ? d.substring(0,10).split('-').reverse().join('.') : '—';
-                    const val = v => v || '—';
                     body.innerHTML = data.map((p, i) => {
-                        const fullName = `${p.lastName} ${p.firstName || ''} ${p.middleName || ''}`.trim();
                         const num = p.personnelNumber ?? (i + 1);
-                        const passport = [p.passportSeries, p.passportNumber].filter(Boolean).join(' ') || '—';
-                        const driverLic = [p.driverLicenseSeries, p.driverLicenseNumber, p.driverLicenseCategory].filter(Boolean).join(' ') || '—';
-                        const weaponInfo = p.weaponInfo || '—';
+                        const age = p.birthDate ? calcAge(p.birthDate) : '—';
                         return `<tr>
             <td style="text-align:center">${num}</td>
             <td style="text-align:center">${val(p.personnelStatus)}</td>
             <td style="text-align:center">${val(p.rank)}</td>
-            <td><strong>${escapeHtml(fullName)}</strong></td>
+            <td><strong>${escapeHtml(p.lastName)} ${escapeHtml(p.firstName||'')} ${escapeHtml(p.middleName||'')}</strong></td>
             <td>${val(p.phone)}</td>
             <td style="text-align:center">${fmtDate(p.birthDate)}</td>
-            <td style="text-align:center">${p.birthDate ? calcAge(p.birthDate) : '—'}</td>
+            <td style="text-align:center">${age}</td>
             <td style="text-align:center">${val(p.taxId)}</td>
             <td style="text-align:center">${val(p.bloodGroup)}</td>
             <td style="text-align:center">${val(p.passportSeries)}</td>
@@ -863,6 +877,7 @@
             <td>${val(p.spouseName)}</td>
             <td style="font-size:11px">${val(p.familyAddress)}</td>
             <td style="text-align:center">${val(p.education)}</td>
+            <td style="text-align:center">${val(p.academicDegree)}</td>
             <td style="font-size:11px">${val(p.educationInstitution)}</td>
             <td style="font-size:11px">${val(p.educationSpeciality)}</td>
             <td style="text-align:center">${fmtDate(p.educationStart)}</td>
@@ -888,7 +903,13 @@
             <td style="text-align:center">${val(p.shoeSize)}</td>
             <td style="text-align:center">${val(p.uniformSize)}</td>
             <td style="text-align:center">${val(p.headwearSize)}</td>
-            <td style="font-size:11px">${weaponInfo}</td>
+            <td>${val(p.weaponType)}</td>
+            <td>${val(p.weaponSerial)}</td>
+            <td>${val(p.weaponBayonet)}</td>
+            <td>${val(p.weaponMagazines)}</td>
+            <td>${val(p.weaponCaliber)}</td>
+            <td>${val(p.weaponIssuedDate)}</td>
+            <td style="text-align:center">${p.childrenCount ?? 0}</td>
             <td style="font-size:11px; max-width:200px; white-space:normal; word-wrap:break-word;">${val(p.note)}</td>
             <td class="no-print" style="white-space:nowrap">
                 <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
@@ -963,6 +984,8 @@
                         case 'position': return p.position || '';
                         case 'phone': return p.phone || '';
                         case 'birth': return p.birthDate || '';
+                        case 'age': return p.birthDate ? calcAge(p.birthDate) : 0;
+                        case 'degree': return p.academicDegree || '';
                         default: return '';
                     }
                 }
@@ -977,12 +1000,11 @@
                     }
                 }
 
-                // ===== ФІЛЬТР І ПОШУК (ТІЛЬКИ ЗІ СТАТУСОМ "В ОСОБОВОМУ СКЛАДІ") =====
+                // ===== ФІЛЬТР І ПОШУК =====
                 document.getElementById('searchInput').addEventListener('input', applyFilters);
 
                 function applyFilters() {
                     const q = document.getElementById('searchInput').value.toLowerCase();
-                    // Фільтруємо тільки тих, хто має статус "В особовому складі" або статус не задано
                     let filtered = activePersonnel.filter(p =>
                         p.personnelStatus === 'В особовому складі' || !p.personnelStatus
                     );
@@ -1008,7 +1030,7 @@
                     }
                     renderShortTable(filtered);
                     renderFullTable(filtered);
-                    renderStats(); // оновлюємо статистику після фільтра
+                    renderStats();
                 }
 
                 // ===== СТАТИСТИКА =====
@@ -1150,28 +1172,6 @@
                     t.textContent = msg;
                     t.className = `toast ${type} show`;
                     setTimeout(() => t.classList.remove('show'), 3000);
-                }
-
-                function calcAge(dateStr) {
-                    if (!dateStr) return '—';
-                    const birth = new Date(dateStr);
-                    const today = new Date();
-                    let age = today.getFullYear() - birth.getFullYear();
-                    const m = today.getMonth() - birth.getMonth();
-                    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
-                    return age;
-                }
-
-                function printActiveTable() {
-                    // Знаходимо активну вкладку
-                    const activeTab = document.querySelector('.tab-btn.active');
-                    let title = 'Особовий склад';
-                    if (activeTab) {
-                        title = activeTab.textContent.trim();
-                    }
-                    // Встановлюємо тимчасовий заголовок сторінки для друку
-                    document.title = title;
-                    window.print();
                 }
 
                 function exportXlsx() {

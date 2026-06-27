@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
@@ -22,29 +23,29 @@ public class Personnel {
 
     // ===== ОСНОВНІ =====
     @Column(unique = true)
-    private Integer personnelNumber;   // Порядковий номер
+    private Integer personnelNumber;
 
     @Column(nullable = false)
     private String lastName;
 
     // ===== РЕЧОВЕ ЗАБЕЗПЕЧЕННЯ =====
     @Column(length = 10)
-    private String shoeSize;          // Розмір взуття
+    private String shoeSize;
 
     @Column(length = 10)
-    private String uniformSize;       // Розмір форми
+    private String uniformSize;
 
     @Column(length = 10)
-    private String headwearSize;      // Розмір головного убору
+    private String headwearSize;
 
     @Column(length = 50)
-    private String vos;                // ВОС
+    private String vos;
 
     @Column(length = 30)
-    private String tariffGrade;        // Тарифний розряд
+    private String tariffGrade;
 
     @Column(length = 100)
-    private String personnelStatus; // Статус
+    private String personnelStatus;
 
     @Column(nullable = false)
     private String firstName;
@@ -66,102 +67,130 @@ public class Personnel {
 
     // ===== ОСОБОВІ ДАНІ =====
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate birthDate;         // Дата народження
+    private LocalDate birthDate;
 
     @Column(length = 50)
-    private String taxId;                // ІПН
+    private String taxId;
 
     @Column(length = 50)
-    private String passportSeries;       // Серія паспорта
+    private String passportSeries;
 
     @Column(length = 50)
-    private String passportNumber;       // Номер паспорта
+    private String passportNumber;
 
     @Column(length = 50)
-    private String bloodGroup;           // Група крові
+    private String bloodGroup;
 
     // ===== ОСВІТА (рівень) =====
     @Column(length = 50)
     private String education;
 
     @Column(length = 100)
-    private String militaryUnit;      // Військова частина
+    private String militaryUnit;
 
     // ===== ПРИЗВАНИЙ НА ВІЙСЬКОВУ СЛУЖБУ =====
     @Column(length = 100)
-    private String drafObl;             // Область
+    private String drafObl;
 
     @Column(length = 100)
-    private String draftLoc;            // Місто/Селище
+    private String draftLoc;
 
     // ===== ЗАРАХУВАННЯ У ВІЙСЬКОВУ ЧАСТИНУ =====
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate enrollmentDate;   // Дата зарахування
+    private LocalDate enrollmentDate;
 
     @Column(length = 100)
-    private String enrollmentNakaz;     // Наказ
+    private String enrollmentNakaz;
 
     // ===== УЧАСНИК БОЙОВИХ ДІЙ =====
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate ubdDate;          // Дата УБД
+    private LocalDate ubdDate;
 
     // ===== ФОРМА ДОПУСКУ =====
     @Column(length = 50)
-    private String admissionNakaz;      // Ф-Наказ
+    private String admissionNakaz;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate admissionDate;    // Ф-Дата
+    private LocalDate admissionDate;
 
     // ===== АДРЕСА =====
     @Column(length = 500)
-    private String registrationAddress;  // Адреса реєстрації
+    private String registrationAddress;
 
     @Column(length = 500)
-    private String livingAddress;        // Адреса проживання
+    private String livingAddress;
 
     // ===== СІМЕЙНИЙ СТАН =====
     @Column(length = 50)
-    private String maritalStatus;        // Сімейний стан
+    private String maritalStatus;
 
     @Column(length = 500)
-    private String spouseName;           // Дружина/чоловік
+    private String spouseName;
 
     // ===== ВІЙСЬКОВІ ДАНІ =====
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate draftDate;         // Дата призову
+    private LocalDate draftDate;
 
     @Column(length = 100)
-    private String draftOrganization;    // Ким призваний (ТЦК)
+    private String draftOrganization;
 
     @Column(length = 100)
-    private String serviceType;          // Вид служби (контракт/мобілізація)
+    private String serviceType;
 
     @Column(length = 100)
-    private String ubdNumber;            // Номер УБД
+    private String ubdNumber;
 
     // Водійське посвідчення
     @Column(length = 50)
-    private String driverLicenseSeries;   // Серія
+    private String driverLicenseSeries;
     @Column(length = 50)
-    private String driverLicenseNumber;   // Номер
+    private String driverLicenseNumber;
     @Column(length = 100)
-    private String driverLicenseCategory; // Категорія (B, C тощо)
-
-    // ===== ОЗБРОЄННЯ =====
+    private String driverLicenseCategory;
 
     // ===== АДРЕСА СІМ'Ї =====
     @Column(length = 500)
-    private String familyAddress;         // Адреса проживання сім'ї
+    private String familyAddress;
 
     // ===== ВІЙСЬКОВІ (розширені) =====
     @Column(length = 255)
-    private String admissionForm;         // Форма допуску (Ф-№, наказ, дата)
+    private String admissionForm;
 
     @Column(length = 255)
-    private String enrollmentInfo;        // Зарахування у в/ч (дата, наказ)
+    private String enrollmentInfo;
 
     @Column(length = 100)
-    private String serviceFor;            // Військова служба за
+    private String serviceFor;
+
+    // ===== TRANSIENT ПОЛЯ ДЛЯ ПОВНОЇ ТАБЛИЦІ =====
+    @Transient
+    private String educationInstitution;
+    @Transient
+    private String educationSpeciality;
+    @Transient
+    private String educationStart;
+    @Transient
+    private String educationEnd;
+    @Transient
+    private String diploma;
+    @Transient
+    private String academicDegree;
+
+    @Transient
+    private String weaponType;
+    @Transient
+    private String weaponSerial;
+    @Transient
+    private String weaponBayonet;
+    @Transient
+    private String weaponMagazines;
+    @Transient
+    private String weaponCaliber;
+    @Transient
+    private String weaponIssuedDate;
+
+    @Transient
+    private Integer childrenCount;
 
     public Personnel(String lastName, String firstName, String middleName,
                      String rank, String position) {
@@ -180,5 +209,10 @@ public class Personnel {
         String i = (firstName != null && !firstName.isEmpty()) ? firstName.substring(0, 1) + "." : "";
         String p = (middleName != null && !middleName.isEmpty()) ? middleName.substring(0, 1) + "." : "";
         return lastName + " " + i + " " + p;
+    }
+
+    public int getAge() {
+        if (birthDate == null) return 0;
+        return Period.between(birthDate, LocalDate.now()).getYears();
     }
 }
