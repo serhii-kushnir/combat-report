@@ -197,7 +197,7 @@
     }
     .sub-table th {
       background: var(--bg-table-header, #e8eaf6);
-      color: var(--text-primary);
+      color: #fff;
       font-weight: 600;
       padding: 10px 8px;
       text-align: left;
@@ -1106,20 +1106,23 @@
       tbody.innerHTML = '<tr><td colspan="7">Немає даних</td></tr>';
       return;
     }
-    tbody.innerHTML = list.map(w => `
-            <tr>
-                <td>${escapeHtml(w.weaponType)}</td>
-                <td>${escapeHtml(w.serialNumber)}</td>
-                <td>${escapeHtml(w.bayonet)}</td>
-                <td>${escapeHtml(w.magazines)}</td>
-                <td>${escapeHtml(w.caliber)}</td>
-                <td>${escapeHtml(w.issuedDate)}</td>
-                <td>
-                    <button class="btn btn-warning btn-sm hidden-action" onclick="openEditWeapon(${w.id})">✏️</button>
-                    <button class="btn btn-danger btn-sm hidden-action" onclick="confirmDeleteWeapon(${w.id})">🗑</button>
-                </td>
-            </tr>
-        `).join('');
+    tbody.innerHTML = list.map(w => {
+      // Форматуємо дату
+      const issuedDate = w.issuedDate ? formatDateForDisplay(w.issuedDate) : '';
+      return `
+        <tr>
+            <td>${escapeHtml(w.weaponType)}</td>
+            <td>${escapeHtml(w.serialNumber)}</td>
+            <td>${escapeHtml(w.bayonet)}</td>
+            <td>${escapeHtml(w.magazines)}</td>
+            <td>${escapeHtml(w.caliber)}</td>
+            <td>${escapeHtml(issuedDate)}</td>
+            <td>
+                <button class="btn btn-warning btn-sm hidden-action" onclick="openEditWeapon(${w.id})">✏️</button>
+                <button class="btn btn-danger btn-sm hidden-action" onclick="confirmDeleteWeapon(${w.id})">🗑</button>
+            </td>
+        </tr>
+    `}).join('');
     if (isEditMode) showActionButtons();
   }
 

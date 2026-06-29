@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-
 @Service
 public class PCardExportService {
 
@@ -117,8 +116,8 @@ public class PCardExportService {
             if (edus.isEmpty()) {
                 addField(sheet, rowNum++, "Записів немає", "", labelStyle, valueStyle);
             } else {
-                // Заголовки
-                String[] eduHeaders = {"Рівень", "Заклад", "Спеціальність", "Початок", "Кінець", "Диплом №"};
+                // Заголовки – додано колонку "Ступінь" після "Рівень"
+                String[] eduHeaders = {"Рівень", "Ступінь", "Заклад", "Спеціальність", "Початок", "Кінець", "Диплом №"};
                 for (int idx = 0; idx < eduHeaders.length; idx++) {
                     sheet.setColumnWidth(idx, (eduHeaders[idx].length() + 6) * 256);
                 }
@@ -133,11 +132,12 @@ public class PCardExportService {
                     XSSFRow row = sheet.createRow(rowNum++);
                     row.setHeightInPoints(18);
                     setCell(row, 0, e.getLevel(), dataStyle);
-                    setCell(row, 1, e.getInstitution(), dataStyle);
-                    setCell(row, 2, e.getSpeciality(), dataStyle);
-                    setCell(row, 3, fmt(e.getStartDate()), centerStyle);
-                    setCell(row, 4, fmt(e.getEndDate()), centerStyle);
-                    setCell(row, 5, e.getDiploma(), centerStyle);
+                    setCell(row, 1, e.getAcademicDegree(), dataStyle);
+                    setCell(row, 2, e.getInstitution(), dataStyle);
+                    setCell(row, 3, e.getSpeciality(), dataStyle);
+                    setCell(row, 4, fmt(e.getStartDate()), centerStyle);
+                    setCell(row, 5, fmt(e.getEndDate()), centerStyle);
+                    setCell(row, 6, e.getDiploma(), centerStyle);
                 }
             }
 
@@ -248,12 +248,16 @@ public class PCardExportService {
                 for (PersonnelWeapon w : weapons) {
                     XSSFRow row = sheet.createRow(rowNum++);
                     row.setHeightInPoints(18);
+
+                    // Форматуємо дату видачі
+                    String issuedDate = formatDateString(w.getIssuedDate());
+
                     setCell(row, 0, w.getWeaponType(), dataStyle);
                     setCell(row, 1, w.getSerialNumber(), centerStyle);
                     setCell(row, 2, w.getBayonet(), centerStyle);
                     setCell(row, 3, w.getMagazines(), centerStyle);
                     setCell(row, 4, w.getCaliber(), centerStyle);
-                    setCell(row, 5, w.getIssuedDate(), centerStyle);
+                    setCell(row, 5, issuedDate, centerStyle);
                     setCell(row, 6, w.getNote(), dataStyle);
                 }
             }
@@ -458,6 +462,17 @@ public class PCardExportService {
 
     private String fmt(LocalDate d) {
         return d != null ? d.format(DATE_FMT) : "";
+    }
+
+    // Додаємо метод для форматування рядка дати
+    private String formatDateString(String dateStr) {
+        if (dateStr == null || dateStr.isEmpty()) return "";
+        try {
+            LocalDate date = LocalDate.parse(dateStr); // очікує yyyy-MM-dd
+            return fmt(date);
+        } catch (Exception e) {
+            return dateStr; // якщо не вдалося розпарсити, повертаємо як є
+        }
     }
 
     private int calcAge(LocalDate birthDate) {

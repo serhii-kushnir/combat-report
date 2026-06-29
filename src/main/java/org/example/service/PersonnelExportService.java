@@ -311,12 +311,13 @@ public class PersonnelExportService {
 
     private void buildWeaponSheet(XSSFSheet sheet, List<PersonnelWeapon> list) {
         sheet.setDefaultRowHeightInPoints(50);
+
         XSSFCellStyle headerStyle = createHeaderStyle(sheet.getWorkbook());
         XSSFCellStyle dataStyle = createDataStyle(sheet.getWorkbook());
         XSSFCellStyle centerStyle = createCenterStyle(sheet.getWorkbook());
 
-        String[] headers = {"№", "Пор.№", "ПІБ особи", "Модель", "Серійний №", "Штик-багнет", "Магазини", "Калібр", "Дата видачі"};
-        int[] widths = {6, 10, 30, 18, 16, 16, 16, 16, 16};
+        String[] headers = {"№", "ПІБ особи", "Модель", "Серійний №", "Штик-багнет", "Магазини", "Калібр", "Дата видачі"};
+        int[] widths = {6, 30, 18, 16, 16, 16, 16, 16};
 
         XSSFRow headerRow = sheet.createRow(0);
         headerRow.setHeightInPoints(50);
@@ -333,15 +334,26 @@ public class PersonnelExportService {
             XSSFRow row = sheet.createRow(rowNum++);
             row.setHeightInPoints(50);
             Personnel p = w.getPersonnel();
+            // Форматуємо дату
+            String issuedDate = w.getIssuedDate() != null ? formatDateForDisplay(w.getIssuedDate()) : "";
             setCell(row, 0, seq++, centerStyle);
-            setCell(row, 1, p != null ? p.getPersonnelNumber() : "", centerStyle);
-            setCell(row, 2, p != null ? p.getFullName() : "", dataStyle);
-            setCell(row, 3, w.getWeaponType(), dataStyle);
-            setCell(row, 4, w.getSerialNumber(), centerStyle);
-            setCell(row, 5, w.getBayonet(), centerStyle);
-            setCell(row, 6, w.getMagazines(), centerStyle);
-            setCell(row, 7, w.getCaliber(), centerStyle);
-            setCell(row, 8, w.getIssuedDate(), centerStyle);
+            setCell(row, 1, p != null ? p.getFullName() : "", dataStyle);
+            setCell(row, 2, w.getWeaponType(), dataStyle);
+            setCell(row, 3, w.getSerialNumber(), centerStyle);
+            setCell(row, 4, w.getBayonet(), centerStyle);
+            setCell(row, 5, w.getMagazines(), centerStyle);
+            setCell(row, 6, w.getCaliber(), centerStyle);
+            setCell(row, 7, issuedDate, centerStyle);  // ← змінено
+        }
+    }
+
+    private String formatDateForDisplay(String dateStr) {
+        if (dateStr == null) return "";
+        try {
+            LocalDate d = LocalDate.parse(dateStr);
+            return d.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        } catch (Exception e) {
+            return dateStr;
         }
     }
 
