@@ -18,7 +18,6 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -98,10 +97,24 @@ public class CombatDutyController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // ===== СТВОРЕННЯ (з перевіркою на перетин) =====
     @PostMapping("/api")
     @ResponseBody
     public ResponseEntity<?> create(@RequestBody CombatDuty duty) {
         try {
+            // Перевірка дат
+            if (duty.getStartTime() == null || duty.getEndTime() == null) {
+                return ResponseEntity.badRequest().body("Необхідно вказати час початку та кінця");
+            }
+            if (duty.getStartTime().isAfter(duty.getEndTime())) {
+                return ResponseEntity.badRequest().body("Дата початку не може бути пізніше дати кінця");
+            }
+
+            // Перевірка на перетин з існуючими чергуваннями
+            if (hasOverlap(duty, null)) {
+                return ResponseEntity.badRequest().body("Цей період уже зайнятий іншим чергуванням");
+            }
+
             CombatDuty saved = service.save(duty);
             return ResponseEntity.ok(saved);
         } catch (Exception e) {
@@ -109,10 +122,24 @@ public class CombatDutyController {
         }
     }
 
+    // ===== ОНОВЛЕННЯ (з перевіркою на перетин, виключаючи саме себе) =====
     @PutMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody CombatDuty duty) {
         try {
+            // Перевірка дат
+            if (duty.getStartTime() == null || duty.getEndTime() == null) {
+                return ResponseEntity.badRequest().body("Необхідно вказати час початку та кінця");
+            }
+            if (duty.getStartTime().isAfter(duty.getEndTime())) {
+                return ResponseEntity.badRequest().body("Дата початку не може бути пізніше дати кінця");
+            }
+
+            // Перевірка на перетин (виключаємо поточне чергування за id)
+            if (hasOverlap(duty, id)) {
+                return ResponseEntity.badRequest().body("Цей період уже зайнятий іншим чергуванням");
+            }
+
             duty.setId(id);
             CombatDuty updated = service.save(duty);
             return ResponseEntity.ok(updated);
@@ -130,6 +157,28 @@ public class CombatDutyController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Помилка: " + e.getMessage());
         }
+    }
+
+    // ===== ДОПОМІЖНИЙ МЕТОД ДЛЯ ПЕРЕВІРКИ ПЕРЕТИНУ =====
+    private boolean hasOverlap(CombatDuty newDuty, Long excludeId) {
+        java.time.LocalDateTime newStart = newDuty.getStartTime();
+        java.time.LocalDateTime newEnd = newDuty.getEndTime();
+
+        List<CombatDuty> all = service.getAll();
+        for (CombatDuty existing : all) {
+            // Якщо це те саме чергування (при оновленні) – пропускаємо
+            if (excludeId != null && existing.getId().equals(excludeId)) {
+                continue;
+            }
+            java.time.LocalDateTime existingStart = existing.getStartTime();
+            java.time.LocalDateTime existingEnd = existing.getEndTime();
+
+            // Перевірка на перетин: новий початок раніше за існуючий кінець І новий кінець пізніше за існуючий початок
+            if (newStart.isBefore(existingEnd) && newEnd.isAfter(existingStart)) {
+                return true; // Є перетин
+            }
+        }
+        return false; // Перетину немає
     }
 
     // ===== ЕКСПОРТ XLSX =====

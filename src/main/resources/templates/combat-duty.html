@@ -5,7 +5,7 @@
     <title>Бойове чергування</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     <style>
-        /* ===== СТИЛІ ===== */
+        /* ===== СТИЛІ (без змін) ===== */
         :root {
             --bg-body: #f0f2f5;
             --bg-card: #ffffff;
@@ -290,60 +290,50 @@
     <div th:replace="~{fragments :: sidebar('combat-duty')}"></div>
     <div class="main-content">
         <div class="container">
-            <!-- ТУЛБАР (з датою та навігацією) -->
             <div class="toolbar">
                 <div class="current-date" id="currentDate">📅 02.07.2026</div>
                 <button class="btn btn-nav" id="prevBtn">◀</button>
                 <button class="btn btn-today" id="todayBtn">Сьогодні</button>
                 <button class="btn btn-nav" id="nextBtn">▶</button>
                 <h2 id="monthTitle">Липень 2026</h2>
-                <select id="yearFilter">
-                    <option value="">— Всі роки —</option>
-                </select>
-                <select id="monthFilter">
-                    <option value="">— Всі місяці —</option>
-                </select>
+                <select id="yearFilter"><option value="">— Всі роки —</option></select>
+                <select id="monthFilter"><option value="">— Всі місяці —</option></select>
                 <button class="btn btn-primary" id="applyFilterBtn">Показати</button>
                 <button class="btn btn-success" id="exportXlsxBtn">📊 Експорт XLSX</button>
-                <button class="btn btn-print" onclick="window.print()">
-                    <i class="fas fa-print"></i> Друк
-                </button>
+                <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> Друк</button>
             </div>
 
-            <!-- ТАБЛИЦЯ -->
             <div class="table-wrap">
                 <table id="dutyTable">
                     <thead>
                     <tr>
-                        <th data-col="id" onclick="sortBy('id')" style="min-width:40px;">№</th>
-                        <th data-col="startTime" onclick="sortBy('startTime')" style="min-width:130px;">Початок</th>
-                        <th data-col="endTime" onclick="sortBy('endTime')" style="min-width:130px;">Кінець</th>
-                        <th data-col="unitName" onclick="sortBy('unitName')" style="min-width:80px;">Екіпаж</th>
-                        <th data-col="commander" onclick="sortBy('commander')" style="min-width:160px;">Командир</th>
-                        <th data-col="pilot" onclick="sortBy('pilot')" style="min-width:140px;">Пілот</th>
-                        <th data-col="navigator" onclick="sortBy('navigator')" style="min-width:140px;">Штурман</th>
-                        <th data-col="technician" onclick="sortBy('technician')" style="min-width:140px;">Технік</th>
-                        <th data-col="weapons" onclick="sortBy('weapons')" style="min-width:120px;">Озброєння</th>
-                        <th data-col="dutyOfficer" onclick="sortBy('dutyOfficer')" style="min-width:140px;">Черговий ПУ</th>
-                        <th data-col="reportSummary" onclick="sortBy('reportSummary')" style="min-width:200px;">Доповідь</th>
-                        <th data-col="totalSorties" onclick="sortBy('totalSorties')" style="min-width:60px;" class="num-col">Вильотів</th>
-                        <th data-col="combatSorties" onclick="sortBy('combatSorties')" style="min-width:60px;" class="num-col">Бойових</th>
-                        <th data-col="losses" onclick="sortBy('losses')" style="min-width:60px;" class="num-col">Втрат</th>
-                        <th data-col="destructions" onclick="sortBy('destructions')" style="min-width:60px;" class="num-col">Знищень</th>
-                        <th data-col="ntp" onclick="sortBy('ntp')" style="min-width:60px;" class="num-col">НТП</th>
+                        <th data-col="id" onclick="window.sortBy('id')" style="min-width:40px;">№</th>
+                        <th data-col="startTime" onclick="window.sortBy('startTime')" style="min-width:130px;">Початок</th>
+                        <th data-col="endTime" onclick="window.sortBy('endTime')" style="min-width:130px;">Кінець</th>
+                        <th data-col="unitName" onclick="window.sortBy('unitName')" style="min-width:80px;">Екіпаж</th>
+                        <th data-col="commander" onclick="window.sortBy('commander')" style="min-width:160px;">Командир</th>
+                        <th data-col="pilot" onclick="window.sortBy('pilot')" style="min-width:140px;">Пілот</th>
+                        <th data-col="navigator" onclick="window.sortBy('navigator')" style="min-width:140px;">Штурман</th>
+                        <th data-col="technician" onclick="window.sortBy('technician')" style="min-width:140px;">Технік</th>
+                        <th data-col="weapons" onclick="window.sortBy('weapons')" style="min-width:120px;">Озброєння</th>
+                        <th data-col="dutyOfficer" onclick="window.sortBy('dutyOfficer')" style="min-width:140px;">Черговий ПУ</th>
+                        <th data-col="reportSummary" onclick="window.sortBy('reportSummary')" style="min-width:200px;">Доповідь</th>
+                        <th data-col="totalSorties" onclick="window.sortBy('totalSorties')" style="min-width:60px;" class="num-col">Вильотів</th>
+                        <th data-col="combatSorties" onclick="window.sortBy('combatSorties')" style="min-width:60px;" class="num-col">Бойових</th>
+                        <th data-col="losses" onclick="window.sortBy('losses')" style="min-width:60px;" class="num-col">Втрат</th>
+                        <th data-col="destructions" onclick="window.sortBy('destructions')" style="min-width:60px;" class="num-col">Знищень</th>
+                        <th data-col="ntp" onclick="window.sortBy('ntp')" style="min-width:60px;" class="num-col">НТП</th>
                         <th style="min-width:120px;">Дії</th>
                     </tr>
                     </thead>
-                    <tbody id="dutyTableBody">
-                    <tr><td colspan="17" class="empty-state">Завантаження...</td></tr>
-                    </tbody>
+                    <tbody id="dutyTableBody"><tr><td colspan="17" class="empty-state">Завантаження...</td></tr></tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ===== МОДАЛЬНЕ ВІКНО ДЛЯ ФОРМИ ===== -->
+<!-- ===== МОДАЛЬНЕ ВІКНО ===== -->
 <div class="modal-overlay" id="formModal">
     <div class="modal">
         <h2 id="formModalTitle">Додати чергування</h2>
@@ -364,21 +354,21 @@
         </div>
         <div class="form-group">
             <label>Командир екіпажу</label>
-            <input type="text" id="fCommander" placeholder="ст. сержант ШЕПРУК Олександр Васильович">
+            <select id="fCommander"><option value="">— Оберіть командира —</option></select>
         </div>
         <div class="form-row">
             <div class="form-group">
                 <label>Пілот</label>
-                <input type="text" id="fPilot" placeholder="солдат БИТКА Костянтин Романович">
+                <select id="fPilot"><option value="">— Оберіть пілота —</option></select>
             </div>
             <div class="form-group">
                 <label>Штурман</label>
-                <input type="text" id="fNavigator" placeholder="ст. солдат КУШНІР Сергій Олегович">
+                <select id="fNavigator"><option value="">— Оберіть штурмана —</option></select>
             </div>
         </div>
         <div class="form-group">
             <label>Технік</label>
-            <input type="text" id="fTechnician" placeholder="солдат ЛИПАЧ Олександр Вікторович">
+            <select id="fTechnician"><option value="">— Оберіть техніка —</option></select>
         </div>
         <div class="form-group">
             <label>Озброєння</label>
@@ -392,40 +382,22 @@
             <label>Доповідь про чергування</label>
             <textarea id="fReportSummary" rows="3" placeholder="Доповідаю, що під час мого чергування..."></textarea>
         </div>
-
         <div class="form-row-3">
-            <div class="form-group">
-                <label>Вильотів</label>
-                <input type="number" id="fTotalSorties" value="0" min="0">
-            </div>
-            <div class="form-group">
-                <label>Бойових</label>
-                <input type="number" id="fCombatSorties" value="0" min="0">
-            </div>
-            <div class="form-group">
-                <label>Втрат</label>
-                <input type="number" id="fLosses" value="0" min="0">
-            </div>
+            <div class="form-group"><label>Вильотів</label><input type="number" id="fTotalSorties" value="0" min="0"></div>
+            <div class="form-group"><label>Бойових</label><input type="number" id="fCombatSorties" value="0" min="0"></div>
+            <div class="form-group"><label>Втрат</label><input type="number" id="fLosses" value="0" min="0"></div>
         </div>
         <div class="form-row-3">
-            <div class="form-group">
-                <label>Знищень</label>
-                <input type="number" id="fDestructions" value="0" min="0">
-            </div>
-            <div class="form-group">
-                <label>НТП</label>
-                <input type="number" id="fNtp" value="0" min="0">
-            </div>
+            <div class="form-group"><label>Знищень</label><input type="number" id="fDestructions" value="0" min="0"></div>
+            <div class="form-group"><label>НТП</label><input type="number" id="fNtp" value="0" min="0"></div>
         </div>
-
         <div class="modal-actions">
-            <button class="btn" onclick="closeModal('formModal')" style="background:#eee;">Скасувати</button>
-            <button class="btn btn-primary" onclick="saveDuty()">Зберегти</button>
+            <button class="btn" onclick="window.closeModal('formModal')" style="background:#eee;">Скасувати</button>
+            <button class="btn btn-primary" onclick="window.saveDuty()">Зберегти</button>
         </div>
     </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script th:replace="~{fragments :: sidebar-js}"></script>
@@ -435,16 +407,51 @@
             'Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
         const today = new Date();
         let currentYear = today.getFullYear();
-        let currentMonth = today.getMonth() + 1; // 1-12
+        let currentMonth = today.getMonth() + 1;
 
         let allDuties = [];
         let sortCol = 'id';
-        let sortDir = 1;
+        let sortDir = -1;
+        let personnelList = [];
+
+        // ===== ЗАВАНТАЖЕННЯ ПЕРСОНАЛУ =====
+        async function loadPersonnelForSelects() {
+            try {
+                const res = await fetch('/personnel/api');
+                if (!res.ok) throw new Error('Network error');
+                const data = await res.json();
+                personnelList = data;
+                populateSelect('fCommander', 'Командир', data);
+                populateSelect('fPilot', 'Пілот', data);
+                populateSelect('fNavigator', 'Штурман', data);
+                populateSelect('fTechnician', 'Технік', data);
+            } catch (err) {
+                console.warn('Помилка завантаження персоналу:', err);
+            }
+        }
+
+        function populateSelect(selectId, roleLabel, personnel) {
+            const select = document.getElementById(selectId);
+            if (!select) return;
+            // Сортуємо за personnelNumber (зростання)
+            const sorted = [...personnel].sort((a, b) => (a.personnelNumber || 0) - (b.personnelNumber || 0));
+            select.innerHTML = `<option value="">— Оберіть ${roleLabel.toLowerCase()} —</option>`;
+            sorted.forEach(p => {
+                const rank = (p.rank || '').toLowerCase();
+                const fullName = p.fullName || (p.lastName + ' ' + p.firstName + ' ' + (p.middleName || '')).trim();
+                const displayName = rank ? rank + ' ' + fullName : fullName;
+                const opt = document.createElement('option');
+                opt.value = displayName;
+                opt.textContent = displayName;
+                select.appendChild(opt);
+            });
+        }
 
         // ===== ІНІЦІАЛІЗАЦІЯ =====
         updateCurrentDateDisplay();
         loadFilters();
         loadDuties();
+        loadPersonnelForSelects();
 
         function updateCurrentDateDisplay() {
             const now = new Date();
@@ -455,7 +462,6 @@
         }
 
         function loadFilters() {
-            // Роки
             fetch('/combat-duty/api/years')
                 .then(res => res.json())
                 .then(years => {
@@ -469,7 +475,6 @@
                 })
                 .catch(() => {});
 
-            // Місяці
             fetch('/combat-duty/api/months')
                 .then(res => res.json())
                 .then(months => {
@@ -508,7 +513,7 @@
                 })
                 .catch(err => {
                     console.error(err);
-                    showToast('Помилка завантаження даних', 'err');
+                    window.showToast('Помилка завантаження даних', 'err');
                 });
         }
 
@@ -528,37 +533,31 @@
         }
 
         // ===== СОРТУВАННЯ =====
-        function sortBy(col) {
+        window.sortBy = function(col) {
             if (sortCol === col) {
                 sortDir *= -1;
             } else {
                 sortCol = col;
-                sortDir = 1;
+                sortDir = -1;
             }
             applySortAndRender();
-        }
+        };
 
         function getSortValue(row, col) {
             if (col === 'id') return row.id || 0;
-            if (col === 'startTime') return row.startTime || '';
-            if (col === 'endTime') return row.endTime || '';
-            if (col === 'unitName') return row.unitName || '';
-            if (col === 'commander') return row.commander || '';
-            if (col === 'pilot') return row.pilot || '';
-            if (col === 'navigator') return row.navigator || '';
-            if (col === 'technician') return row.technician || '';
-            if (col === 'weapons') return row.weapons || '';
-            if (col === 'dutyOfficer') return row.dutyOfficer || '';
-            if (col === 'reportSummary') return row.reportSummary || '';
-            if (col === 'totalSorties') return row.totalSorties || 0;
-            if (col === 'combatSorties') return row.combatSorties || 0;
-            if (col === 'losses') return row.losses || 0;
-            if (col === 'destructions') return row.destructions || 0;
-            if (col === 'ntp') return row.ntp || 0;
-            return '';
+            if (col === 'startTime' || col === 'endTime') {
+                return row[col] ? new Date(row[col]).getTime() : 0;
+            }
+            const val = row[col];
+            if (typeof val === 'string') return val.toLowerCase();
+            return val || '';
         }
 
         function applySortAndRender() {
+            if (!allDuties || !allDuties.length) {
+                renderTable();
+                return;
+            }
             const sorted = [...allDuties].sort((a, b) => {
                 let va = getSortValue(a, sortCol);
                 let vb = getSortValue(b, sortCol);
@@ -572,7 +571,6 @@
                 return 0;
             });
             renderTable(sorted);
-            // Оновлюємо стрілки
             document.querySelectorAll('#dutyTable thead th').forEach(th => {
                 th.classList.remove('sort-asc', 'sort-desc');
                 if (th.dataset.col === sortCol) {
@@ -583,11 +581,12 @@
 
         function renderTable(data) {
             const tbody = document.getElementById('dutyTableBody');
-            if (!data || !data.length) {
+            const rows = data || allDuties;
+            if (!rows || !rows.length) {
                 tbody.innerHTML = '<tr><td colspan="17" class="empty-state">Чергувань немає</td></tr>';
                 return;
             }
-            tbody.innerHTML = data.map(d => {
+            tbody.innerHTML = rows.map(d => {
                 const start = d.startTime ? new Date(d.startTime).toLocaleString('uk-UA', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : '';
                 const end = d.endTime ? new Date(d.endTime).toLocaleString('uk-UA', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : '';
                 const summary = d.reportSummary || '—';
@@ -595,23 +594,23 @@
                     <td>${d.id}</td>
                     <td>${start}</td>
                     <td>${end}</td>
-                    <td>${escapeHtml(d.unitName || 'СКОПА')}</td>
-                    <td class="text-left personnel-cell">${escapeHtml(d.commander || '—')}</td>
-                    <td class="text-left personnel-cell">${escapeHtml(d.pilot || '—')}</td>
-                    <td class="text-left personnel-cell">${escapeHtml(d.navigator || '—')}</td>
-                    <td class="text-left personnel-cell">${escapeHtml(d.technician || '—')}</td>
-                    <td>${escapeHtml(d.weapons || '—')}</td>
-                    <td>${escapeHtml(d.dutyOfficer || '—')}</td>
-                    <td class="text-left note-cell" onclick="this.classList.toggle('expanded')" title="Натисни щоб розгорнути">${escapeHtml(summary)}</td>
+                    <td>${window.escapeHtml(d.unitName || 'СКОПА')}</td>
+                    <td class="text-left personnel-cell">${window.escapeHtml(d.commander || '—')}</td>
+                    <td class="text-left personnel-cell">${window.escapeHtml(d.pilot || '—')}</td>
+                    <td class="text-left personnel-cell">${window.escapeHtml(d.navigator || '—')}</td>
+                    <td class="text-left personnel-cell">${window.escapeHtml(d.technician || '—')}</td>
+                    <td>${window.escapeHtml(d.weapons || '—')}</td>
+                    <td>${window.escapeHtml(d.dutyOfficer || '—')}</td>
+                    <td class="text-left note-cell" onclick="this.classList.toggle('expanded')" title="Натисни щоб розгорнути">${window.escapeHtml(summary)}</td>
                     <td class="num-col">${d.totalSorties ?? 0}</td>
                     <td class="num-col">${d.combatSorties ?? 0}</td>
                     <td class="num-col">${d.losses ?? 0}</td>
                     <td class="num-col">${d.destructions ?? 0}</td>
                     <td class="num-col">${d.ntp ?? 0}</td>
                     <td>
-                        <button class="btn btn-warning btn-sm" onclick="openEditModal(${d.id})" title="Редагувати">✏️</button>
-                        <button class="btn btn-duplicate btn-sm" onclick="duplicateDuty(${d.id})" title="Дублювати">📋</button>
-                        <button class="btn btn-danger btn-sm" onclick="confirmDelete(${d.id})" title="Видалити">🗑</button>
+                        <button class="btn btn-warning btn-sm" onclick="window.openEditModal(${d.id})" title="Редагувати">✏️</button>
+                        <button class="btn btn-duplicate btn-sm" onclick="window.duplicateDuty(${d.id})" title="Дублювати">📋</button>
+                        <button class="btn btn-danger btn-sm" onclick="window.confirmDelete(${d.id})" title="Видалити">🗑</button>
                     </td>
                 </tr>`;
             }).join('');
@@ -628,8 +627,7 @@
             if (m > 12) { m = 1; y++; }
             if (m < 1) { m = 12; y--; }
             document.getElementById('yearFilter').value = y;
-            const monthName = UA_MONTHS[m-1];
-            document.getElementById('monthFilter').value = monthName;
+            document.getElementById('monthFilter').value = UA_MONTHS[m-1];
             loadDuties();
         }
 
@@ -641,7 +639,6 @@
             document.getElementById('monthFilter').value = UA_MONTHS[now.getMonth()];
             loadDuties();
         };
-
         document.getElementById('applyFilterBtn').onclick = loadDuties;
 
         // ===== ЕКСПОРТ =====
@@ -655,40 +652,15 @@
                 const idx = UA_MONTHS.indexOf(monthVal);
                 if (idx !== -1) params.append('month', idx + 1);
             }
-            // Якщо немає фільтрів – експортуємо всі
             url += params.toString();
             window.location.href = url;
         };
 
-        // ===== ДУБЛЮВАННЯ =====
-        function duplicateDuty(id) {
-            const duty = allDuties.find(d => d.id === id);
-            if (!duty) return;
-            document.getElementById('formModalTitle').textContent = '📋 Дублювати чергування';
-            document.getElementById('editId').value = '';
-            document.getElementById('fStartTime').value = duty.startTime ? duty.startTime.substring(0,16) : '';
-            document.getElementById('fEndTime').value = duty.endTime ? duty.endTime.substring(0,16) : '';
-            document.getElementById('fUnitName').value = duty.unitName || 'СКОПА';
-            document.getElementById('fCommander').value = duty.commander || '';
-            document.getElementById('fPilot').value = duty.pilot || '';
-            document.getElementById('fNavigator').value = duty.navigator || '';
-            document.getElementById('fTechnician').value = duty.technician || '';
-            document.getElementById('fWeapons').value = duty.weapons || '';
-            document.getElementById('fDutyOfficer').value = duty.dutyOfficer || '';
-            document.getElementById('fReportSummary').value = duty.reportSummary || '';
-            document.getElementById('fTotalSorties').value = duty.totalSorties ?? 0;
-            document.getElementById('fCombatSorties').value = duty.combatSorties ?? 0;
-            document.getElementById('fLosses').value = duty.losses ?? 0;
-            document.getElementById('fDestructions').value = duty.destructions ?? 0;
-            document.getElementById('fNtp').value = duty.ntp ?? 0;
-            openModal('formModal');
-        }
-
-        // ===== ФОРМА (додавання/редагування) =====
-        function openAddModal() {
+        // ===== ГЛОБАЛЬНІ ФУНКЦІЇ =====
+        window.openAddModal = function() {
             document.getElementById('formModalTitle').textContent = '➕ Додати чергування';
             document.getElementById('editId').value = '';
-            ['fStartTime','fEndTime','fUnitName','fCommander','fPilot','fNavigator','fTechnician','fWeapons','fDutyOfficer','fReportSummary',
+            ['fStartTime','fEndTime','fUnitName','fWeapons','fDutyOfficer','fReportSummary',
                 'fTotalSorties','fCombatSorties','fLosses','fDestructions','fNtp'
             ].forEach(id => {
                 const el = document.getElementById(id);
@@ -696,21 +668,21 @@
                 else if (el) el.value = '';
             });
             document.getElementById('fUnitName').value = 'СКОПА';
-            openModal('formModal');
-        }
+            ['fCommander','fPilot','fNavigator','fTechnician'].forEach(id => {
+                const sel = document.getElementById(id);
+                if (sel) sel.value = '';
+            });
+            window.openModal('formModal');
+        };
 
-        function openEditModal(id) {
+        window.duplicateDuty = function(id) {
             const duty = allDuties.find(d => d.id === id);
             if (!duty) return;
-            document.getElementById('formModalTitle').textContent = '✏️ Редагувати чергування';
-            document.getElementById('editId').value = id;
+            document.getElementById('formModalTitle').textContent = '📋 Дублювати чергування';
+            document.getElementById('editId').value = '';
             document.getElementById('fStartTime').value = duty.startTime ? duty.startTime.substring(0,16) : '';
             document.getElementById('fEndTime').value = duty.endTime ? duty.endTime.substring(0,16) : '';
             document.getElementById('fUnitName').value = duty.unitName || 'СКОПА';
-            document.getElementById('fCommander').value = duty.commander || '';
-            document.getElementById('fPilot').value = duty.pilot || '';
-            document.getElementById('fNavigator').value = duty.navigator || '';
-            document.getElementById('fTechnician').value = duty.technician || '';
             document.getElementById('fWeapons').value = duty.weapons || '';
             document.getElementById('fDutyOfficer').value = duty.dutyOfficer || '';
             document.getElementById('fReportSummary').value = duty.reportSummary || '';
@@ -719,19 +691,79 @@
             document.getElementById('fLosses').value = duty.losses ?? 0;
             document.getElementById('fDestructions').value = duty.destructions ?? 0;
             document.getElementById('fNtp').value = duty.ntp ?? 0;
-            openModal('formModal');
+            setSelectValue('fCommander', duty.commander);
+            setSelectValue('fPilot', duty.pilot);
+            setSelectValue('fNavigator', duty.navigator);
+            setSelectValue('fTechnician', duty.technician);
+            window.openModal('formModal');
+        };
+
+        window.openEditModal = function(id) {
+            const duty = allDuties.find(d => d.id === id);
+            if (!duty) return;
+            document.getElementById('formModalTitle').textContent = '✏️ Редагувати чергування';
+            document.getElementById('editId').value = id;
+            document.getElementById('fStartTime').value = duty.startTime ? duty.startTime.substring(0,16) : '';
+            document.getElementById('fEndTime').value = duty.endTime ? duty.endTime.substring(0,16) : '';
+            document.getElementById('fUnitName').value = duty.unitName || 'СКОПА';
+            document.getElementById('fWeapons').value = duty.weapons || '';
+            document.getElementById('fDutyOfficer').value = duty.dutyOfficer || '';
+            document.getElementById('fReportSummary').value = duty.reportSummary || '';
+            document.getElementById('fTotalSorties').value = duty.totalSorties ?? 0;
+            document.getElementById('fCombatSorties').value = duty.combatSorties ?? 0;
+            document.getElementById('fLosses').value = duty.losses ?? 0;
+            document.getElementById('fDestructions').value = duty.destructions ?? 0;
+            document.getElementById('fNtp').value = duty.ntp ?? 0;
+            setSelectValue('fCommander', duty.commander);
+            setSelectValue('fPilot', duty.pilot);
+            setSelectValue('fNavigator', duty.navigator);
+            setSelectValue('fTechnician', duty.technician);
+            window.openModal('formModal');
+        };
+
+        function setSelectValue(selectId, value) {
+            const sel = document.getElementById(selectId);
+            if (!sel) return;
+            // Якщо значення є і воно не збігається з жодною опцією – додаємо тимчасову опцію
+            if (value) {
+                const exists = Array.from(sel.options).some(opt => opt.value === value);
+                if (!exists) {
+                    const opt = document.createElement('option');
+                    opt.value = value;
+                    opt.textContent = value;
+                    sel.appendChild(opt);
+                }
+                sel.value = value;
+            } else {
+                sel.value = '';
+            }
         }
 
-        async function saveDuty() {
+        window.saveDuty = async function() {
             const id = document.getElementById('editId').value;
+
+            // Отримуємо вибрані значення з селектів
+            const commander = document.getElementById('fCommander').value;
+            const pilot = document.getElementById('fPilot').value;
+            const navigator = document.getElementById('fNavigator').value;
+            const technician = document.getElementById('fTechnician').value;
+
+            // Перевірка на дублювання осіб у різних посадах
+            const roles = [commander, pilot, navigator, technician].filter(Boolean);
+            const uniqueRoles = new Set(roles);
+            if (uniqueRoles.size < roles.length) {
+                window.showToast('Одна особа не може займати кілька посад у чергуванні', 'err');
+                return;
+            }
+
             const body = {
                 startTime: document.getElementById('fStartTime').value,
                 endTime: document.getElementById('fEndTime').value,
                 unitName: document.getElementById('fUnitName').value.trim() || 'СКОПА',
-                commander: document.getElementById('fCommander').value.trim(),
-                pilot: document.getElementById('fPilot').value.trim(),
-                navigator: document.getElementById('fNavigator').value.trim(),
-                technician: document.getElementById('fTechnician').value.trim(),
+                commander: commander,
+                pilot: pilot,
+                navigator: navigator,
+                technician: technician,
                 weapons: document.getElementById('fWeapons').value.trim(),
                 dutyOfficer: document.getElementById('fDutyOfficer').value.trim(),
                 reportSummary: document.getElementById('fReportSummary').value.trim(),
@@ -741,10 +773,16 @@
                 destructions: parseInt(document.getElementById('fDestructions').value) || 0,
                 ntp: parseInt(document.getElementById('fNtp').value) || 0
             };
+
             if (!body.startTime || !body.endTime) {
-                showToast('Вкажіть час початку та кінця', 'err');
+                window.showToast('Вкажіть час початку та кінця', 'err');
                 return;
             }
+            if (body.startTime > body.endTime) {
+                window.showToast('Початок не може бути пізніше кінця', 'err');
+                return;
+            }
+
             const url = id ? `/combat-duty/api/${id}` : '/combat-duty/api';
             const method = id ? 'PUT' : 'POST';
             try {
@@ -753,54 +791,58 @@
                     headers: {'Content-Type':'application/json'},
                     body: JSON.stringify(body)
                 });
+                const text = await res.text();
                 if (res.ok) {
-                    closeModal('formModal');
+                    window.closeModal('formModal');
                     loadDuties();
-                    showToast(id ? 'Чергування оновлено' : 'Чергування додано', 'ok');
+                    window.showToast(id ? 'Чергування оновлено' : 'Чергування додано', 'ok');
                 } else {
-                    const err = await res.text();
-                    showToast('Помилка: ' + err, 'err');
+                    window.showToast('Помилка: ' + text, 'err');
                 }
             } catch(e) {
-                showToast('Помилка мережі', 'err');
+                window.showToast('Помилка мережі', 'err');
             }
-        }
+        };
 
-        function confirmDelete(id) {
+        window.confirmDelete = function(id) {
             if (!confirm('Видалити чергування?')) return;
             fetch(`/combat-duty/api/${id}`, { method: 'DELETE' })
                 .then(res => {
                     if (res.ok) {
                         loadDuties();
-                        showToast('Видалено', 'ok');
+                        window.showToast('Видалено', 'ok');
                     } else {
-                        showToast('Помилка видалення', 'err');
+                        window.showToast('Помилка видалення', 'err');
                     }
                 })
-                .catch(() => showToast('Помилка мережі', 'err'));
-        }
+                .catch(() => window.showToast('Помилка мережі', 'err'));
+        };
 
         // ===== ДОПОМІЖНІ =====
-        function escapeHtml(str) {
+        window.escapeHtml = function(str) {
             if (!str) return '';
             return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
-        }
+        };
 
-        function openModal(id) { document.getElementById(id).classList.add('open'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+        window.openModal = function(id) {
+            document.getElementById(id).classList.add('open');
+        };
+        window.closeModal = function(id) {
+            document.getElementById(id).classList.remove('open');
+        };
+
+        window.showToast = function(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `toast ${type} show`;
+            setTimeout(() => t.classList.remove('show'), 3000);
+        };
 
         document.querySelectorAll('.modal-overlay').forEach(el => {
             el.addEventListener('click', function(e) {
                 if (e.target === this) this.classList.remove('open');
             });
         });
-
-        function showToast(msg, type) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.className = `toast ${type} show`;
-            setTimeout(() => t.classList.remove('show'), 3000);
-        }
     })();
 </script>
 </body>
