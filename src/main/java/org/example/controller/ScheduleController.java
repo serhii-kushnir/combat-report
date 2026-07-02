@@ -7,14 +7,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -32,6 +30,20 @@ public class ScheduleController {
     @GetMapping
     public String schedulePage() {
         return "schedule";
+    }
+
+    @PostMapping("/api/cell")
+    @ResponseBody
+    public ResponseEntity<?> setStatus(@RequestBody Map<String, Object> payload) {
+        try {
+            Long personnelId = Long.valueOf(payload.get("personnelId").toString());
+            LocalDate date = LocalDate.parse(payload.get("date").toString());
+            String status = (String) payload.get("status");
+            service.setStatus(personnelId, date, status);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Помилка: " + e.getMessage());
+        }
     }
 
     @GetMapping("/api")

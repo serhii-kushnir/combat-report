@@ -5,7 +5,7 @@
     <title>Бойове чергування</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     <style>
-        /* ===== СТИЛІ (без змін) ===== */
+        /* ===== СТИЛІ ===== */
         :root {
             --bg-body: #f0f2f5;
             --bg-card: #ffffff;
@@ -193,8 +193,9 @@
             max-width: 250px;
             min-width: 120px;
         }
+
         td.note-cell {
-            white-space: normal;
+            white-space: pre-wrap;          /* зберігає перенесення рядків */
             word-break: break-word;
             max-width: 300px;
             min-width: 150px;
@@ -208,11 +209,14 @@
             transition: max-height 0.2s ease;
         }
         td.note-cell.expanded {
-            max-height: 500px;
+            max-height: none;               /* ← повна висота */
             -webkit-line-clamp: unset;
             display: block;
+            overflow-y: auto;               /* ← прокрутка, якщо дуже довго */
         }
-        td.note-cell:hover { color: var(--btn-primary-bg); }
+        td.note-cell:hover {
+            color: var(--btn-primary-bg);
+        }
 
         .modal-overlay {
             display: none;
@@ -267,20 +271,143 @@
         .empty-state { text-align: center; padding: 40px; color: var(--text-light); }
 
         @media print {
-            .sidebar, .toolbar, .no-print, .btn, .modal-overlay { display: none !important; }
-            body { background: white !important; color: black !important; }
-            .main-content { margin-left: 0 !important; padding: 0 !important; }
-            .container { padding: 10px !important; }
-            .table-wrap { box-shadow: none !important; border: 1px solid #ccc !important; border-radius: 0 !important; }
-            table { background: white !important; }
-            thead { background: #1a237e !important; color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            thead th { background: #1a237e !important; color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            td { color: black !important; border-bottom: 1px solid #ddd !important; }
-            tr { page-break-inside: avoid; }
-            .dark-theme td { color: black !important; background: white !important; }
-            .dark-theme thead { background: #1a237e !important; color: white !important; }
-            .dark-theme thead th { background: #1a237e !important; color: white !important; }
-            @page { size: landscape; margin: 0.8cm 0.5cm; }
+            /* === ПРИХОВУЄМО ВСЕ ЗАЙВЕ === */
+            .sidebar, .toolbar, .no-print, .btn, .btn-print, .btn-success,
+            .btn-primary, .btn-warning, .btn-danger, .btn-duplicate,
+            .modal-overlay, input[type="text"], .search-input, button, select,
+            .current-date, #monthTitle, #prevBtn, #nextBtn, #todayBtn,
+            #yearFilter, #monthFilter, #applyFilterBtn, #exportXlsxBtn {
+                display: none !important;
+            }
+
+            body {
+                background: white !important;
+                color: black !important;
+                font-size: 6px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+
+            .container {
+                padding: 0 !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+            }
+
+            .table-wrap {
+                box-shadow: none !important;
+                border: none !important;
+                border-radius: 0 !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+            }
+
+            table {
+                background: white !important;
+                width: 100% !important;
+                border-collapse: collapse !important;
+                font-size: 5px !important;
+                table-layout: fixed !important;
+                page-break-inside: avoid !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            thead {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            thead th {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                padding: 1px 1px !important;
+                font-size: 5px !important;
+                border: 1px solid #1a237e !important;
+                text-align: center !important;
+                overflow: hidden !important;
+                white-space: nowrap !important;
+            }
+
+            td {
+                color: black !important;
+                border: 1px solid #ddd !important;
+                font-size: 4.5px !important;
+                padding: 1px 1px !important;
+                line-height: 1.1 !important;
+                background: white !important;
+                text-align: center !important;
+                overflow: hidden !important;
+                white-space: normal !important;
+                word-break: break-word !important;
+                word-wrap: break-word !important;
+                vertical-align: middle !important;
+            }
+
+            td.text-left {
+                text-align: left !important;
+            }
+
+            td.personnel-cell,
+            td.note-cell {
+                white-space: normal !important;
+                word-break: break-word !important;
+                overflow: hidden !important;
+                max-height: none !important;
+                text-overflow: clip !important;
+            }
+
+            /* === ДОПОВІДЬ – компактна, текст по ширині === */
+            td.note-cell {
+                text-align: justify !important;
+                padding: 1px 1px !important;
+                width: 65px !important;
+                min-width: 65px !important;
+                max-width: 65px !important;
+                white-space: normal !important;
+                line-height: 1.2 !important;
+            }
+
+            /* Приховуємо "Дії" */
+            th:last-child, td:last-child {
+                display: none !important;
+            }
+
+            /* Фіксовані ширини колонок – сума ≈ 100% */
+            th:nth-child(1), td:nth-child(1) { width: 14px !important; min-width: 14px !important; max-width: 14px !important; }
+            th:nth-child(2), td:nth-child(2) { width: 42px !important; min-width: 42px !important; max-width: 42px !important; }
+            th:nth-child(3), td:nth-child(3) { width: 42px !important; min-width: 42px !important; max-width: 42px !important; }
+            th:nth-child(4), td:nth-child(4) { width: 34px !important; min-width: 34px !important; max-width: 34px !important; }
+            th:nth-child(5), td:nth-child(5) { width: 56px !important; min-width: 56px !important; max-width: 56px !important; }
+            th:nth-child(6), td:nth-child(6) { width: 42px !important; min-width: 42px !important; max-width: 42px !important; }
+            th:nth-child(7), td:nth-child(7) { width: 42px !important; min-width: 42px !important; max-width: 42px !important; }
+            th:nth-child(8), td:nth-child(8) { width: 42px !important; min-width: 42px !important; max-width: 42px !important; }
+            th:nth-child(9), td:nth-child(9) { width: 42px !important; min-width: 42px !important; max-width: 42px !important; }
+            th:nth-child(10), td:nth-child(10) { width: 42px !important; min-width: 42px !important; max-width: 42px !important; }
+            th:nth-child(11), td:nth-child(11) { width: 65px !important; min-width: 65px !important; max-width: 65px !important; }
+            th:nth-child(12), td:nth-child(12) { width: 20px !important; min-width: 20px !important; max-width: 20px !important; }
+            th:nth-child(13), td:nth-child(13) { width: 20px !important; min-width: 20px !important; max-width: 20px !important; }
+            th:nth-child(14), td:nth-child(14) { width: 20px !important; min-width: 20px !important; max-width: 20px !important; }
+            th:nth-child(15), td:nth-child(15) { width: 20px !important; min-width: 20px !important; max-width: 20px !important; }
+            th:nth-child(16), td:nth-child(16) { width: 20px !important; min-width: 20px !important; max-width: 20px !important; }
+
+            @page {
+                size: landscape;
+                margin: 2mm 2mm;
+            }
         }
     </style>
     <link th:replace="~{fragments :: sidebar-css}">
@@ -290,19 +417,29 @@
     <div th:replace="~{fragments :: sidebar('combat-duty')}"></div>
     <div class="main-content">
         <div class="container">
+            <!-- ТУЛБАР -->
             <div class="toolbar">
                 <div class="current-date" id="currentDate">📅 02.07.2026</div>
                 <button class="btn btn-nav" id="prevBtn">◀</button>
                 <button class="btn btn-today" id="todayBtn">Сьогодні</button>
                 <button class="btn btn-nav" id="nextBtn">▶</button>
                 <h2 id="monthTitle">Липень 2026</h2>
-                <select id="yearFilter"><option value="">— Всі роки —</option></select>
-                <select id="monthFilter"><option value="">— Всі місяці —</option></select>
+                <select id="yearFilter">
+                    <option value="">— Всі роки —</option>
+                </select>
+                <select id="monthFilter">
+                    <option value="">— Всі місяці —</option>
+                </select>
                 <button class="btn btn-primary" id="applyFilterBtn">Показати</button>
+                <button class="btn btn-success" onclick="window.openAddModal()">+ Додати</button>
                 <button class="btn btn-success" id="exportXlsxBtn">📊 Експорт XLSX</button>
-                <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> Друк</button>
+                <button class="btn btn-print" onclick="window.print()">
+                    <i class="fas fa-print"></i> Друк
+                </button>
+                <input type="text" id="searchInput" placeholder="🔍 Пошук..." style="width:185px;">
             </div>
 
+            <!-- ТАБЛИЦЯ -->
             <div class="table-wrap">
                 <table id="dutyTable">
                     <thead>
@@ -326,7 +463,9 @@
                         <th style="min-width:120px;">Дії</th>
                     </tr>
                     </thead>
-                    <tbody id="dutyTableBody"><tr><td colspan="17" class="empty-state">Завантаження...</td></tr></tbody>
+                    <tbody id="dutyTableBody">
+                    <tr><td colspan="17" class="empty-state">Завантаження...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -354,21 +493,29 @@
         </div>
         <div class="form-group">
             <label>Командир екіпажу</label>
-            <select id="fCommander"><option value="">— Оберіть командира —</option></select>
+            <select id="fCommander">
+                <option value="">— Оберіть командира —</option>
+            </select>
         </div>
         <div class="form-row">
             <div class="form-group">
                 <label>Пілот</label>
-                <select id="fPilot"><option value="">— Оберіть пілота —</option></select>
+                <select id="fPilot">
+                    <option value="">— Оберіть пілота —</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>Штурман</label>
-                <select id="fNavigator"><option value="">— Оберіть штурмана —</option></select>
+                <select id="fNavigator">
+                    <option value="">— Оберіть штурмана —</option>
+                </select>
             </div>
         </div>
         <div class="form-group">
             <label>Технік</label>
-            <select id="fTechnician"><option value="">— Оберіть техніка —</option></select>
+            <select id="fTechnician">
+                <option value="">— Оберіть техніка —</option>
+            </select>
         </div>
         <div class="form-group">
             <label>Озброєння</label>
@@ -382,6 +529,7 @@
             <label>Доповідь про чергування</label>
             <textarea id="fReportSummary" rows="3" placeholder="Доповідаю, що під час мого чергування..."></textarea>
         </div>
+
         <div class="form-row-3">
             <div class="form-group"><label>Вильотів</label><input type="number" id="fTotalSorties" value="0" min="0"></div>
             <div class="form-group"><label>Бойових</label><input type="number" id="fCombatSorties" value="0" min="0"></div>
@@ -391,6 +539,7 @@
             <div class="form-group"><label>Знищень</label><input type="number" id="fDestructions" value="0" min="0"></div>
             <div class="form-group"><label>НТП</label><input type="number" id="fNtp" value="0" min="0"></div>
         </div>
+
         <div class="modal-actions">
             <button class="btn" onclick="window.closeModal('formModal')" style="background:#eee;">Скасувати</button>
             <button class="btn btn-primary" onclick="window.saveDuty()">Зберегти</button>
@@ -398,6 +547,7 @@
     </div>
 </div>
 
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script th:replace="~{fragments :: sidebar-js}"></script>
@@ -412,6 +562,7 @@
         let allDuties = [];
         let sortCol = 'id';
         let sortDir = -1;
+        let searchQuery = '';
         let personnelList = [];
 
         // ===== ЗАВАНТАЖЕННЯ ПЕРСОНАЛУ =====
@@ -433,7 +584,6 @@
         function populateSelect(selectId, roleLabel, personnel) {
             const select = document.getElementById(selectId);
             if (!select) return;
-            // Сортуємо за personnelNumber (зростання)
             const sorted = [...personnel].sort((a, b) => (a.personnelNumber || 0) - (b.personnelNumber || 0));
             select.innerHTML = `<option value="">— Оберіть ${roleLabel.toLowerCase()} —</option>`;
             sorted.forEach(p => {
@@ -509,7 +659,7 @@
                 .then(data => {
                     allDuties = data;
                     updateMonthTitle();
-                    applySortAndRender();
+                    applyFiltersAndRender();
                 })
                 .catch(err => {
                     console.error(err);
@@ -532,16 +682,75 @@
             document.getElementById('monthTitle').textContent = title || 'Всі періоди';
         }
 
-        // ===== СОРТУВАННЯ =====
-        window.sortBy = function(col) {
-            if (sortCol === col) {
-                sortDir *= -1;
-            } else {
-                sortCol = col;
-                sortDir = -1;
+        // ===== ПОШУК =====
+        document.getElementById('searchInput').addEventListener('input', function() {
+            searchQuery = this.value.toLowerCase().trim();
+            applyFiltersAndRender();
+        });
+
+        // ===== ФІЛЬТРИ + СОРТУВАННЯ =====
+        function applyFiltersAndRender() {
+            const yearVal = document.getElementById('yearFilter').value;
+            const monthVal = document.getElementById('monthFilter').value;
+
+            // Фільтр за роком/місяцем
+            let filtered = allDuties;
+            if (yearVal || monthVal) {
+                filtered = allDuties.filter(d => {
+                    const date = new Date(d.startTime);
+                    let match = true;
+                    if (yearVal) match = match && date.getFullYear() === parseInt(yearVal);
+                    if (monthVal) {
+                        const idx = UA_MONTHS.indexOf(monthVal);
+                        if (idx !== -1) match = match && date.getMonth() === idx;
+                    }
+                    return match;
+                });
             }
-            applySortAndRender();
-        };
+
+            // ===== ПОШУК ЗА ДАТАМИ ТА ТЕКСТОМ =====
+            if (searchQuery) {
+                filtered = filtered.filter(d => {
+                    // Форматуємо дати для пошуку
+                    const startDate = d.startTime ? new Date(d.startTime).toLocaleDateString('uk-UA') : '';
+                    const endDate = d.endTime ? new Date(d.endTime).toLocaleDateString('uk-UA') : '';
+                    const startTime = d.startTime ? new Date(d.startTime).toLocaleTimeString('uk-UA', {hour:'2-digit', minute:'2-digit'}) : '';
+                    const endTime = d.endTime ? new Date(d.endTime).toLocaleTimeString('uk-UA', {hour:'2-digit', minute:'2-digit'}) : '';
+
+                    const fields = [
+                        d.unitName, d.commander, d.pilot, d.navigator, d.technician,
+                        d.weapons, d.dutyOfficer, d.reportSummary,
+                        startDate, endDate, startTime, endTime
+                    ];
+                    return fields.some(f => f && f.toLowerCase().includes(searchQuery));
+                });
+            }
+
+            // Сортування
+            if (sortCol) {
+                filtered.sort((a, b) => {
+                    let va = getSortValue(a, sortCol);
+                    let vb = getSortValue(b, sortCol);
+                    if (typeof va === 'number' && typeof vb === 'number') {
+                        return (va - vb) * sortDir;
+                    }
+                    va = String(va).toLowerCase();
+                    vb = String(vb).toLowerCase();
+                    if (va < vb) return -1 * sortDir;
+                    if (va > vb) return 1 * sortDir;
+                    return 0;
+                });
+            }
+
+            renderTable(filtered);
+            // Оновлюємо стрілки
+            document.querySelectorAll('#dutyTable thead th').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+                if (th.dataset.col === sortCol) {
+                    th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+                }
+            });
+        }
 
         function getSortValue(row, col) {
             if (col === 'id') return row.id || 0;
@@ -553,40 +762,23 @@
             return val || '';
         }
 
-        function applySortAndRender() {
-            if (!allDuties || !allDuties.length) {
-                renderTable();
-                return;
+        window.sortBy = function(col) {
+            if (sortCol === col) {
+                sortDir *= -1;
+            } else {
+                sortCol = col;
+                sortDir = -1;
             }
-            const sorted = [...allDuties].sort((a, b) => {
-                let va = getSortValue(a, sortCol);
-                let vb = getSortValue(b, sortCol);
-                if (typeof va === 'number' && typeof vb === 'number') {
-                    return (va - vb) * sortDir;
-                }
-                va = String(va).toLowerCase();
-                vb = String(vb).toLowerCase();
-                if (va < vb) return -1 * sortDir;
-                if (va > vb) return 1 * sortDir;
-                return 0;
-            });
-            renderTable(sorted);
-            document.querySelectorAll('#dutyTable thead th').forEach(th => {
-                th.classList.remove('sort-asc', 'sort-desc');
-                if (th.dataset.col === sortCol) {
-                    th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
-                }
-            });
-        }
+            applyFiltersAndRender();
+        };
 
         function renderTable(data) {
             const tbody = document.getElementById('dutyTableBody');
-            const rows = data || allDuties;
-            if (!rows || !rows.length) {
+            if (!data || !data.length) {
                 tbody.innerHTML = '<tr><td colspan="17" class="empty-state">Чергувань немає</td></tr>';
                 return;
             }
-            tbody.innerHTML = rows.map(d => {
+            tbody.innerHTML = data.map(d => {
                 const start = d.startTime ? new Date(d.startTime).toLocaleString('uk-UA', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : '';
                 const end = d.endTime ? new Date(d.endTime).toLocaleString('uk-UA', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : '';
                 const summary = d.reportSummary || '—';
@@ -724,7 +916,6 @@
         function setSelectValue(selectId, value) {
             const sel = document.getElementById(selectId);
             if (!sel) return;
-            // Якщо значення є і воно не збігається з жодною опцією – додаємо тимчасову опцію
             if (value) {
                 const exists = Array.from(sel.options).some(opt => opt.value === value);
                 if (!exists) {
@@ -742,13 +933,11 @@
         window.saveDuty = async function() {
             const id = document.getElementById('editId').value;
 
-            // Отримуємо вибрані значення з селектів
             const commander = document.getElementById('fCommander').value;
             const pilot = document.getElementById('fPilot').value;
             const navigator = document.getElementById('fNavigator').value;
             const technician = document.getElementById('fTechnician').value;
 
-            // Перевірка на дублювання осіб у різних посадах
             const roles = [commander, pilot, navigator, technician].filter(Boolean);
             const uniqueRoles = new Set(roles);
             if (uniqueRoles.size < roles.length) {

@@ -32,25 +32,30 @@ public class CombatScheduleService {
         LocalDate from = ym.atDay(1);
         LocalDate to = ym.atEndOfMonth();
 
-        // Всі чергування, що перетинаються з вибраним місяцем
+        // Всі чергування, що перетинаються з вибраним місяцем (для фільтрації)
         List<CombatDuty> duties = dutyRepo.findAll().stream()
                 .filter(d -> !d.getStartTime().toLocalDate().isAfter(to) && !d.getEndTime().toLocalDate().isBefore(from))
                 .collect(Collectors.toList());
 
-        // Всі активні особи зі статусом "В особовому складі"
+        // Всі активні особи
         List<Personnel> personnel = personnelRepo.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("В особовому складі");
 
-        // Мапа: день місяця -> (нормалізоване ПІБ -> роль)
+        // Мапа: день -> (ПІБ -> роль)
         Map<Integer, Map<String, String>> dayRoles = new HashMap<>();
         for (int d = 1; d <= ym.lengthOfMonth(); d++) {
             dayRoles.put(d, new HashMap<>());
         }
 
         for (CombatDuty duty : duties) {
-            LocalDate start = duty.getStartTime().toLocalDate();
-            LocalDate end = duty.getEndTime().toLocalDate();
-            LocalDate fromDay = start.isBefore(from) ? from : start;
-            LocalDate toDay = end.isAfter(to) ? to : end;
+            LocalDate startDate = duty.getStartTime().toLocalDate();
+
+            // === ВИПРАВЛЕННЯ: показуємо ТІЛЬКИ В ДЕНЬ ПОЧАТКУ ===
+            // Якщо дата початку не належить до вибраного місяця – пропускаємо
+            if (startDate.isBefore(from) || startDate.isAfter(to)) {
+                continue;
+            }
+
+            int day = startDate.getDayOfMonth();
 
             Map<String, String> roleMap = new HashMap<>();
             addRole(roleMap, duty.getCommander(), "К");
@@ -58,17 +63,14 @@ public class CombatScheduleService {
             addRole(roleMap, duty.getNavigator(), "Ш");
             addRole(roleMap, duty.getTechnician(), "Т");
 
-            for (LocalDate date = fromDay; !date.isAfter(toDay); date = date.plusDays(1)) {
-                int day = date.getDayOfMonth();
-                Map<String, String> currentDayRoles = dayRoles.get(day);
-                for (Map.Entry<String, String> entry : roleMap.entrySet()) {
-                    String key = entry.getKey();
-                    String existing = currentDayRoles.get(key);
-                    if (existing == null) {
-                        currentDayRoles.put(key, entry.getValue());
-                    } else if (!existing.equals(entry.getValue())) {
-                        currentDayRoles.put(key, existing + "/" + entry.getValue());
-                    }
+            Map<String, String> currentDayRoles = dayRoles.get(day);
+            for (Map.Entry<String, String> entry : roleMap.entrySet()) {
+                String key = entry.getKey();
+                String existing = currentDayRoles.get(key);
+                if (existing == null) {
+                    currentDayRoles.put(key, entry.getValue());
+                } else if (!existing.equals(entry.getValue())) {
+                    currentDayRoles.put(key, existing + "/" + entry.getValue());
                 }
             }
         }
