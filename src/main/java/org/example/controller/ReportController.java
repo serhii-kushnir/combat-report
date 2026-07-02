@@ -222,15 +222,22 @@ public class ReportController {
     public ResponseEntity<byte[]> saveAsTxt(@RequestParam String report,
                                             @RequestParam String filename) {
         if (report == null || report.isBlank()) {
-            return ResponseEntity.badRequest().body("Звіт порожній".getBytes(StandardCharsets.UTF_8));
+            return ResponseEntity.badRequest()
+                    .body("Звіт порожній".getBytes(StandardCharsets.UTF_8));
         }
-        byte[] content = report.getBytes(StandardCharsets.UTF_8);
-        String safeFilename = encodeFilename(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + safeFilename + "\"; filename*=UTF-8''" + safeFilename)
-                .contentType(new MediaType("text", "plain", StandardCharsets.UTF_8))
-                .body(content);
+        try {
+            byte[] content = report.getBytes(StandardCharsets.UTF_8);
+            String safeFilename = encodeFilename(filename);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + safeFilename + "\"; filename*=UTF-8''" + safeFilename)
+                    .contentType(new MediaType("text", "plain", StandardCharsets.UTF_8))
+                    .body(content);
+        } catch (Exception e) {
+            log.error("Помилка збереження TXT: {}", filename, e);
+            return ResponseEntity.internalServerError()
+                    .body(("Помилка: " + e.getMessage()).getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     @PostMapping("/save/docx")
