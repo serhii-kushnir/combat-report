@@ -111,7 +111,7 @@ public class CombatDutyController {
             }
 
             // Перевірка на перетин з існуючими чергуваннями
-            if (hasOverlap(duty, null)) {
+            if (service.hasOverlap(duty, null)) {
                 return ResponseEntity.badRequest().body("Цей період уже зайнятий іншим чергуванням");
             }
 
@@ -136,7 +136,7 @@ public class CombatDutyController {
             }
 
             // Перевірка на перетин (виключаємо поточне чергування за id)
-            if (hasOverlap(duty, id)) {
+            if (service.hasOverlap(duty, id)) {
                 return ResponseEntity.badRequest().body("Цей період уже зайнятий іншим чергуванням");
             }
 

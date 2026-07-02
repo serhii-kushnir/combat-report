@@ -22,6 +22,10 @@ public class CombatDutyService {
         return dutyRepo.findAll();
     }
 
+    public boolean hasOverlap(CombatDuty duty, Long excludeId) {
+        return dutyRepo.existsOverlap(duty.getStartTime(), duty.getEndTime(), excludeId);
+    }
+
     @Transactional(readOnly = true)
     public Optional<CombatDuty> getById(Long id) {
         return dutyRepo.findById(id);
