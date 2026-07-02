@@ -467,14 +467,19 @@
             <span class="label">Бойове чергування</span>
         </a>
 
+        <a href="/combat-schedule" class="nav-item" th:classappend="${activePage == 'combat-schedule' ? 'active' : ''}" title="БЧ Графік">
+            <span class="icon">📅</span>
+            <span class="label">БЧ Графік</span>
+        </a>
+
         <div class="nav-section-title">Особовий склад</div>
         <a href="/personnel" class="nav-item" th:classappend="${activePage == 'personnel' ? 'active' : ''}" title="Особовий склад">
             <span class="icon">👥</span>
             <span class="label">Особовий склад</span>
         </a>
-        <a href="/schedule" class="nav-item" th:classappend="${activePage == 'schedule' ? 'active' : ''}" title="Графік чергувань">
+        <a href="/schedule" class="nav-item" th:classappend="${activePage == 'schedule' ? 'active' : ''}" title="Вечірння перевірка">
             <span class="icon">📅</span>
-            <span class="label">Графік чергувань</span>
+            <span class="label">Вечірння перевірка</span>
         </a>
 
         <div class="nav-section-title">Ресурси</div>

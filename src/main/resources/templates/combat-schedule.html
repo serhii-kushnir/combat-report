@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>БЧ Графік чергувань</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <style>
+        /* ===== СТИЛІ ===== */
+        :root {
+            --bg-body: #f0f2f5;
+            --bg-card: #ffffff;
+            --bg-toolbar: #ffffff;
+            --bg-header: #1a237e;
+            --bg-table: #ffffff;
+            --bg-hover: #f5f9ff;
+            --bg-weekend: #fff8f0;
+            --bg-today: #fffde7;
+            --text-primary: #222;
+            --text-secondary: #555;
+            --text-white: #fff;
+            --border-color: #ccc;
+            --shadow-color: rgba(0,0,0,0.1);
+            --btn-nav-bg: #e8eaf6;
+            --btn-nav-color: #1a237e;
+            --btn-today-bg: #1976d2;
+            --btn-today-hover: #1565c0;
+            --btn-primary-bg: #1976d2;
+            --btn-primary-hover: #1565c0;
+            --toast-success: #2e7d32;
+            --toast-error: #c62828;
+        }
+
+        body.dark-theme {
+            --bg-body: #1e1e24;
+            --bg-card: #2d2d35;
+            --bg-toolbar: #2d2d35;
+            --bg-header: #2a2a3a;
+            --bg-table: #2d2d35;
+            --bg-hover: #3a3a44;
+            --bg-weekend: #2a2a35;
+            --bg-today: #3a3a30;
+            --text-primary: #e8e8ec;
+            --text-secondary: #b0b0b8;
+            --text-white: #fff;
+            --border-color: #3d3d48;
+            --shadow-color: rgba(0,0,0,0.4);
+            --btn-nav-bg: #3a3a4a;
+            --btn-nav-color: #90caf9;
+            --btn-today-bg: #4a7ab5;
+            --btn-today-hover: #5a8ac5;
+            --btn-primary-bg: #4a7ab5;
+            --btn-primary-hover: #5a8ac5;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); color: var(--text-primary); margin: 0; }
+        .container { padding: 16px 20px; max-width: 100%; overflow-x: auto; }
+
+        .toolbar {
+            background: var(--bg-toolbar);
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+        .btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-nav { background: var(--btn-nav-bg); color: var(--btn-nav-color); }
+        .btn-nav:hover { background: var(--btn-nav-hover); }
+        .btn-today { background: var(--btn-today-bg); color: white; }
+        .btn-today:hover { background: var(--btn-today-hover); }
+        .btn-primary { background: var(--btn-primary-bg); color: white; }
+        .btn-primary:hover { background: var(--btn-primary-hover); }
+        .btn-print { background: #607d8b; color: white; }
+        .btn-print:hover { background: #546e7a; }
+        .dark-theme .btn-print { background: #4a5a6a; }
+        .dark-theme .btn-print:hover { background: #5a6a7a; }
+
+        select, input[type="text"] {
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
+            background: var(--bg-input);
+            color: var(--text-primary);
+        }
+
+        .current-date {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+
+        #monthTitle {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+
+        table {
+            border-collapse: collapse;
+            background: var(--bg-table);
+            min-width: 100%;
+        }
+        thead tr:first-child th {
+            background: var(--bg-header);
+            color: var(--text-white);
+            font-size: 12px;
+            padding: 10px 4px;
+        }
+        thead tr:last-child th {
+            background: var(--bg-header);
+            color: #c5cae9;
+            font-size: 11px;
+            padding: 6px 2px;
+        }
+
+        .col-num { width: 32px; min-width: 32px; }
+        .col-rank { width: 125px; min-width: 125px; text-align: left; padding-left: 6px; }
+        .col-name { width: 130px; min-width: 130px; text-align: left; padding-left: 8px; }
+        .col-day { width: 36px; min-width: 32px; }
+        .col-count { width: 60px; min-width: 60px; text-align: center; }
+
+        .col-num, .col-rank, .col-name,
+        .num-cell, .rank-cell, .name-cell {
+            position: sticky;
+            z-index: 2;
+            background: var(--bg-table);
+        }
+        thead .col-num, thead .col-rank, thead .col-name { z-index: 3; }
+        .col-num, .num-cell { left: 0; }
+        .col-rank, .rank-cell { left: 32px; }
+        .col-name, .name-cell { left: calc(32px + 125px); }
+
+        tr:hover td.num-cell,
+        tr:hover td.rank-cell,
+        tr:hover td.name-cell { background: var(--bg-hover); }
+
+        td {
+            padding: 2px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            font-size: 12px;
+            color: var(--text-primary);
+        }
+        td.name-cell {
+            text-align: left;
+            padding: 4px 6px 4px 8px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        td.rank-cell {
+            text-align: left;
+            padding: 4px 4px 4px 6px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        td.num-cell {
+            color: var(--text-light);
+            font-size: 11px;
+            text-align: center;
+        }
+        td.count-cell {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--btn-primary-bg);
+        }
+        tr:hover td { background: var(--bg-hover); }
+
+        .day-cell {
+            cursor: pointer;
+            position: relative;
+            height: 28px;
+            vertical-align: middle;
+        }
+        .day-cell:hover { background: var(--bg-hover) !important; }
+        .day-cell.weekend { background: var(--bg-weekend); }
+        .day-cell.today-col { background: var(--bg-today) !important; }
+
+        .cell-badge {
+            display: inline-block;
+            padding: 1px 3px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 700;
+            line-height: 1.4;
+            white-space: nowrap;
+            width: 100%;
+        }
+        .cell-badge.БЧ {
+            background: #ffcdd2;
+            color: #b71c1c;
+        }
+
+        .legend {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-top: 12px;
+            box-shadow: 0 2px 6px var(--shadow-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+        .legend-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-right: 4px;
+        }
+        .legend-item {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+        }
+        .legend-item.БЧ { background: #ffcdd2; color: #b71c1c; }
+
+        .toast {
+            position: fixed; bottom: 20px; right: 20px;
+            padding: 10px 18px; border-radius: 8px;
+            color: white; font-size: 13px; font-weight: 600;
+            opacity: 0; transition: opacity 0.3s;
+            z-index: 9999;
+        }
+        .toast.show { opacity: 1; }
+        .toast.ok { background: var(--toast-success); }
+        .toast.err { background: var(--toast-error); }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+
+        @media print {
+            .sidebar, .toolbar, .legend, .no-print, .btn { display: none !important; }
+            body { background: white !important; color: black !important; font-size: 7px !important; }
+            .main-content { margin-left: 0 !important; padding: 0 !important; }
+            .container { padding: 4px !important; max-width: 100% !important; margin: 0 !important; }
+            .table-wrap { overflow: visible !important; box-shadow: none !important; border: 1px solid #ccc !important; border-radius: 0 !important; }
+            table { background: white !important; width: 100% !important; border-collapse: collapse; font-size: 6px !important; table-layout: fixed !important; }
+            thead th { background: #1a237e !important; color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .cell-badge.БЧ { background: #ffcdd2 !important; color: #b71c1c !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .weekend { background: #f5f5f5 !important; }
+            .today-col { background: #fffde7 !important; }
+            @page { size: landscape; margin: 4mm 3mm; }
+        }
+    </style>
+    <link th:replace="~{fragments :: sidebar-css}">
+</head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments :: sidebar('combat-schedule')}"></div>
+    <div class="main-content">
+        <div class="container">
+            <div class="toolbar">
+                <div class="current-date" id="currentDate"></div>
+                <button class="btn btn-nav" id="prevBtn">◀</button>
+                <button class="btn btn-today" id="todayBtn">Сьогодні</button>
+                <button class="btn btn-nav" id="nextBtn">▶</button>
+                <h2 id="monthTitle" style="margin:0 10px;">—</h2>
+
+                <select id="yearFilter">
+                    <option value="">— Всі роки —</option>
+                </select>
+                <select id="monthFilter">
+                    <option value="">— Всі місяці —</option>
+                </select>
+                <button class="btn btn-primary" id="applyFilterBtn">Показати</button>
+                <button class="btn btn-primary" id="exportXlsxBtn">📊 Експорт XLSX</button>
+                <button class="btn btn-print" onclick="window.print()">🖨️ Друк</button>
+            </div>
+
+            <div class="table-wrap" id="scheduleTableWrap">
+                <table id="scheduleTable">
+                    <thead id="tableHead"></thead>
+                    <tbody id="tableBody">
+                    <tr><td colspan="40" style="text-align:center;padding:32px;color:var(--text-light)">Завантаження...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="legend" id="legend">
+                <span class="legend-title">Позначення:</span>
+                <span class="legend-item" style="background:#ffcdd2;color:#b71c1c;">К</span>
+                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Командир екіпажу</span>
+                <span class="legend-item" style="background:#ffcdd2;color:#b71c1c;">П</span>
+                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Пілот</span>
+                <span class="legend-item" style="background:#ffcdd2;color:#b71c1c;">Ш</span>
+                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Штурман</span>
+                <span class="legend-item" style="background:#ffcdd2;color:#b71c1c;">Т</span>
+                <span style="font-size:11px;color:var(--text-secondary);">— Технік</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script th:replace="~{fragments :: sidebar-js}"></script>
+<script>
+    (function() {
+        const UA_MONTHS = ['Січень','Лютий','Березень','Квітень','Травень','Червень',
+            'Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+        const UA_DAYS = ['Нд','Пн','Вт','Ср','Чт','Пт','Сб'];
+
+        let currentYear, currentMonth;
+        let tableData = [];
+        const today = new Date();
+        currentYear = today.getFullYear();
+        currentMonth = today.getMonth() + 1;
+
+        updateCurrentDate();
+        loadFilters();
+        loadMonth();
+
+        function updateCurrentDate() {
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2,'0');
+            const month = String(now.getMonth()+1).padStart(2,'0');
+            const year = now.getFullYear();
+            document.getElementById('currentDate').textContent = `📅 ${day}.${month}.${year}`;
+        }
+
+        function loadFilters() {
+            fetch('/combat-schedule/api/years')
+                .then(res => res.json())
+                .then(years => {
+                    const sel = document.getElementById('yearFilter');
+                    years.forEach(y => {
+                        const opt = document.createElement('option');
+                        opt.value = y;
+                        opt.textContent = y;
+                        sel.appendChild(opt);
+                    });
+                })
+                .catch(() => {});
+
+            fetch('/combat-schedule/api/months')
+                .then(res => res.json())
+                .then(months => {
+                    const sel = document.getElementById('monthFilter');
+                    months.forEach(m => {
+                        const opt = document.createElement('option');
+                        opt.value = m;
+                        opt.textContent = m;
+                        sel.appendChild(opt);
+                    });
+                })
+                .catch(() => {});
+        }
+
+        function loadMonth() {
+            document.getElementById('monthTitle').textContent =
+                UA_MONTHS[currentMonth - 1] + ' ' + currentYear;
+
+            const url = `/combat-schedule/api?year=${currentYear}&month=${currentMonth}`;
+            fetch(url)
+                .then(res => {
+                    if (!res.ok) { showToast('Помилка завантаження', 'err'); throw new Error('Network error'); }
+                    return res.json();
+                })
+                .then(data => {
+                    tableData = data;
+                    renderTable();
+                })
+                .catch(err => {
+                    console.error(err);
+                    showToast('Помилка завантаження даних', 'err');
+                    document.getElementById('tableBody').innerHTML =
+                        '<tr><td colspan="40" style="text-align:center;padding:32px;color:var(--text-light)">Помилка завантаження</td></tr>';
+                });
+        }
+
+        function renderTable() {
+            const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+            let headRow1 = `<tr>
+        <th class="col-num">№</th>
+        <th class="col-rank" style="text-align:left">Звання</th>
+        <th class="col-name" style="text-align:left">ПІБ</th>`;
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dow = new Date(currentYear, currentMonth - 1, d).getDay();
+                const isWE = (dow === 0 || dow === 6);
+                const isTod = (currentYear === today.getFullYear() &&
+                    currentMonth === today.getMonth() + 1 &&
+                    d === today.getDate());
+                headRow1 += `<th class="col-day${isWE ? ' weekend' : ''}${isTod ? ' today-col' : ''}"
+                 style="font-size:11px;padding:4px 2px">${d}</th>`;
+            }
+            headRow1 += `<th class="col-count">Днів БЧ</th>`;
+            headRow1 += `</tr>`;
+
+            let headRow2 = `<tr><th></th><th></th><th></th>`;
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dow = new Date(currentYear, currentMonth - 1, d).getDay();
+                headRow2 += `<th style="font-size:9px;color:#90caf9">${UA_DAYS[dow]}</th>`;
+            }
+            headRow2 += `<th></th>`;
+            headRow2 += `</tr>`;
+            document.getElementById('tableHead').innerHTML = headRow1 + headRow2;
+
+            if (!tableData || !tableData.length) {
+                document.getElementById('tableBody').innerHTML =
+                    `<tr><td colspan="${daysInMonth + 4}" style="text-align:center;padding:32px;color:var(--text-light)">Немає даних про чергування</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            tableData.forEach((row, idx) => {
+                const rowNum = row.personnelNumber ?? (idx + 1);
+                let rowHtml = `<tr>
+            <td class="num-cell">${rowNum}</td>
+            <td class="rank-cell">${escapeHtml(row.rank)}</td>
+            <td class="name-cell">${escapeHtml(row.shortName)}</td>`;
+                for (let d = 1; d <= daysInMonth; d++) {
+                    const status = row.days[d] || '';
+                    const dow = new Date(currentYear, currentMonth - 1, d).getDay();
+                    const isWE = (dow === 0 || dow === 6);
+                    const isTod = (currentYear === today.getFullYear() &&
+                        currentMonth === today.getMonth() + 1 &&
+                        d === today.getDate());
+                    const cls = `day-cell${isWE ? ' weekend' : ''}${isTod ? ' today-col' : ''}`;
+
+                    let badge = '';
+                    if (status) {
+                        // status – це роль (К, П, Ш, Т або комбінація через /)
+                        badge = `<span class="cell-badge">${status}</span>`;
+                    }
+                    rowHtml += `<td class="${cls}">${badge}</td>`;
+                }
+                rowHtml += `<td class="count-cell">${row.count ?? 0}</td>`;
+                rowHtml += `</tr>`;
+                html += rowHtml;
+            });
+            document.getElementById('tableBody').innerHTML = html;
+        }
+
+        function shiftMonth(delta) {
+            currentMonth += delta;
+            if (currentMonth > 12) { currentMonth = 1; currentYear++; }
+            if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+            loadMonth();
+        }
+
+        document.getElementById('prevBtn').onclick = () => shiftMonth(-1);
+        document.getElementById('nextBtn').onclick = () => shiftMonth(1);
+        document.getElementById('todayBtn').onclick = () => {
+            currentYear = today.getFullYear();
+            currentMonth = today.getMonth() + 1;
+            loadMonth();
+        };
+
+        document.getElementById('applyFilterBtn').onclick = () => {
+            const yearVal = document.getElementById('yearFilter').value;
+            const monthVal = document.getElementById('monthFilter').value;
+            if (monthVal) {
+                const idx = UA_MONTHS.indexOf(monthVal);
+                if (idx !== -1) {
+                    currentYear = parseInt(yearVal) || new Date().getFullYear();
+                    currentMonth = idx + 1;
+                    loadMonth();
+                }
+            } else if (yearVal) {
+                currentYear = parseInt(yearVal);
+                currentMonth = 1;
+                loadMonth();
+            } else {
+                currentYear = today.getFullYear();
+                currentMonth = today.getMonth() + 1;
+                loadMonth();
+            }
+        };
+
+        document.getElementById('exportXlsxBtn').onclick = () => {
+            const yearVal = document.getElementById('yearFilter').value;
+            const monthVal = document.getElementById('monthFilter').value;
+            let url = '/schedule/export?';
+            if (monthVal) {
+                const idx = UA_MONTHS.indexOf(monthVal);
+                if (idx !== -1) {
+                    url += `year=${yearVal || currentYear}&month=${idx + 1}`;
+                }
+            } else if (yearVal) {
+                url += `year=${yearVal}`;
+            } else {
+                url += `year=${currentYear}&month=${currentMonth}`;
+            }
+            window.location.href = url;
+        };
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
+        }
+
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `toast ${type} show`;
+            setTimeout(() => t.classList.remove('show'), 2500);
+        }
+    })();
+</script>
+</body>
+</html>
