@@ -802,12 +802,18 @@
             const yearVal = document.getElementById('yearFilter').value;
             const monthVal = document.getElementById('monthFilter').value;
             let year = parseInt(yearVal) || currentYear;
-            let month = currentMonth;
+
+            let url = `/combat-schedule/api/export?year=${year}`;
             if (monthVal) {
                 const idx = UA_MONTHS.indexOf(monthVal);
-                if (idx !== -1) month = idx + 1;
+                if (idx !== -1) {
+                    url += `&month=${idx + 1}`;
+                }
             }
-            const url = `/combat-schedule/api/export?year=${year}&month=${month}`;
+            // Передаємо параметри сортування (вони вже є у вашому скрипті)
+            url += `&sortCol=${encodeURIComponent(sortCol)}&sortDir=${sortDir}`;
+            url += `&statsSortCol=${encodeURIComponent(statsSortCol)}&statsSortDir=${statsSortDir}`;
+
             window.location.href = url;
         };
 
