@@ -33,7 +33,6 @@ public class CombatScheduleService {
 
         List<Personnel> personnel = personnelRepo.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("В особовому складі");
 
-        // Мапа: день -> (нормалізоване ПІБ -> роль)
         Map<Integer, Map<String, String>> dayRoles = new HashMap<>();
         for (int d = 1; d <= ym.lengthOfMonth(); d++) {
             dayRoles.put(d, new HashMap<>());
@@ -55,7 +54,7 @@ public class CombatScheduleService {
                 int day = date.getDayOfMonth();
                 Map<String, String> currentDayRoles = dayRoles.get(day);
                 for (Map.Entry<String, String> entry : roleMap.entrySet()) {
-                    String key = entry.getKey(); // вже нормалізоване
+                    String key = entry.getKey();
                     String existing = currentDayRoles.get(key);
                     if (existing == null) {
                         currentDayRoles.put(key, entry.getValue());
@@ -66,7 +65,6 @@ public class CombatScheduleService {
             }
         }
 
-        // Формуємо вихідні рядки
         List<Map<String, Object>> rows = new ArrayList<>();
         for (Personnel p : personnel) {
             Map<String, Object> row = new LinkedHashMap<>();
@@ -77,23 +75,48 @@ public class CombatScheduleService {
 
             Map<Integer, String> days = new LinkedHashMap<>();
             String normalizedFullName = normalizeName(p.getFullName());
-            int count = 0;
+            int total = 0;
             for (int d = 1; d <= ym.lengthOfMonth(); d++) {
                 Map<String, String> dayMap = dayRoles.get(d);
                 String role = dayMap != null ? dayMap.getOrDefault(normalizedFullName, "") : "";
                 days.put(d, role);
-                if (!role.isEmpty()) count++;
+                if (!role.isEmpty()) total++;
             }
             row.put("days", days);
-            row.put("count", count);
+            row.put("total", total);
             rows.add(row);
         }
         return rows;
     }
 
-    /**
-     * Додає роль у мапу, попередньо очистивши ім'я від звання та нормалізувавши.
-     */
+    public List<Map<String, Object>> getStats(int year, int month) {
+        List<Map<String, Object>> monthData = getMonthData(year, month);
+        List<Map<String, Object>> stats = new ArrayList<>();
+        for (Map<String, Object> row : monthData) {
+            Map<String, Object> statRow = new LinkedHashMap<>();
+            statRow.put("id", row.get("id"));
+            statRow.put("shortName", row.get("shortName"));
+            statRow.put("rank", row.get("rank"));
+            statRow.put("personnelNumber", row.get("personnelNumber"));
+
+            Map<Integer, String> days = (Map<Integer, String>) row.get("days");
+            int countK = 0, countP = 0, countSh = 0, countT = 0;
+            for (String role : days.values()) {
+                if (role.contains("К")) countK++;
+                if (role.contains("П")) countP++;
+                if (role.contains("Ш")) countSh++;
+                if (role.contains("Т")) countT++;
+            }
+            statRow.put("countK", countK);
+            statRow.put("countP", countP);
+            statRow.put("countSh", countSh);
+            statRow.put("countT", countT);
+            statRow.put("total", countK + countP + countSh + countT);
+            stats.add(statRow);
+        }
+        return stats;
+    }
+
     private void addRole(Map<String, String> roleMap, String fullNameWithRank, String role) {
         if (fullNameWithRank == null || fullNameWithRank.trim().isEmpty()) return;
         String normalized = normalizeName(fullNameWithRank);
@@ -102,9 +125,6 @@ public class CombatScheduleService {
         }
     }
 
-    /**
-     * Видаляє з рядка поширені військові звання.
-     */
     private String extractNameWithoutRank(String fullNameWithRank) {
         String[] ranks = {
                 "солдат", "старший солдат", "молодший сержант", "сержант", "старший сержант",
@@ -124,9 +144,6 @@ public class CombatScheduleService {
         return trimmed;
     }
 
-    /**
-     * Нормалізує ПІБ: видаляє звання, зайві пробіли, приводить до нижнього регістру.
-     */
     private String normalizeName(String name) {
         if (name == null) return null;
         String withoutRank = extractNameWithoutRank(name);
