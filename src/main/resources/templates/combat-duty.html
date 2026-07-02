@@ -267,6 +267,7 @@
                 width: 100% !important;
                 border-collapse: collapse;
                 font-size: 8px !important;
+                table-layout: fixed !important;
             }
             thead {
                 background: #1a237e !important;
@@ -279,19 +280,25 @@
                 color: white !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
-                padding: 4px 4px !important;
-                font-size: 8px !important;
+                padding: 4px 2px !important;
+                font-size: 7px !important;
                 border: 1px solid #1a237e !important;
                 text-align: center !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
             }
             td {
                 color: black !important;
                 border: 1px solid #ddd !important;
-                font-size: 7px !important;
-                padding: 3px 3px !important;
-                line-height: 1.3 !important;
+                font-size: 6.5px !important;
+                padding: 3px 2px !important;
+                line-height: 1.2 !important;
                 background: white !important;
                 text-align: center !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
             }
             td.text-left {
                 text-align: left !important;
@@ -303,12 +310,65 @@
                 -webkit-line-clamp: unset !important;
                 display: table-cell !important;
                 white-space: normal !important;
-                word-break: normal !important;
+                word-break: break-word !important;
+                text-overflow: clip !important;
             }
-            td:last-child,
-            th:last-child {
+
+            /* ===== ЗВУЖЕННЯ КОЛОНОК ДЛЯ ДРУКУ ===== */
+            /* ID */
+            table th:nth-child(1), table td:nth-child(1) {
+                min-width: 20px !important;
+                width: 20px !important;
+                max-width: 20px !important;
+            }
+            /* Початок */
+            table th:nth-child(2), table td:nth-child(2) {
+                min-width: 55px !important;
+                width: 55px !important;
+                max-width: 55px !important;
+            }
+            /* Кінець */
+            table th:nth-child(3), table td:nth-child(3) {
+                min-width: 55px !important;
+                width: 55px !important;
+                max-width: 55px !important;
+            }
+            /* Вильотів */
+            table th:nth-child(12), table td:nth-child(12) {
+                min-width: 25px !important;
+                width: 25px !important;
+                max-width: 25px !important;
+            }
+            /* Бойових */
+            table th:nth-child(13), table td:nth-child(13) {
+                min-width: 25px !important;
+                width: 25px !important;
+                max-width: 25px !important;
+            }
+            /* Втрат */
+            table th:nth-child(14), table td:nth-child(14) {
+                min-width: 25px !important;
+                width: 25px !important;
+                max-width: 25px !important;
+            }
+            /* Знищень */
+            table th:nth-child(15), table td:nth-child(15) {
+                min-width: 25px !important;
+                width: 25px !important;
+                max-width: 25px !important;
+            }
+            /* НТП */
+            table th:nth-child(16), table td:nth-child(16) {
+                min-width: 25px !important;
+                width: 25px !important;
+                max-width: 25px !important;
+            }
+
+            /* Остання колонка "Дії" - ховаємо */
+            table th:nth-child(17), table td:nth-child(17) {
                 display: none !important;
             }
+
             tr {
                 page-break-inside: avoid;
             }
