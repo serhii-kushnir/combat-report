@@ -1342,19 +1342,21 @@
                 }
             };
 
-            document.getElementById('exportXlsxBtn').addEventListener('click', () => {
+            document.getElementById('exportXlsxBtn').addEventListener('click', function() {
                 const yearVal = document.getElementById('yearFilter').value;
                 const monthVal = document.getElementById('monthFilter').value;
-                let url = '/schedule/export?';
+                let year = parseInt(yearVal) || currentYear;
+
+                let url = `/schedule/export?year=${year}`;
                 if (monthVal) {
-                    const monthIndex = UA_MONTHS.findIndex(m => m === monthVal);
-                    if (monthIndex !== -1) {
-                        url += `year=${yearVal || currentYear}&month=${monthIndex + 1}`;
+                    const idx = UA_MONTHS.indexOf(monthVal);
+                    if (idx !== -1) {
+                        url += `&month=${idx + 1}`;
                     }
-                } else if (yearVal) {
-                    url += `year=${yearVal}`;
-                } else {
-                    url += `year=${currentYear}&month=${currentMonth}`;
+                }
+                // Якщо є сортування на сторінці – передаємо
+                if (typeof sortCol !== 'undefined' && sortCol) {
+                    url += `&sortCol=${encodeURIComponent(sortCol)}&sortDir=${sortDir}`;
                 }
                 window.location.href = url;
             });
