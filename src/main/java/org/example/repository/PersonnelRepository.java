@@ -9,6 +9,8 @@ import java.util.List;
 @Repository
 public interface PersonnelRepository extends JpaRepository<Personnel, Long> {
 
+    boolean existsByPersonnelNumber(Integer personnelNumber);
+
     // Основний список (активні + статус "В особовому складі")
     List<Personnel> findByActiveTrueAndPersonnelStatusOrderByLastNameAsc(String personnelStatus);
 

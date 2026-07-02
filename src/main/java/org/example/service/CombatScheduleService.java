@@ -4,15 +4,20 @@ import org.example.entity.CombatDuty;
 import org.example.entity.Personnel;
 import org.example.repository.CombatDutyRepository;
 import org.example.repository.PersonnelRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class CombatScheduleService {
+
+    private static final Logger log = LoggerFactory.getLogger(CombatScheduleService.class);
 
     private final CombatDutyRepository dutyRepo;
     private final PersonnelRepository personnelRepo;
@@ -28,14 +33,19 @@ public class CombatScheduleService {
      * а в полі "days" – мапа день → роль ("К", "П", "Ш", "Т" або порожньо).
      */
     public List<Map<String, Object>> getMonthData(int year, int month) {
+        log.info("getMonthData: year={}, month={}", year, month);
+
         YearMonth ym = YearMonth.of(year, month);
         LocalDate from = ym.atDay(1);
         LocalDate to = ym.atEndOfMonth();
 
-        // Всі чергування, що перетинаються з вибраним місяцем (для фільтрації)
-        List<CombatDuty> duties = dutyRepo.findAll().stream()
-                .filter(d -> !d.getStartTime().toLocalDate().isAfter(to) && !d.getEndTime().toLocalDate().isBefore(from))
-                .collect(Collectors.toList());
+        // Перетворюємо на LocalDateTime для коректного порівняння
+        LocalDateTime fromDateTime = from.atStartOfDay();
+        LocalDateTime toDateTime = to.atTime(23, 59, 59);
+
+        // ===== ОПТИМІЗОВАНИЙ ЗАПИТ =====
+        // Замість dutyRepo.findAll() використовуємо новий метод
+        List<CombatDuty> duties = dutyRepo.findOverlapping(fromDateTime, toDateTime);
 
         // Всі активні особи
         List<Personnel> personnel = personnelRepo.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("В особовому складі");
@@ -49,7 +59,6 @@ public class CombatScheduleService {
         for (CombatDuty duty : duties) {
             LocalDate startDate = duty.getStartTime().toLocalDate();
 
-            // === ВИПРАВЛЕННЯ: показуємо ТІЛЬКИ В ДЕНЬ ПОЧАТКУ ===
             // Якщо дата початку не належить до вибраного місяця – пропускаємо
             if (startDate.isBefore(from) || startDate.isAfter(to)) {
                 continue;
@@ -173,18 +182,12 @@ public class CombatScheduleService {
         return withoutRank.trim().toLowerCase().replaceAll("\\s+", " ");
     }
 
-    // ===== НОВІ МЕТОДИ ДЛЯ ФІЛЬТРІВ =====
+    // ===== МЕТОДИ ДЛЯ ФІЛЬТРІВ =====
 
-    /**
-     * Повертає список унікальних років із таблиці combat_duty.
-     */
     public List<Integer> getYears() {
         return dutyRepo.findDistinctYears();
     }
 
-    /**
-     * Повертає список назв місяців, для яких є записи в таблиці combat_duty.
-     */
     public List<String> getMonths() {
         List<Integer> monthNumbers = dutyRepo.findDistinctMonths();
         String[] monthNames = {"Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",

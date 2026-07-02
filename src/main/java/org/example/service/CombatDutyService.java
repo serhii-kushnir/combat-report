@@ -22,10 +22,6 @@ public class CombatDutyService {
         return dutyRepo.findAll();
     }
 
-    public boolean hasOverlap(CombatDuty duty, Long excludeId) {
-        return dutyRepo.existsOverlap(duty.getStartTime(), duty.getEndTime(), excludeId);
-    }
-
     @Transactional(readOnly = true)
     public Optional<CombatDuty> getById(Long id) {
         return dutyRepo.findById(id);
@@ -39,5 +35,16 @@ public class CombatDutyService {
     @Transactional
     public void delete(Long id) {
         dutyRepo.deleteById(id);
+    }
+
+    // ===== НОВИЙ МЕТОД ДЛЯ ПЕРЕВІРКИ ПЕРЕТИНУ =====
+    /**
+     * Перевіряє, чи нове чергування перетинається з існуючими.
+     * @param duty нове чергування
+     * @param excludeId ID чергування, яке потрібно виключити (при оновленні)
+     * @return true, якщо є перетин
+     */
+    public boolean hasOverlap(CombatDuty duty, Long excludeId) {
+        return dutyRepo.existsOverlap(duty.getStartTime(), duty.getEndTime(), excludeId);
     }
 }

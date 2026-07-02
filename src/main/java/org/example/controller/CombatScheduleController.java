@@ -3,6 +3,8 @@ package org.example.controller;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.example.service.CombatScheduleService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,8 @@ import java.util.Map;
 @RequestMapping("/combat-schedule")
 public class CombatScheduleController {
 
+    private static final Logger log = LoggerFactory.getLogger(CombatScheduleController.class);
+
     private final CombatScheduleService service;
 
     public CombatScheduleController(CombatScheduleService service) {
@@ -43,6 +47,7 @@ public class CombatScheduleController {
             List<Map<String, Object>> data = service.getMonthData(year, month);
             return ResponseEntity.ok(data);
         } catch (Exception e) {
+            log.error("Помилка отримання даних графіка: year={}, month={}", year, month, e);
             return ResponseEntity.badRequest().body("Помилка: " + e.getMessage());
         }
     }
@@ -54,6 +59,7 @@ public class CombatScheduleController {
             List<Map<String, Object>> data = service.getStats(year, month);
             return ResponseEntity.ok(data);
         } catch (Exception e) {
+            log.error("Помилка отримання статистики: year={}, month={}", year, month, e);
             return ResponseEntity.badRequest().body("Помилка: " + e.getMessage());
         }
     }
@@ -105,7 +111,7 @@ public class CombatScheduleController {
                         .body(data);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Помилка експорту XLSX", e);
             return ResponseEntity.internalServerError().build();
         }
     }

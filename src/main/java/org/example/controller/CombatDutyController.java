@@ -102,7 +102,6 @@ public class CombatDutyController {
     @ResponseBody
     public ResponseEntity<?> create(@RequestBody CombatDuty duty) {
         try {
-            // Перевірка дат
             if (duty.getStartTime() == null || duty.getEndTime() == null) {
                 return ResponseEntity.badRequest().body("Необхідно вказати час початку та кінця");
             }
@@ -110,7 +109,7 @@ public class CombatDutyController {
                 return ResponseEntity.badRequest().body("Дата початку не може бути пізніше дати кінця");
             }
 
-            // Перевірка на перетин з існуючими чергуваннями
+            // Використовуємо новий метод
             if (service.hasOverlap(duty, null)) {
                 return ResponseEntity.badRequest().body("Цей період уже зайнятий іншим чергуванням");
             }
@@ -122,12 +121,10 @@ public class CombatDutyController {
         }
     }
 
-    // ===== ОНОВЛЕННЯ (з перевіркою на перетин, виключаючи саме себе) =====
     @PutMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody CombatDuty duty) {
         try {
-            // Перевірка дат
             if (duty.getStartTime() == null || duty.getEndTime() == null) {
                 return ResponseEntity.badRequest().body("Необхідно вказати час початку та кінця");
             }
@@ -135,7 +132,7 @@ public class CombatDutyController {
                 return ResponseEntity.badRequest().body("Дата початку не може бути пізніше дати кінця");
             }
 
-            // Перевірка на перетин (виключаємо поточне чергування за id)
+            // Використовуємо новий метод з excludeId
             if (service.hasOverlap(duty, id)) {
                 return ResponseEntity.badRequest().body("Цей період уже зайнятий іншим чергуванням");
             }
