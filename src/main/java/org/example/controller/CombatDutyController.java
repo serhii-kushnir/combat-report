@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -30,37 +33,66 @@ public class CombatDutyController {
 
     @GetMapping
     public String list(Model model) {
-        model.addAttribute("duties", service.getAll());
         return "combat-duty";
     }
 
-    // ===== API =====
-
+    // ===== API (з фільтрацією) =====
     @GetMapping("/api")
     @ResponseBody
-    public List<CombatDuty> getAllApi(@RequestParam(required = false) String q) {
+    public List<CombatDuty> getAllApi(
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month) {
         List<CombatDuty> all = service.getAll();
-        if (q != null && !q.isEmpty()) {
-            String filter = q.toLowerCase();
+        if (year != null || month != null) {
             return all.stream()
-                    .filter(d ->
-                            (d.getCommander() != null && d.getCommander().toLowerCase().contains(filter)) ||
-                            (d.getPilot() != null && d.getPilot().toLowerCase().contains(filter)) ||
-                            (d.getNavigator() != null && d.getNavigator().toLowerCase().contains(filter)) ||
-                            (d.getTechnician() != null && d.getTechnician().toLowerCase().contains(filter)) ||
-                            (d.getUnitName() != null && d.getUnitName().toLowerCase().contains(filter)) ||
-                            (d.getWeapons() != null && d.getWeapons().toLowerCase().contains(filter)) ||
-                            (d.getDutyOfficer() != null && d.getDutyOfficer().toLowerCase().contains(filter)) ||
-                            (d.getReportSummary() != null && d.getReportSummary().toLowerCase().contains(filter))
-                    )
+                    .filter(d -> {
+                        LocalDate start = d.getStartTime().toLocalDate();
+                        boolean match = true;
+                        if (year != null) match = match && start.getYear() == year;
+                        if (month != null) match = match && start.getMonthValue() == month;
+                        return match;
+                    })
                     .collect(Collectors.toList());
         }
         return all;
     }
 
+    @GetMapping("/api/years")
+    @ResponseBody
+    public List<Integer> getYears() {
+        return service.getAll().stream()
+                .map(d -> d.getStartTime().toLocalDate().getYear())
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/api/months")
+    @ResponseBody
+    public List<String> getMonths() {
+        // Повертаємо всі місяці, для яких є записи
+        return service.getAll().stream()
+                .map(d -> {
+                    int m = d.getStartTime().toLocalDate().getMonthValue();
+                    String[] monthNames = {"Січень","Лютий","Березень","Квітень","Травень","Червень",
+                            "Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"};
+                    return monthNames[m-1];
+                })
+                .distinct()
+                .sorted((a,b) -> {
+                    String[] names = {"Січень","Лютий","Березень","Квітень","Травень","Червень",
+                            "Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"};
+                    return Integer.compare(
+                            java.util.Arrays.asList(names).indexOf(a),
+                            java.util.Arrays.asList(names).indexOf(b)
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
     @GetMapping("/api/{id}")
     @ResponseBody
-    public ResponseEntity<CombatDuty> getOneApi(@PathVariable Long id) {
+    public ResponseEntity<CombatDuty> getOne(@PathVariable Long id) {
         return service.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -101,13 +133,17 @@ public class CombatDutyController {
     }
 
     // ===== ЕКСПОРТ XLSX =====
-
     @GetMapping("/api/export")
-    public ResponseEntity<byte[]> exportXlsx(@RequestParam(required = false) String q) {
+    public ResponseEntity<byte[]> exportXlsx(
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month) {
         try {
-            List<CombatDuty> list = getAllApi(q);
-            byte[] data = exportToXlsx(list);
-            String filename = URLEncoder.encode("Бойове_чергування.xlsx", StandardCharsets.UTF_8).replace("+", "%20");
+            List<CombatDuty> duties = getAllApi(year, month);
+            byte[] data = exportToXlsx(duties);
+            String filename = URLEncoder.encode("Бойове_чергування" +
+                    (year != null ? "_" + year : "") +
+                    (month != null ? "_" + month : "") +
+                    ".xlsx", StandardCharsets.UTF_8).replace("+", "%20");
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION,
                             "attachment; filename=\"" + filename + "\"; filename*=UTF-8''" + filename)
@@ -124,45 +160,19 @@ public class CombatDutyController {
         try (XSSFWorkbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = wb.createSheet("Чергування");
 
-            // Висота рядків за замовчуванням (30 pt)
-            sheet.setDefaultRowHeightInPoints(30);
+            CellStyle headerStyle = createHeaderStyle(wb);
+            CellStyle centerStyle = createCenterStyle(wb);
+            CellStyle leftStyle = createLeftStyle(wb);
 
-            // Стиль заголовка
-            CellStyle headerStyle = wb.createCellStyle();
-            Font font = wb.createFont();
-            font.setBold(true);
-            font.setColor(IndexedColors.WHITE.getIndex());
-            headerStyle.setFont(font);
-            headerStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
-            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            headerStyle.setAlignment(HorizontalAlignment.CENTER);
-            headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-
-            // Стиль для даних (центр)
-            CellStyle centerDataStyle = wb.createCellStyle();
-            centerDataStyle.setAlignment(HorizontalAlignment.CENTER);
-            centerDataStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-            centerDataStyle.setWrapText(true);
-
-            // Стиль для даних (лівий край)
-            CellStyle leftDataStyle = wb.createCellStyle();
-            leftDataStyle.setAlignment(HorizontalAlignment.LEFT);
-            leftDataStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-            leftDataStyle.setWrapText(true);
-
-            // Заголовки та ширини колонок
             String[] headers = {
                     "ID", "Початок", "Кінець", "Екіпаж", "Командир", "Пілот", "Штурман", "Технік",
                     "Озброєння", "Черговий ПУ", "Доповідь", "Вильотів", "Бойових", "Втрат", "Знищень", "НТП"
             };
-            int[] widths = {
-                    8, 16, 16, 12, 25, 22, 22, 22, 18, 20, 80, 10, 10, 10, 10, 10
-            };
-
             Row headerRow = sheet.createRow(0);
-            headerRow.setHeightInPoints(30);
+            headerRow.setHeightInPoints(25);
             for (int i = 0; i < headers.length; i++) {
-                sheet.setColumnWidth(i, widths[i] * 256);
+                // Попередньо встановлюємо ширину (потім перерахуємо)
+                sheet.setColumnWidth(i, (headers[i].length() + 6) * 256);
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
                 cell.setCellStyle(headerStyle);
@@ -171,25 +181,37 @@ public class CombatDutyController {
             int rowNum = 1;
             for (CombatDuty d : list) {
                 Row row = sheet.createRow(rowNum++);
-                row.setHeightInPoints(30);
+                row.setHeightInPoints(20);
                 int col = 0;
+                createCell(row, col++, d.getId(), centerStyle);
+                createCell(row, col++, d.getStartTime() != null ? d.getStartTime().format(fmt) : "", centerStyle);
+                createCell(row, col++, d.getEndTime() != null ? d.getEndTime().format(fmt) : "", centerStyle);
+                createCell(row, col++, d.getUnitName(), centerStyle);
+                createCell(row, col++, d.getCommander(), leftStyle);
+                createCell(row, col++, d.getPilot(), leftStyle);
+                createCell(row, col++, d.getNavigator(), leftStyle);
+                createCell(row, col++, d.getTechnician(), leftStyle);
+                createCell(row, col++, d.getWeapons(), centerStyle);
+                createCell(row, col++, d.getDutyOfficer(), centerStyle);
+                createCell(row, col++, d.getReportSummary(), leftStyle);
+                createCell(row, col++, d.getTotalSorties() != null ? d.getTotalSorties() : 0, centerStyle);
+                createCell(row, col++, d.getCombatSorties() != null ? d.getCombatSorties() : 0, centerStyle);
+                createCell(row, col++, d.getLosses() != null ? d.getLosses() : 0, centerStyle);
+                createCell(row, col++, d.getDestructions() != null ? d.getDestructions() : 0, centerStyle);
+                createCell(row, col++, d.getNtp() != null ? d.getNtp() : 0, centerStyle);
+            }
 
-                setCell(row, col++, d.getId(), centerDataStyle);
-                setCell(row, col++, d.getStartTime() != null ? d.getStartTime().format(fmt) : "", centerDataStyle);
-                setCell(row, col++, d.getEndTime() != null ? d.getEndTime().format(fmt) : "", centerDataStyle);
-                setCell(row, col++, d.getUnitName(), centerDataStyle);
-                setCell(row, col++, d.getCommander(), leftDataStyle);
-                setCell(row, col++, d.getPilot(), leftDataStyle);
-                setCell(row, col++, d.getNavigator(), leftDataStyle);
-                setCell(row, col++, d.getTechnician(), leftDataStyle);
-                setCell(row, col++, d.getWeapons(), centerDataStyle);
-                setCell(row, col++, d.getDutyOfficer(), centerDataStyle);
-                setCell(row, col++, d.getReportSummary(), leftDataStyle);
-                setCell(row, col++, d.getTotalSorties() != null ? d.getTotalSorties() : 0, centerDataStyle);
-                setCell(row, col++, d.getCombatSorties() != null ? d.getCombatSorties() : 0, centerDataStyle);
-                setCell(row, col++, d.getLosses() != null ? d.getLosses() : 0, centerDataStyle);
-                setCell(row, col++, d.getDestructions() != null ? d.getDestructions() : 0, centerDataStyle);
-                setCell(row, col++, d.getNtp() != null ? d.getNtp() : 0, centerDataStyle);
+            // Автоматичне підігнання ширини для всіх колонок, крім "Доповідь"
+            for (int i = 0; i < headers.length; i++) {
+                if (i == 10) {
+                    // Колонка "Доповідь" – ширша (80 символів)
+                    sheet.setColumnWidth(i, 80 * 256);
+                } else {
+                    sheet.autoSizeColumn(i);
+                    // Додаємо невеликий запас, щоб текст не прилипав до краю
+                    int currentWidth = sheet.getColumnWidth(i);
+                    sheet.setColumnWidth(i, currentWidth + 512);
+                }
             }
 
             wb.write(out);
@@ -197,7 +219,7 @@ public class CombatDutyController {
         }
     }
 
-    private void setCell(Row row, int col, Object value, CellStyle style) {
+    private void createCell(Row row, int col, Object value, CellStyle style) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(style);
         if (value == null) return;
@@ -208,6 +230,40 @@ public class CombatDutyController {
         }
     }
 
+    private CellStyle createHeaderStyle(Workbook wb) {
+        CellStyle s = wb.createCellStyle();
+        Font f = wb.createFont();
+        f.setBold(true);
+        f.setColor(IndexedColors.WHITE.getIndex());
+        s.setFont(f);
+        s.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+        s.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        s.setAlignment(HorizontalAlignment.CENTER);
+        s.setVerticalAlignment(VerticalAlignment.CENTER);
+        setBorders(s);
+        return s;
+    }
 
+    private CellStyle createCenterStyle(Workbook wb) {
+        CellStyle s = wb.createCellStyle();
+        s.setAlignment(HorizontalAlignment.CENTER);
+        s.setVerticalAlignment(VerticalAlignment.CENTER);
+        setBorders(s);
+        return s;
+    }
 
+    private CellStyle createLeftStyle(Workbook wb) {
+        CellStyle s = wb.createCellStyle();
+        s.setAlignment(HorizontalAlignment.LEFT);
+        s.setVerticalAlignment(VerticalAlignment.CENTER);
+        setBorders(s);
+        return s;
+    }
+
+    private void setBorders(CellStyle s) {
+        s.setBorderBottom(BorderStyle.THIN);
+        s.setBorderTop(BorderStyle.THIN);
+        s.setBorderLeft(BorderStyle.THIN);
+        s.setBorderRight(BorderStyle.THIN);
+    }
 }
