@@ -101,6 +101,17 @@
                     </excludes>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>10.10.0</version>
+                <configuration>
+                    <url>jdbc:h2:file:./data/combat-db</url>
+                    <user>sa</user>
+                    <password>skopa9099</password>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
