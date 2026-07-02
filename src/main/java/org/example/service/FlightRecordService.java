@@ -132,7 +132,7 @@ public class FlightRecordService {
             XSSFCellStyle greenLeftStyle = createGreenStyle(wb);
             greenLeftStyle.setAlignment(HorizontalAlignment.LEFT);
 
-            // Оновлені заголовки – без "Тип" та "Ідентифікація"
+            // Заголовки відповідають порядку
             String[] HEADERS = {
                     "№", "Дата", "Екіпаж", "Подія", "Час взльоту", "Час втрати",
                     "Координати", "Азимут (°)", "Відстань (м)", "Вис. польоту (м)",
@@ -148,6 +148,9 @@ public class FlightRecordService {
                     22, 50
             };
 
+            DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("HH:mm");
+            DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
             for (Map.Entry<String, List<FlightRecord>> entry : byMonth.entrySet()) {
                 XSSFSheet sheet = wb.createSheet(entry.getKey());
 
@@ -155,6 +158,7 @@ public class FlightRecordService {
                     sheet.setColumnWidth(c, COL_WIDTHS[c] * 256);
                 }
 
+                // Заголовок
                 XSSFRow hRow = sheet.createRow(0);
                 hRow.setHeightInPoints(30);
                 for (int c = 0; c < HEADERS.length; c++) {
@@ -164,9 +168,6 @@ public class FlightRecordService {
                 }
 
                 int rowIdx = 1;
-                DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("HH:mm");
-                DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
                 for (FlightRecord r : entry.getValue()) {
                     XSSFRow row = sheet.createRow(rowIdx++);
                     row.setHeightInPoints(40);
@@ -179,23 +180,63 @@ public class FlightRecordService {
                     XSSFCellStyle lft = isDestroyed ? greenLeftStyle : leftStyle;
 
                     int col = 0;
+
+                    // 1. №
                     setCell(row, col++, r.getRecordNumber(), ctr);
-                    setCell(row, col++, r.getFlightDate() != null ? r.getFlightDate().format(dateFmt) : "", ctr);
+
+                    // 2. Дата
+                    String dateStr = r.getFlightDate() != null ? r.getFlightDate().format(dateFmt) : "";
+                    setCell(row, col++, dateStr, ctr);
+
+                    // 3. Екіпаж
                     setCell(row, col++, r.getCrew(), ctr);
+
+                    // 4. Подія
                     setCell(row, col++, r.getEvent(), ctr);
-                    setCell(row, col++, r.getTakeoffTime() != null ? r.getTakeoffTime().format(timeFmt) : "", ctr);
-                    setCell(row, col++, r.getLossTime() != null ? r.getLossTime().format(timeFmt) : "", ctr);
+
+                    // 5. Час взльоту
+                    String takeoffStr = r.getTakeoffTime() != null ? r.getTakeoffTime().format(timeFmt) : "";
+                    setCell(row, col++, takeoffStr, ctr);
+
+                    // 6. Час втрати
+                    String lossStr = r.getLossTime() != null ? r.getLossTime().format(timeFmt) : "";
+                    setCell(row, col++, lossStr, ctr);
+
+                    // 7. Координати
                     setCell(row, col++, r.getCoordinates(), ctr);
-                    setCell(row, col++, r.getAzimuth() != null ? r.getAzimuth() + "°" : "", ctr);
+
+                    // 8. Азимут
+                    String azimuthStr = r.getAzimuth() != null ? r.getAzimuth() + "°" : "";
+                    setCell(row, col++, azimuthStr, ctr);
+
+                    // 9. Відстань
                     setCell(row, col++, r.getDistance(), ctr);
+
+                    // 10. Висота польоту
                     setCell(row, col++, r.getAltitude(), ctr);
+
+                    // 11. Засіб ураження
                     setCell(row, col++, r.getWeapon(), lft);
+
+                    // 12. Вибухівка
                     setCell(row, col++, r.getExplosive(), lft);
+
+                    // 13. Детонатор
                     setCell(row, col++, r.getDetonator(), lft);
+
+                    // 14. Висота цілі
                     setCell(row, col++, r.getTargetAltitude(), ctr);
+
+                    // 15. Ціль
                     setCell(row, col++, r.getTarget(), ctr);
+
+                    // 16. Швидкість цілі
                     setCell(row, col++, r.getTargetSpeed(), ctr);
+
+                    // 17. Причина втрати
                     setCell(row, col++, r.getLossReason(), lft);
+
+                    // 18. Примітка
                     setCell(row, col++, r.getNote(), lft);
                 }
             }
