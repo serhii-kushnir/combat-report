@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Журнал БпАК</title>
     <link rel="icon" type="image/png" href="/favicon.png">
+    <link th:replace="~{fragments :: sidebar-css}">
     <style>
         /* ===== CSS ЗМІННІ ===== */
         :root {
@@ -40,14 +41,15 @@
             --stat-num-hits: #2e7d32;
             --stat-num-loss: #d32f2f;
             --topbar-color: #1a237e;
-            --btn-primary-bg: #1976d2;
-            --btn-primary-hover: #1565c0;
-            --btn-success-bg: #388e3c;
-            --btn-success-hover: #2e7d32;
-            --btn-warning-bg: #f57c00;
-            --btn-warning-hover: #e65100;
-            --btn-danger-bg: #d32f2f;
+            --btn-primary-bg: #1565c0;
+            --btn-primary-hover: #0d47a1;
+            --btn-success-bg: #2e7d32;
+            --btn-success-hover: #1b5e20;
+            --btn-warning-bg: #e65100;
+            --btn-warning-hover: #bf360c;
+            --btn-danger-bg: #c62828;
             --btn-danger-hover: #b71c1c;
+            --shadow-light: rgba(0,0,0,0.05);
         }
 
         /* Темна тема */
@@ -83,14 +85,15 @@
             --stat-num-hits: #81c784;
             --stat-num-loss: #ef9a9a;
             --topbar-color: #90caf9;
-            --btn-primary-bg: #4a7ab5;
-            --btn-primary-hover: #5a8ac5;
-            --btn-success-bg: #3a6a3a;
-            --btn-success-hover: #4a7a4a;
-            --btn-warning-bg: #b87a2a;
-            --btn-warning-hover: #c88a3a;
-            --btn-danger-bg: #a03040;
-            --btn-danger-hover: #b04050;
+            --btn-primary-bg: #2a4a7a;
+            --btn-primary-hover: #3a5a8a;
+            --btn-success-bg: #2a4a2a;
+            --btn-success-hover: #3a5a3a;
+            --btn-warning-bg: #7a5a2a;
+            --btn-warning-hover: #8a6a3a;
+            --btn-danger-bg: #6a2a3a;
+            --btn-danger-hover: #7a3a4a;
+            --shadow-light: rgba(0,0,0,0.3);
         }
 
         /* ===== ОСНОВНІ СТИЛІ ===== */
@@ -125,36 +128,77 @@
             box-shadow: 0 1px 4px var(--shadow-color);
             transition: background 0.3s, box-shadow 0.3s;
         }
+
+        /* ===== СТИЛІ КНОПОК З АНІМАЦІЄЮ ===== */
         .btn {
-            padding: 7px 14px;
+            padding: 6px 14px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px var(--shadow-light);
         }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+        .btn:active {
+            transform: translateY(1px);
+        }
+
         .btn-primary {
             background: var(--btn-primary-bg);
             color: var(--text-white);
         }
-        .btn-primary:hover { background: var(--btn-primary-hover); }
+        .btn-primary:hover {
+            background: var(--btn-primary-hover);
+        }
+
         .btn-success {
             background: var(--btn-success-bg);
             color: var(--text-white);
         }
-        .btn-success:hover { background: var(--btn-success-hover); }
+        .btn-success:hover {
+            background: var(--btn-success-hover);
+        }
+
         .btn-warning {
             background: var(--btn-warning-bg);
             color: var(--text-white);
         }
-        .btn-warning:hover { background: var(--btn-warning-hover); }
+        .btn-warning:hover {
+            background: var(--btn-warning-hover);
+        }
+
         .btn-danger {
             background: var(--btn-danger-bg);
             color: var(--text-white);
         }
-        .btn-danger:hover { background: var(--btn-danger-hover); }
-        .btn-sm { padding: 4px 9px; font-size: 11px; }
+        .btn-danger:hover {
+            background: var(--btn-danger-hover);
+        }
+
+        .btn-sm {
+            padding: 4px 9px;
+            font-size: 11px;
+        }
+
+        .btn-print {
+            background: #607d8b;
+            color: white;
+        }
+        .btn-print:hover {
+            background: #546e7a;
+        }
+        .dark-theme .btn-print {
+            background: #4a5a6a;
+            color: white;
+        }
+        .dark-theme .btn-print:hover {
+            background: #5a6a7a;
+        }
 
         /* ===== ПОЛЯ ВВОДУ ===== */
         select, input[type=text], input[type=number], input[type=date], input[type=time] {
@@ -202,8 +246,12 @@
             color: var(--text-secondary);
             transition: color 0.3s;
         }
-        .stat-card .num.hits { color: var(--stat-num-hits); }
-        .stat-card .num.loss { color: var(--stat-num-loss); }
+        .stat-card .num.hits {
+            color: var(--stat-num-hits);
+        }
+        .stat-card .num.loss {
+            color: var(--stat-num-loss);
+        }
 
         /* ===== ТАБЛИЦЯ ===== */
         .table-wrap {
@@ -228,14 +276,22 @@
             padding: 9px 8px;
             font-size: 12px;
             font-weight: 600;
-            text-align: left;
+            text-align: center;
             white-space: nowrap;
             cursor: pointer;
             user-select: none;
         }
-        th:hover { background: var(--bg-hover); }
-        th.sort-asc::after { content: ' ▲'; font-size: 10px; }
-        th.sort-desc::after { content: ' ▼'; font-size: 10px; }
+        th:hover {
+            background: var(--bg-hover);
+        }
+        th.sort-asc::after {
+            content: ' ▲';
+            font-size: 10px;
+        }
+        th.sort-desc::after {
+            content: ' ▼';
+            font-size: 10px;
+        }
 
         td {
             padding: 7px 8px;
@@ -245,8 +301,12 @@
             vertical-align: top;
             transition: border-color 0.3s, color 0.3s;
         }
-        tr:hover td { background: var(--bg-hover); }
-        .actions-col { white-space: nowrap; }
+        tr:hover td {
+            background: var(--bg-hover);
+        }
+        .actions-col {
+            white-space: nowrap;
+        }
 
         .badge-success {
             background: var(--bg-badge-success);
@@ -286,7 +346,9 @@
             justify-content: center;
             transition: background 0.3s;
         }
-        .modal-overlay.open { display: flex; }
+        .modal-overlay.open {
+            display: flex;
+        }
         .modal {
             background: var(--bg-card);
             border-radius: 10px;
@@ -314,14 +376,18 @@
             flex-direction: column;
             gap: 4px;
         }
-        .form-group.full { grid-column: 1 / -1; }
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
         label {
             font-size: 12px;
             font-weight: 600;
             color: var(--text-secondary);
             transition: color 0.3s;
         }
-        .form-group input, .form-group select, .form-group textarea {
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             padding: 7px 9px;
             border: 1px solid var(--border-color);
             border-radius: 5px;
@@ -331,7 +397,10 @@
             color: var(--text-primary);
             transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
-        .form-group textarea { height: 80px; resize: vertical; }
+        .form-group textarea {
+            height: 80px;
+            resize: vertical;
+        }
         .modal-actions {
             display: flex;
             gap: 10px;
@@ -349,7 +418,9 @@
             justify-content: center;
             transition: background 0.3s;
         }
-        .confirm-overlay.open { display: flex; }
+        .confirm-overlay.open {
+            display: flex;
+        }
         .confirm-box {
             background: var(--bg-confirm);
             border-radius: 10px;
@@ -381,9 +452,15 @@
             transition: opacity 0.3s;
             z-index: 9999;
         }
-        .toast.show { opacity: 1; }
-        .toast.ok { background: var(--toast-success); }
-        .toast.err { background: var(--toast-error); }
+        .toast.show {
+            opacity: 1;
+        }
+        .toast.ok {
+            background: var(--toast-success);
+        }
+        .toast.err {
+            background: var(--toast-error);
+        }
 
         .empty-state {
             text-align: center;
@@ -407,15 +484,16 @@
             -webkit-line-clamp: unset;
             display: block;
         }
-        .note-cell:hover { color: var(--btn-primary-bg); }
+        .note-cell:hover {
+            color: var(--btn-primary-bg);
+        }
 
-        /* ===== ПАГІНАЦІЯ (як у combat-duty) ===== */
+        /* ===== ПАГІНАЦІЯ ===== */
         .pagination {
             display: flex;
             gap: 8px;
             align-items: center;
             justify-content: center;
-            margin-top: 16px;
             padding: 8px 0;
         }
         .pagination button {
@@ -439,6 +517,13 @@
             font-size: 13px;
             color: var(--text-secondary);
             padding: 4px 8px;
+        }
+
+        /* ===== КНОПКА "ЗАВАНТАЖИТИ ЩЕ" (тільки знизу) ===== */
+        .load-more-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
         }
 
         /* ===== АДАПТИВ ===== */
@@ -465,7 +550,16 @@
 
         /* ===== ДРУК ===== */
         @media print {
-            .sidebar, .toolbar, .stats-row, .no-print, .btn, .btn-print, .btn-success, .btn-primary, .pagination {
+            .sidebar,
+            .toolbar,
+            .stats-row,
+            .no-print,
+            .btn,
+            .btn-print,
+            .btn-success,
+            .btn-primary,
+            .pagination,
+            .load-more-container {
                 display: none !important;
             }
             body {
@@ -549,7 +643,9 @@
                 overflow: visible !important;
                 white-space: normal !important;
             }
-            .actions-col, td:last-child, th:last-child {
+            .actions-col,
+            td:last-child,
+            th:last-child {
                 display: none !important;
             }
             .dark-theme td {
@@ -572,31 +668,7 @@
                 margin: 5mm 4mm 5mm 4mm;
             }
         }
-
-        /* ===== КНОПКА ДРУК ===== */
-        .btn-print {
-            background: #607d8b;
-            color: white;
-            padding: 7px 14px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: background 0.2s;
-        }
-        .btn-print:hover {
-            background: #546e7a;
-        }
-        .dark-theme .btn-print {
-            background: #4a5a6a;
-            color: white;
-        }
-        .dark-theme .btn-print:hover {
-            background: #5a6a7a;
-        }
     </style>
-    <link th:replace="~{fragments :: sidebar-css}">
 </head>
 <body>
 <div class="layout">
@@ -610,7 +682,7 @@
                 <select id="monthFilter">
                     <option value="">— Всі місяці —</option>
                 </select>
-                <input type="text" id="searchInput" placeholder="🔍 Пошук..." style="width:180px">
+                <input type="text" id="searchInput" placeholder="🔍 Пошук за номером, датою, текстом..." style="width:250px">
                 <button class="btn btn-success" onclick="openAddModal()">+ Додати запис</button>
                 <button class="btn btn-warning" onclick="exportXlsx()">📤 Експорт xlsx</button>
                 <button class="btn btn-print" onclick="window.print()">
@@ -666,7 +738,12 @@
                 </table>
             </div>
 
-            <!-- ПАГІНАЦІЯ (як у combat-duty) -->
+            <!-- КНОПКА "ЗАВАНТАЖИТИ ЩЕ" (тільки знизу) -->
+            <div class="load-more-container no-print">
+                <button class="btn btn-primary" id="loadMoreBtn" onclick="loadMore()">Завантажити ще</button>
+            </div>
+
+            <!-- ПАГІНАЦІЯ -->
             <div class="pagination" id="pagination"></div>
         </div>
     </div>
@@ -803,7 +880,7 @@
     let sortDir   = -1;
     let deleteTargetId = null;
 
-    // ПАГІНАЦІЯ (як у combat-duty)
+    // ПАГІНАЦІЯ
     let currentPage = 0;
     let pageSize = 20;
     let totalElements = 0;
@@ -874,35 +951,33 @@
                 renderTable([]);
                 renderPageStats();
                 renderPagination();
+                updateLoadMoreButton();
                 return;
             }
 
             applyFilter();
             renderPageStats();
             loadGeneralStats();
+            updateLoadMoreButton();
         } catch (err) {
             console.error(err);
             showToast('Помилка мережі', 'err');
         }
     }
 
-    // ===== ФУНКЦІЇ ДЛЯ ПАГІНАЦІЇ (як у combat-duty) =====
+    // ===== ФУНКЦІЇ ДЛЯ ПАГІНАЦІЇ =====
     function goToPage(page) {
         const totalPages = Math.ceil(totalElements / pageSize);
         if (page < 0 || page >= totalPages) return;
         currentPage = page;
         loadRecords();
     }
-    // Робимо глобальною для onclick
     window.goToPage = goToPage;
 
     function renderPagination() {
         const totalPages = Math.ceil(totalElements / pageSize);
         const pag = document.getElementById('pagination');
-        if (totalPages <= 1) {
-            pag.innerHTML = '';
-            return;
-        }
+        // Завжди показуємо пагінацію
         let html = '';
         html += `<button onclick="goToPage(0)" ${currentPage === 0 ? 'disabled' : ''}>⏮</button>`;
         html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>`;
@@ -912,15 +987,56 @@
         pag.innerHTML = html;
     }
 
-    // ===== ФІЛЬТР + СОРТУВАННЯ =====
+    // ===== КНОПКА "ЗАВАНТАЖИТИ ЩЕ 20" =====
+    function updateLoadMoreButton() {
+        const totalPages = Math.ceil(totalElements / pageSize);
+        const btn = document.getElementById('loadMoreBtn');
+        const remaining = totalElements - (currentPage + 1) * pageSize;
+        if (remaining <= 0 || totalPages <= 1) {
+            btn.disabled = true;
+            btn.textContent = 'Всі завантажено';
+        } else {
+            const nextBatch = Math.min(20, remaining);
+            btn.disabled = false;
+            btn.textContent = `Завантажити ще ${nextBatch}`;
+        }
+    }
+
+    function loadMore() {
+        const totalPages = Math.ceil(totalElements / pageSize);
+        if (currentPage < totalPages - 1) {
+            const newSize = Math.min(pageSize + 20, totalElements);
+            if (newSize > pageSize) {
+                pageSize = newSize;
+                currentPage = 0;
+                loadRecords();
+            } else {
+                showToast('Всі записи вже завантажені', 'ok');
+            }
+        } else {
+            showToast('Всі записи вже завантажені', 'ok');
+        }
+    }
+    window.loadMore = loadMore;
+
+    // ===== ФІЛЬТР + СОРТУВАННЯ (з пошуком за датою та номером) =====
     function applyFilter() {
-        const q = document.getElementById('searchInput').value.toLowerCase();
+        const q = document.getElementById('searchInput').value.toLowerCase().trim();
         let filtered = allRecords;
         if (q) {
-            filtered = allRecords.filter(r =>
-                [r.crew, r.event, r.target, r.weapon, r.note, r.coordinates]
-                    .some(v => v && v.toLowerCase().includes(q))
-            );
+            filtered = allRecords.filter(r => {
+                // Перевіряємо номер (recordNumber)
+                const numMatch = r.recordNumber !== null && r.recordNumber !== undefined &&
+                    String(r.recordNumber).includes(q);
+                // Перевіряємо дату (у форматі дд.мм.рррр)
+                const dateStr = r.flightDate ? fmtDate(r.flightDate) : '';
+                const dateMatch = dateStr.includes(q);
+                // Перевіряємо текстові поля
+                const textFields = [r.crew, r.event, r.target, r.weapon, r.note, r.coordinates,
+                    r.lossReason, r.detonator, r.explosive];
+                const textMatch = textFields.some(f => f && f.toLowerCase().includes(q));
+                return numMatch || dateMatch || textMatch;
+            });
         }
         if (sortCol) {
             filtered = [...filtered].sort((a, b) => {
@@ -939,6 +1055,7 @@
         renderTable(filtered);
         renderPageStats();
         renderPagination();
+        updateLoadMoreButton();
     }
 
     function getSortValue(r, col) {
@@ -1109,8 +1226,9 @@
             });
             if (res.ok) {
                 closeModal('formModal');
+                // Скидаємо на першу сторінку після зміни
                 currentPage = 0;
-                await loadRecords(); // перезавантажуємо з початку
+                await loadRecords();
                 await loadGeneralStats();
                 showToast(id ? 'Запис оновлено' : 'Запис додано', 'ok');
             } else {
@@ -1165,15 +1283,19 @@
     // ===== ОБРОБНИКИ ПОДІЙ =====
     document.getElementById('yearFilter').onchange = () => {
         document.getElementById('monthFilter').value = '';
+        pageSize = 20;
         currentPage = 0;
         loadRecords();
     };
     document.getElementById('monthFilter').onchange = () => {
         document.getElementById('yearFilter').value = '';
+        pageSize = 20;
         currentPage = 0;
         loadRecords();
     };
-    document.getElementById('searchInput').oninput = applyFilter;
+    document.getElementById('searchInput').oninput = function() {
+        applyFilter();
+    };
 
     // ===== ЗАКРИТТЯ МОДАЛЬНИХ ВІКОН ПРИ КЛІКУ ПО ОВЕРЛЕЮ =====
     document.querySelectorAll('.modal-overlay').forEach(el =>
