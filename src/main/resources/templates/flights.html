@@ -129,6 +129,57 @@
             transition: background 0.3s, box-shadow 0.3s;
         }
 
+        /* ===== ФІКСАЦІЯ ЗАГОЛОВКА ТА ПЕРШОЇ КОЛОНКИ ===== */
+        .table-wrap {
+            overflow: auto;
+            max-height: 75vh; /* обмежуємо висоту, з'являється вертикальний скрол */
+            position: relative;
+        }
+
+        /* Заголовок таблиці завжди зверху */
+        .table-wrap table thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        /* Фон для заголовків, щоб перекривати контент при скролі */
+        .table-wrap table thead th {
+            background: var(--bg-table-header);
+        }
+
+        /* Фіксація першої колонки (№) */
+        .table-wrap table td:first-child,
+        .table-wrap table th:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            background: var(--bg-table);
+            min-width: 40px;
+            max-width: 40px;
+        }
+
+        /* Заголовок першої колонки має бути поверх тіла */
+        .table-wrap table thead th:first-child {
+            z-index: 11;
+            background: var(--bg-table-header);
+        }
+
+        /* Якщо потрібно зафіксувати другу колонку (Дата) – розкоментуйте */
+
+        .table-wrap table td:nth-child(2),
+        .table-wrap table th:nth-child(2) {
+            position: sticky;
+            left: 40px;
+            z-index: 4;
+            background: var(--bg-table);
+            min-width: 90px;
+        }
+        .table-wrap table thead th:nth-child(2) {
+            z-index: 11;
+            background: var(--bg-table-header);
+        }
+
         /* ===== СТИЛІ КНОПОК З АНІМАЦІЄЮ ===== */
         .btn {
             padding: 6px 14px;
@@ -138,7 +189,14 @@
             font-size: 13px;
             font-weight: 600;
             transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            line-height: 1.4;
             box-shadow: 0 1px 2px var(--shadow-light);
+        }
+        .btn i {
+            line-height: 1;
         }
         .btn:hover {
             transform: translateY(-1px);
