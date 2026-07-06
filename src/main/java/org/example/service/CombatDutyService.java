@@ -2,6 +2,10 @@ package org.example.service;
 
 import org.example.entity.CombatDuty;
 import org.example.repository.CombatDutyRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +21,7 @@ public class CombatDutyService {
         this.dutyRepo = dutyRepo;
     }
 
+    // ----- Без пагінації (для експорту та сумісності) -----
     @Transactional(readOnly = true)
     public List<CombatDuty> getAll() {
         return dutyRepo.findAll();
@@ -37,14 +42,23 @@ public class CombatDutyService {
         dutyRepo.deleteById(id);
     }
 
-    // ===== НОВИЙ МЕТОД ДЛЯ ПЕРЕВІРКИ ПЕРЕТИНУ =====
-    /**
-     * Перевіряє, чи нове чергування перетинається з існуючими.
-     * @param duty нове чергування
-     * @param excludeId ID чергування, яке потрібно виключити (при оновленні)
-     * @return true, якщо є перетин
-     */
     public boolean hasOverlap(CombatDuty duty, Long excludeId) {
         return dutyRepo.existsOverlap(duty.getStartTime(), duty.getEndTime(), excludeId);
+    }
+
+    // ----- Нові методи з пагінацією -----
+    public Page<CombatDuty> getPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("startTime").descending());
+        return dutyRepo.findAll(pageable);
+    }
+
+    public Page<CombatDuty> getByYear(int year, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("startTime").descending());
+        return dutyRepo.findByYear(year, pageable);
+    }
+
+    public Page<CombatDuty> getByYearAndMonth(int year, int month, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("startTime").descending());
+        return dutyRepo.findByYearAndMonth(year, month, pageable);
     }
 }

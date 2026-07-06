@@ -195,7 +195,7 @@
         }
 
         td.note-cell {
-            white-space: pre-wrap;          /* зберігає перенесення рядків */
+            white-space: pre-wrap;
             word-break: break-word;
             max-width: 300px;
             min-width: 150px;
@@ -209,10 +209,10 @@
             transition: max-height 0.2s ease;
         }
         td.note-cell.expanded {
-            max-height: none;               /* ← повна висота */
+            max-height: none;
             -webkit-line-clamp: unset;
             display: block;
-            overflow-y: auto;               /* ← прокрутка, якщо дуже довго */
+            overflow-y: auto;
         }
         td.note-cell:hover {
             color: var(--btn-primary-bg);
@@ -270,144 +270,57 @@
         .toast.err { background: var(--toast-error); }
         .empty-state { text-align: center; padding: 40px; color: var(--text-light); }
 
+        /* Пагінація */
+        .pagination {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            margin-top: 16px;
+            padding: 8px 0;
+        }
+        .pagination button {
+            padding: 4px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pagination button:hover:not(:disabled) {
+            background: var(--bg-hover);
+        }
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .pagination .page-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
         @media print {
-            /* === ПРИХОВУЄМО ВСЕ ЗАЙВЕ === */
             .sidebar, .toolbar, .no-print, .btn, .btn-print, .btn-success,
             .btn-primary, .btn-warning, .btn-danger, .btn-duplicate,
-            .modal-overlay, input[type="text"], .search-input, button, select,
+            .modal-overlay, input, select, button, .search-input,
             .current-date, #monthTitle, #prevBtn, #nextBtn, #todayBtn,
-            #yearFilter, #monthFilter, #applyFilterBtn, #exportXlsxBtn {
+            #yearFilter, #monthFilter, #applyFilterBtn, #exportXlsxBtn,
+            .pagination {
                 display: none !important;
             }
-
-            body {
-                background: white !important;
-                color: black !important;
-                font-size: 6px !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                overflow: visible !important;
-            }
-
-            .main-content {
-                margin-left: 0 !important;
-                padding: 0 !important;
-                width: 100% !important;
-            }
-
-            .container {
-                padding: 0 !important;
-                max-width: 100% !important;
-                margin: 0 !important;
-            }
-
-            .table-wrap {
-                box-shadow: none !important;
-                border: none !important;
-                border-radius: 0 !important;
-                overflow: visible !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                width: 100% !important;
-            }
-
-            table {
-                background: white !important;
-                width: 100% !important;
-                border-collapse: collapse !important;
-                font-size: 5px !important;
-                table-layout: fixed !important;
-                page-break-inside: avoid !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-
-            thead {
-                background: #1a237e !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-
-            thead th {
-                background: #1a237e !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                padding: 1px 1px !important;
-                font-size: 5px !important;
-                border: 1px solid #1a237e !important;
-                text-align: center !important;
-                overflow: hidden !important;
-                white-space: nowrap !important;
-            }
-
-            td {
-                color: black !important;
-                border: 1px solid #ddd !important;
-                font-size: 4.5px !important;
-                padding: 1px 1px !important;
-                line-height: 1.1 !important;
-                background: white !important;
-                text-align: center !important;
-                overflow: hidden !important;
-                white-space: normal !important;
-                word-break: break-word !important;
-                word-wrap: break-word !important;
-                vertical-align: middle !important;
-            }
-
-            td.text-left {
-                text-align: left !important;
-            }
-
-            td.personnel-cell,
-            td.note-cell {
-                white-space: normal !important;
-                word-break: break-word !important;
-                overflow: hidden !important;
-                max-height: none !important;
-                text-overflow: clip !important;
-            }
-
-            /* === ДОПОВІДЬ – компактна, текст по ширині === */
-            td.note-cell {
-                text-align: justify !important;
-                padding: 1px 1px !important;
-                width: 65px !important;
-                min-width: 65px !important;
-                max-width: 65px !important;
-                white-space: normal !important;
-                line-height: 1.2 !important;
-            }
-
-            /* Приховуємо "Дії" */
-            th:last-child, td:last-child {
-                display: none !important;
-            }
-
-            /* Фіксовані ширини колонок – сума ≈ 100% */
-            th:nth-child(1), td:nth-child(1) { width: 14px !important; min-width: 14px !important; max-width: 14px !important; }
-            th:nth-child(2), td:nth-child(2) { width: 42px !important; min-width: 42px !important; max-width: 42px !important; }
-            th:nth-child(3), td:nth-child(3) { width: 42px !important; min-width: 42px !important; max-width: 42px !important; }
-            th:nth-child(4), td:nth-child(4) { width: 34px !important; min-width: 34px !important; max-width: 34px !important; }
-            th:nth-child(5), td:nth-child(5) { width: 56px !important; min-width: 56px !important; max-width: 56px !important; }
-            th:nth-child(6), td:nth-child(6) { width: 42px !important; min-width: 42px !important; max-width: 42px !important; }
-            th:nth-child(7), td:nth-child(7) { width: 42px !important; min-width: 42px !important; max-width: 42px !important; }
-            th:nth-child(8), td:nth-child(8) { width: 42px !important; min-width: 42px !important; max-width: 42px !important; }
-            th:nth-child(9), td:nth-child(9) { width: 42px !important; min-width: 42px !important; max-width: 42px !important; }
-            th:nth-child(10), td:nth-child(10) { width: 42px !important; min-width: 42px !important; max-width: 42px !important; }
-            th:nth-child(11), td:nth-child(11) { width: 65px !important; min-width: 65px !important; max-width: 65px !important; }
-            th:nth-child(12), td:nth-child(12) { width: 20px !important; min-width: 20px !important; max-width: 20px !important; }
-            th:nth-child(13), td:nth-child(13) { width: 20px !important; min-width: 20px !important; max-width: 20px !important; }
-            th:nth-child(14), td:nth-child(14) { width: 20px !important; min-width: 20px !important; max-width: 20px !important; }
-            th:nth-child(15), td:nth-child(15) { width: 20px !important; min-width: 20px !important; max-width: 20px !important; }
-            th:nth-child(16), td:nth-child(16) { width: 20px !important; min-width: 20px !important; max-width: 20px !important; }
-
-            @page {
-                size: landscape;
-                margin: 2mm 2mm;
-            }
+            body { background: white !important; color: black !important; font-size: 6px !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+            .main-content { margin-left: 0 !important; padding: 0 !important; width: 100% !important; }
+            .container { padding: 0 !important; max-width: 100% !important; margin: 0 !important; }
+            .table-wrap { box-shadow: none !important; border: none !important; border-radius: 0 !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; width: 100% !important; }
+            table { background: white !important; width: 100% !important; border-collapse: collapse !important; font-size: 5px !important; table-layout: fixed !important; page-break-inside: avoid !important; margin: 0 !important; padding: 0 !important; }
+            thead { background: #1a237e !important; color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            thead th { background: #1a237e !important; color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; padding: 1px 1px !important; font-size: 5px !important; border: 1px solid #1a237e !important; text-align: center !important; overflow: hidden !important; white-space: nowrap !important; }
+            td { color: black !important; border: 1px solid #ddd !important; font-size: 4.5px !important; padding: 1px 1px !important; line-height: 1.1 !important; background: white !important; text-align: center !important; overflow: hidden !important; white-space: normal !important; word-break: break-word !important; word-wrap: break-word !important; vertical-align: middle !important; }
+            td.text-left { text-align: left !important; }
+            td.personnel-cell, td.note-cell { white-space: normal !important; word-break: break-word !important; overflow: hidden !important; max-height: none !important; text-overflow: clip !important; }
+            td.note-cell { text-align: justify !important; padding: 1px 1px !important; width: 65px !important; min-width: 65px !important; max-width: 65px !important; white-space: normal !important; line-height: 1.2 !important; }
+            th:last-child, td:last-child { display: none !important; }
+            @page { size: landscape; margin: 2mm 2mm; }
         }
     </style>
     <link th:replace="~{fragments :: sidebar-css}">
@@ -431,7 +344,7 @@
                     <option value="">— Всі місяці —</option>
                 </select>
                 <button class="btn btn-primary" id="applyFilterBtn">Показати</button>
-                <button class="btn btn-success" onclick="window.openAddModal()">+ Додати</button>
+                <button class="btn btn-success" onclick="openAddModal()">+ Додати</button>
                 <button class="btn btn-success" id="exportXlsxBtn">📊 Експорт XLSX</button>
                 <button class="btn btn-print" onclick="window.print()">
                     <i class="fas fa-print"></i> Друк
@@ -444,22 +357,22 @@
                 <table id="dutyTable">
                     <thead>
                     <tr>
-                        <th data-col="id" onclick="window.sortBy('id')" style="min-width:40px;">№</th>
-                        <th data-col="startTime" onclick="window.sortBy('startTime')" style="min-width:130px;">Початок</th>
-                        <th data-col="endTime" onclick="window.sortBy('endTime')" style="min-width:130px;">Кінець</th>
-                        <th data-col="unitName" onclick="window.sortBy('unitName')" style="min-width:80px;">Екіпаж</th>
-                        <th data-col="commander" onclick="window.sortBy('commander')" style="min-width:160px;">Командир</th>
-                        <th data-col="pilot" onclick="window.sortBy('pilot')" style="min-width:140px;">Пілот</th>
-                        <th data-col="navigator" onclick="window.sortBy('navigator')" style="min-width:140px;">Штурман</th>
-                        <th data-col="technician" onclick="window.sortBy('technician')" style="min-width:140px;">Технік</th>
-                        <th data-col="weapons" onclick="window.sortBy('weapons')" style="min-width:120px;">Озброєння</th>
-                        <th data-col="dutyOfficer" onclick="window.sortBy('dutyOfficer')" style="min-width:140px;">Черговий ПУ</th>
-                        <th data-col="reportSummary" onclick="window.sortBy('reportSummary')" style="min-width:200px;">Доповідь</th>
-                        <th data-col="totalSorties" onclick="window.sortBy('totalSorties')" style="min-width:60px;" class="num-col">Вильотів</th>
-                        <th data-col="combatSorties" onclick="window.sortBy('combatSorties')" style="min-width:60px;" class="num-col">Бойових</th>
-                        <th data-col="losses" onclick="window.sortBy('losses')" style="min-width:60px;" class="num-col">Втрат</th>
-                        <th data-col="destructions" onclick="window.sortBy('destructions')" style="min-width:60px;" class="num-col">Знищень</th>
-                        <th data-col="ntp" onclick="window.sortBy('ntp')" style="min-width:60px;" class="num-col">НТП</th>
+                        <th data-col="id" onclick="sortBy('id')" style="min-width:40px;">№</th>
+                        <th data-col="startTime" onclick="sortBy('startTime')" style="min-width:130px;">Початок</th>
+                        <th data-col="endTime" onclick="sortBy('endTime')" style="min-width:130px;">Кінець</th>
+                        <th data-col="unitName" onclick="sortBy('unitName')" style="min-width:80px;">Екіпаж</th>
+                        <th data-col="commander" onclick="sortBy('commander')" style="min-width:160px;">Командир</th>
+                        <th data-col="pilot" onclick="sortBy('pilot')" style="min-width:140px;">Пілот</th>
+                        <th data-col="navigator" onclick="sortBy('navigator')" style="min-width:140px;">Штурман</th>
+                        <th data-col="technician" onclick="sortBy('technician')" style="min-width:140px;">Технік</th>
+                        <th data-col="weapons" onclick="sortBy('weapons')" style="min-width:120px;">Озброєння</th>
+                        <th data-col="dutyOfficer" onclick="sortBy('dutyOfficer')" style="min-width:140px;">Черговий ПУ</th>
+                        <th data-col="reportSummary" onclick="sortBy('reportSummary')" style="min-width:200px;">Доповідь</th>
+                        <th data-col="totalSorties" onclick="sortBy('totalSorties')" style="min-width:60px;" class="num-col">Вильотів</th>
+                        <th data-col="combatSorties" onclick="sortBy('combatSorties')" style="min-width:60px;" class="num-col">Бойових</th>
+                        <th data-col="losses" onclick="sortBy('losses')" style="min-width:60px;" class="num-col">Втрат</th>
+                        <th data-col="destructions" onclick="sortBy('destructions')" style="min-width:60px;" class="num-col">Знищень</th>
+                        <th data-col="ntp" onclick="sortBy('ntp')" style="min-width:60px;" class="num-col">НТП</th>
                         <th style="min-width:120px;">Дії</th>
                     </tr>
                     </thead>
@@ -468,6 +381,10 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- ПАГІНАЦІЯ -->
+            <div class="pagination" id="pagination"></div>
+
         </div>
     </div>
 </div>
@@ -541,8 +458,8 @@
         </div>
 
         <div class="modal-actions">
-            <button class="btn" onclick="window.closeModal('formModal')" style="background:#eee;">Скасувати</button>
-            <button class="btn btn-primary" onclick="window.saveDuty()">Зберегти</button>
+            <button class="btn" onclick="closeModal('formModal')" style="background:#eee;">Скасувати</button>
+            <button class="btn btn-primary" onclick="saveDuty()">Зберегти</button>
         </div>
     </div>
 </div>
@@ -565,17 +482,22 @@
         let searchQuery = '';
         let personnelList = [];
 
-        // ===== ЗАВАНТАЖЕННЯ ПЕРСОНАЛУ =====
+        // ПАГІНАЦІЯ
+        let currentPage = 0;
+        let pageSize = 20;
+        let totalElements = 0;
+
+        // ===== ЗАВАНТАЖЕННЯ ПЕРСОНАЛУ ДЛЯ СЕЛЕКТІВ =====
         async function loadPersonnelForSelects() {
             try {
-                const res = await fetch('/personnel/api');
+                const res = await fetch('/personnel/api?page=0&size=1000');
                 if (!res.ok) throw new Error('Network error');
-                const data = await res.json();
-                personnelList = data;
-                populateSelect('fCommander', 'Командир', data);
-                populateSelect('fPilot', 'Пілот', data);
-                populateSelect('fNavigator', 'Штурман', data);
-                populateSelect('fTechnician', 'Технік', data);
+                const pageData = await res.json();
+                personnelList = pageData.content || [];
+                populateSelect('fCommander', 'Командир', personnelList);
+                populateSelect('fPilot', 'Пілот', personnelList);
+                populateSelect('fNavigator', 'Штурман', personnelList);
+                populateSelect('fTechnician', 'Технік', personnelList);
             } catch (err) {
                 console.warn('Помилка завантаження персоналу:', err);
             }
@@ -598,11 +520,6 @@
         }
 
         // ===== ІНІЦІАЛІЗАЦІЯ =====
-        updateCurrentDateDisplay();
-        loadFilters();
-        loadDuties();
-        loadPersonnelForSelects();
-
         function updateCurrentDateDisplay() {
             const now = new Date();
             const day = String(now.getDate()).padStart(2,'0');
@@ -610,6 +527,10 @@
             const year = now.getFullYear();
             document.getElementById('currentDate').textContent = `📅 ${day}.${month}.${year}`;
         }
+        updateCurrentDateDisplay();
+        loadFilters();
+        loadDuties();
+        loadPersonnelForSelects();
 
         function loadFilters() {
             fetch('/combat-duty/api/years')
@@ -649,6 +570,8 @@
                 const idx = UA_MONTHS.indexOf(monthVal);
                 if (idx !== -1) params.append('month', idx + 1);
             }
+            params.append('page', currentPage);
+            params.append('size', pageSize);
             if (params.toString()) url += '?' + params.toString();
 
             fetch(url)
@@ -656,15 +579,42 @@
                     if (!res.ok) throw new Error('Network error');
                     return res.json();
                 })
-                .then(data => {
-                    allDuties = data;
+                .then(pageData => {
+                    allDuties = pageData.content || [];
+                    totalElements = pageData.totalElements || 0;
                     updateMonthTitle();
                     applyFiltersAndRender();
+                    renderPagination();
                 })
                 .catch(err => {
                     console.error(err);
-                    window.showToast('Помилка завантаження даних', 'err');
+                    showToast('Помилка завантаження даних', 'err');
                 });
+        }
+
+        function goToPage(page) {
+            const totalPages = Math.ceil(totalElements / pageSize);
+            if (page < 0 || page >= totalPages) return;
+            currentPage = page;
+            loadDuties();
+        }
+        // Робимо глобальною для onclick
+        window.goToPage = goToPage;
+
+        function renderPagination() {
+            const totalPages = Math.ceil(totalElements / pageSize);
+            const pag = document.getElementById('pagination');
+            if (totalPages <= 1) {
+                pag.innerHTML = '';
+                return;
+            }
+            let html = '';
+            html += `<button onclick="goToPage(0)" ${currentPage === 0 ? 'disabled' : ''}>⏮</button>`;
+            html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>`;
+            html += `<span class="page-info">Сторінка ${currentPage + 1} з ${totalPages} (всього ${totalElements} записів)</span>`;
+            html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>▶</button>`;
+            html += `<button onclick="goToPage(${totalPages - 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>⏭</button>`;
+            pag.innerHTML = html;
         }
 
         function updateMonthTitle() {
@@ -682,41 +632,22 @@
             document.getElementById('monthTitle').textContent = title || 'Всі періоди';
         }
 
-        // ===== ПОШУК =====
+        // ПОШУК
         document.getElementById('searchInput').addEventListener('input', function() {
             searchQuery = this.value.toLowerCase().trim();
             applyFiltersAndRender();
         });
 
-        // ===== ФІЛЬТРИ + СОРТУВАННЯ =====
+        // ФІЛЬТРИ + СОРТУВАННЯ
         function applyFiltersAndRender() {
-            const yearVal = document.getElementById('yearFilter').value;
-            const monthVal = document.getElementById('monthFilter').value;
-
-            // Фільтр за роком/місяцем
             let filtered = allDuties;
-            if (yearVal || monthVal) {
-                filtered = allDuties.filter(d => {
-                    const date = new Date(d.startTime);
-                    let match = true;
-                    if (yearVal) match = match && date.getFullYear() === parseInt(yearVal);
-                    if (monthVal) {
-                        const idx = UA_MONTHS.indexOf(monthVal);
-                        if (idx !== -1) match = match && date.getMonth() === idx;
-                    }
-                    return match;
-                });
-            }
 
-            // ===== ПОШУК ЗА ДАТАМИ ТА ТЕКСТОМ =====
             if (searchQuery) {
                 filtered = filtered.filter(d => {
-                    // Форматуємо дати для пошуку
                     const startDate = d.startTime ? new Date(d.startTime).toLocaleDateString('uk-UA') : '';
                     const endDate = d.endTime ? new Date(d.endTime).toLocaleDateString('uk-UA') : '';
                     const startTime = d.startTime ? new Date(d.startTime).toLocaleTimeString('uk-UA', {hour:'2-digit', minute:'2-digit'}) : '';
                     const endTime = d.endTime ? new Date(d.endTime).toLocaleTimeString('uk-UA', {hour:'2-digit', minute:'2-digit'}) : '';
-
                     const fields = [
                         d.unitName, d.commander, d.pilot, d.navigator, d.technician,
                         d.weapons, d.dutyOfficer, d.reportSummary,
@@ -726,7 +657,6 @@
                 });
             }
 
-            // Сортування
             if (sortCol) {
                 filtered.sort((a, b) => {
                     let va = getSortValue(a, sortCol);
@@ -743,7 +673,6 @@
             }
 
             renderTable(filtered);
-            // Оновлюємо стрілки
             document.querySelectorAll('#dutyTable thead th').forEach(th => {
                 th.classList.remove('sort-asc', 'sort-desc');
                 if (th.dataset.col === sortCol) {
@@ -762,6 +691,7 @@
             return val || '';
         }
 
+        // Глобальна функція сортування
         window.sortBy = function(col) {
             if (sortCol === col) {
                 sortDir *= -1;
@@ -786,29 +716,29 @@
                     <td>${d.id}</td>
                     <td>${start}</td>
                     <td>${end}</td>
-                    <td>${window.escapeHtml(d.unitName || 'СКОПА')}</td>
-                    <td class="text-left personnel-cell">${window.escapeHtml(d.commander || '—')}</td>
-                    <td class="text-left personnel-cell">${window.escapeHtml(d.pilot || '—')}</td>
-                    <td class="text-left personnel-cell">${window.escapeHtml(d.navigator || '—')}</td>
-                    <td class="text-left personnel-cell">${window.escapeHtml(d.technician || '—')}</td>
-                    <td>${window.escapeHtml(d.weapons || '—')}</td>
-                    <td>${window.escapeHtml(d.dutyOfficer || '—')}</td>
-                    <td class="text-left note-cell" onclick="this.classList.toggle('expanded')" title="Натисни щоб розгорнути">${window.escapeHtml(summary)}</td>
+                    <td>${escapeHtml(d.unitName || 'СКОПА')}</td>
+                    <td class="text-left personnel-cell">${escapeHtml(d.commander || '—')}</td>
+                    <td class="text-left personnel-cell">${escapeHtml(d.pilot || '—')}</td>
+                    <td class="text-left personnel-cell">${escapeHtml(d.navigator || '—')}</td>
+                    <td class="text-left personnel-cell">${escapeHtml(d.technician || '—')}</td>
+                    <td>${escapeHtml(d.weapons || '—')}</td>
+                    <td>${escapeHtml(d.dutyOfficer || '—')}</td>
+                    <td class="text-left note-cell" onclick="this.classList.toggle('expanded')" title="Натисни щоб розгорнути">${escapeHtml(summary)}</td>
                     <td class="num-col">${d.totalSorties ?? 0}</td>
                     <td class="num-col">${d.combatSorties ?? 0}</td>
                     <td class="num-col">${d.losses ?? 0}</td>
                     <td class="num-col">${d.destructions ?? 0}</td>
                     <td class="num-col">${d.ntp ?? 0}</td>
                     <td>
-                        <button class="btn btn-warning btn-sm" onclick="window.openEditModal(${d.id})" title="Редагувати">✏️</button>
-                        <button class="btn btn-duplicate btn-sm" onclick="window.duplicateDuty(${d.id})" title="Дублювати">📋</button>
-                        <button class="btn btn-danger btn-sm" onclick="window.confirmDelete(${d.id})" title="Видалити">🗑</button>
+                        <button class="btn btn-warning btn-sm" onclick="openEditModal(${d.id})" title="Редагувати">✏️</button>
+                        <button class="btn btn-duplicate btn-sm" onclick="duplicateDuty(${d.id})" title="Дублювати">📋</button>
+                        <button class="btn btn-danger btn-sm" onclick="confirmDelete(${d.id})" title="Видалити">🗑</button>
                     </td>
                 </tr>`;
             }).join('');
         }
 
-        // ===== НАВІГАЦІЯ =====
+        // НАВІГАЦІЯ
         function shiftMonth(delta) {
             const yearVal = document.getElementById('yearFilter').value;
             const monthVal = document.getElementById('monthFilter').value;
@@ -820,6 +750,7 @@
             if (m < 1) { m = 12; y--; }
             document.getElementById('yearFilter').value = y;
             document.getElementById('monthFilter').value = UA_MONTHS[m-1];
+            currentPage = 0;
             loadDuties();
         }
 
@@ -829,11 +760,15 @@
             const now = new Date();
             document.getElementById('yearFilter').value = now.getFullYear();
             document.getElementById('monthFilter').value = UA_MONTHS[now.getMonth()];
+            currentPage = 0;
             loadDuties();
         };
-        document.getElementById('applyFilterBtn').onclick = loadDuties;
+        document.getElementById('applyFilterBtn').onclick = () => {
+            currentPage = 0;
+            loadDuties();
+        };
 
-        // ===== ЕКСПОРТ =====
+        // ЕКСПОРТ
         document.getElementById('exportXlsxBtn').onclick = () => {
             const yearVal = document.getElementById('yearFilter').value;
             const monthVal = document.getElementById('monthFilter').value;
@@ -848,7 +783,7 @@
             window.location.href = url;
         };
 
-        // ===== ГЛОБАЛЬНІ ФУНКЦІЇ =====
+        // ===== ГЛОБАЛЬНІ ФУНКЦІЇ (викликаються з HTML) =====
         window.openAddModal = function() {
             document.getElementById('formModalTitle').textContent = '➕ Додати чергування';
             document.getElementById('editId').value = '';
@@ -864,7 +799,7 @@
                 const sel = document.getElementById(id);
                 if (sel) sel.value = '';
             });
-            window.openModal('formModal');
+            openModal('formModal');
         };
 
         window.duplicateDuty = function(id) {
@@ -887,7 +822,7 @@
             setSelectValue('fPilot', duty.pilot);
             setSelectValue('fNavigator', duty.navigator);
             setSelectValue('fTechnician', duty.technician);
-            window.openModal('formModal');
+            openModal('formModal');
         };
 
         window.openEditModal = function(id) {
@@ -910,7 +845,7 @@
             setSelectValue('fPilot', duty.pilot);
             setSelectValue('fNavigator', duty.navigator);
             setSelectValue('fTechnician', duty.technician);
-            window.openModal('formModal');
+            openModal('formModal');
         };
 
         function setSelectValue(selectId, value) {
@@ -941,7 +876,7 @@
             const roles = [commander, pilot, navigator, technician].filter(Boolean);
             const uniqueRoles = new Set(roles);
             if (uniqueRoles.size < roles.length) {
-                window.showToast('Одна особа не може займати кілька посад у чергуванні', 'err');
+                showToast('Одна особа не може займати кілька посад у чергуванні', 'err');
                 return;
             }
 
@@ -964,11 +899,11 @@
             };
 
             if (!body.startTime || !body.endTime) {
-                window.showToast('Вкажіть час початку та кінця', 'err');
+                showToast('Вкажіть час початку та кінця', 'err');
                 return;
             }
             if (body.startTime > body.endTime) {
-                window.showToast('Початок не може бути пізніше кінця', 'err');
+                showToast('Початок не може бути пізніше кінця', 'err');
                 return;
             }
 
@@ -982,14 +917,15 @@
                 });
                 const text = await res.text();
                 if (res.ok) {
-                    window.closeModal('formModal');
+                    closeModal('formModal');
+                    currentPage = 0;
                     loadDuties();
-                    window.showToast(id ? 'Чергування оновлено' : 'Чергування додано', 'ok');
+                    showToast(id ? 'Чергування оновлено' : 'Чергування додано', 'ok');
                 } else {
-                    window.showToast('Помилка: ' + text, 'err');
+                    showToast('Помилка: ' + text, 'err');
                 }
             } catch(e) {
-                window.showToast('Помилка мережі', 'err');
+                showToast('Помилка мережі', 'err');
             }
         };
 
@@ -998,13 +934,14 @@
             fetch(`/combat-duty/api/${id}`, { method: 'DELETE' })
                 .then(res => {
                     if (res.ok) {
+                        currentPage = 0;
                         loadDuties();
-                        window.showToast('Видалено', 'ok');
+                        showToast('Видалено', 'ok');
                     } else {
-                        window.showToast('Помилка видалення', 'err');
+                        showToast('Помилка видалення', 'err');
                     }
                 })
-                .catch(() => window.showToast('Помилка мережі', 'err'));
+                .catch(() => showToast('Помилка мережі', 'err'));
         };
 
         // ===== ДОПОМІЖНІ =====
@@ -1032,6 +969,7 @@
                 if (e.target === this) this.classList.remove('open');
             });
         });
+
     })();
 </script>
 </body>

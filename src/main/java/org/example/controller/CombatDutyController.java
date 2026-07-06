@@ -4,6 +4,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.example.entity.CombatDuty;
 import org.example.service.CombatDutyService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,6 @@ import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,30 +35,27 @@ public class CombatDutyController {
         return "combat-duty";
     }
 
-    // ===== API (з фільтрацією) =====
+    // ===== API (з пагінацією) =====
     @GetMapping("/api")
     @ResponseBody
-    public List<CombatDuty> getAllApi(
-            @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) Integer month) {
-        List<CombatDuty> all = service.getAll();
-        if (year != null || month != null) {
-            return all.stream()
-                    .filter(d -> {
-                        LocalDate start = d.getStartTime().toLocalDate();
-                        boolean match = true;
-                        if (year != null) match = match && start.getYear() == year;
-                        if (month != null) match = match && start.getMonthValue() == month;
-                        return match;
-                    })
-                    .collect(Collectors.toList());
+    public Page<CombatDuty> getAllApi(@RequestParam(required = false) Integer year,
+                                      @RequestParam(required = false) Integer month,
+                                      @RequestParam(defaultValue = "0") int page,
+                                      @RequestParam(defaultValue = "20") int size) {
+        if (year != null && month != null) {
+            return service.getByYearAndMonth(year, month, page, size);
+        } else if (year != null) {
+            return service.getByYear(year, page, size);
+        } else {
+            return service.getPage(page, size);
         }
-        return all;
     }
 
+    // ===== Для фільтрів (роки, місяці) без пагінації =====
     @GetMapping("/api/years")
     @ResponseBody
     public List<Integer> getYears() {
+        // Використовуємо старий метод getAll() для отримання списку років
         return service.getAll().stream()
                 .map(d -> d.getStartTime().toLocalDate().getYear())
                 .distinct()
@@ -69,22 +66,16 @@ public class CombatDutyController {
     @GetMapping("/api/months")
     @ResponseBody
     public List<String> getMonths() {
-        // Повертаємо всі місяці, для яких є записи
+        String[] monthNames = {"Січень","Лютий","Березень","Квітень","Травень","Червень",
+                "Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"};
         return service.getAll().stream()
-                .map(d -> {
-                    int m = d.getStartTime().toLocalDate().getMonthValue();
-                    String[] monthNames = {"Січень","Лютий","Березень","Квітень","Травень","Червень",
-                            "Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"};
-                    return monthNames[m-1];
-                })
+                .map(d -> monthNames[d.getStartTime().toLocalDate().getMonthValue() - 1])
                 .distinct()
-                .sorted((a,b) -> {
-                    String[] names = {"Січень","Лютий","Березень","Квітень","Травень","Червень",
-                            "Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"};
-                    return Integer.compare(
-                            java.util.Arrays.asList(names).indexOf(a),
-                            java.util.Arrays.asList(names).indexOf(b)
-                    );
+                .sorted((a, b) -> {
+                    for (int i = 0; i < monthNames.length; i++) {
+                        if (monthNames[i].equals(a)) return Integer.compare(i, java.util.Arrays.asList(monthNames).indexOf(b));
+                    }
+                    return 0;
                 })
                 .collect(Collectors.toList());
     }
@@ -97,7 +88,7 @@ public class CombatDutyController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ===== СТВОРЕННЯ (з перевіркою на перетин) =====
+    // ===== CRUD (без змін) =====
     @PostMapping("/api")
     @ResponseBody
     public ResponseEntity<?> create(@RequestBody CombatDuty duty) {
@@ -108,12 +99,9 @@ public class CombatDutyController {
             if (duty.getStartTime().isAfter(duty.getEndTime())) {
                 return ResponseEntity.badRequest().body("Дата початку не може бути пізніше дати кінця");
             }
-
-            // Використовуємо новий метод
             if (service.hasOverlap(duty, null)) {
                 return ResponseEntity.badRequest().body("Цей період уже зайнятий іншим чергуванням");
             }
-
             CombatDuty saved = service.save(duty);
             return ResponseEntity.ok(saved);
         } catch (Exception e) {
@@ -131,12 +119,9 @@ public class CombatDutyController {
             if (duty.getStartTime().isAfter(duty.getEndTime())) {
                 return ResponseEntity.badRequest().body("Дата початку не може бути пізніше дати кінця");
             }
-
-            // Використовуємо новий метод з excludeId
             if (service.hasOverlap(duty, id)) {
                 return ResponseEntity.badRequest().body("Цей період уже зайнятий іншим чергуванням");
             }
-
             duty.setId(id);
             CombatDuty updated = service.save(duty);
             return ResponseEntity.ok(updated);
@@ -156,35 +141,24 @@ public class CombatDutyController {
         }
     }
 
-    // ===== ДОПОМІЖНИЙ МЕТОД ДЛЯ ПЕРЕВІРКИ ПЕРЕТИНУ =====
-    private boolean hasOverlap(CombatDuty newDuty, Long excludeId) {
-        java.time.LocalDateTime newStart = newDuty.getStartTime();
-        java.time.LocalDateTime newEnd = newDuty.getEndTime();
-
-        List<CombatDuty> all = service.getAll();
-        for (CombatDuty existing : all) {
-            // Якщо це те саме чергування (при оновленні) – пропускаємо
-            if (excludeId != null && existing.getId().equals(excludeId)) {
-                continue;
-            }
-            java.time.LocalDateTime existingStart = existing.getStartTime();
-            java.time.LocalDateTime existingEnd = existing.getEndTime();
-
-            // Перевірка на перетин: новий початок раніше за існуючий кінець І новий кінець пізніше за існуючий початок
-            if (newStart.isBefore(existingEnd) && newEnd.isAfter(existingStart)) {
-                return true; // Є перетин
-            }
-        }
-        return false; // Перетину немає
-    }
-
-    // ===== ЕКСПОРТ XLSX =====
+    // ===== ЕКСПОРТ XLSX (без пагінації) =====
     @GetMapping("/api/export")
     public ResponseEntity<byte[]> exportXlsx(
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) Integer month) {
         try {
-            List<CombatDuty> duties = getAllApi(year, month);
+            List<CombatDuty> duties = service.getAll();
+            if (year != null || month != null) {
+                duties = duties.stream()
+                        .filter(d -> {
+                            LocalDate date = d.getStartTime().toLocalDate();
+                            boolean match = true;
+                            if (year != null) match = match && date.getYear() == year;
+                            if (month != null) match = match && date.getMonthValue() == month;
+                            return match;
+                        })
+                        .collect(Collectors.toList());
+            }
             byte[] data = exportToXlsx(duties);
             String filename = URLEncoder.encode("Бойове_чергування" +
                     (year != null ? "_" + year : "") +
@@ -205,7 +179,6 @@ public class CombatDutyController {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         try (XSSFWorkbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = wb.createSheet("Чергування");
-
             CellStyle headerStyle = createHeaderStyle(wb);
             CellStyle centerStyle = createCenterStyle(wb);
             CellStyle leftStyle = createLeftStyle(wb);
@@ -217,7 +190,6 @@ public class CombatDutyController {
             Row headerRow = sheet.createRow(0);
             headerRow.setHeightInPoints(25);
             for (int i = 0; i < headers.length; i++) {
-                // Попередньо встановлюємо ширину (потім перерахуємо)
                 sheet.setColumnWidth(i, (headers[i].length() + 6) * 256);
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
@@ -247,19 +219,15 @@ public class CombatDutyController {
                 createCell(row, col++, d.getNtp() != null ? d.getNtp() : 0, centerStyle);
             }
 
-            // Автоматичне підігнання ширини для всіх колонок, крім "Доповідь"
             for (int i = 0; i < headers.length; i++) {
                 if (i == 10) {
-                    // Колонка "Доповідь" – ширша (80 символів)
                     sheet.setColumnWidth(i, 80 * 256);
                 } else {
                     sheet.autoSizeColumn(i);
-                    // Додаємо невеликий запас, щоб текст не прилипав до краю
                     int currentWidth = sheet.getColumnWidth(i);
                     sheet.setColumnWidth(i, currentWidth + 512);
                 }
             }
-
             wb.write(out);
             return out.toByteArray();
         }
