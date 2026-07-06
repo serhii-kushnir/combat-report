@@ -20,7 +20,7 @@ public interface CombatDutyRepository extends JpaRepository<CombatDuty, Long> {
     @Query("SELECT DISTINCT MONTH(c.startTime) FROM CombatDuty c ORDER BY MONTH(c.startTime) ASC")
     List<Integer> findDistinctMonths();
 
-    // Перевірка перетину (пункт 4)
+    // Перевірка перетину
     @Query("SELECT COUNT(c) > 0 FROM CombatDuty c " +
            "WHERE c.startTime < :endTime AND c.endTime > :startTime " +
            "AND (:excludeId IS NULL OR c.id != :excludeId)")
@@ -28,13 +28,13 @@ public interface CombatDutyRepository extends JpaRepository<CombatDuty, Long> {
                           @Param("endTime") LocalDateTime endTime,
                           @Param("excludeId") Long excludeId);
 
-    // Оптимізація завантаження (пункт 8)
+    // Для оптимізації (не використовується, але залишаємо)
     @Query("SELECT c FROM CombatDuty c " +
            "WHERE c.startTime <= :endDateTime AND c.endTime >= :startDateTime")
     List<CombatDuty> findOverlapping(@Param("startDateTime") LocalDateTime startDateTime,
                                      @Param("endDateTime") LocalDateTime endDateTime);
 
-    // ----- Нові методи з пагінацією -----
+    // ===== НОВІ МЕТОДИ З ПАГІНАЦІЄЮ =====
     @Query("SELECT c FROM CombatDuty c WHERE YEAR(c.startTime) = :year AND MONTH(c.startTime) = :month")
     Page<CombatDuty> findByYearAndMonth(@Param("year") int year,
                                         @Param("month") int month,

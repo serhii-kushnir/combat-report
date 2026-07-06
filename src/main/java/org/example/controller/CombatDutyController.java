@@ -17,7 +17,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -35,7 +37,7 @@ public class CombatDutyController {
         return "combat-duty";
     }
 
-    // ===== API (з пагінацією) =====
+    // ===== API З ПАГІНАЦІЄЮ =====
     @GetMapping("/api")
     @ResponseBody
     public Page<CombatDuty> getAllApi(@RequestParam(required = false) Integer year,
@@ -51,11 +53,17 @@ public class CombatDutyController {
         }
     }
 
-    // ===== Для фільтрів (роки, місяці) без пагінації =====
+    // ===== ЗАГАЛЬНА СТАТИСТИКА (НОВИЙ ЕНДПОІНТ) =====
+    @GetMapping("/api/general-stats")
+    @ResponseBody
+    public Map<String, Long> getGeneralStats() {
+        return service.getGeneralStats();
+    }
+
+    // ===== ДЛЯ ФІЛЬТРІВ (роки, місяці) БЕЗ ПАГІНАЦІЇ =====
     @GetMapping("/api/years")
     @ResponseBody
     public List<Integer> getYears() {
-        // Використовуємо старий метод getAll() для отримання списку років
         return service.getAll().stream()
                 .map(d -> d.getStartTime().toLocalDate().getYear())
                 .distinct()
@@ -88,7 +96,7 @@ public class CombatDutyController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ===== CRUD (без змін) =====
+    // ===== CRUD =====
     @PostMapping("/api")
     @ResponseBody
     public ResponseEntity<?> create(@RequestBody CombatDuty duty) {
@@ -141,7 +149,7 @@ public class CombatDutyController {
         }
     }
 
-    // ===== ЕКСПОРТ XLSX (без пагінації) =====
+    // ===== ЕКСПОРТ XLSX =====
     @GetMapping("/api/export")
     public ResponseEntity<byte[]> exportXlsx(
             @RequestParam(required = false) Integer year,

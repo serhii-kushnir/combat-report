@@ -9,7 +9,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -21,7 +23,7 @@ public class CombatDutyService {
         this.dutyRepo = dutyRepo;
     }
 
-    // ----- Без пагінації (для експорту та сумісності) -----
+    // ===== БЕЗ ПАГІНАЦІЇ (для експорту та фільтрів) =====
     @Transactional(readOnly = true)
     public List<CombatDuty> getAll() {
         return dutyRepo.findAll();
@@ -46,7 +48,7 @@ public class CombatDutyService {
         return dutyRepo.existsOverlap(duty.getStartTime(), duty.getEndTime(), excludeId);
     }
 
-    // ----- Нові методи з пагінацією -----
+    // ===== МЕТОДИ З ПАГІНАЦІЄЮ =====
     public Page<CombatDuty> getPage(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("startTime").descending());
         return dutyRepo.findAll(pageable);
@@ -60,5 +62,26 @@ public class CombatDutyService {
     public Page<CombatDuty> getByYearAndMonth(int year, int month, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("startTime").descending());
         return dutyRepo.findByYearAndMonth(year, month, pageable);
+    }
+
+    // ===== ЗАГАЛЬНА СТАТИСТИКА (НОВИЙ МЕТОД) =====
+    @Transactional(readOnly = true)
+    public Map<String, Long> getGeneralStats() {
+        List<CombatDuty> all = dutyRepo.findAll();
+        long total = all.size();
+        long totalSorties = all.stream().mapToLong(d -> d.getTotalSorties() != null ? d.getTotalSorties() : 0).sum();
+        long combatSorties = all.stream().mapToLong(d -> d.getCombatSorties() != null ? d.getCombatSorties() : 0).sum();
+        long losses = all.stream().mapToLong(d -> d.getLosses() != null ? d.getLosses() : 0).sum();
+        long destructions = all.stream().mapToLong(d -> d.getDestructions() != null ? d.getDestructions() : 0).sum();
+        long ntp = all.stream().mapToLong(d -> d.getNtp() != null ? d.getNtp() : 0).sum();
+
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("total", total);
+        stats.put("totalSorties", totalSorties);
+        stats.put("combatSorties", combatSorties);
+        stats.put("losses", losses);
+        stats.put("destructions", destructions);
+        stats.put("ntp", ntp);
+        return stats;
     }
 }
