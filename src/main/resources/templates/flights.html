@@ -168,11 +168,18 @@
             transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
 
-        /* ===== СТАТИСТИКА ===== */
-        .stats {
+        /* ===== СТАТИСТИКА (два блоки в одному рядку) ===== */
+        .stats-row {
             display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            flex-wrap: wrap;
             gap: 10px;
             margin-bottom: 14px;
+        }
+        .stats-group {
+            display: flex;
+            gap: 10px;
             flex-wrap: wrap;
         }
         .stat-card {
@@ -195,6 +202,8 @@
             color: var(--text-secondary);
             transition: color 0.3s;
         }
+        .stat-card .num.hits { color: var(--stat-num-hits); }
+        .stat-card .num.loss { color: var(--stat-num-loss); }
 
         /* ===== ТАБЛИЦЯ ===== */
         .table-wrap {
@@ -400,50 +409,63 @@
         }
         .note-cell:hover { color: var(--btn-primary-bg); }
 
-        /* Додаткові стилі для темної теми */
-        .dark-theme .toast.ok { background: var(--toast-success); }
-        .dark-theme .toast.err { background: var(--toast-error); }
-        .dark-theme .stat-card .num[style*="color:#2e7d32"] { color: var(--stat-num-hits) !important; }
-        .dark-theme .stat-card .num[style*="color:#d32f2f"] { color: var(--stat-num-loss) !important; }
-        .dark-theme td[style*="color:#c62828"] { color: var(--text-loss-reason) !important; }
-        .dark-theme td[style*="color:#666"] { color: var(--text-note) !important; }
-        /* ===== КНОПКА ДРУК ===== */
-        .btn-print {
-            background: #607d8b;
-            color: white;
-            padding: 7px 14px;
-            border: none;
-            border-radius: 5px;
+        /* ===== ПАГІНАЦІЯ (як у combat-duty) ===== */
+        .pagination {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            margin-top: 16px;
+            padding: 8px 0;
+        }
+        .pagination button {
+            padding: 4px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-card);
             cursor: pointer;
+            transition: all 0.2s;
             font-size: 13px;
-            font-weight: 600;
-            transition: background 0.2s;
+            color: var(--text-primary);
         }
-        .btn-print:hover {
-            background: #546e7a;
+        .pagination button:hover:not(:disabled) {
+            background: var(--bg-hover);
         }
-        .dark-theme .btn-print {
-            background: #4a5a6a;
-            color: white;
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
-        .dark-theme .btn-print:hover {
-            background: #5a6a7a;
+        .pagination .page-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 4px 8px;
         }
 
-        /* ===== СТИЛІ ДЛЯ ДРУКУ ===== */
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .stats-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .stats-group {
+                justify-content: center;
+            }
+            .stat-card {
+                min-width: 80px;
+                padding: 8px 12px;
+            }
+            .stat-card .num {
+                font-size: 20px;
+            }
+        }
+
+        /* ===== ДРУК ===== */
         @media print {
-            /* Ховаємо всі елементи інтерфейсу */
-            .sidebar,
-            .toolbar,
-            .stats,
-            .no-print,
-            .btn,
-            .btn-print,
-            .btn-success,
-            .btn-warning,
-            select,
-            input,
-            .status-menu {
+            .sidebar, .toolbar, .stats-row, .no-print, .btn, .btn-print, .btn-success, .btn-primary, .pagination {
                 display: none !important;
             }
             body {
@@ -499,22 +521,6 @@
             tr {
                 page-break-inside: avoid;
             }
-            /* Скасовуємо sticky для друку */
-            .col-num,
-            .col-rank,
-            .col-name,
-            .num-cell,
-            .rank-cell,
-            .name-cell {
-                position: static !important;
-                background: white !important;
-                left: auto !important;
-                z-index: auto !important;
-                font-size: 7px !important;
-                padding: 3px 3px !important;
-                text-align: center !important;
-            }
-            /* Рядки зі статусом "знищення" – зелений фон */
             .row-success td {
                 background: #e8f5e9 !important;
                 -webkit-print-color-adjust: exact !important;
@@ -543,13 +549,9 @@
                 overflow: visible !important;
                 white-space: normal !important;
             }
-            /* Колонка "Дії" – ховаємо */
-            .actions-col,
-            td:last-child,
-            th:last-child {
+            .actions-col, td:last-child, th:last-child {
                 display: none !important;
             }
-            /* Для темної теми */
             .dark-theme td {
                 color: black !important;
                 background: white !important;
@@ -569,6 +571,29 @@
                 size: landscape;
                 margin: 5mm 4mm 5mm 4mm;
             }
+        }
+
+        /* ===== КНОПКА ДРУК ===== */
+        .btn-print {
+            background: #607d8b;
+            color: white;
+            padding: 7px 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-print:hover {
+            background: #546e7a;
+        }
+        .dark-theme .btn-print {
+            background: #4a5a6a;
+            color: white;
+        }
+        .dark-theme .btn-print:hover {
+            background: #5a6a7a;
         }
     </style>
     <link th:replace="~{fragments :: sidebar-css}">
@@ -593,7 +618,22 @@
                 </button>
             </div>
 
-            <div class="stats" id="statsBar"></div>
+            <!-- СТАТИСТИКА – один рядок, дві групи -->
+            <div class="stats-row">
+                <!-- ЛІВА група: статистика поточної сторінки -->
+                <div class="stats-group" id="statsBar">
+                    <div class="stat-card"><div class="num" id="pageTotal">—</div><div class="lbl">На сторінці</div></div>
+                    <div class="stat-card"><div class="num hits" id="pageHits">—</div><div class="lbl">Знищень на стор.</div></div>
+                    <div class="stat-card"><div class="num loss" id="pageLoss">—</div><div class="lbl">Втрат на стор.</div></div>
+                </div>
+
+                <!-- ПРАВА група: загальна статистика з БД -->
+                <div class="stats-group" id="generalStatsBar">
+                    <div class="stat-card"><div class="num" id="genTotal">—</div><div class="lbl">Всього в БД</div></div>
+                    <div class="stat-card"><div class="num hits" id="genHits">—</div><div class="lbl">Знищень в БД</div></div>
+                    <div class="stat-card"><div class="num loss" id="genLoss">—</div><div class="lbl">Втрат в БД</div></div>
+                </div>
+            </div>
 
             <div class="table-wrap">
                 <table>
@@ -625,291 +665,315 @@
                     </tbody>
                 </table>
             </div>
-        </div>
 
-        <!-- Форма додавання/редагування -->
-        <div class="modal-overlay" id="formModal">
-            <div class="modal">
-                <h2 id="modalTitle">Додати запис</h2>
-                <input type="hidden" id="editId">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Порядковий №</label>
-                        <input type="number" id="fNum" placeholder="1">
-                    </div>
-                    <div class="form-group">
-                        <label>Дата</label>
-                        <input type="date" id="fDate">
-                    </div>
-                    <div class="form-group">
-                        <label>Екіпаж</label>
-                        <input type="text" id="fCrew" placeholder="СКОПА">
-                    </div>
-                    <div class="form-group">
-                        <label>Місяць (лист)</label>
-                        <input type="text" id="fMonth" placeholder="Травень">
-                    </div>
-                    <div class="form-group full">
-                        <label>Подія</label>
-                        <input type="text" id="fEvent" placeholder="Підрив по цілі">
-                    </div>
-                    <div class="form-group">
-                        <label>Час взльоту</label>
-                        <input type="time" id="fTakeoff">
-                    </div>
-                    <div class="form-group">
-                        <label>Час втрати/підриву</label>
-                        <input type="time" id="fLoss">
-                    </div>
-                    <div class="form-group full">
-                        <label>Координати</label>
-                        <input type="text" id="fCoords" placeholder="46.482 N, 30.723 E">
-                    </div>
-                    <div class="form-group">
-                        <label>Азимут (°)</label>
-                        <input type="number" id="fAzimuth" placeholder="50" min="0" max="360">
-                    </div>
-                    <div class="form-group">
-                        <label>Відстань (м)</label>
-                        <input type="number" id="fDist" placeholder="10000">
-                    </div>
-                    <div class="form-group">
-                        <label>Висота польоту (м)</label>
-                        <input type="number" id="fFlightAlt" placeholder="2042">
-                    </div>
-                    <div class="form-group">
-                        <label>Тип цілі</label>
-                        <input type="text" id="fType" placeholder="БпЛА крило">
-                    </div>
-                    <div class="form-group">
-                        <label>Ідентифікація</label>
-                        <input type="text" id="fIdent" placeholder="Дружній">
-                    </div>
-                    <div class="form-group">
-                        <label>Засіб ураження</label>
-                        <input type="text" id="fWeapon" placeholder="AS3 Merops (нічний)">
-                    </div>
-                    <div class="form-group">
-                        <label>Вибухівка</label>
-                        <input type="text" id="fExplosive" placeholder="3-1.2 КУФ 1,2 кг">
-                    </div>
-                    <div class="form-group">
-                        <label>Детонатор</label>
-                        <input type="text" id="fDetonator" placeholder="Розумна плата ініціації">
-                    </div>
-                    <div class="form-group">
-                        <label>Висота польоту (м)</label>
-                        <input type="text" id="fAltitude" placeholder="2042">
-                    </div>
-                    <div class="form-group">
-                        <label>Висота цілі (м)</label>
-                        <input type="number" id="fTargetAlt" placeholder="600">
-                    </div>
-                    <div class="form-group">
-                        <label>Ціль</label>
-                        <input type="text" id="fTarget" placeholder="Шахід 8241">
-                    </div>
-                    <div class="form-group">
-                        <label>Швидкість цілі (км/год)</label>
-                        <input type="number" id="fSpeed" placeholder="160">
-                    </div>
-                    <div class="form-group">
-                        <label>Причина втрати</label>
-                        <select id="fLossReason">
-                            <option value="">— не вказано —</option>
-                            <option>Відмова батареї</option>
-                            <option>Втрата сигналу відео</option>
-                            <option>Втрата керування</option>
-                            <option>Знищення цілі, успішне застосування (камікадзе)</option>
-                            <option>Збитий ціллю</option>
-                            <option>Технічна несправність</option>
-                            <option>РЕБ противника</option>
-                            <option>Інше</option>
-                        </select>
-                    </div>
-                    <div class="form-group full">
-                        <label>Примітка</label>
-                        <textarea id="fNote"></textarea>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn" onclick="closeModal('formModal')" style="background:#eee">Скасувати</button>
-                    <button class="btn btn-primary" onclick="saveRecord()">Зберегти</button>
-                </div>
+            <!-- ПАГІНАЦІЯ (як у combat-duty) -->
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== МОДАЛЬНІ ВІКНА ===== -->
+<div class="modal-overlay" id="formModal">
+    <div class="modal">
+        <h2 id="modalTitle">Додати запис</h2>
+        <input type="hidden" id="editId">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Порядковий №</label>
+                <input type="number" id="fNum" placeholder="1">
+            </div>
+            <div class="form-group">
+                <label>Дата</label>
+                <input type="date" id="fDate">
+            </div>
+            <div class="form-group">
+                <label>Екіпаж</label>
+                <input type="text" id="fCrew" placeholder="СКОПА">
+            </div>
+            <div class="form-group">
+                <label>Місяць (лист)</label>
+                <input type="text" id="fMonth" placeholder="Травень">
+            </div>
+            <div class="form-group full">
+                <label>Подія</label>
+                <input type="text" id="fEvent" placeholder="Підрив по цілі">
+            </div>
+            <div class="form-group">
+                <label>Час взльоту</label>
+                <input type="time" id="fTakeoff">
+            </div>
+            <div class="form-group">
+                <label>Час втрати/підриву</label>
+                <input type="time" id="fLoss">
+            </div>
+            <div class="form-group full">
+                <label>Координати</label>
+                <input type="text" id="fCoords" placeholder="46.482 N, 30.723 E">
+            </div>
+            <div class="form-group">
+                <label>Азимут (°)</label>
+                <input type="number" id="fAzimuth" placeholder="50" min="0" max="360">
+            </div>
+            <div class="form-group">
+                <label>Відстань (м)</label>
+                <input type="number" id="fDist" placeholder="10000">
+            </div>
+            <div class="form-group">
+                <label>Висота польоту (м)</label>
+                <input type="number" id="fFlightAlt" placeholder="2042">
+            </div>
+            <div class="form-group">
+                <label>Тип цілі</label>
+                <input type="text" id="fType" placeholder="БпЛА крило">
+            </div>
+            <div class="form-group">
+                <label>Ідентифікація</label>
+                <input type="text" id="fIdent" placeholder="Дружній">
+            </div>
+            <div class="form-group">
+                <label>Засіб ураження</label>
+                <input type="text" id="fWeapon" placeholder="AS3 Merops (нічний)">
+            </div>
+            <div class="form-group">
+                <label>Вибухівка</label>
+                <input type="text" id="fExplosive" placeholder="3-1.2 КУФ 1,2 кг">
+            </div>
+            <div class="form-group">
+                <label>Детонатор</label>
+                <input type="text" id="fDetonator" placeholder="Розумна плата ініціації">
+            </div>
+            <div class="form-group">
+                <label>Висота польоту (м)</label>
+                <input type="text" id="fAltitude" placeholder="2042">
+            </div>
+            <div class="form-group">
+                <label>Висота цілі (м)</label>
+                <input type="number" id="fTargetAlt" placeholder="600">
+            </div>
+            <div class="form-group">
+                <label>Ціль</label>
+                <input type="text" id="fTarget" placeholder="Шахід 8241">
+            </div>
+            <div class="form-group">
+                <label>Швидкість цілі (км/год)</label>
+                <input type="number" id="fSpeed" placeholder="160">
+            </div>
+            <div class="form-group">
+                <label>Причина втрати</label>
+                <select id="fLossReason">
+                    <option value="">— не вказано —</option>
+                    <option>Відмова батареї</option>
+                    <option>Втрата сигналу відео</option>
+                    <option>Втрата керування</option>
+                    <option>Знищення цілі, успішне застосування (камікадзе)</option>
+                    <option>Збитий ціллю</option>
+                    <option>Технічна несправність</option>
+                    <option>РЕБ противника</option>
+                    <option>Інше</option>
+                </select>
+            </div>
+            <div class="form-group full">
+                <label>Примітка</label>
+                <textarea id="fNote"></textarea>
             </div>
         </div>
-
-        <!-- Підтвердження видалення -->
-        <div class="confirm-overlay" id="confirmModal">
-            <div class="confirm-box">
-                <p>Видалити цей запис?</p>
-                <div class="confirm-actions">
-                    <button class="btn" onclick="closeModal('confirmModal')" style="background:#eee">Скасувати</button>
-                    <button class="btn btn-danger" id="confirmBtn">Видалити</button>
-                </div>
-            </div>
+        <div class="modal-actions">
+            <button class="btn" onclick="closeModal('formModal')" style="background:#eee">Скасувати</button>
+            <button class="btn btn-primary" onclick="saveRecord()">Зберегти</button>
         </div>
+    </div>
+</div>
 
-        <div class="toast" id="toast"></div>
+<div class="confirm-overlay" id="confirmModal">
+    <div class="confirm-box">
+        <p>Видалити цей запис?</p>
+        <div class="confirm-actions">
+            <button class="btn" onclick="closeModal('confirmModal')" style="background:#eee">Скасувати</button>
+            <button class="btn btn-danger" id="confirmBtn">Видалити</button>
+        </div>
+    </div>
+</div>
 
-        <script>
-            // ===== ГЛОБАЛЬНІ ЗМІННІ =====
-            let allRecords = [];
-            let sortCol   = 'num';
-            let sortDir   = -1; // за замовчуванням спадання за №
-            let deleteTargetId = null;
-            let currentPage = 0;
-            let pageSize = 20;
-            let totalElements = 0;
-            let currentMonth = '';
-            let currentYear = '';
+<div class="toast" id="toast"></div>
 
-            // ===== ДОПОМІЖНІ =====
-            function fmtDate(d) {
-                if (!d) return '';
-                const [y, m, day] = d.substring(0,10).split('-');
-                return `${day}.${m}.${y}`;
-            }
-            function fmtTime(t) {
-                if (!t) return '';
-                return t.substring(0,5);
-            }
-            function showToast(msg, type) {
-                const t = document.getElementById('toast');
-                t.textContent = msg;
-                t.className = `toast ${type} show`;
-                setTimeout(() => t.classList.remove('show'), 3000);
-            }
-            function openModal(id)  { document.getElementById(id).classList.add('open'); }
-            function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+<script>
+    // ===== ГЛОБАЛЬНІ ЗМІННІ =====
+    let allRecords = [];
+    let sortCol   = 'num';
+    let sortDir   = -1;
+    let deleteTargetId = null;
 
-            // ===== ЗАВАНТАЖЕННЯ ДАНИХ З ПАГІНАЦІЄЮ =====
-            async function loadRecords() {
-                const month = document.getElementById('monthFilter').value;
-                const year  = document.getElementById('yearFilter').value;
-                currentMonth = month;
-                currentYear = year;
+    // ПАГІНАЦІЯ (як у combat-duty)
+    let currentPage = 0;
+    let pageSize = 20;
+    let totalElements = 0;
 
-                let url = `/flights/api?page=${currentPage}&size=${pageSize}`;
-                if (month) url += `&month=${encodeURIComponent(month)}`;
-                else if (year) url += `&year=${year}`;
+    // ===== ДОПОМІЖНІ =====
+    function fmtDate(d) {
+        if (!d) return '';
+        const [y, m, day] = d.substring(0,10).split('-');
+        return `${day}.${m}.${y}`;
+    }
+    function fmtTime(t) {
+        if (!t) return '';
+        return t.substring(0,5);
+    }
+    function showToast(msg, type) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = `toast ${type} show`;
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-                try {
-                    const res = await fetch(url);
-                    if (!res.ok) { showToast('Помилка завантаження', 'err'); return; }
-                    const pageData = await res.json();
-                    allRecords = pageData.content || [];
-                    totalElements = pageData.totalElements || 0;
+    // ===== ЗАВАНТАЖЕННЯ ЗАГАЛЬНОЇ СТАТИСТИКИ З БД =====
+    async function loadGeneralStats() {
+        try {
+            const res = await fetch('/flights/api/general-stats');
+            if (!res.ok) throw new Error('Network error');
+            const stats = await res.json();
+            document.getElementById('genTotal').textContent = stats.total || 0;
+            document.getElementById('genHits').textContent = stats.hits || 0;
+            document.getElementById('genLoss').textContent = stats.loss || 0;
+        } catch (e) {
+            console.error('Помилка завантаження загальної статистики:', e);
+            document.getElementById('genTotal').textContent = '—';
+            document.getElementById('genHits').textContent = '—';
+            document.getElementById('genLoss').textContent = '—';
+        }
+    }
 
-                    if (!allRecords.length) {
-                        renderTable([]);
-                        renderStats();
-                        renderPagination();
-                        return;
-                    }
+    // ===== СТАТИСТИКА ПОТОЧНОЇ СТОРІНКИ =====
+    function renderPageStats() {
+        const total = allRecords.length;
+        const hits  = allRecords.filter(r => r.event && (r.event.toLowerCase().includes('знищен') || r.event.toLowerCase().includes('підрив'))).length;
+        const loss  = allRecords.filter(r => r.event && r.event.toLowerCase().includes('втрат')).length;
+        document.getElementById('pageTotal').textContent = total;
+        document.getElementById('pageHits').textContent = hits;
+        document.getElementById('pageLoss').textContent = loss;
+    }
 
-                    applyFilter();
-                    renderStats();
-                } catch (err) {
-                    console.error(err);
-                    showToast('Помилка мережі', 'err');
-                }
-            }
+    // ===== ЗАВАНТАЖЕННЯ ДАНИХ (ПАГІНАЦІЯ) =====
+    async function loadRecords() {
+        const month = document.getElementById('monthFilter').value;
+        const year  = document.getElementById('yearFilter').value;
 
-            // ===== ФІЛЬТР + СОРТУВАННЯ =====
-            function applyFilter() {
-                const q = document.getElementById('searchInput').value.toLowerCase();
-                let filtered = allRecords;
-                if (q) {
-                    filtered = allRecords.filter(r =>
-                        [r.crew, r.event, r.target, r.weapon, r.note, r.coordinates]
-                            .some(v => v && v.toLowerCase().includes(q))
-                    );
-                }
-                if (sortCol) {
-                    filtered = [...filtered].sort((a, b) => {
-                        const va = getSortValue(a, sortCol);
-                        const vb = getSortValue(b, sortCol);
-                        if (typeof va === 'number' && typeof vb === 'number') {
-                            return (va - vb) * sortDir;
-                        }
-                        const sa = String(va).toLowerCase();
-                        const sb = String(vb).toLowerCase();
-                        if (sa < sb) return -1 * sortDir;
-                        if (sa > sb) return 1 * sortDir;
-                        return 0;
-                    });
-                }
-                renderTable(filtered);
-                renderStats();
+        let url = `/flights/api?page=${currentPage}&size=${pageSize}`;
+        if (month) url += `&month=${encodeURIComponent(month)}`;
+        else if (year) url += `&year=${year}`;
+
+        try {
+            const res = await fetch(url);
+            if (!res.ok) { showToast('Помилка завантаження', 'err'); return; }
+            const pageData = await res.json();
+            allRecords = pageData.content || [];
+            totalElements = pageData.totalElements || 0;
+
+            if (!allRecords.length) {
+                renderTable([]);
+                renderPageStats();
                 renderPagination();
+                return;
             }
 
-            function getSortValue(r, col) {
-                switch(col) {
-                    case 'num':    return r.recordNumber || 0;
-                    case 'date':   return r.flightDate || '';
-                    case 'crew':   return r.crew || '';
-                    case 'event':  return r.event || '';
-                    case 'takeoff': return r.takeoffTime || '';
-                    case 'loss':   return r.lossTime || '';
-                    case 'coords': return r.coordinates || '';
-                    case 'azimuth': return r.azimuth || 0;
-                    case 'dist':   return r.distance || 0;
-                    case 'alt':    return r.altitude || '';
-                    case 'weapon': return r.weapon || '';
-                    case 'targetAlt': return r.targetAltitude || 0;
-                    case 'target': return r.target || '';
-                    case 'speed':  return r.targetSpeed || 0;
-                    case 'loss_reason': return r.lossReason || '';
-                    default:       return '';
-                }
-            }
+            applyFilter();
+            renderPageStats();
+            loadGeneralStats();
+        } catch (err) {
+            console.error(err);
+            showToast('Помилка мережі', 'err');
+        }
+    }
 
-            // ===== ПАГІНАЦІЯ =====
-            function goToPage(page) {
-                const totalPages = Math.ceil(totalElements / pageSize);
-                if (page < 0 || page >= totalPages) return;
-                currentPage = page;
-                loadRecords();
-            }
+    // ===== ФУНКЦІЇ ДЛЯ ПАГІНАЦІЇ (як у combat-duty) =====
+    function goToPage(page) {
+        const totalPages = Math.ceil(totalElements / pageSize);
+        if (page < 0 || page >= totalPages) return;
+        currentPage = page;
+        loadRecords();
+    }
+    // Робимо глобальною для onclick
+    window.goToPage = goToPage;
 
-            function renderPagination() {
-                const totalPages = Math.ceil(totalElements / pageSize);
-                if (totalPages <= 1) {
-                    const pag = document.getElementById('pagination');
-                    if (pag) pag.style.display = 'none';
-                    return;
-                }
-                let html = `<div style="display:flex; gap:10px; align-items:center; justify-content:center; margin-top:12px;">`;
-                html += `<button class="btn btn-sm" onclick="goToPage(0)" ${currentPage === 0 ? 'disabled' : ''}>⏮</button>`;
-                html += `<button class="btn btn-sm" onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>`;
-                html += `<span>Сторінка ${currentPage + 1} з ${totalPages} (всього ${totalElements} записів)</span>`;
-                html += `<button class="btn btn-sm" onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>▶</button>`;
-                html += `<button class="btn btn-sm" onclick="goToPage(${totalPages - 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>⏭</button>`;
-                html += `</div>`;
-                let pagDiv = document.getElementById('pagination');
-                if (!pagDiv) {
-                    pagDiv = document.createElement('div');
-                    pagDiv.id = 'pagination';
-                    document.querySelector('.table-wrap').after(pagDiv);
-                }
-                pagDiv.style.display = 'block';
-                pagDiv.innerHTML = html;
-            }
+    function renderPagination() {
+        const totalPages = Math.ceil(totalElements / pageSize);
+        const pag = document.getElementById('pagination');
+        if (totalPages <= 1) {
+            pag.innerHTML = '';
+            return;
+        }
+        let html = '';
+        html += `<button onclick="goToPage(0)" ${currentPage === 0 ? 'disabled' : ''}>⏮</button>`;
+        html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>`;
+        html += `<span class="page-info">Сторінка ${currentPage + 1} з ${totalPages} (всього ${totalElements} записів)</span>`;
+        html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>▶</button>`;
+        html += `<button onclick="goToPage(${totalPages - 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>⏭</button>`;
+        pag.innerHTML = html;
+    }
 
-            // ===== РЕНДЕРИНГ ТАБЛИЦІ =====
-            function renderTable(records) {
-                const body = document.getElementById('tableBody');
-                if (!records || !records.length) {
-                    body.innerHTML = '<tr><td colspan="19" class="empty-state">Записів немає</td></tr>';
-                    return;
+    // ===== ФІЛЬТР + СОРТУВАННЯ =====
+    function applyFilter() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        let filtered = allRecords;
+        if (q) {
+            filtered = allRecords.filter(r =>
+                [r.crew, r.event, r.target, r.weapon, r.note, r.coordinates]
+                    .some(v => v && v.toLowerCase().includes(q))
+            );
+        }
+        if (sortCol) {
+            filtered = [...filtered].sort((a, b) => {
+                const va = getSortValue(a, sortCol);
+                const vb = getSortValue(b, sortCol);
+                if (typeof va === 'number' && typeof vb === 'number') {
+                    return (va - vb) * sortDir;
                 }
-                body.innerHTML = records.map(r => {
-                    const isDestroyed = r.event && (r.event.toLowerCase().includes('знищен') || r.event.toLowerCase().includes('підрив'));
-                    const badgeCls = isDestroyed ? 'badge-success' : 'badge-warning';
-                    const rowCls = isDestroyed ? 'row-success' : '';
-                    return `<tr class="${rowCls}">
+                const sa = String(va).toLowerCase();
+                const sb = String(vb).toLowerCase();
+                if (sa < sb) return -1 * sortDir;
+                if (sa > sb) return 1 * sortDir;
+                return 0;
+            });
+        }
+        renderTable(filtered);
+        renderPageStats();
+        renderPagination();
+    }
+
+    function getSortValue(r, col) {
+        switch(col) {
+            case 'num':    return r.recordNumber || 0;
+            case 'date':   return r.flightDate || '';
+            case 'crew':   return r.crew || '';
+            case 'event':  return r.event || '';
+            case 'takeoff': return r.takeoffTime || '';
+            case 'loss':   return r.lossTime || '';
+            case 'coords': return r.coordinates || '';
+            case 'azimuth': return r.azimuth || 0;
+            case 'dist':   return r.distance || 0;
+            case 'alt':    return r.altitude || '';
+            case 'weapon': return r.weapon || '';
+            case 'targetAlt': return r.targetAltitude || 0;
+            case 'target': return r.target || '';
+            case 'speed':  return r.targetSpeed || 0;
+            case 'loss_reason': return r.lossReason || '';
+            default:       return '';
+        }
+    }
+
+    // ===== РЕНДЕРИНГ ТАБЛИЦІ =====
+    function renderTable(records) {
+        const body = document.getElementById('tableBody');
+        if (!records || !records.length) {
+            body.innerHTML = '<tr><td colspan="19" class="empty-state">Записів немає</td></tr>';
+            return;
+        }
+        body.innerHTML = records.map(r => {
+            const isDestroyed = r.event && (r.event.toLowerCase().includes('знищен') || r.event.toLowerCase().includes('підрив'));
+            const badgeCls = isDestroyed ? 'badge-success' : 'badge-warning';
+            const rowCls = isDestroyed ? 'row-success' : '';
+            return `<tr class="${rowCls}">
                 <td style="text-align:center">${r.recordNumber ?? ''}</td>
                 <td style="text-align:center">${fmtDate(r.flightDate)}</td>
                 <td style="text-align:center">${r.crew ?? ''}</td>
@@ -938,193 +1002,190 @@
                     <button class="btn btn-danger btn-sm" onclick="confirmDelete(${r.id})">🗑</button>
                 </td>
             </tr>`;
-                }).join('');
-            }
+        }).join('');
+    }
 
-            // ===== СТАТИСТИКА (на основі всіх записів на поточній сторінці) =====
-            function renderStats() {
-                const total = totalElements;
-                const hits  = allRecords.filter(r => r.event && (r.event.toLowerCase().includes('знищен') || r.event.toLowerCase().includes('підрив'))).length;
-                const loss  = allRecords.filter(r => r.event && r.event.toLowerCase().includes('втрат')).length;
-                document.getElementById('statsBar').innerHTML = `
-            <div class="stat-card"><div class="num">${total}</div><div class="lbl">Всього вильотів</div></div>
-            <div class="stat-card"><div class="num" style="color:var(--stat-num-hits, #2e7d32)">${hits}</div><div class="lbl">Знищення цілі</div></div>
-            <div class="stat-card"><div class="num" style="color:var(--stat-num-loss, #d32f2f)">${loss}</div><div class="lbl">Втрат бортів</div></div>
-        `;
+    // ===== СОРТУВАННЯ =====
+    function sortBy(col) {
+        if (sortCol === col) {
+            sortDir *= -1;
+        } else {
+            sortCol = col;
+            sortDir = 1;
+        }
+        document.querySelectorAll('thead th').forEach(th => {
+            th.classList.remove('sort-asc', 'sort-desc');
+            if (th.dataset.col === col) {
+                th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
             }
+        });
+        applyFilter();
+    }
 
-            // ===== СОРТУВАННЯ =====
-            function sortBy(col) {
-                if (sortCol === col) {
-                    sortDir *= -1;
-                } else {
-                    sortCol = col;
-                    sortDir = 1;
-                }
-                applyFilter();
-            }
+    // ===== ЕКСПОРТ XLSX =====
+    function exportXlsx() {
+        const month = document.getElementById('monthFilter').value;
+        const year  = document.getElementById('yearFilter').value;
+        let url = '/flights/api/export';
+        if (month) url += `?month=${encodeURIComponent(month)}`;
+        else if (year) url += `?year=${year}`;
+        window.location.href = url;
+    }
 
-            // ===== ЕКСПОРТ XLSX =====
-            function exportXlsx() {
-                const month = document.getElementById('monthFilter').value;
-                const year  = document.getElementById('yearFilter').value;
-                let url = '/flights/api/export';
-                if (month) url += `?month=${encodeURIComponent(month)}`;
-                else if (year) url += `?year=${year}`;
-                window.location.href = url;
-            }
+    // ===== МОДАЛЬНІ ВІКНА (додавання/редагування) =====
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent = 'Додати запис';
+        document.getElementById('editId').value = '';
+        const fields = ['fNum','fDate','fCrew','fMonth','fEvent','fTakeoff','fLoss',
+            'fCoords','fAzimuth','fDist','fFlightAlt','fType','fIdent','fWeapon','fExplosive',
+            'fDetonator','fAltitude','fTarget','fSpeed','fNote'];
+        document.getElementById('fLossReason').value = '';
+        fields.forEach(id => document.getElementById(id).value = '');
+        openModal('formModal');
+    }
 
-            // ===== МОДАЛЬНІ ВІКНА (додавання/редагування) =====
-            function openAddModal() {
-                document.getElementById('modalTitle').textContent = 'Додати запис';
-                document.getElementById('editId').value = '';
-                const fields = ['fNum','fDate','fCrew','fMonth','fEvent','fTakeoff','fLoss',
-                    'fCoords','fAzimuth','fDist','fFlightAlt','fType','fIdent','fWeapon','fExplosive',
-                    'fDetonator','fAltitude','fTarget','fSpeed','fNote'];
-                document.getElementById('fLossReason').value = '';
-                fields.forEach(id => document.getElementById(id).value = '');
-                openModal('formModal');
-            }
+    function openEditModal(id) {
+        const r = allRecords.find(x => x.id === id);
+        if (!r) return;
+        document.getElementById('modalTitle').textContent = 'Редагувати запис';
+        document.getElementById('editId').value = id;
+        document.getElementById('fNum').value      = r.recordNumber ?? '';
+        document.getElementById('fDate').value     = r.flightDate ? r.flightDate.substring(0,10) : '';
+        document.getElementById('fCrew').value     = r.crew ?? '';
+        document.getElementById('fMonth').value    = r.month ?? '';
+        document.getElementById('fEvent').value    = r.event ?? '';
+        document.getElementById('fTakeoff').value  = r.takeoffTime ? r.takeoffTime.substring(0,5) : '';
+        document.getElementById('fLoss').value     = r.lossTime ? r.lossTime.substring(0,5) : '';
+        document.getElementById('fCoords').value      = r.coordinates ?? '';
+        document.getElementById('fAzimuth').value   = r.azimuth ?? '';
+        document.getElementById('fDist').value      = r.distance ?? '';
+        document.getElementById('fFlightAlt').value = r.flightAltitude ?? '';
+        document.getElementById('fType').value     = r.targetType ?? '';
+        document.getElementById('fIdent').value    = r.identification ?? '';
+        document.getElementById('fWeapon').value   = r.weapon ?? '';
+        document.getElementById('fExplosive').value = r.explosive ?? '';
+        document.getElementById('fDetonator').value = r.detonator ?? '';
+        document.getElementById('fAltitude').value     = r.altitude ?? '';
+        document.getElementById('fTargetAlt').value  = r.targetAltitude ?? '';
+        document.getElementById('fTarget').value   = r.target ?? '';
+        document.getElementById('fSpeed').value      = r.targetSpeed ?? '';
+        document.getElementById('fLossReason').value = r.lossReason ?? '';
+        document.getElementById('fNote').value       = r.note ?? '';
+        openModal('formModal');
+    }
 
-            function openEditModal(id) {
-                const r = allRecords.find(x => x.id === id);
-                if (!r) return;
-                document.getElementById('modalTitle').textContent = 'Редагувати запис';
-                document.getElementById('editId').value = id;
-                document.getElementById('fNum').value      = r.recordNumber ?? '';
-                document.getElementById('fDate').value     = r.flightDate ? r.flightDate.substring(0,10) : '';
-                document.getElementById('fCrew').value     = r.crew ?? '';
-                document.getElementById('fMonth').value    = r.month ?? '';
-                document.getElementById('fEvent').value    = r.event ?? '';
-                document.getElementById('fTakeoff').value  = r.takeoffTime ? r.takeoffTime.substring(0,5) : '';
-                document.getElementById('fLoss').value     = r.lossTime ? r.lossTime.substring(0,5) : '';
-                document.getElementById('fCoords').value      = r.coordinates ?? '';
-                document.getElementById('fAzimuth').value   = r.azimuth ?? '';
-                document.getElementById('fDist').value      = r.distance ?? '';
-                document.getElementById('fFlightAlt').value = r.altitude ?? '';
-                document.getElementById('fType').value     = r.targetType ?? '';
-                document.getElementById('fIdent').value    = r.identification ?? '';
-                document.getElementById('fWeapon').value   = r.weapon ?? '';
-                document.getElementById('fExplosive').value = r.explosive ?? '';
-                document.getElementById('fDetonator').value = r.detonator ?? '';
-                document.getElementById('fAltitude').value     = r.altitude ?? '';
-                document.getElementById('fTargetAlt').value  = r.targetAltitude ?? '';
-                document.getElementById('fTarget').value   = r.target ?? '';
-                document.getElementById('fSpeed').value      = r.targetSpeed ?? '';
-                document.getElementById('fLossReason').value = r.lossReason ?? '';
-                document.getElementById('fNote').value       = r.note ?? '';
-                openModal('formModal');
-            }
+    async function saveRecord() {
+        const id = document.getElementById('editId').value;
+        const body = {
+            recordNumber:   parseInt(document.getElementById('fNum').value) || null,
+            flightDate:     document.getElementById('fDate').value || null,
+            crew:           document.getElementById('fCrew').value.trim(),
+            month:          document.getElementById('fMonth').value.trim(),
+            event:          document.getElementById('fEvent').value.trim(),
+            takeoffTime:    document.getElementById('fTakeoff').value || null,
+            lossTime:       document.getElementById('fLoss').value || null,
+            coordinates:    document.getElementById('fCoords').value.trim(),
+            azimuth:        parseInt(document.getElementById('fAzimuth').value) || null,
+            distance:       parseInt(document.getElementById('fDist').value) || null,
+            flightAltitude: parseInt(document.getElementById('fFlightAlt').value) || null,
+            targetType:     document.getElementById('fType').value.trim(),
+            identification: document.getElementById('fIdent').value.trim(),
+            weapon:         document.getElementById('fWeapon').value.trim(),
+            explosive:      document.getElementById('fExplosive').value.trim(),
+            detonator:      document.getElementById('fDetonator').value.trim(),
+            altitude:       document.getElementById('fAltitude').value.trim(),
+            targetAltitude: parseInt(document.getElementById('fTargetAlt').value) || null,
+            target:         document.getElementById('fTarget').value.trim(),
+            targetSpeed:    parseInt(document.getElementById('fSpeed').value) || null,
+            lossReason:     document.getElementById('fLossReason').value.trim(),
+            note:           document.getElementById('fNote').value.trim(),
+        };
 
-            async function saveRecord() {
-                const id = document.getElementById('editId').value;
-                const body = {
-                    recordNumber:   parseInt(document.getElementById('fNum').value) || null,
-                    flightDate:     document.getElementById('fDate').value || null,
-                    crew:           document.getElementById('fCrew').value.trim(),
-                    month:          document.getElementById('fMonth').value.trim(),
-                    event:          document.getElementById('fEvent').value.trim(),
-                    takeoffTime:    document.getElementById('fTakeoff').value || null,
-                    lossTime:       document.getElementById('fLoss').value || null,
-                    coordinates:    document.getElementById('fCoords').value.trim(),
-                    azimuth:        parseInt(document.getElementById('fAzimuth').value) || null,
-                    distance:       parseInt(document.getElementById('fDist').value) || null,
-                    flightAltitude: parseInt(document.getElementById('fFlightAlt').value) || null,
-                    targetType:     document.getElementById('fType').value.trim(),
-                    identification: document.getElementById('fIdent').value.trim(),
-                    weapon:         document.getElementById('fWeapon').value.trim(),
-                    explosive:      document.getElementById('fExplosive').value.trim(),
-                    detonator:      document.getElementById('fDetonator').value.trim(),
-                    altitude:       document.getElementById('fAltitude').value.trim(),
-                    targetAltitude: parseInt(document.getElementById('fTargetAlt').value) || null,
-                    target:         document.getElementById('fTarget').value.trim(),
-                    targetSpeed:    parseInt(document.getElementById('fSpeed').value) || null,
-                    lossReason:     document.getElementById('fLossReason').value.trim(),
-                    note:           document.getElementById('fNote').value.trim(),
-                };
-
-                const url    = id ? `/flights/api/${id}` : '/flights/api';
-                const method = id ? 'PUT' : 'POST';
-                try {
-                    const res = await fetch(url, {
-                        method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
-                    });
-                    if (res.ok) {
-                        closeModal('formModal');
-                        await loadRecords(); // перезавантажуємо поточну сторінку
-                        showToast(id ? 'Запис оновлено' : 'Запис додано', 'ok');
-                    } else {
-                        const msg = await res.text();
-                        showToast('Помилка: ' + msg, 'err');
-                    }
-                } catch (e) {
-                    showToast('Помилка мережі', 'err');
-                }
-            }
-
-            // ===== ВИДАЛЕННЯ =====
-            function confirmDelete(id) {
-                deleteTargetId = id;
-                document.getElementById('confirmBtn').onclick = async () => {
-                    const res = await fetch(`/flights/api/${deleteTargetId}`, {method:'DELETE'});
-                    closeModal('confirmModal');
-                    if (res.ok) {
-                        await loadRecords();
-                        showToast('Запис видалено', 'ok');
-                    } else {
-                        showToast('Помилка видалення', 'err');
-                    }
-                };
-                openModal('confirmModal');
-            }
-
-            // ===== ЗАВАНТАЖЕННЯ ФІЛЬТРІВ (роки, місяці) =====
-            async function loadYears() {
-                const res = await fetch('/flights/api/years');
-                const years = await res.json();
-                const sel = document.getElementById('yearFilter');
-                years.forEach(y => {
-                    const opt = document.createElement('option');
-                    opt.value = y; opt.textContent = y;
-                    sel.appendChild(opt);
-                });
-            }
-            async function loadMonths() {
-                const res = await fetch('/flights/api/months');
-                const months = await res.json();
-                const sel = document.getElementById('monthFilter');
-                months.forEach(m => {
-                    const opt = document.createElement('option');
-                    opt.value = m; opt.textContent = m;
-                    sel.appendChild(opt);
-                });
-            }
-
-            // ===== ОБРОБНИКИ ПОДІЙ =====
-            document.getElementById('yearFilter').onchange = () => {
-                document.getElementById('monthFilter').value = '';
+        const url    = id ? `/flights/api/${id}` : '/flights/api';
+        const method = id ? 'PUT' : 'POST';
+        try {
+            const res = await fetch(url, {
+                method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+            });
+            if (res.ok) {
+                closeModal('formModal');
                 currentPage = 0;
-                loadRecords();
-            };
-            document.getElementById('monthFilter').onchange = () => {
-                document.getElementById('yearFilter').value = '';
+                await loadRecords(); // перезавантажуємо з початку
+                await loadGeneralStats();
+                showToast(id ? 'Запис оновлено' : 'Запис додано', 'ok');
+            } else {
+                const msg = await res.text();
+                showToast('Помилка: ' + msg, 'err');
+            }
+        } catch (e) {
+            showToast('Помилка мережі', 'err');
+        }
+    }
+
+    // ===== ВИДАЛЕННЯ =====
+    function confirmDelete(id) {
+        deleteTargetId = id;
+        document.getElementById('confirmBtn').onclick = async () => {
+            const res = await fetch(`/flights/api/${deleteTargetId}`, {method:'DELETE'});
+            closeModal('confirmModal');
+            if (res.ok) {
                 currentPage = 0;
-                loadRecords();
-            };
-            document.getElementById('searchInput').oninput = applyFilter;
+                await loadRecords();
+                await loadGeneralStats();
+                showToast('Запис видалено', 'ok');
+            } else {
+                showToast('Помилка видалення', 'err');
+            }
+        };
+        openModal('confirmModal');
+    }
 
-            // ===== ЗАКРИТТЯ МОДАЛЬНИХ ВІКОН ПРИ КЛІКУ ПО ОВЕРЛЕЮ =====
-            document.querySelectorAll('.modal-overlay').forEach(el =>
-                el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
-            );
+    // ===== ЗАВАНТАЖЕННЯ ФІЛЬТРІВ (роки, місяці) =====
+    async function loadYears() {
+        const res = await fetch('/flights/api/years');
+        const years = await res.json();
+        const sel = document.getElementById('yearFilter');
+        years.forEach(y => {
+            const opt = document.createElement('option');
+            opt.value = y; opt.textContent = y;
+            sel.appendChild(opt);
+        });
+    }
+    async function loadMonths() {
+        const res = await fetch('/flights/api/months');
+        const months = await res.json();
+        const sel = document.getElementById('monthFilter');
+        months.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m; opt.textContent = m;
+            sel.appendChild(opt);
+        });
+    }
 
-            // ===== ІНІЦІАЛІЗАЦІЯ =====
-            loadYears();
-            loadMonths();
-            loadRecords();
-        </script>
-    </div>
-</div>
+    // ===== ОБРОБНИКИ ПОДІЙ =====
+    document.getElementById('yearFilter').onchange = () => {
+        document.getElementById('monthFilter').value = '';
+        currentPage = 0;
+        loadRecords();
+    };
+    document.getElementById('monthFilter').onchange = () => {
+        document.getElementById('yearFilter').value = '';
+        currentPage = 0;
+        loadRecords();
+    };
+    document.getElementById('searchInput').oninput = applyFilter;
+
+    // ===== ЗАКРИТТЯ МОДАЛЬНИХ ВІКОН ПРИ КЛІКУ ПО ОВЕРЛЕЮ =====
+    document.querySelectorAll('.modal-overlay').forEach(el =>
+        el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
+    );
+
+    // ===== ІНІЦІАЛІЗАЦІЯ =====
+    loadYears();
+    loadMonths();
+    loadGeneralStats();
+    loadRecords();
+</script>
 <div th:replace="~{fragments :: sidebar-js}"></div>
 </body>
 </html>

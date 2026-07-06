@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -110,24 +109,6 @@ public class FlightRecordController {
         }
     }
 
-    @GetMapping("/api/stats")
-    @ResponseBody
-    public Map<String, Integer> getStats() {
-        List<FlightRecord> all = service.getAll();
-        Map<String, Integer> stats = new HashMap<>();
-        stats.put("total", all.size());
-        stats.put("hits", (int) all.stream()
-                .filter(r -> r.getEvent() != null &&
-                        (r.getEvent().toLowerCase().contains("знищен") ||
-                                r.getEvent().toLowerCase().contains("підрив")))
-                .count());
-        stats.put("loss", (int) all.stream()
-                .filter(r -> r.getEvent() != null &&
-                        r.getEvent().toLowerCase().contains("втрат"))
-                .count());
-        return stats;
-    }
-
     @GetMapping("/api/export")
     public ResponseEntity<byte[]> exportXlsx(@RequestParam(required = false) String month,
                                              @RequestParam(required = false) Integer year) {
@@ -145,5 +126,12 @@ public class FlightRecordController {
             log.error("Помилка експорту xlsx", e);
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    // ===== НОВИЙ ЕНДПОІНТ ДЛЯ ЗАГАЛЬНОЇ СТАТИСТИКИ =====
+    @GetMapping("/api/general-stats")
+    @ResponseBody
+    public Map<String, Long> getGeneralStats() {
+        return service.getGeneralStats();
     }
 }

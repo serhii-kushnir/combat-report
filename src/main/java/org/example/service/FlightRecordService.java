@@ -211,6 +211,47 @@ public class FlightRecordService {
         }
     }
 
+    // ===== НОВИЙ МЕТОД ДЛЯ СТАТИСТИКИ =====
+    public Map<String, Long> getStats() {
+        List<FlightRecord> all = repository.findAll();
+        long total = all.size();
+        long hits = all.stream()
+                .filter(r -> r.getEvent() != null &&
+                        (r.getEvent().toLowerCase().contains("знищен") ||
+                                r.getEvent().toLowerCase().contains("підрив")))
+                .count();
+        long loss = all.stream()
+                .filter(r -> r.getEvent() != null &&
+                        r.getEvent().toLowerCase().contains("втрат"))
+                .count();
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("total", total);
+        stats.put("hits", hits);
+        stats.put("loss", loss);
+        return stats;
+    }
+
+    // ===== НОВИЙ МЕТОД ДЛЯ ЗАГАЛЬНОЇ СТАТИСТИКИ =====
+    @Transactional(readOnly = true)
+    public Map<String, Long> getGeneralStats() {
+        List<FlightRecord> all = repository.findAll();
+        long total = all.size();
+        long hits = all.stream()
+                .filter(r -> r.getEvent() != null &&
+                        (r.getEvent().toLowerCase().contains("знищен") ||
+                                r.getEvent().toLowerCase().contains("підрив")))
+                .count();
+        long loss = all.stream()
+                .filter(r -> r.getEvent() != null &&
+                        r.getEvent().toLowerCase().contains("втрат"))
+                .count();
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("total", total);
+        stats.put("hits", hits);
+        stats.put("loss", loss);
+        return stats;
+    }
+
     // ===== ХЕЛПЕРИ ДЛЯ СТИЛІВ =====
 
     private void setCell(XSSFRow row, int col, Object value, XSSFCellStyle style) {
