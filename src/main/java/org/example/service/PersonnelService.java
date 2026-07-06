@@ -1,13 +1,24 @@
 package org.example.service;
 
-import org.example.entity.*;
-import org.example.repository.*;
+import org.example.entity.Personnel;
+import org.example.entity.PersonnelChild;
+import org.example.entity.PersonnelEducation;
+import org.example.entity.PersonnelWeapon;
+import org.example.repository.PersonnelChildRepository;
+import org.example.repository.PersonnelEducationRepository;
+import org.example.repository.PersonnelRepository;
+import org.example.repository.PersonnelWeaponRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,7 +43,10 @@ public class PersonnelService {
         this.weaponRepository = weaponRepository;
     }
 
-    // ===== ОСНОВНІ МЕТОДИ (без змін) =====
+    // ======================================================================
+    //  БЕЗ ПАГІНАЦІЇ (для експорту та інших потреб)
+    // ======================================================================
+
     public List<Personnel> getAll() {
         List<Personnel> list = repository.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("В особовому складі");
         for (Personnel p : list) enrichPersonnel(p);
@@ -63,50 +77,89 @@ public class PersonnelService {
         return repository.findById(id);
     }
 
-    // ============================================================
-    //  СТВОРЕННЯ (CREATE) – З ПЕРЕВІРКОЮ УНІКАЛЬНОСТІ
-    // ============================================================
+    public List<Personnel> search(String query) {
+        return repository.findByLastNameContainingIgnoreCaseAndActiveTrue(query);
+    }
+
+    // ======================================================================
+    //  МЕТОДИ З ПАГІНАЦІЄЮ
+    // ======================================================================
+
+    public Page<Personnel> getActivePage(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("lastName").ascending());
+        Page<Personnel> pageResult = repository.findByActiveTrueAndPersonnelStatus("В особовому складі", pageable);
+        pageResult.forEach(this::enrichPersonnel);
+        return pageResult;
+    }
+
+    public Page<Personnel> searchPage(String query, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("lastName").ascending());
+        Page<Personnel> pageResult = repository.findByLastNameContainingIgnoreCaseAndActiveTrue(query, pageable);
+        pageResult.forEach(this::enrichPersonnel);
+        return pageResult;
+    }
+
+    // ======================================================================
+    //  СТАТИСТИКА
+    // ======================================================================
+
+    public Map<String, Integer> getStatistics() {
+        List<Personnel> all = repository.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("В особовому складі");
+        int total = all.size();
+        int officers = 0, sergeants = 0, soldiers = 0;
+        for (Personnel p : all) {
+            String rank = p.getRank();
+            if (rank == null) continue;
+            String lower = rank.toLowerCase();
+            if (lower.contains("лейтенант") || lower.contains("капітан") || lower.contains("майор") ||
+                    lower.contains("підполковник") || lower.contains("полковник") || lower.contains("генерал")) {
+                officers++;
+            } else if (lower.contains("сержант") || lower.contains("старшина")) {
+                sergeants++;
+            } else {
+                soldiers++;
+            }
+        }
+        int archived = repository.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("Не в особовому складі").size();
+
+        Map<String, Integer> stats = new HashMap<>();
+        stats.put("total", total);
+        stats.put("officers", officers);
+        stats.put("sergeants", sergeants);
+        stats.put("soldiers", soldiers);
+        stats.put("archived", archived);
+        return stats;
+    }
+
+    // ======================================================================
+    //  CRUD ОПЕРАЦІЇ
+    // ======================================================================
+
     @Transactional
     public Personnel create(Personnel p) {
-        // 1. Валідація personnelNumber на унікальність
         if (p.getPersonnelNumber() != null && repository.existsByPersonnelNumber(p.getPersonnelNumber())) {
             throw new IllegalArgumentException("Порядковий номер " + p.getPersonnelNumber() + " вже зайнятий");
         }
-
-        // 2. Дефолтні значення
         if (p.getPersonnelStatus() == null || p.getPersonnelStatus().isEmpty()) {
             p.setPersonnelStatus("В особовому складі");
         }
         p.setActive(true);
-
-        // 3. Збереження
         Personnel saved = repository.save(p);
-        log.info("Додано особу: {} (id={}, номер={})",
-                saved.getFullName(), saved.getId(), saved.getPersonnelNumber());
+        log.info("Додано особу: {} (id={}, номер={})", saved.getFullName(), saved.getId(), saved.getPersonnelNumber());
         return saved;
     }
 
-    // ============================================================
-    //  ОНОВЛЕННЯ (UPDATE) – З ПЕРЕВІРКОЮ УНІКАЛЬНОСТІ
-    // ============================================================
     @Transactional
     public Personnel update(Long id, Personnel updated) {
-        // 1. Знаходимо існуючу особу
         Personnel existing = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Особу не знайдено: " + id));
 
-        // 2. Перевірка унікальності personnelNumber (якщо змінюється)
         Integer newNumber = updated.getPersonnelNumber();
         Integer oldNumber = existing.getPersonnelNumber();
-
-        if (newNumber != null) {
-            // Якщо номер змінився І новий номер вже зайнятий кимось іншим
-            if (!newNumber.equals(oldNumber) && repository.existsByPersonnelNumber(newNumber)) {
-                throw new IllegalArgumentException("Порядковий номер " + newNumber + " вже зайнятий");
-            }
+        if (newNumber != null && !newNumber.equals(oldNumber) && repository.existsByPersonnelNumber(newNumber)) {
+            throw new IllegalArgumentException("Порядковий номер " + newNumber + " вже зайнятий");
         }
 
-        // 3. Копіювання всіх полів (як у вашому оригіналі)
         existing.setLastName(updated.getLastName());
         existing.setFirstName(updated.getFirstName());
         existing.setMiddleName(updated.getMiddleName());
@@ -135,7 +188,7 @@ public class PersonnelService {
         existing.setAdmissionForm(updated.getAdmissionForm());
         existing.setEnrollmentInfo(updated.getEnrollmentInfo());
         existing.setServiceFor(updated.getServiceFor());
-        existing.setPersonnelNumber(updated.getPersonnelNumber()); // оновлюємо номер
+        existing.setPersonnelNumber(updated.getPersonnelNumber());
         existing.setPersonnelStatus(updated.getPersonnelStatus());
         existing.setVos(updated.getVos());
         existing.setTariffGrade(updated.getTariffGrade());
@@ -151,22 +204,16 @@ public class PersonnelService {
         existing.setAdmissionNakaz(updated.getAdmissionNakaz());
         existing.setAdmissionDate(updated.getAdmissionDate());
 
-        // 4. Збереження
         Personnel saved = repository.save(existing);
-        log.info("Оновлено особу: {} (id={}, номер={})",
-                saved.getFullName(), saved.getId(), saved.getPersonnelNumber());
+        log.info("Оновлено особу: {} (id={}, номер={})", saved.getFullName(), saved.getId(), saved.getPersonnelNumber());
         return saved;
     }
 
-    // ============================================================
-    //  ЧАСТКОВЕ ОНОВЛЕННЯ (PATCH) – ДОДАТКОВО ДОДАЄМО ПЕРЕВІРКУ
-    // ============================================================
     @Transactional
     public Personnel patch(Long id, Map<String, Object> updates) {
         Personnel p = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Особу не знайдено: " + id));
 
-        // Окремо обробляємо personnelNumber, щоб перевірити унікальність
         if (updates.containsKey("personnelNumber")) {
             Object val = updates.get("personnelNumber");
             Integer newNumber = null;
@@ -177,10 +224,7 @@ public class PersonnelService {
                     newNumber = Integer.parseInt((String) val);
                 } catch (NumberFormatException ignored) {}
             }
-
-            // Перевірка: якщо номер змінюється і вже зайнятий
-            if (newNumber != null &&
-                    !newNumber.equals(p.getPersonnelNumber()) &&
+            if (newNumber != null && !newNumber.equals(p.getPersonnelNumber()) &&
                     repository.existsByPersonnelNumber(newNumber)) {
                 throw new IllegalArgumentException("Порядковий номер " + newNumber + " вже зайнятий");
             }
@@ -188,11 +232,8 @@ public class PersonnelService {
             updates.remove("personnelNumber");
         }
 
-        // Решта полів (без змін, як у вашому оригіналі)
         updates.forEach((key, value) -> {
-            if (value instanceof String && ((String) value).isEmpty()) {
-                value = null;
-            }
+            if (value instanceof String && ((String) value).isEmpty()) value = null;
             switch (key) {
                 case "lastName": p.setLastName((String) value); break;
                 case "firstName": p.setFirstName((String) value); break;
@@ -249,11 +290,9 @@ public class PersonnelService {
                 default: log.warn("Невідоме поле для оновлення: {}", key);
             }
         });
-
         return repository.save(p);
     }
 
-    // ===== ІНШІ МЕТОДИ (без змін) =====
     @Transactional
     public void deactivate(Long id) {
         Personnel p = repository.findById(id)
@@ -264,11 +303,10 @@ public class PersonnelService {
         log.info("Деактивовано особу: {} (id={})", p.getFullName(), id);
     }
 
-    public List<Personnel> search(String query) {
-        return repository.findByLastNameContainingIgnoreCaseAndActiveTrue(query);
-    }
+    // ======================================================================
+    //  ДОПОМІЖНИЙ МЕТОД ДЛЯ ЗБАГАЧЕННЯ
+    // ======================================================================
 
-    // ===== ДОПОМІЖНИЙ МЕТОД ДЛЯ ЗБАГАЧЕННЯ =====
     private void enrichPersonnel(Personnel p) {
         List<PersonnelEducation> eduList = educationRepository.findByPersonnelIdOrderByStartDateAsc(p.getId());
         if (!eduList.isEmpty()) {
@@ -281,7 +319,6 @@ public class PersonnelService {
             p.setEducationEnd(first.getEndDate() != null ? first.getEndDate().toString() : null);
             p.setDiploma(first.getDiploma());
         }
-
         List<PersonnelWeapon> weaponList = weaponRepository.findByPersonnelId(p.getId());
         if (!weaponList.isEmpty()) {
             PersonnelWeapon first = weaponList.get(0);
@@ -292,7 +329,6 @@ public class PersonnelService {
             p.setWeaponCaliber(first.getCaliber());
             p.setWeaponIssuedDate(first.getIssuedDate());
         }
-
         List<PersonnelChild> children = childRepository.findByPersonnelIdOrderByBirthDateAsc(p.getId());
         p.setChildrenCount(children.size());
     }

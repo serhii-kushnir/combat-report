@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Особовий склад</title>
+    <link th:replace="~{fragments :: sidebar-css}">
     <style>
         /* ===== CSS ЗМІННІ ===== */
         :root {
@@ -537,7 +538,7 @@
             }
         }
     </style>
-    <link th:replace="~{fragments :: sidebar-css}">
+
 </head>
 <body>
 <div class="layout">
@@ -547,7 +548,7 @@
             <div class="toolbar">
                 <input type="text" id="searchInput" placeholder="🔍 Пошук за прізвищем...">
                 <button class="btn btn-success" onclick="openAddModal()">+ Додати особу</button>
-                <button class="btn" style="background:#1976d2;color:white" onclick="exportXlsx()">📤 Експорт xlsx</button>
+                <button class="btn btn-primary" onclick="exportXlsx()">📤 Експорт xlsx</button>
                 <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> Друк</button>
             </div>
 
@@ -559,7 +560,6 @@
                 <button class="tab-btn" onclick="switchTab('archived')">📁 Архів</button>
             </div>
 
-            <!-- КОРОТКА ТАБЛИЦЯ -->
             <div class="table-section visible" id="shortTable">
                 <div class="table-wrap">
                     <table>
@@ -577,9 +577,9 @@
                         </tbody>
                     </table>
                 </div>
+                <div id="pagination"></div>
             </div>
 
-            <!-- ПОВНА ТАБЛИЦЯ (оновлена — додано Вік та Ступінь) -->
             <div class="table-section" id="fullTable">
                 <div class="table-wrap">
                     <table style="min-width:4400px">
@@ -643,13 +643,13 @@
                         </tr>
                         </thead>
                         <tbody id="fullBody">
-                        <tr><td colspan="50" class="empty-state">Завантаження...</td></tr>
+                        <tr><td colspan="56" class="empty-state">Завантаження...</td></tr>
                         </tbody>
                     </table>
                 </div>
+                <div id="paginationFull"></div>
             </div>
 
-            <!-- АРХІВНА ТАБЛИЦЯ -->
             <div class="table-section" id="archivedTable">
                 <div class="table-wrap">
                     <table>
@@ -730,7 +730,6 @@
                         <label>Повна посада</label>
                         <textarea id="fFullPosition" placeholder="Оператор безпілотних літальних апаратів..."></textarea>
                     </div>
-
                     <div class="modal-actions">
                         <button class="btn" onclick="closeModal('formModal')" style="background:#eee">Скасувати</button>
                         <button class="btn btn-primary" onclick="savePerson()">Зберегти</button>
@@ -738,7 +737,6 @@
                 </div>
             </div>
 
-            <!-- Підтвердження видалення -->
             <div class="confirm-overlay" id="confirmModal">
                 <div class="confirm-box">
                     <p id="confirmText">Видалити особу?</p>
@@ -760,6 +758,9 @@
                 let sortArchivedCol = 'num';
                 let sortArchivedDir = 1;
                 let currentTab = 'short';
+                let currentPage = 0;
+                let pageSize = 20;
+                let totalElements = 0;
 
                 function escapeHtml(str) {
                     if (!str) return '';
@@ -771,9 +772,7 @@
                     });
                 }
 
-                function val(v) {
-                    return v || '—';
-                }
+                function val(v) { return v || '—'; }
 
                 function calcAge(dateStr) {
                     if (!dateStr) return '—';
@@ -785,17 +784,20 @@
                     return age;
                 }
 
-                // ===== ЗАВАНТАЖЕННЯ ДАНИХ =====
+                // ===== ЗАВАНТАЖЕННЯ =====
                 async function loadPersonnel() {
                     try {
-                        const [activeRes, archivedRes] = await Promise.all([
-                            fetch('/personnel/api'),
-                            fetch('/personnel/api/archived')
-                        ]);
+                        const activeRes = await fetch(`/personnel/api?page=${currentPage}&size=${pageSize}`);
                         if (!activeRes.ok) { showToast('Помилка завантаження активних', 'error'); return; }
+                        const activePage = await activeRes.json();
+                        activePersonnel = activePage.content;
+                        totalElements = activePage.totalElements;
+
+                        const archivedRes = await fetch('/personnel/api/archived');
                         if (!archivedRes.ok) { showToast('Помилка завантаження архіву', 'error'); return; }
-                        activePersonnel = await activeRes.json();
                         archivedPersonnel = await archivedRes.json();
+
+                        await loadStats();
 
                         sortCol = 'num';
                         sortDir = 1;
@@ -804,26 +806,94 @@
 
                         applyFilters();
                         renderArchivedTable();
-                        renderStats();
                     } catch(err) {
                         console.error(err);
                         showToast('Помилка завантаження', 'error');
                     }
                 }
 
-                // ===== ПЕРЕМИКАННЯ ВКЛАДОК =====
-                function switchTab(tab) {
-                    currentTab = tab;
-                    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-                        const tabs = ['short', 'full', 'archived'];
-                        btn.classList.toggle('active', tabs[i] === tab);
-                    });
-                    document.getElementById('shortTable').classList.toggle('visible', tab === 'short');
-                    document.getElementById('fullTable').classList.toggle('visible', tab === 'full');
-                    document.getElementById('archivedTable').classList.toggle('visible', tab === 'archived');
+                async function loadStats() {
+                    try {
+                        const res = await fetch('/personnel/api/stats');
+                        if (!res.ok) return;
+                        const stats = await res.json();
+                        document.getElementById('statsBar').innerHTML =
+                            `<div class="stat-card"><div class="num">${stats.total}</div><div class="lbl">В особовому складі</div></div>` +
+                            `<div class="stat-card"><div class="num" style="color:#1565c0">${stats.officers}</div><div class="lbl">Офіцерів</div></div>` +
+                            `<div class="stat-card"><div class="num" style="color:#6a1b9a">${stats.sergeants}</div><div class="lbl">Сержантів</div></div>` +
+                            `<div class="stat-card"><div class="num" style="color:#2e7d32">${stats.soldiers}</div><div class="lbl">Солдат</div></div>` +
+                            `<div class="stat-card"><div class="num" style="color:#888">${stats.archived}</div><div class="lbl">Архів</div></div>`;
+                    } catch (e) {
+                        console.error('Помилка статистики', e);
+                    }
                 }
 
-                // ===== РЕНДЕРИНГ АКТИВНИХ (КОРОТКА) =====
+                document.getElementById('searchInput').addEventListener('input', function() {
+                    const q = this.value.trim();
+                    if (q) {
+                        fetch(`/personnel/api/search?q=${encodeURIComponent(q)}&page=0&size=${pageSize}`)
+                            .then(res => res.json())
+                            .then(page => {
+                                activePersonnel = page.content;
+                                totalElements = page.totalElements;
+                                currentPage = 0;
+                                applyFilters();
+                            })
+                            .catch(err => console.error(err));
+                    } else {
+                        loadPersonnel();
+                    }
+                });
+
+                // ===== ПАГІНАЦІЯ =====
+                function goToPage(page) {
+                    if (page < 0 || page >= Math.ceil(totalElements / pageSize)) return;
+                    currentPage = page;
+                    loadPersonnel();
+                }
+
+                // ===== ЗАСТОСУВАННЯ ФІЛЬТРІВ =====
+                function applyFilters() {
+                    let filtered = [...activePersonnel];
+                    if (sortCol) {
+                        filtered.sort((a, b) => {
+                            let va = getSortVal(a, sortCol);
+                            let vb = getSortVal(b, sortCol);
+                            if (typeof va === 'number' && typeof vb === 'number') {
+                                return (va - vb) * sortDir;
+                            }
+                            const sa = String(va).toLowerCase();
+                            const sb = String(vb).toLowerCase();
+                            if (sa < sb) return -1 * sortDir;
+                            if (sa > sb) return 1 * sortDir;
+                            return 0;
+                        });
+                    }
+                    renderShortTable(filtered);
+                    renderFullTable(filtered);
+                    renderPagination();
+                }
+
+                function renderPagination() {
+                    const totalPages = Math.ceil(totalElements / pageSize);
+                    let html = `<div style="display:flex; gap:10px; align-items:center; justify-content:center; margin-top:12px;">`;
+                    html += `<button class="btn btn-sm" onclick="goToPage(0)" ${currentPage === 0 ? 'disabled' : ''}>⏮</button>`;
+                    html += `<button class="btn btn-sm" onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>`;
+                    html += `<span>Сторінка ${currentPage + 1} з ${totalPages || 1}</span>`;
+                    html += `<button class="btn btn-sm" onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>▶</button>`;
+                    html += `<button class="btn btn-sm" onclick="goToPage(${totalPages - 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>⏭</button>`;
+                    html += `</div>`;
+                    const container = document.querySelector('#shortTable .table-wrap');
+                    let paginationDiv = document.getElementById('pagination');
+                    if (!paginationDiv) {
+                        paginationDiv = document.createElement('div');
+                        paginationDiv.id = 'pagination';
+                        container.parentNode.insertBefore(paginationDiv, container.nextSibling);
+                    }
+                    paginationDiv.innerHTML = html;
+                }
+
+                // ===== РЕНДЕРИНГ =====
                 function renderShortTable(data) {
                     const body = document.getElementById('shortBody');
                     if (!data || !data.length) {
@@ -845,7 +915,6 @@
                     }).join('');
                 }
 
-                // ===== РЕНДЕРИНГ АКТИВНИХ (ПОВНА) – додано "Вік" та "Ступінь" =====
                 function renderFullTable(data) {
                     const body = document.getElementById('fullBody');
                     if (!data || !data.length) {
@@ -857,68 +926,67 @@
                         const num = p.personnelNumber ?? (i + 1);
                         const age = p.birthDate ? calcAge(p.birthDate) : '—';
                         return `<tr>
-            <td style="text-align:center">${num}</td>
-            <td style="text-align:center">${val(p.personnelStatus)}</td>
-            <td style="text-align:center">${val(p.rank)}</td>
-            <td><strong>${escapeHtml(p.lastName)} ${escapeHtml(p.firstName||'')} ${escapeHtml(p.middleName||'')}</strong></td>
-            <td>${val(p.phone)}</td>
-            <td style="text-align:center">${fmtDate(p.birthDate)}</td>
-            <td style="text-align:center">${age}</td>
-            <td style="text-align:center">${val(p.taxId)}</td>
-            <td style="text-align:center">${val(p.bloodGroup)}</td>
-            <td style="text-align:center">${val(p.passportSeries)}</td>
-            <td style="text-align:center">${val(p.passportNumber)}</td>
-            <td style="text-align:center">${val(p.driverLicenseSeries)}</td>
-            <td style="text-align:center">${val(p.driverLicenseNumber)}</td>
-            <td style="text-align:center">${val(p.driverLicenseCategory)}</td>
-            <td style="font-size:11px">${val(p.registrationAddress)}</td>
-            <td style="font-size:11px">${val(p.livingAddress)}</td>
-            <td style="text-align:center">${val(p.maritalStatus)}</td>
-            <td>${val(p.spouseName)}</td>
-            <td style="font-size:11px">${val(p.familyAddress)}</td>
-            <td style="text-align:center">${val(p.education)}</td>
-            <td style="text-align:center">${val(p.academicDegree)}</td>
-            <td style="font-size:11px">${val(p.educationInstitution)}</td>
-            <td style="font-size:11px">${val(p.educationSpeciality)}</td>
-            <td style="text-align:center">${fmtDate(p.educationStart)}</td>
-            <td style="text-align:center">${fmtDate(p.educationEnd)}</td>
-            <td style="text-align:center">${val(p.diploma)}</td>
-            <td>${val(p.position)}</td>
-            <td style="font-size:11px">${val(p.fullPosition)}</td>
-            <td>${val(p.militaryUnit)}</td>
-            <td style="text-align:center">${val(p.vos)}</td>
-            <td style="text-align:center">${val(p.tariffGrade)}</td>
-            <td style="text-align:center">${fmtDate(p.draftDate)}</td>
-            <td>${val(p.draftOrganization)}</td>
-            <td>${val(p.drafObl)}</td>
-            <td>${val(p.draftLoc)}</td>
-            <td style="text-align:center">${fmtDate(p.enrollmentDate)}</td>
-            <td>${val(p.enrollmentNakaz)}</td>
-            <td>${val(p.ubdNumber)}</td>
-            <td style="text-align:center">${fmtDate(p.ubdDate)}</td>
-            <td>${val(p.admissionForm)}</td>
-            <td>${val(p.admissionNakaz)}</td>
-            <td style="text-align:center">${fmtDate(p.admissionDate)}</td>
-            <td>${val(p.serviceFor)}</td>
-            <td style="text-align:center">${val(p.shoeSize)}</td>
-            <td style="text-align:center">${val(p.uniformSize)}</td>
-            <td style="text-align:center">${val(p.headwearSize)}</td>
-            <td>${val(p.weaponType)}</td>
-            <td>${val(p.weaponSerial)}</td>
-            <td>${val(p.weaponBayonet)}</td>
-            <td>${val(p.weaponMagazines)}</td>
-            <td>${val(p.weaponCaliber)}</td>
-            <td>${val(p.weaponIssuedDate)}</td>
-            <td style="text-align:center">${p.childrenCount ?? 0}</td>
-            <td style="font-size:11px; max-width:200px; white-space:normal; word-wrap:break-word;">${val(p.note)}</td>
-            <td class="no-print" style="white-space:nowrap">
-                <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
-            </td>
-        </tr>`;
+                            <td style="text-align:center">${num}</td>
+                            <td style="text-align:center">${val(p.personnelStatus)}</td>
+                            <td style="text-align:center">${val(p.rank)}</td>
+                            <td><strong>${escapeHtml(p.lastName)} ${escapeHtml(p.firstName||'')} ${escapeHtml(p.middleName||'')}</strong></td>
+                            <td>${val(p.phone)}</td>
+                            <td style="text-align:center">${fmtDate(p.birthDate)}</td>
+                            <td style="text-align:center">${age}</td>
+                            <td style="text-align:center">${val(p.taxId)}</td>
+                            <td style="text-align:center">${val(p.bloodGroup)}</td>
+                            <td style="text-align:center">${val(p.passportSeries)}</td>
+                            <td style="text-align:center">${val(p.passportNumber)}</td>
+                            <td style="text-align:center">${val(p.driverLicenseSeries)}</td>
+                            <td style="text-align:center">${val(p.driverLicenseNumber)}</td>
+                            <td style="text-align:center">${val(p.driverLicenseCategory)}</td>
+                            <td style="font-size:11px">${val(p.registrationAddress)}</td>
+                            <td style="font-size:11px">${val(p.livingAddress)}</td>
+                            <td style="text-align:center">${val(p.maritalStatus)}</td>
+                            <td>${val(p.spouseName)}</td>
+                            <td style="font-size:11px">${val(p.familyAddress)}</td>
+                            <td style="text-align:center">${val(p.education)}</td>
+                            <td style="text-align:center">${val(p.academicDegree)}</td>
+                            <td style="font-size:11px">${val(p.educationInstitution)}</td>
+                            <td style="font-size:11px">${val(p.educationSpeciality)}</td>
+                            <td style="text-align:center">${fmtDate(p.educationStart)}</td>
+                            <td style="text-align:center">${fmtDate(p.educationEnd)}</td>
+                            <td style="text-align:center">${val(p.diploma)}</td>
+                            <td>${val(p.position)}</td>
+                            <td style="font-size:11px">${val(p.fullPosition)}</td>
+                            <td>${val(p.militaryUnit)}</td>
+                            <td style="text-align:center">${val(p.vos)}</td>
+                            <td style="text-align:center">${val(p.tariffGrade)}</td>
+                            <td style="text-align:center">${fmtDate(p.draftDate)}</td>
+                            <td>${val(p.draftOrganization)}</td>
+                            <td>${val(p.drafObl)}</td>
+                            <td>${val(p.draftLoc)}</td>
+                            <td style="text-align:center">${fmtDate(p.enrollmentDate)}</td>
+                            <td>${val(p.enrollmentNakaz)}</td>
+                            <td>${val(p.ubdNumber)}</td>
+                            <td style="text-align:center">${fmtDate(p.ubdDate)}</td>
+                            <td>${val(p.admissionForm)}</td>
+                            <td>${val(p.admissionNakaz)}</td>
+                            <td style="text-align:center">${fmtDate(p.admissionDate)}</td>
+                            <td>${val(p.serviceFor)}</td>
+                            <td style="text-align:center">${val(p.shoeSize)}</td>
+                            <td style="text-align:center">${val(p.uniformSize)}</td>
+                            <td style="text-align:center">${val(p.headwearSize)}</td>
+                            <td>${val(p.weaponType)}</td>
+                            <td>${val(p.weaponSerial)}</td>
+                            <td>${val(p.weaponBayonet)}</td>
+                            <td>${val(p.weaponMagazines)}</td>
+                            <td>${val(p.weaponCaliber)}</td>
+                            <td>${val(p.weaponIssuedDate)}</td>
+                            <td style="text-align:center">${p.childrenCount ?? 0}</td>
+                            <td style="font-size:11px; max-width:200px; white-space:normal; word-wrap:break-word;">${val(p.note)}</td>
+                            <td class="no-print" style="white-space:nowrap">
+                                <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
+                            </td>
+                        </tr>`;
                     }).join('');
                 }
 
-                // ===== РЕНДЕРИНГ АРХІВУ =====
                 function renderArchivedTable() {
                     const body = document.getElementById('archivedBody');
                     if (!archivedPersonnel || !archivedPersonnel.length) {
@@ -956,26 +1024,6 @@
                 }
 
                 // ===== СОРТУВАННЯ =====
-                function sortBy(col) {
-                    if (sortCol === col) {
-                        sortDir *= -1;
-                    } else {
-                        sortCol = col;
-                        sortDir = 1;
-                    }
-                    applyFilters();
-                }
-
-                function sortArchivedBy(col) {
-                    if (sortArchivedCol === col) {
-                        sortArchivedDir *= -1;
-                    } else {
-                        sortArchivedCol = col;
-                        sortArchivedDir = 1;
-                    }
-                    renderArchivedTable();
-                }
-
                 function getSortVal(p, col) {
                     switch(col) {
                         case 'num': return p.personnelNumber ?? p.id ?? 0;
@@ -1000,80 +1048,39 @@
                     }
                 }
 
-                // ===== ФІЛЬТР І ПОШУК =====
-                document.getElementById('searchInput').addEventListener('input', applyFilters);
-
-                function applyFilters() {
-                    const q = document.getElementById('searchInput').value.toLowerCase();
-                    let filtered = activePersonnel.filter(p =>
-                        p.personnelStatus === 'В особовому складі' || !p.personnelStatus
-                    );
-                    if (q) {
-                        filtered = filtered.filter(p =>
-                            p.lastName.toLowerCase().includes(q) ||
-                            (p.firstName || '').toLowerCase().includes(q)
-                        );
-                    }
-                    if (sortCol) {
-                        filtered = [...filtered].sort((a, b) => {
-                            const va = getSortVal(a, sortCol);
-                            const vb = getSortVal(b, sortCol);
-                            if (typeof va === 'number' && typeof vb === 'number') {
-                                return (va - vb) * sortDir;
-                            }
-                            const sa = String(va).toLowerCase();
-                            const sb = String(vb).toLowerCase();
-                            if (sa < sb) return -1 * sortDir;
-                            if (sa > sb) return 1 * sortDir;
-                            return 0;
-                        });
-                    }
-                    renderShortTable(filtered);
-                    renderFullTable(filtered);
-                    renderStats();
+                function sortBy(col) {
+                    if (sortCol === col) sortDir *= -1;
+                    else { sortCol = col; sortDir = 1; }
+                    applyFilters();
                 }
 
-                // ===== СТАТИСТИКА =====
-                function renderStats() {
-                    const q = document.getElementById('searchInput').value.toLowerCase();
-                    let filtered = activePersonnel.filter(p =>
-                        p.personnelStatus === 'В особовому складі' || !p.personnelStatus
-                    );
-                    if (q) {
-                        filtered = filtered.filter(p =>
-                            p.lastName.toLowerCase().includes(q) ||
-                            (p.firstName || '').toLowerCase().includes(q)
-                        );
-                    }
-                    const total = filtered.length;
-                    const officers = filtered.filter(p => p.rank && /лейтенант|капітан|майор|підполковник|полковник|генерал/i.test(p.rank)).length;
-                    const sergeants = filtered.filter(p => p.rank && /сержант|старшина/i.test(p.rank)).length;
-                    const soldiers = filtered.filter(p => p.rank && /солдат|рядовий/i.test(p.rank)).length;
-                    const archived = archivedPersonnel.length;
-                    document.getElementById('statsBar').innerHTML =
-                        `<div class="stat-card"><div class="num">${total}</div><div class="lbl">В особовому складі</div></div>` +
-                        `<div class="stat-card"><div class="num" style="color:#1565c0">${officers}</div><div class="lbl">Офіцерів</div></div>` +
-                        `<div class="stat-card"><div class="num" style="color:#6a1b9a">${sergeants}</div><div class="lbl">Сержантів</div></div>` +
-                        `<div class="stat-card"><div class="num" style="color:#2e7d32">${soldiers}</div><div class="lbl">Солдат</div></div>` +
-                        `<div class="stat-card"><div class="num" style="color:#888">${archived}</div><div class="lbl">Архів</div></div>`;
+                function sortArchivedBy(col) {
+                    if (sortArchivedCol === col) sortArchivedDir *= -1;
+                    else { sortArchivedCol = col; sortArchivedDir = 1; }
+                    renderArchivedTable();
+                }
+
+                // ===== ВКЛАДКИ =====
+                function switchTab(tab) {
+                    currentTab = tab;
+                    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+                        const tabs = ['short', 'full', 'archived'];
+                        btn.classList.toggle('active', tabs[i] === tab);
+                    });
+                    document.getElementById('shortTable').classList.toggle('visible', tab === 'short');
+                    document.getElementById('fullTable').classList.toggle('visible', tab === 'full');
+                    document.getElementById('archivedTable').classList.toggle('visible', tab === 'archived');
                 }
 
                 // ===== ФОРМА =====
                 function openAddModal() {
                     document.getElementById('modalTitle').textContent = 'Додати особу';
                     document.getElementById('editId').value = '';
-                    const fields = [
-                        'fPersonnelNumber', 'fPersonnelStatus',
-                        'fLastName', 'fFirstName', 'fMiddleName',
-                        'fRank', 'fPosition', 'fFullPosition'
-                    ];
-                    fields.forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el) {
-                            if (el.tagName === 'SELECT') el.value = '';
-                            else el.value = '';
-                        }
-                    });
+                    ['fPersonnelNumber','fPersonnelStatus','fLastName','fFirstName','fMiddleName','fRank','fPosition','fFullPosition']
+                        .forEach(id => {
+                            const el = document.getElementById(id);
+                            if (el) { if (el.tagName === 'SELECT') el.value = ''; else el.value = ''; }
+                        });
                     openModal('formModal');
                 }
 
@@ -1084,52 +1091,36 @@
                     document.getElementById('editId').value = id;
                     document.getElementById('fPersonnelNumber').value = p.personnelNumber || '';
                     document.getElementById('fPersonnelStatus').value = p.personnelStatus || '';
-                    document.getElementById('fLastName').value     = p.lastName || '';
-                    document.getElementById('fFirstName').value    = p.firstName || '';
-                    document.getElementById('fMiddleName').value   = p.middleName || '';
-                    document.getElementById('fRank').value         = p.rank || '';
-                    document.getElementById('fPosition').value     = p.position || '';
+                    document.getElementById('fLastName').value = p.lastName || '';
+                    document.getElementById('fFirstName').value = p.firstName || '';
+                    document.getElementById('fMiddleName').value = p.middleName || '';
+                    document.getElementById('fRank').value = p.rank || '';
+                    document.getElementById('fPosition').value = p.position || '';
                     document.getElementById('fFullPosition').value = p.fullPosition || '';
                     openModal('formModal');
                 }
 
                 async function savePerson() {
                     const id = document.getElementById('editId').value;
-
                     const personnelNumber = parseInt(document.getElementById('fPersonnelNumber').value);
                     const personnelStatus = document.getElementById('fPersonnelStatus').value;
                     const lastName = document.getElementById('fLastName').value.trim();
                     const firstName = document.getElementById('fFirstName').value.trim();
 
-                    if (!personnelNumber || personnelNumber < 1) {
-                        showToast('Порядковий номер обов\'язковий і має бути більше 0', 'error');
-                        return;
-                    }
-                    if (!personnelStatus) {
-                        showToast('Оберіть статус особи', 'error');
-                        return;
-                    }
-                    if (!lastName) {
-                        showToast('Прізвище обов\'язкове', 'error');
-                        return;
-                    }
-                    if (!firstName) {
-                        showToast('Ім\'я обов\'язкове', 'error');
-                        return;
-                    }
+                    if (!personnelNumber || personnelNumber < 1) { showToast('Порядковий номер обов\'язковий і має бути більше 0', 'error'); return; }
+                    if (!personnelStatus) { showToast('Оберіть статус особи', 'error'); return; }
+                    if (!lastName) { showToast('Прізвище обов\'язкове', 'error'); return; }
+                    if (!firstName) { showToast('Ім\'я обов\'язкове', 'error'); return; }
 
                     const body = {
-                        personnelNumber: personnelNumber,
-                        personnelStatus: personnelStatus,
-                        lastName: lastName,
-                        firstName: firstName,
+                        personnelNumber, personnelStatus, lastName, firstName,
                         middleName: document.getElementById('fMiddleName').value.trim(),
                         rank: document.getElementById('fRank').value,
                         position: document.getElementById('fPosition').value.trim(),
                         fullPosition: document.getElementById('fFullPosition').value.trim(),
                     };
 
-                    const url    = id ? `/personnel/api/${id}` : '/personnel/api';
+                    const url = id ? `/personnel/api/${id}` : '/personnel/api';
                     const method = id ? 'PUT' : 'POST';
                     try {
                         const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
@@ -1177,11 +1168,7 @@
                 function exportXlsx() {
                     const searchQuery = document.getElementById('searchInput').value.trim();
                     let url = '/personnel/api/export?q=' + encodeURIComponent(searchQuery);
-                    // Додаємо параметри сортування
-                    if (sortCol) {
-                        url += '&sortCol=' + sortCol;
-                        url += '&sortDir=' + (sortDir === 1 ? 'asc' : 'desc');
-                    }
+                    if (sortCol) { url += '&sortCol=' + sortCol + '&sortDir=' + (sortDir === 1 ? 'asc' : 'desc'); }
                     window.location.href = url;
                 }
 
@@ -1190,6 +1177,7 @@
             </script>
         </div>
     </div>
-    <div th:replace="~{fragments :: sidebar-js}"></div>
+</div>
+<div th:replace="~{fragments :: sidebar-js}"></div>
 </body>
 </html>

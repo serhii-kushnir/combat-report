@@ -4,6 +4,7 @@ import org.example.entity.FlightRecord;
 import org.example.service.FlightRecordService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/flights")
@@ -25,25 +28,26 @@ public class FlightRecordController {
         this.service = service;
     }
 
-    /** Сторінка журналу */
     @GetMapping
     public String flightsPage() {
         return "flights";
     }
 
-    /** REST: всі записи або за місяцем */
+    // ===== API З ПАГІНАЦІЄЮ =====
     @GetMapping("/api")
     @ResponseBody
     public ResponseEntity<?> getAll(@RequestParam(required = false) String month,
-                                    @RequestParam(required = false) Integer year) {
+                                    @RequestParam(required = false) Integer year,
+                                    @RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "20") int size) {
         try {
-            List<FlightRecord> records;
+            Page<FlightRecord> records;
             if (month != null && !month.isBlank()) {
-                records = service.getByMonth(month);
+                records = service.getByMonth(month, page, size);
             } else if (year != null) {
-                records = service.getByYear(year);
+                records = service.getByYear(year, page, size);
             } else {
-                records = service.getAll();
+                records = service.getAll(page, size);
             }
             return ResponseEntity.ok(records);
         } catch (Exception e) {
@@ -52,21 +56,18 @@ public class FlightRecordController {
         }
     }
 
-    /** REST: список місяців */
     @GetMapping("/api/months")
     @ResponseBody
     public List<String> getMonths() {
         return service.getMonths();
     }
 
-    /** REST: список років */
     @GetMapping("/api/years")
     @ResponseBody
     public List<Integer> getYears() {
         return service.getYears();
     }
 
-    /** REST: один запис */
     @GetMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> getById(@PathVariable Long id) {
@@ -75,7 +76,6 @@ public class FlightRecordController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /** REST: додати запис */
     @PostMapping("/api")
     @ResponseBody
     public ResponseEntity<?> create(@RequestBody FlightRecord record) {
@@ -87,7 +87,6 @@ public class FlightRecordController {
         }
     }
 
-    /** REST: оновити запис */
     @PutMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody FlightRecord record) {
@@ -100,7 +99,6 @@ public class FlightRecordController {
         }
     }
 
-    /** REST: видалити запис */
     @DeleteMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> delete(@PathVariable Long id) {
@@ -112,16 +110,32 @@ public class FlightRecordController {
         }
     }
 
-    /** Експорт xlsx */
+    @GetMapping("/api/stats")
+    @ResponseBody
+    public Map<String, Integer> getStats() {
+        List<FlightRecord> all = service.getAll();
+        Map<String, Integer> stats = new HashMap<>();
+        stats.put("total", all.size());
+        stats.put("hits", (int) all.stream()
+                .filter(r -> r.getEvent() != null &&
+                        (r.getEvent().toLowerCase().contains("знищен") ||
+                                r.getEvent().toLowerCase().contains("підрив")))
+                .count());
+        stats.put("loss", (int) all.stream()
+                .filter(r -> r.getEvent() != null &&
+                        r.getEvent().toLowerCase().contains("втрат"))
+                .count());
+        return stats;
+    }
+
     @GetMapping("/api/export")
     public ResponseEntity<byte[]> exportXlsx(@RequestParam(required = false) String month,
                                              @RequestParam(required = false) Integer year) {
         try {
             byte[] data = service.exportToXlsx(month, year);
             String suffix = month != null ? "_" + month : (year != null ? "_" + year : "");
-            String filename = URLEncoder.encode(
-                    "Звіт_БпАК" + suffix + ".xlsx",
-                    StandardCharsets.UTF_8).replace("+", "%20");
+            String filename = URLEncoder.encode("Звіт_БпАК" + suffix + ".xlsx", StandardCharsets.UTF_8)
+                    .replace("+", "%20");
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION,
                             "attachment; filename=\"" + filename + "\"; filename*=UTF-8''" + filename)

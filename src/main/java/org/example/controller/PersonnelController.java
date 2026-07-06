@@ -1,12 +1,13 @@
 package org.example.controller;
 
 import org.example.entity.Personnel;
+import org.example.service.PCardExportService;
 import org.example.service.PersonnelExportService;
 import org.example.service.PersonnelService;
-import org.example.service.PCardExportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -60,10 +61,12 @@ public class PersonnelController {
     }
 
     // ===== API =====
+
     @GetMapping("/api")
     @ResponseBody
-    public List<Personnel> getAll() {
-        return service.getAll();
+    public Page<Personnel> getAll(@RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "20") int size) {
+        return service.getActivePage(page, size);
     }
 
     @GetMapping("/api/archived")
@@ -88,11 +91,20 @@ public class PersonnelController {
 
     @GetMapping("/api/search")
     @ResponseBody
-    public List<Personnel> search(@RequestParam String q) {
-        return service.search(q);
+    public Page<Personnel> search(@RequestParam String q,
+                                  @RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "20") int size) {
+        return service.searchPage(q, page, size);
     }
 
-    // ===== CREATE (з обробкою IllegalArgumentException) =====
+    @GetMapping("/api/stats")
+    @ResponseBody
+    public Map<String, Integer> getStats() {
+        return service.getStatistics();
+    }
+
+    // ===== CREATE =====
+
     @PostMapping("/api")
     @ResponseBody
     public ResponseEntity<?> create(@RequestBody Personnel personnel) {
@@ -104,66 +116,56 @@ public class PersonnelController {
                 return ResponseEntity.badRequest().body("Прізвище обов'язкове");
             if (personnel.getFirstName() == null || personnel.getFirstName().isBlank())
                 return ResponseEntity.badRequest().body("Ім'я обов'язкове");
-
-            // Дефолтний статус, якщо не задано
             if (personnel.getPersonnelStatus() == null || personnel.getPersonnelStatus().isEmpty()) {
                 personnel.setPersonnelStatus("В особовому складі");
             }
-
             Personnel saved = service.create(personnel);
             return ResponseEntity.ok(saved);
 
         } catch (IllegalArgumentException e) {
-            // Перехоплюємо виняток про дублікат номера
             log.warn("Помилка при створенні: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
-
         } catch (DataIntegrityViolationException e) {
-            // Запасний варіант – якщо з якоїсь причини виняток не був перехоплений сервісом
             String message = e.getMessage();
             if (message != null && message.contains("personnel_number")) {
                 return ResponseEntity.badRequest().body("Порядковий номер вже зайнятий");
             }
             log.error("Помилка цілісності даних", e);
             return ResponseEntity.badRequest().body("Помилка даних: " + e.getMessage());
-
         } catch (Exception e) {
             log.error("Помилка додавання особи", e);
             return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
         }
     }
 
-    // ===== UPDATE (з обробкою IllegalArgumentException) =====
+    // ===== UPDATE =====
+
     @PutMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Personnel personnel) {
         try {
             Personnel updated = service.update(id, personnel);
             return ResponseEntity.ok(updated);
-
         } catch (IllegalArgumentException e) {
-            // Перехоплюємо виняток про дублікат номера або відсутність запису
             log.warn("Помилка при оновленні id={}: {}", id, e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
-
         } catch (Exception e) {
             log.error("Помилка оновлення особи id={}", id, e);
             return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
         }
     }
 
-    // ===== PATCH (часткове оновлення) – також додаємо обробку =====
+    // ===== PATCH =====
+
     @PatchMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> patch(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         try {
             Personnel updated = service.patch(id, updates);
             return ResponseEntity.ok(updated);
-
         } catch (IllegalArgumentException e) {
             log.warn("Помилка при частковому оновленні id={}: {}", id, e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
-
         } catch (Exception e) {
             log.error("Помилка часткового оновлення id={}", id, e);
             return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
@@ -171,6 +173,7 @@ public class PersonnelController {
     }
 
     // ===== DELETE (деактивація) =====
+
     @DeleteMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> deactivate(@PathVariable Long id) {
@@ -186,6 +189,7 @@ public class PersonnelController {
     }
 
     // ===== ЕКСПОРТ =====
+
     @GetMapping("/api/{id}/export")
     public ResponseEntity<byte[]> exportPersonXlsx(@PathVariable Long id) {
         try {
@@ -216,8 +220,6 @@ public class PersonnelController {
             } else {
                 list = service.getAll();
             }
-
-            // Сортування
             if (sortCol != null && !sortCol.isEmpty()) {
                 boolean ascending = !"desc".equalsIgnoreCase(sortDir);
                 Comparator<Personnel> comparator = switch (sortCol) {
@@ -244,7 +246,6 @@ public class PersonnelController {
                 list.sort(Comparator.comparing(Personnel::getPersonnelNumber,
                         Comparator.nullsLast(Comparator.naturalOrder())));
             }
-
             byte[] data = exportService.exportToXlsx(list);
             String filename = URLEncoder.encode("Відомість_ОС.xlsx", StandardCharsets.UTF_8)
                     .replace("+", "%20");
@@ -253,7 +254,6 @@ public class PersonnelController {
                             "attachment; filename=\"" + filename + "\"; filename*=UTF-8''" + filename)
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(data);
-
         } catch (Exception e) {
             log.error("Помилка експорту ОС", e);
             return ResponseEntity.internalServerError().build();

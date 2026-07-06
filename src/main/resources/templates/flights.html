@@ -753,82 +753,96 @@
         <div class="toast" id="toast"></div>
 
         <script>
+            // ===== ГЛОБАЛЬНІ ЗМІННІ =====
             let allRecords = [];
-            let sortCol   = null;
-            let sortDir   = 1; // 1 = asc, -1 = desc
+            let sortCol   = 'num';
+            let sortDir   = -1; // за замовчуванням спадання за №
             let deleteTargetId = null;
+            let currentPage = 0;
+            let pageSize = 20;
+            let totalElements = 0;
+            let currentMonth = '';
+            let currentYear = '';
 
-            // ===== ІНІЦІАЛІЗАЦІЯ =====
-            loadYears();
-            loadMonths();
-            loadRecords();
-
-            async function loadYears() {
-                const res = await fetch('/flights/api/years');
-                const years = await res.json();
-                const sel = document.getElementById('yearFilter');
-                years.forEach(y => {
-                    const opt = document.createElement('option');
-                    opt.value = y; opt.textContent = y;
-                    sel.appendChild(opt);
-                });
+            // ===== ДОПОМІЖНІ =====
+            function fmtDate(d) {
+                if (!d) return '';
+                const [y, m, day] = d.substring(0,10).split('-');
+                return `${day}.${m}.${y}`;
             }
-
-            async function loadMonths() {
-                const res = await fetch('/flights/api/months');
-                const months = await res.json();
-                const sel = document.getElementById('monthFilter');
-                months.forEach(m => {
-                    const opt = document.createElement('option');
-                    opt.value = m; opt.textContent = m;
-                    sel.appendChild(opt);
-                });
+            function fmtTime(t) {
+                if (!t) return '';
+                return t.substring(0,5);
             }
+            function showToast(msg, type) {
+                const t = document.getElementById('toast');
+                t.textContent = msg;
+                t.className = `toast ${type} show`;
+                setTimeout(() => t.classList.remove('show'), 3000);
+            }
+            function openModal(id)  { document.getElementById(id).classList.add('open'); }
+            function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
+            // ===== ЗАВАНТАЖЕННЯ ДАНИХ З ПАГІНАЦІЄЮ =====
             async function loadRecords() {
                 const month = document.getElementById('monthFilter').value;
                 const year  = document.getElementById('yearFilter').value;
-                let url = '/flights/api';
-                if (month) url += `?month=${encodeURIComponent(month)}`;
-                else if (year) url += `?year=${year}`;
-                const res = await fetch(url);
-                if (!res.ok) { showToast('Помилка завантаження', 'err'); return; }
-                allRecords = await res.json();
+                currentMonth = month;
+                currentYear = year;
 
-                // Встановлюємо сортування за № за замовчуванням (спадання)
-                sortCol = 'num';
-                sortDir = -1;
-                // Оновлюємо клас у заголовку
-                document.querySelectorAll('thead th').forEach(th => {
-                    th.classList.remove('sort-asc', 'sort-desc');
-                    if (th.dataset.col === 'num') {
-                        th.classList.add('sort-desc');
+                let url = `/flights/api?page=${currentPage}&size=${pageSize}`;
+                if (month) url += `&month=${encodeURIComponent(month)}`;
+                else if (year) url += `&year=${year}`;
+
+                try {
+                    const res = await fetch(url);
+                    if (!res.ok) { showToast('Помилка завантаження', 'err'); return; }
+                    const pageData = await res.json();
+                    allRecords = pageData.content || [];
+                    totalElements = pageData.totalElements || 0;
+
+                    if (!allRecords.length) {
+                        renderTable([]);
+                        renderStats();
+                        renderPagination();
+                        return;
                     }
-                });
 
-                applyFilter();
-                renderStats();
+                    applyFilter();
+                    renderStats();
+                } catch (err) {
+                    console.error(err);
+                    showToast('Помилка мережі', 'err');
+                }
             }
 
-            document.getElementById('yearFilter').onchange = () => { document.getElementById('monthFilter').value = ''; loadRecords(); };
-            document.getElementById('monthFilter').onchange = () => { document.getElementById('yearFilter').value = ''; loadRecords(); };
-            document.getElementById('searchInput').oninput = applyFilter;
-
-            function sortBy(col) {
-                if (sortCol === col) {
-                    sortDir *= -1;
-                } else {
-                    sortCol = col;
-                    sortDir = 1;
+            // ===== ФІЛЬТР + СОРТУВАННЯ =====
+            function applyFilter() {
+                const q = document.getElementById('searchInput').value.toLowerCase();
+                let filtered = allRecords;
+                if (q) {
+                    filtered = allRecords.filter(r =>
+                        [r.crew, r.event, r.target, r.weapon, r.note, r.coordinates]
+                            .some(v => v && v.toLowerCase().includes(q))
+                    );
                 }
-                // Оновлюємо стрілки в заголовках
-                document.querySelectorAll('thead th').forEach(th => {
-                    th.classList.remove('sort-asc', 'sort-desc');
-                    if (th.dataset.col === col) {
-                        th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
-                    }
-                });
-                applyFilter();
+                if (sortCol) {
+                    filtered = [...filtered].sort((a, b) => {
+                        const va = getSortValue(a, sortCol);
+                        const vb = getSortValue(b, sortCol);
+                        if (typeof va === 'number' && typeof vb === 'number') {
+                            return (va - vb) * sortDir;
+                        }
+                        const sa = String(va).toLowerCase();
+                        const sb = String(vb).toLowerCase();
+                        if (sa < sb) return -1 * sortDir;
+                        if (sa > sb) return 1 * sortDir;
+                        return 0;
+                    });
+                }
+                renderTable(filtered);
+                renderStats();
+                renderPagination();
             }
 
             function getSortValue(r, col) {
@@ -852,38 +866,42 @@
                 }
             }
 
-            function applyFilter() {
-                const q = document.getElementById('searchInput').value.toLowerCase();
-                let filtered = !q ? allRecords : allRecords.filter(r =>
-                    [r.crew, r.event, r.target, r.weapon, r.note, r.coordinates]
-                        .some(v => v && v.toLowerCase().includes(q))
-                );
-                if (sortCol) {
-                    filtered = [...filtered].sort((a, b) => {
-                        const va = getSortValue(a, sortCol);
-                        const vb = getSortValue(b, sortCol);
-                        if (va < vb) return -1 * sortDir;
-                        if (va > vb) return  1 * sortDir;
-                        return 0;
-                    });
+            // ===== ПАГІНАЦІЯ =====
+            function goToPage(page) {
+                const totalPages = Math.ceil(totalElements / pageSize);
+                if (page < 0 || page >= totalPages) return;
+                currentPage = page;
+                loadRecords();
+            }
+
+            function renderPagination() {
+                const totalPages = Math.ceil(totalElements / pageSize);
+                if (totalPages <= 1) {
+                    const pag = document.getElementById('pagination');
+                    if (pag) pag.style.display = 'none';
+                    return;
                 }
-                renderTable(filtered);
+                let html = `<div style="display:flex; gap:10px; align-items:center; justify-content:center; margin-top:12px;">`;
+                html += `<button class="btn btn-sm" onclick="goToPage(0)" ${currentPage === 0 ? 'disabled' : ''}>⏮</button>`;
+                html += `<button class="btn btn-sm" onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>`;
+                html += `<span>Сторінка ${currentPage + 1} з ${totalPages} (всього ${totalElements} записів)</span>`;
+                html += `<button class="btn btn-sm" onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>▶</button>`;
+                html += `<button class="btn btn-sm" onclick="goToPage(${totalPages - 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>⏭</button>`;
+                html += `</div>`;
+                let pagDiv = document.getElementById('pagination');
+                if (!pagDiv) {
+                    pagDiv = document.createElement('div');
+                    pagDiv.id = 'pagination';
+                    document.querySelector('.table-wrap').after(pagDiv);
+                }
+                pagDiv.style.display = 'block';
+                pagDiv.innerHTML = html;
             }
 
-            function renderStats() {
-                const total = allRecords.length;
-                const hits  = allRecords.filter(r => r.event && (r.event.toLowerCase().includes('знищен') || r.event.toLowerCase().includes('підрив'))).length;
-                const loss  = allRecords.filter(r => r.event && r.event.toLowerCase().includes('втрат')).length;
-                document.getElementById('statsBar').innerHTML = `
-        <div class="stat-card"><div class="num">${total}</div><div class="lbl">Всього вильотів</div></div>
-        <div class="stat-card"><div class="num" style="color:var(--stat-num-hits, #2e7d32)">${hits}</div><div class="lbl">Знищення цілі</div></div>
-        <div class="stat-card"><div class="num" style="color:var(--stat-num-loss, #d32f2f)">${loss}</div><div class="lbl">Втрат бортів</div></div>
-    `;
-            }
-
+            // ===== РЕНДЕРИНГ ТАБЛИЦІ =====
             function renderTable(records) {
                 const body = document.getElementById('tableBody');
-                if (!records.length) {
+                if (!records || !records.length) {
                     body.innerHTML = '<tr><td colspan="19" class="empty-state">Записів немає</td></tr>';
                     return;
                 }
@@ -892,38 +910,71 @@
                     const badgeCls = isDestroyed ? 'badge-success' : 'badge-warning';
                     const rowCls = isDestroyed ? 'row-success' : '';
                     return `<tr class="${rowCls}">
-            <td style="text-align:center">${r.recordNumber ?? ''}</td>
-            <td style="text-align:center">${fmtDate(r.flightDate)}</td>
-            <td style="text-align:center">${r.crew ?? ''}</td>
-            <td style="text-align:center"><span class="${badgeCls}">${r.event ?? ''}</span></td>
-            <td style="text-align:center">${fmtTime(r.takeoffTime)}</td>
-            <td style="text-align:center">${fmtTime(r.lossTime)}</td>
-            <td style="text-align:center;font-size:11px">${r.coordinates ?? ''}</td>
-            <td style="text-align:center">${r.azimuth != null ? r.azimuth + '°' : ''}</td>
-            <td style="text-align:center">${r.distance ?? ''}</td>
-            <td style="text-align:center">${r.altitude ?? ''}</td>
-            <td style="text-align:left;font-size:11px">${r.weapon ?? ''}</td>
-            <td style="text-align:left;font-size:11px">${r.explosive ?? ''}</td>
-            <td style="text-align:left;font-size:11px">${r.detonator ?? ''}</td>
-            <td style="text-align:center">${r.targetAltitude ?? ''}</td>
-            <td style="text-align:center">${r.target ?? ''}</td>
-            <td style="text-align:center">${r.targetSpeed ?? ''}</td>
-            <td style="text-align:left;font-size:11px;color:var(--text-loss-reason, #c62828)">${r.lossReason ?? ''}</td>
-            <td style="text-align:left;font-size:11px;color:var(--text-note, #666);max-width:280px">
-                <div class="note-cell" onclick="this.classList.toggle('expanded')"
-                     title="Натисни щоб розгорнути">
-                    ${r.note ?? ''}
-                </div>
-             </td>
-            <td class="actions-col no-print">
-                <button class="btn btn-warning btn-sm" onclick="openEditModal(${r.id})">✏️</button>
-                <button class="btn btn-danger btn-sm" onclick="confirmDelete(${r.id})">🗑</button>
-            </td>
-         </tr>`;
+                <td style="text-align:center">${r.recordNumber ?? ''}</td>
+                <td style="text-align:center">${fmtDate(r.flightDate)}</td>
+                <td style="text-align:center">${r.crew ?? ''}</td>
+                <td style="text-align:center"><span class="${badgeCls}">${r.event ?? ''}</span></td>
+                <td style="text-align:center">${fmtTime(r.takeoffTime)}</td>
+                <td style="text-align:center">${fmtTime(r.lossTime)}</td>
+                <td style="text-align:center;font-size:11px">${r.coordinates ?? ''}</td>
+                <td style="text-align:center">${r.azimuth != null ? r.azimuth + '°' : ''}</td>
+                <td style="text-align:center">${r.distance ?? ''}</td>
+                <td style="text-align:center">${r.altitude ?? ''}</td>
+                <td style="text-align:left;font-size:11px">${r.weapon ?? ''}</td>
+                <td style="text-align:left;font-size:11px">${r.explosive ?? ''}</td>
+                <td style="text-align:left;font-size:11px">${r.detonator ?? ''}</td>
+                <td style="text-align:center">${r.targetAltitude ?? ''}</td>
+                <td style="text-align:center">${r.target ?? ''}</td>
+                <td style="text-align:center">${r.targetSpeed ?? ''}</td>
+                <td style="text-align:left;font-size:11px;color:var(--text-loss-reason, #c62828)">${r.lossReason ?? ''}</td>
+                <td style="text-align:left;font-size:11px;color:var(--text-note, #666);max-width:280px">
+                    <div class="note-cell" onclick="this.classList.toggle('expanded')"
+                         title="Натисни щоб розгорнути">
+                        ${r.note ?? ''}
+                    </div>
+                </td>
+                <td class="actions-col no-print">
+                    <button class="btn btn-warning btn-sm" onclick="openEditModal(${r.id})">✏️</button>
+                    <button class="btn btn-danger btn-sm" onclick="confirmDelete(${r.id})">🗑</button>
+                </td>
+            </tr>`;
                 }).join('');
             }
 
-            // ===== ФОРМА =====
+            // ===== СТАТИСТИКА (на основі всіх записів на поточній сторінці) =====
+            function renderStats() {
+                const total = totalElements;
+                const hits  = allRecords.filter(r => r.event && (r.event.toLowerCase().includes('знищен') || r.event.toLowerCase().includes('підрив'))).length;
+                const loss  = allRecords.filter(r => r.event && r.event.toLowerCase().includes('втрат')).length;
+                document.getElementById('statsBar').innerHTML = `
+            <div class="stat-card"><div class="num">${total}</div><div class="lbl">Всього вильотів</div></div>
+            <div class="stat-card"><div class="num" style="color:var(--stat-num-hits, #2e7d32)">${hits}</div><div class="lbl">Знищення цілі</div></div>
+            <div class="stat-card"><div class="num" style="color:var(--stat-num-loss, #d32f2f)">${loss}</div><div class="lbl">Втрат бортів</div></div>
+        `;
+            }
+
+            // ===== СОРТУВАННЯ =====
+            function sortBy(col) {
+                if (sortCol === col) {
+                    sortDir *= -1;
+                } else {
+                    sortCol = col;
+                    sortDir = 1;
+                }
+                applyFilter();
+            }
+
+            // ===== ЕКСПОРТ XLSX =====
+            function exportXlsx() {
+                const month = document.getElementById('monthFilter').value;
+                const year  = document.getElementById('yearFilter').value;
+                let url = '/flights/api/export';
+                if (month) url += `?month=${encodeURIComponent(month)}`;
+                else if (year) url += `?year=${year}`;
+                window.location.href = url;
+            }
+
+            // ===== МОДАЛЬНІ ВІКНА (додавання/редагування) =====
             function openAddModal() {
                 document.getElementById('modalTitle').textContent = 'Додати запис';
                 document.getElementById('editId').value = '';
@@ -932,7 +983,7 @@
                     'fDetonator','fAltitude','fTarget','fSpeed','fNote'];
                 document.getElementById('fLossReason').value = '';
                 fields.forEach(id => document.getElementById(id).value = '');
-                document.getElementById('formModal').classList.add('open');
+                openModal('formModal');
             }
 
             function openEditModal(id) {
@@ -962,7 +1013,7 @@
                 document.getElementById('fSpeed').value      = r.targetSpeed ?? '';
                 document.getElementById('fLossReason').value = r.lossReason ?? '';
                 document.getElementById('fNote').value       = r.note ?? '';
-                document.getElementById('formModal').classList.add('open');
+                openModal('formModal');
             }
 
             async function saveRecord() {
@@ -994,16 +1045,20 @@
 
                 const url    = id ? `/flights/api/${id}` : '/flights/api';
                 const method = id ? 'PUT' : 'POST';
-                const res = await fetch(url, {
-                    method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
-                });
-                if (res.ok) {
-                    closeModal('formModal');
-                    await loadRecords();
-                    showToast(id ? 'Запис оновлено' : 'Запис додано', 'ok');
-                } else {
-                    const msg = await res.text();
-                    showToast('Помилка: ' + msg, 'err');
+                try {
+                    const res = await fetch(url, {
+                        method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+                    });
+                    if (res.ok) {
+                        closeModal('formModal');
+                        await loadRecords(); // перезавантажуємо поточну сторінку
+                        showToast(id ? 'Запис оновлено' : 'Запис додано', 'ok');
+                    } else {
+                        const msg = await res.text();
+                        showToast('Помилка: ' + msg, 'err');
+                    }
+                } catch (e) {
+                    showToast('Помилка мережі', 'err');
                 }
             }
 
@@ -1013,42 +1068,60 @@
                 document.getElementById('confirmBtn').onclick = async () => {
                     const res = await fetch(`/flights/api/${deleteTargetId}`, {method:'DELETE'});
                     closeModal('confirmModal');
-                    if (res.ok) { await loadRecords(); showToast('Запис видалено', 'ok'); }
-                    else showToast('Помилка видалення', 'err');
+                    if (res.ok) {
+                        await loadRecords();
+                        showToast('Запис видалено', 'ok');
+                    } else {
+                        showToast('Помилка видалення', 'err');
+                    }
                 };
-                document.getElementById('confirmModal').classList.add('open');
+                openModal('confirmModal');
             }
 
-            // ===== ЕКСПОРТ =====
-            function exportXlsx() {
-                const month = document.getElementById('monthFilter').value;
-                const year  = document.getElementById('yearFilter').value;
-                let url = '/flights/api/export';
-                if (month) url += `?month=${encodeURIComponent(month)}`;
-                else if (year) url += `?year=${year}`;
-                window.location.href = url;
+            // ===== ЗАВАНТАЖЕННЯ ФІЛЬТРІВ (роки, місяці) =====
+            async function loadYears() {
+                const res = await fetch('/flights/api/years');
+                const years = await res.json();
+                const sel = document.getElementById('yearFilter');
+                years.forEach(y => {
+                    const opt = document.createElement('option');
+                    opt.value = y; opt.textContent = y;
+                    sel.appendChild(opt);
+                });
+            }
+            async function loadMonths() {
+                const res = await fetch('/flights/api/months');
+                const months = await res.json();
+                const sel = document.getElementById('monthFilter');
+                months.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m; opt.textContent = m;
+                    sel.appendChild(opt);
+                });
             }
 
-            // ===== УТИЛІТИ =====
-            function fmtDate(d) {
-                if (!d) return '';
-                const [y, m, day] = d.substring(0,10).split('-');
-                return `${day}.${m}.${y}`;
-            }
-            function fmtTime(t) {
-                if (!t) return '';
-                return t.substring(0,5);
-            }
-            function openModal(id)  { document.getElementById(id).classList.add('open'); }
-            function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+            // ===== ОБРОБНИКИ ПОДІЙ =====
+            document.getElementById('yearFilter').onchange = () => {
+                document.getElementById('monthFilter').value = '';
+                currentPage = 0;
+                loadRecords();
+            };
+            document.getElementById('monthFilter').onchange = () => {
+                document.getElementById('yearFilter').value = '';
+                currentPage = 0;
+                loadRecords();
+            };
+            document.getElementById('searchInput').oninput = applyFilter;
+
+            // ===== ЗАКРИТТЯ МОДАЛЬНИХ ВІКОН ПРИ КЛІКУ ПО ОВЕРЛЕЮ =====
             document.querySelectorAll('.modal-overlay').forEach(el =>
                 el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
             );
-            function showToast(msg, type) {
-                const t = document.getElementById('toast');
-                t.textContent = msg; t.className = `toast ${type} show`;
-                setTimeout(() => t.classList.remove('show'), 2500);
-            }
+
+            // ===== ІНІЦІАЛІЗАЦІЯ =====
+            loadYears();
+            loadMonths();
+            loadRecords();
         </script>
     </div>
 </div>
