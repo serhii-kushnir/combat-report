@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface PersonnelRepository extends JpaRepository<Personnel, Long> {
 
-    // Без пагінації (збережено для експорту та сумісності)
+    // ----- Без пагінації -----
     List<Personnel> findByActiveTrueAndPersonnelStatusOrderByLastNameAsc(String personnelStatus);
 
     List<Personnel> findByActiveFalseOrderByLastNameAsc();
@@ -22,7 +22,7 @@ public interface PersonnelRepository extends JpaRepository<Personnel, Long> {
 
     boolean existsByPersonnelNumber(Integer personnelNumber);
 
-    // З пагінацією
+    // ----- З пагінацією (БЕЗ EntityGraph) -----
     Page<Personnel> findByActiveTrueAndPersonnelStatus(String personnelStatus, Pageable pageable);
 
     Page<Personnel> findByLastNameContainingIgnoreCaseAndActiveTrue(String lastName, Pageable pageable);

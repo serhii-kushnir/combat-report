@@ -44,47 +44,55 @@ public class PersonnelService {
     }
 
     // ======================================================================
-    //  БЕЗ ПАГІНАЦІЇ (для експорту та інших потреб)
+    //  БЕЗ ПАГІНАЦІЇ
     // ======================================================================
 
+    @Transactional(readOnly = true)
     public List<Personnel> getAll() {
         List<Personnel> list = repository.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("В особовому складі");
         for (Personnel p : list) enrichPersonnel(p);
         return list;
     }
 
+    @Transactional(readOnly = true)
     public List<Personnel> getArchived() {
         List<Personnel> list = repository.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("Не в особовому складі");
         for (Personnel p : list) enrichPersonnel(p);
         return list;
     }
 
+    @Transactional(readOnly = true)
     public List<Personnel> getInactive() {
         return repository.findByActiveFalseOrderByLastNameAsc();
     }
 
+    @Transactional(readOnly = true)
     public List<Personnel> getAllPersonnel() {
         List<Personnel> all = repository.findAll();
         for (Personnel p : all) enrichPersonnel(p);
         return all;
     }
 
+    @Transactional(readOnly = true)
     public List<Personnel> getByStatus(String status) {
         return repository.findByPersonnelStatus(status);
     }
 
+    @Transactional(readOnly = true)
     public Optional<Personnel> getById(Long id) {
         return repository.findById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<Personnel> search(String query) {
         return repository.findByLastNameContainingIgnoreCaseAndActiveTrue(query);
     }
 
     // ======================================================================
-    //  МЕТОДИ З ПАГІНАЦІЄЮ
+    //  З ПАГІНАЦІЄЮ (додано @Transactional(readOnly = true))
     // ======================================================================
 
+    @Transactional(readOnly = true)
     public Page<Personnel> getActivePage(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("lastName").ascending());
         Page<Personnel> pageResult = repository.findByActiveTrueAndPersonnelStatus("В особовому складі", pageable);
@@ -92,6 +100,7 @@ public class PersonnelService {
         return pageResult;
     }
 
+    @Transactional(readOnly = true)
     public Page<Personnel> searchPage(String query, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("lastName").ascending());
         Page<Personnel> pageResult = repository.findByLastNameContainingIgnoreCaseAndActiveTrue(query, pageable);
@@ -103,6 +112,7 @@ public class PersonnelService {
     //  СТАТИСТИКА
     // ======================================================================
 
+    @Transactional(readOnly = true)
     public Map<String, Integer> getStatistics() {
         List<Personnel> all = repository.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("В особовому складі");
         int total = all.size();
@@ -132,7 +142,7 @@ public class PersonnelService {
     }
 
     // ======================================================================
-    //  CRUD ОПЕРАЦІЇ
+    //  CRUD
     // ======================================================================
 
     @Transactional
@@ -304,7 +314,7 @@ public class PersonnelService {
     }
 
     // ======================================================================
-    //  ДОПОМІЖНИЙ МЕТОД ДЛЯ ЗБАГАЧЕННЯ
+    //  ДОПОМІЖНИЙ МЕТОД enrichPersonnel (без змін)
     // ======================================================================
 
     private void enrichPersonnel(Personnel p) {

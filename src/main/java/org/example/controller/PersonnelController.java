@@ -60,8 +60,7 @@ public class PersonnelController {
         return "pCard";
     }
 
-    // ===== API =====
-
+    // ===== API З ПАГІНАЦІЄЮ (використовують оновлений сервіс) =====
     @GetMapping("/api")
     @ResponseBody
     public Page<Personnel> getAll(@RequestParam(defaultValue = "0") int page,
@@ -104,7 +103,6 @@ public class PersonnelController {
     }
 
     // ===== CREATE =====
-
     @PostMapping("/api")
     @ResponseBody
     public ResponseEntity<?> create(@RequestBody Personnel personnel) {
@@ -139,7 +137,6 @@ public class PersonnelController {
     }
 
     // ===== UPDATE =====
-
     @PutMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Personnel personnel) {
@@ -156,7 +153,6 @@ public class PersonnelController {
     }
 
     // ===== PATCH =====
-
     @PatchMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> patch(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
@@ -173,7 +169,6 @@ public class PersonnelController {
     }
 
     // ===== DELETE (деактивація) =====
-
     @DeleteMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> deactivate(@PathVariable Long id) {
@@ -189,7 +184,6 @@ public class PersonnelController {
     }
 
     // ===== ЕКСПОРТ =====
-
     @GetMapping("/api/{id}/export")
     public ResponseEntity<byte[]> exportPersonXlsx(@PathVariable Long id) {
         try {

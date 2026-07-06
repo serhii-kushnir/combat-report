@@ -1,14 +1,18 @@
 package org.example.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
@@ -21,14 +25,12 @@ public class Personnel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ===== ОСНОВНІ =====
     @Column(unique = true)
     private Integer personnelNumber;
 
     @Column(nullable = false)
     private String lastName;
 
-    // ===== РЕЧОВЕ ЗАБЕЗПЕЧЕННЯ =====
     @Column(length = 10)
     private String shoeSize;
 
@@ -65,7 +67,6 @@ public class Personnel {
     @JsonProperty("active")
     private Boolean active = true;
 
-    // ===== ОСОБОВІ ДАНІ =====
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
@@ -81,53 +82,45 @@ public class Personnel {
     @Column(length = 50)
     private String bloodGroup;
 
-    // ===== ОСВІТА (рівень) =====
     @Column(length = 50)
     private String education;
 
     @Column(length = 100)
     private String militaryUnit;
 
-    // ===== ПРИЗВАНИЙ НА ВІЙСЬКОВУ СЛУЖБУ =====
     @Column(length = 100)
     private String drafObl;
 
     @Column(length = 100)
     private String draftLoc;
 
-    // ===== ЗАРАХУВАННЯ У ВІЙСЬКОВУ ЧАСТИНУ =====
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate enrollmentDate;
 
     @Column(length = 100)
     private String enrollmentNakaz;
 
-    // ===== УЧАСНИК БОЙОВИХ ДІЙ =====
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate ubdDate;
 
-    // ===== ФОРМА ДОПУСКУ =====
     @Column(length = 50)
     private String admissionNakaz;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate admissionDate;
 
-    // ===== АДРЕСА =====
     @Column(length = 500)
     private String registrationAddress;
 
     @Column(length = 500)
     private String livingAddress;
 
-    // ===== СІМЕЙНИЙ СТАН =====
     @Column(length = 50)
     private String maritalStatus;
 
     @Column(length = 500)
     private String spouseName;
 
-    // ===== ВІЙСЬКОВІ ДАНІ =====
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate draftDate;
 
@@ -140,19 +133,18 @@ public class Personnel {
     @Column(length = 100)
     private String ubdNumber;
 
-    // Водійське посвідчення
     @Column(length = 50)
     private String driverLicenseSeries;
+
     @Column(length = 50)
     private String driverLicenseNumber;
+
     @Column(length = 100)
     private String driverLicenseCategory;
 
-    // ===== АДРЕСА СІМ'Ї =====
     @Column(length = 500)
     private String familyAddress;
 
-    // ===== ВІЙСЬКОВІ (розширені) =====
     @Column(length = 255)
     private String admissionForm;
 
@@ -162,7 +154,23 @@ public class Personnel {
     @Column(length = 100)
     private String serviceFor;
 
-    // ===== TRANSIENT ПОЛЯ ДЛЯ ПОВНОЇ ТАБЛИЦІ =====
+    // ===== ЗВ'ЯЗКИ З @BatchSize ТА @JsonIgnore =====
+    @JsonIgnore
+    @OneToMany(mappedBy = "personnel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @BatchSize(size = 20)
+    private List<PersonnelEducation> educationList = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "personnel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @BatchSize(size = 20)
+    private List<PersonnelChild> childrenList = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "personnel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @BatchSize(size = 20)
+    private List<PersonnelWeapon> weaponList = new ArrayList<>();
+
+    // ===== TRANSIENT ПОЛЯ =====
     @Transient
     private String educationInstitution;
     @Transient
