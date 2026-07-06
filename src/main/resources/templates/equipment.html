@@ -202,7 +202,6 @@
         .col-category { width: 100px; text-align: center; }
         .col-actions { width: 100px; text-align: center !important; white-space: nowrap; }
 
-        /* Бейджики */
         .btn-quantity {
             background: #17a2b8;
             color: white;
@@ -390,21 +389,35 @@
             transition: color 0.3s;
         }
 
-        /* Стилі для темної теми (додаткові) */
-        .dark-theme .btn-edit { background: #b87a2a; }
-        .dark-theme .btn-edit:hover { background: #c88a3a; }
-        .dark-theme .btn-delete { background: #a03040; }
-        .dark-theme .btn-delete:hover { background: #b04050; }
-        .dark-theme .btn-quantity { background: #1a8a9a; }
-        .dark-theme .btn-unit { background: #2a7a2a; }
-        .dark-theme .btn-crew { background: #9a6a1a; }
-        .dark-theme .btn-location { background: #5a2a8a; }
-        .dark-theme .btn-category { background: #1a8a7a; }
-        .dark-theme .btn-empty { background: #4a4a55; }
-        .dark-theme .btn-edit, .dark-theme .btn-delete {
-            color: white;
+        /* Пагінація */
+        .pagination {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            margin-top: 16px;
+            padding: 8px 0;
         }
-        /* ===== КНОПКА ДРУК ===== */
+        .pagination button {
+            padding: 4px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pagination button:hover:not(:disabled) {
+            background: var(--bg-hover);
+        }
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .pagination .page-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
         .btn-print {
             background: #607d8b;
             color: white;
@@ -420,76 +433,25 @@
             background: #5a6a7a;
         }
 
-        /* ===== СТИЛІ ДЛЯ ДРУКУ ===== */
+        /* Стилі для друку */
         @media print {
-            /* Ховаємо всі елементи інтерфейсу */
-            .sidebar,
-            .toolbar,
-            .no-print,
-            .btn,
-            .btn-print,
-            .btn-success,
-            .btn-warning {
+            .sidebar, .toolbar, .no-print, .btn, .btn-print, .btn-success,
+            .btn-primary, .btn-warning, .btn-danger, .modal-overlay,
+            .pagination, .search-input {
                 display: none !important;
             }
-            body {
-                background: white !important;
-                color: black !important;
-            }
-            .main-content {
-                margin-left: 0 !important;
-                padding: 0 !important;
-            }
-            .container {
-                padding: 10px !important;
-                max-width: 100% !important;
-            }
-            .table-wrap {
-                box-shadow: none !important;
-                border: 1px solid #ccc !important;
-                border-radius: 0 !important;
-            }
-            table {
-                background: white !important;
-                width: 100% !important;
-            }
-            thead {
-                background: #1a237e !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            thead th {
-                background: #1a237e !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            td {
-                color: black !important;
-                border-bottom: 1px solid #ddd !important;
-            }
-            tr {
-                page-break-inside: avoid;
-            }
-            /* Для темної теми – перевизначення кольорів */
-            .dark-theme td {
-                color: black !important;
-            }
-            .dark-theme thead {
-                background: #1a237e !important;
-                color: white !important;
-            }
-            .dark-theme thead th {
-                background: #1a237e !important;
-                color: white !important;
-            }
-        }
-        @media print {
-            .modal-overlay,
-            .modal {
-                display: none !important;
-            }
+            body { background: white !important; color: black !important; }
+            .main-content { margin-left: 0 !important; padding: 0 !important; }
+            .container { padding: 10px !important; max-width: 100% !important; }
+            .table-wrap { box-shadow: none !important; border: 1px solid #ccc !important; border-radius: 0 !important; }
+            table { background: white !important; width: 100% !important; }
+            thead { background: #1a237e !important; color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            thead th { background: #1a237e !important; color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            td { color: black !important; border-bottom: 1px solid #ddd !important; }
+            tr { page-break-inside: avoid; }
+            .dark-theme td { color: black !important; }
+            .dark-theme thead { background: #1a237e !important; color: white !important; }
+            .dark-theme thead th { background: #1a237e !important; color: white !important; }
         }
     </style>
     <link th:replace="~{fragments :: sidebar-css}">
@@ -504,7 +466,6 @@
                 <input type="text" id="searchInput" class="search-input" placeholder="🔍 Пошук...">
                 <button class="btn btn-success" onclick="openAddModal()">+ Додати позицію</button>
                 <button class="btn btn-warning" onclick="exportToXlsx()">📊 Експорт XLSX</button>
-                <!-- НОВА КНОПКА ДРУК -->
                 <button class="btn btn-print" onclick="window.print()">
                     <i class="fas fa-print"></i> Друк
                 </button>
@@ -528,6 +489,10 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- ПАГІНАЦІЯ -->
+            <div class="pagination" id="pagination"></div>
+
         </div>
 
         <!-- Модальне вікно додавання -->
@@ -627,6 +592,7 @@
         <div class="toast" id="toast"></div>
 
         <script>
+            // ===== ГЛОБАЛЬНІ ЗМІННІ =====
             let allItems = [];
             let filteredItems = [];
             let sortCol = 'num';
@@ -634,8 +600,65 @@
             let searchTerm = '';
             let deleteTargetId = null;
 
+            // Пагінація
+            let currentPage = 0;
+            let pageSize = 20;
+            let totalElements = 0;
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
+            }
+
+            // ===== ЗАВАНТАЖЕННЯ ДАНИХ З ПАГІНАЦІЄЮ =====
+            async function loadData() {
+                try {
+                    const res = await fetch(`/equipment/api?page=${currentPage}&size=${pageSize}`);
+                    if (!res.ok) {
+                        console.error('Помилка завантаження:', res.status);
+                        showToast('Помилка завантаження: ' + res.status, 'err');
+                        return;
+                    }
+                    const pageData = await res.json();
+                    allItems = pageData.content || [];
+                    totalElements = pageData.totalElements || 0;
+                    console.log('Завантажено:', allItems.length, 'записів, всього:', totalElements);
+                    filterAndSort();
+                    renderPagination();
+                } catch (err) {
+                    console.error('Network error:', err);
+                    showToast('Помилка мережі', 'err');
+                }
+            }
+
+            // ===== ПАГІНАЦІЯ =====
+            function goToPage(page) {
+                const totalPages = Math.ceil(totalElements / pageSize);
+                if (page < 0 || page >= totalPages) return;
+                currentPage = page;
+                loadData();
+            }
+            window.goToPage = goToPage;
+
+            function renderPagination() {
+                const totalPages = Math.ceil(totalElements / pageSize);
+                const pag = document.getElementById('pagination');
+                if (totalPages <= 1) {
+                    pag.innerHTML = '';
+                    return;
+                }
+                let html = '';
+                html += `<button onclick="goToPage(0)" ${currentPage === 0 ? 'disabled' : ''}>⏮</button>`;
+                html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>`;
+                html += `<span class="page-info">Сторінка ${currentPage + 1} з ${totalPages} (всього ${totalElements} записів)</span>`;
+                html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>▶</button>`;
+                html += `<button onclick="goToPage(${totalPages - 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>⏭</button>`;
+                pag.innerHTML = html;
+            }
+
+            // ===== ФІЛЬТР ТА СОРТУВАННЯ =====
             function filterAndSort() {
-                let filtered = allItems;
+                let filtered = allItems; // масив
                 if (searchTerm.trim() !== '') {
                     const term = searchTerm.trim().toLowerCase();
                     filtered = allItems.filter(item =>
@@ -677,6 +700,29 @@
                 renderTable();
             }
 
+            function sortBy(col) {
+                if (sortCol === col) {
+                    sortDir *= -1;
+                } else {
+                    sortCol = col;
+                    sortDir = 1;
+                }
+                document.querySelectorAll('thead th[data-col]').forEach(th => {
+                    th.classList.remove('sort-asc', 'sort-desc');
+                    if (th.getAttribute('data-col') === col) {
+                        th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+                    }
+                });
+                filterAndSort();
+            }
+            window.sortBy = sortBy;
+
+            function onSearchInput() {
+                searchTerm = document.getElementById('searchInput').value;
+                filterAndSort();
+            }
+
+            // ===== РЕНДЕРИНГ ТАБЛИЦІ =====
             function renderTable() {
                 const tbody = document.getElementById('tableBody');
                 if (!filteredItems.length) {
@@ -710,49 +756,13 @@
                 }).join('');
             }
 
-            async function loadData() {
-                try {
-                    const res = await fetch('/equipment/api');
-                    if (!res.ok) {
-                        console.error('Помилка завантаження:', res.status);
-                        showToast('Помилка завантаження: ' + res.status, 'err');
-                        return;
-                    }
-                    allItems = await res.json();
-                    console.log('Завантажено:', allItems.length, 'записів');
-                    filterAndSort();
-                } catch (err) {
-                    console.error('Network error:', err);
-                    showToast('Помилка мережі', 'err');
-                }
+            // ===== ЕКСПОРТ =====
+            function exportToXlsx() {
+                window.location.href = '/equipment/api/export';
             }
+            window.exportToXlsx = exportToXlsx;
 
-            function sortBy(col) {
-                if (sortCol === col) {
-                    sortDir *= -1;
-                } else {
-                    sortCol = col;
-                    sortDir = 1;
-                }
-                document.querySelectorAll('thead th[data-col]').forEach(th => {
-                    th.classList.remove('sort-asc', 'sort-desc');
-                    if (th.getAttribute('data-col') === col) {
-                        th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
-                    }
-                });
-                filterAndSort();
-            }
-
-            function onSearchInput() {
-                searchTerm = document.getElementById('searchInput').value;
-                filterAndSort();
-            }
-
-            function escapeHtml(str) {
-                if (!str) return '';
-                return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
-            }
-
+            // ===== МОДАЛЬНІ ВІКНА =====
             function openAddModal() {
                 document.getElementById('eqName').value = '';
                 document.getElementById('eqQuantity').value = '0';
@@ -762,6 +772,7 @@
                 document.getElementById('eqCategory').value = '';
                 document.getElementById('addModal').classList.add('open');
             }
+            window.openAddModal = openAddModal;
 
             async function addItem() {
                 const name = document.getElementById('eqName').value.trim();
@@ -778,6 +789,7 @@
                 });
                 if (res.ok) {
                     closeModal('addModal');
+                    currentPage = 0;
                     await loadData();
                     showToast("Додано", "ok");
                 } else {
@@ -785,6 +797,7 @@
                     showToast("Помилка: " + err, "err");
                 }
             }
+            window.addItem = addItem;
 
             function openEditItemModal(id) {
                 const item = allItems.find(i => i.id === id);
@@ -798,6 +811,7 @@
                 document.getElementById('editItemCategory').value = item.category || '';
                 document.getElementById('editItemModal').classList.add('open');
             }
+            window.openEditItemModal = openEditItemModal;
 
             async function updateFullItem() {
                 const id = document.getElementById('editItemId').value;
@@ -815,6 +829,7 @@
                 });
                 if (res.ok) {
                     closeModal('editItemModal');
+                    currentPage = 0;
                     await loadData();
                     showToast("Оновлено", "ok");
                 } else {
@@ -822,16 +837,19 @@
                     showToast("Помилка: " + err, "err");
                 }
             }
+            window.updateFullItem = updateFullItem;
 
             function deleteItem(id) {
                 deleteTargetId = id;
                 document.getElementById('confirmDeleteModal').classList.add('open');
             }
+            window.deleteItem = deleteItem;
 
             document.getElementById('confirmDeleteBtn').onclick = async function() {
                 if (!deleteTargetId) return;
                 const res = await fetch(`/equipment/api/${deleteTargetId}`, { method: 'DELETE' });
                 if (res.ok) {
+                    currentPage = 0;
                     await loadData();
                     showToast("Видалено", "ok");
                 } else {
@@ -845,6 +863,7 @@
             function closeModal(id) {
                 document.getElementById(id).classList.remove('open');
             }
+            window.closeModal = closeModal;
 
             function showToast(msg, type) {
                 const toast = document.getElementById('toast');
@@ -852,16 +871,16 @@
                 toast.className = `toast ${type} show`;
                 setTimeout(() => toast.classList.remove('show'), 2500);
             }
+            window.showToast = showToast;
 
-            function exportToXlsx() {
-                window.location.href = '/equipment/api/export';
-            }
-
+            // ===== ОБРОБНИКИ =====
             document.querySelectorAll('.modal-overlay, .confirm-overlay').forEach(el =>
                 el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
             );
 
             document.getElementById('searchInput').addEventListener('input', onSearchInput);
+
+            // ===== ІНІЦІАЛІЗАЦІЯ =====
             loadData();
         </script>
     </div>

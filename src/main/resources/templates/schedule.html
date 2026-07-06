@@ -916,23 +916,30 @@
             let filteredData = [];
             let sortCol = 'num';
             let sortDir = 1;
-            let statsSortCol = 'num';   // <-- тепер завжди 'num' за замовчуванням
+            let statsSortCol = 'num';
             let statsSortDir = 1;
             let menuTarget = null;
             const today = new Date();
             currentYear  = today.getFullYear();
             currentMonth = today.getMonth() + 1;
 
-            // ===== МАПА ДЛЯ ПОРЯДКОВИХ НОМЕРІВ =====
+            // Пагінація
+            let currentPage = 0;
+            let pageSize = 50; // багато людей, але з пагінацією
+            let totalElements = 0;
+
+            // Мапа для порядкових номерів
             let personnelMap = {};
             let personnelMapLoaded = false;
 
             async function loadPersonnelMap() {
                 if (personnelMapLoaded) return;
                 try {
-                    const res = await fetch('/personnel/api');
+                    // Використовуємо великий розмір сторінки, щоб отримати всіх (або краще зробити окремий ендпоінт без пагінації)
+                    const res = await fetch('/personnel/api?page=0&size=1000');
                     if (!res.ok) return;
-                    const list = await res.json();
+                    const pageData = await res.json();
+                    const list = pageData.content || []; // витягуємо масив
                     list.forEach(p => {
                         personnelMap[p.id] = p.personnelNumber;
                     });
@@ -949,7 +956,6 @@
                 });
             }
 
-            // ===== ДОПОМІЖНІ ФУНКЦІЇ =====
             function escapeHtml(str) {
                 if (!str) return '';
                 return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' })[m] || m);
@@ -964,18 +970,13 @@
 
             function getSortValue(row, col) {
                 switch(col) {
-                    case 'num':
-                        return row.personnelNumber ?? row.id ?? 0;
-                    case 'rank':
-                        return row.rank || '';
-                    case 'name':
-                        return row.shortName || '';
-                    default:
-                        return '';
+                    case 'num': return row.personnelNumber ?? row.id ?? 0;
+                    case 'rank': return row.rank || '';
+                    case 'name': return row.shortName || '';
+                    default: return '';
                 }
             }
 
-            // ===== ЗАВАНТАЖЕННЯ ДАНИХ =====
             function updateCurrentDate() {
                 const now = new Date();
                 const day = String(now.getDate()).padStart(2,'0');
@@ -996,18 +997,16 @@
 
                 await loadPersonnelMap();
                 tableData = enrichWithPersonnelNumber(data);
+                totalElements = tableData.length; // загальна кількість для пагінації
 
-                // Сортування основної таблиці за замовчуванням: за №, зростання
                 sortCol = 'num';
                 sortDir = 1;
-                // Сортування статистики за замовчуванням: за №, зростання
                 statsSortCol = 'num';
                 statsSortDir = 1;
                 applyFilters();
                 renderStatsTable();
             }
 
-            // ===== СОРТУВАННЯ ОСНОВНОЇ ТАБЛИЦІ =====
             function sortBy(col) {
                 if (sortCol === col) {
                     sortDir *= -1;
@@ -1036,56 +1035,51 @@
                     });
                 }
                 filteredData = sorted;
+                // Пагінація: вирізаємо частину
+                const start = currentPage * pageSize;
+                const end = start + pageSize;
+                const pagedData = filteredData.slice(start, end);
                 document.querySelectorAll('#scheduleTable thead th[data-col]').forEach(th => {
                     th.classList.remove('sort-asc', 'sort-desc');
                     if (th.dataset.col === sortCol) {
                         th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
                     }
                 });
-                renderTable();
+                renderTable(pagedData);
+                renderPagination();
             }
 
-            // ===== СОРТУВАННЯ СТАТИСТИКИ =====
-            function sortStatsBy(col) {
-                if (statsSortCol === col) {
-                    statsSortDir *= -1;
-                } else {
-                    statsSortCol = col;
-                    statsSortDir = 1;
-                }
-                renderStatsTable();
+            function goToPage(page) {
+                const totalPages = Math.ceil(filteredData.length / pageSize);
+                if (page < 0 || page >= totalPages) return;
+                currentPage = page;
+                applyFilters();
             }
 
-            function getStatsSortValue(row, col) {
-                if (col === 'num') {
-                    return row.personnelNumber ?? row.id ?? 0;
+            function renderPagination() {
+                const totalPages = Math.ceil(filteredData.length / pageSize);
+                const pag = document.getElementById('pagination');
+                if (!pag) return;
+                if (totalPages <= 1) {
+                    pag.innerHTML = '';
+                    return;
                 }
-                if (col === 'name') {
-                    return row.shortName || '';
-                }
-                if (col === 'rank') {
-                    return row.rank || '';
-                }
-                const counts = {};
-                STAT_CATEGORIES.forEach(cat => counts[cat] = 0);
-                for (const dayNum in row.days) {
-                    const statusCode = row.days[dayNum];
-                    if (statusCode && CATEGORY_MAPPING[statusCode]) {
-                        const category = CATEGORY_MAPPING[statusCode];
-                        counts[category]++;
-                    }
-                }
-                return counts[col] || 0;
+                let html = '';
+                html += `<button onclick="goToPage(0)" ${currentPage === 0 ? 'disabled' : ''}>⏮</button>`;
+                html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>`;
+                html += `<span class="page-info">Сторінка ${currentPage + 1} з ${totalPages} (всього ${filteredData.length} осіб)</span>`;
+                html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>▶</button>`;
+                html += `<button onclick="goToPage(${totalPages - 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>⏭</button>`;
+                pag.innerHTML = html;
             }
 
-            // ===== РЕНДЕРИНГ ОСНОВНОЇ ТАБЛИЦІ =====
-            function renderTable() {
+            function renderTable(pagedData) {
                 const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
 
                 let headRow1 = `<tr>
-                    <th class="col-num" data-col="num" onclick="sortBy('num')">№</th>
-                    <th class="col-rank" data-col="rank" onclick="sortBy('rank')" style="text-align:left">Звання</th>
-                    <th class="col-name" data-col="name" onclick="sortBy('name')" style="text-align:left">ПІБ</th>`;
+            <th class="col-num" data-col="num" onclick="sortBy('num')">№</th>
+            <th class="col-rank" data-col="rank" onclick="sortBy('rank')" style="text-align:left">Звання</th>
+            <th class="col-name" data-col="name" onclick="sortBy('name')" style="text-align:left">ПІБ</th>`;
                 for (let d = 1; d <= daysInMonth; d++) {
                     const dow = new Date(currentYear, currentMonth - 1, d).getDay();
                     const isWE = (dow === 0 || dow === 6);
@@ -1093,7 +1087,7 @@
                         currentMonth === today.getMonth() + 1 &&
                         d === today.getDate());
                     headRow1 += `<th class="col-day${isWE ? ' weekend' : ''}${isTod ? ' today-col' : ''}"
-                         style="font-size:11px;padding:4px 2px">${d}</th>`;
+                 style="font-size:11px;padding:4px 2px">${d}</th>`;
                 }
                 headRow1 += `</tr>`;
 
@@ -1105,19 +1099,19 @@
                 headRow2 += `</tr>`;
                 document.getElementById('tableHead').innerHTML = headRow1 + headRow2;
 
-                if (!filteredData.length) {
+                if (!pagedData || !pagedData.length) {
                     document.getElementById('tableBody').innerHTML =
                         `<tr><td colspan="${daysInMonth + 3}" style="text-align:center;padding:32px;color:var(--text-light)">Особовий склад порожній</td></tr>`;
                     return;
                 }
 
                 let html = '';
-                filteredData.forEach((row, idx) => {
+                pagedData.forEach((row, idx) => {
                     const rowNum = row.personnelNumber ?? (idx + 1);
                     let rowHtml = `<tr>
-                        <td class="num-cell">${rowNum}</td>
-                        <td class="rank-cell">${escapeHtml(row.rank)}</td>
-                        <td class="name-cell">${escapeHtml(row.shortName)}</td>`;
+                <td class="num-cell">${rowNum}</td>
+                <td class="rank-cell">${escapeHtml(row.rank)}</td>
+                <td class="name-cell">${escapeHtml(row.shortName)}</td>`;
                     for (let d = 1; d <= daysInMonth; d++) {
                         const status = row.days[d] || '';
                         const dow = new Date(currentYear, currentMonth - 1, d).getDay();
@@ -1139,11 +1133,11 @@
                             }
                         }
                         rowHtml += `<td class="${cls}"
-                            data-pid="${row.id}"
-                            data-day="${d}"
-                            data-date="${dateStr}"
-                            data-status="${status}"
-                            onclick="openMenu(event, this)">${badge}</td>`;
+                    data-pid="${row.id}"
+                    data-day="${d}"
+                    data-date="${dateStr}"
+                    data-status="${status}"
+                    onclick="openMenu(event, this)">${badge}</td>`;
                     }
                     rowHtml += `</tr>`;
                     html += rowHtml;
@@ -1151,7 +1145,6 @@
                 document.getElementById('tableBody').innerHTML = html;
             }
 
-            // ===== РЕНДЕРИНГ СТАТИСТИКИ =====
             function renderStatsTable() {
                 const tbody = document.getElementById('statsTableBody');
                 if (!tableData || tableData.length === 0) {
@@ -1195,24 +1188,56 @@
                         }
                     }
                     rowsHtml += `<tr>
-                        <td class="num-cell">${rowNum}</td>
-                        <td class="rank-cell">${escapeHtml(person.rank)}</td>
-                        <td class="name-cell-stats">${escapeHtml(person.shortName)}</td>
-                        <td>${counts['БЧ']}</td>
-                        <td>${counts['Бат БЧ']}</td>
-                        <td>${counts['БЧ РКП']}</td>
-                        <td>${counts['Р-ня']}</td>
-                        <td>${counts['В-ня']}</td>
-                        <td>${counts['В-ка']}</td>
-                        <td>${counts['Х-й']}</td>
-                        <td>${counts['СЗЧ']}</td>
-                        <td>${counts['Плюс']}</td>
-                        <td>${counts['ППД']}</td>
-                        <td>${counts['Навчання']}</td>
-                        <td>${counts['Перевівся']}</td>
-                    </tr>`;
+                <td class="num-cell">${rowNum}</td>
+                <td class="rank-cell">${escapeHtml(person.rank)}</td>
+                <td class="name-cell-stats">${escapeHtml(person.shortName)}</td>
+                <td>${counts['БЧ']}</td>
+                <td>${counts['Бат БЧ']}</td>
+                <td>${counts['БЧ РКП']}</td>
+                <td>${counts['Р-ня']}</td>
+                <td>${counts['В-ня']}</td>
+                <td>${counts['В-ка']}</td>
+                <td>${counts['Х-й']}</td>
+                <td>${counts['СЗЧ']}</td>
+                <td>${counts['Плюс']}</td>
+                <td>${counts['ППД']}</td>
+                <td>${counts['Навчання']}</td>
+                <td>${counts['Перевівся']}</td>
+            </tr>`;
                 });
                 tbody.innerHTML = rowsHtml;
+            }
+
+            function getStatsSortValue(row, col) {
+                if (col === 'num') {
+                    return row.personnelNumber ?? row.id ?? 0;
+                }
+                if (col === 'name') {
+                    return row.shortName || '';
+                }
+                if (col === 'rank') {
+                    return row.rank || '';
+                }
+                const counts = {};
+                STAT_CATEGORIES.forEach(cat => counts[cat] = 0);
+                for (const dayNum in row.days) {
+                    const statusCode = row.days[dayNum];
+                    if (statusCode && CATEGORY_MAPPING[statusCode]) {
+                        const category = CATEGORY_MAPPING[statusCode];
+                        counts[category]++;
+                    }
+                }
+                return counts[col] || 0;
+            }
+
+            function sortStatsBy(col) {
+                if (statsSortCol === col) {
+                    statsSortDir *= -1;
+                } else {
+                    statsSortCol = col;
+                    statsSortDir = 1;
+                }
+                renderStatsTable();
             }
 
             // ===== МЕНЮ СТАТУСІВ =====
@@ -1233,9 +1258,9 @@
                 let html = `<div class="status-menu-title">${escapeHtml(title)}</div>`;
                 STATUSES.forEach(s => {
                     html += `<div class="status-option" style="background:${s.color};color:${s.text}"
-                        onclick="event.stopPropagation();selectStatus('${s.code}')">
-                        <span class="dot" style="background:${s.text}"></span> ${s.label}
-                    </div>`;
+                onclick="event.stopPropagation();selectStatus('${s.code}')">
+                <span class="dot" style="background:${s.text}"></span> ${s.label}
+            </div>`;
                 });
                 html += `<div class="status-option clear" onclick="event.stopPropagation();selectStatus('')">✕ Очистити</div>`;
                 menu.innerHTML = html;
@@ -1285,7 +1310,6 @@
                 if (!menu.contains(e.target)) menu.classList.remove('open');
             });
 
-            // ===== ЛЕГЕНДА =====
             function buildLegend() {
                 const el = document.getElementById('legend');
                 let html = '<span class="legend-title">Позначення:</span>';
@@ -1295,7 +1319,6 @@
                 el.innerHTML = html;
             }
 
-            // ===== ФІЛЬТРИ (рік/місяць) =====
             async function loadFilters() {
                 const yearsRes = await fetch('/schedule/api/years');
                 if (yearsRes.ok) {
@@ -1329,15 +1352,18 @@
                     if (monthIndex !== -1) {
                         currentYear = parseInt(yearVal) || new Date().getFullYear();
                         currentMonth = monthIndex + 1;
+                        currentPage = 0;
                         loadMonth();
                     }
                 } else if (yearVal) {
                     currentYear = parseInt(yearVal);
                     currentMonth = 1;
+                    currentPage = 0;
                     loadMonth();
                 } else {
                     currentYear = today.getFullYear();
                     currentMonth = today.getMonth() + 1;
+                    currentPage = 0;
                     loadMonth();
                 }
             };
@@ -1346,7 +1372,6 @@
                 const yearVal = document.getElementById('yearFilter').value;
                 const monthVal = document.getElementById('monthFilter').value;
                 let year = parseInt(yearVal) || currentYear;
-
                 let url = `/schedule/export?year=${year}`;
                 if (monthVal) {
                     const idx = UA_MONTHS.indexOf(monthVal);
@@ -1354,7 +1379,6 @@
                         url += `&month=${idx + 1}`;
                     }
                 }
-                // Якщо є сортування на сторінці – передаємо
                 if (typeof sortCol !== 'undefined' && sortCol) {
                     url += `&sortCol=${encodeURIComponent(sortCol)}&sortDir=${sortDir}`;
                 }
@@ -1366,6 +1390,7 @@
             document.getElementById('todayBtn').onclick = () => {
                 currentYear = today.getFullYear();
                 currentMonth = today.getMonth() + 1;
+                currentPage = 0;
                 loadMonth();
             };
 
@@ -1373,6 +1398,7 @@
                 currentMonth += delta;
                 if (currentMonth > 12) { currentMonth = 1; currentYear++; }
                 if (currentMonth < 1)  { currentMonth = 12; currentYear--; }
+                currentPage = 0;
                 loadMonth();
             }
 

@@ -4,6 +4,7 @@ import org.example.entity.Equipment;
 import org.example.service.EquipmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,14 +30,17 @@ public class EquipmentController {
 
     @GetMapping
     public String list(Model model) {
+        // Для відображення беремо всі записи (або можна з пагінацією на фронтенді)
         model.addAttribute("items", service.getAll());
         return "equipment";
     }
 
+    // ===== API З ПАГІНАЦІЄЮ =====
     @GetMapping("/api")
     @ResponseBody
-    public List<Equipment> getApi() {
-        return service.getAll();
+    public Page<Equipment> getApi(@RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "20") int size) {
+        return service.getPage(page, size);
     }
 
     @PostMapping("/api")

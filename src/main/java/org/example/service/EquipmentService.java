@@ -4,6 +4,10 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.example.entity.Equipment;
 import org.example.repository.EquipmentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -35,15 +39,19 @@ public class EquipmentService {
                 .orElseThrow(() -> new IllegalArgumentException("Не знайдено запис з id=" + id));
     }
 
-    // ========== ЕКСПОРТ В XLSX ==========
+    // ----- Новий метод з пагінацією -----
+    public Page<Equipment> getPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+        return repository.findAll(pageable);
+    }
 
+    // ----- Експорт XLSX (без змін) -----
     public byte[] exportToXlsx() throws Exception {
         List<Equipment> items = getAll();
         try (Workbook wb = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
             Sheet sheet = wb.createSheet("Майно");
-
             CellStyle headerStyle = createHeaderStyle(wb);
             CellStyle dataStyle = createDataStyle(wb);
 
@@ -61,8 +69,7 @@ public class EquipmentService {
             for (Equipment eq : items) {
                 Row row = sheet.createRow(rowNum++);
                 row.setHeightInPoints(18);
-
-                setCell(row, 0, rowNum - 1, dataStyle); // №
+                setCell(row, 0, rowNum - 1, dataStyle);
                 setCell(row, 1, eq.getName(), dataStyle);
                 setCell(row, 2, eq.getQuantity(), dataStyle);
                 setCell(row, 3, eq.getUnit(), dataStyle);
