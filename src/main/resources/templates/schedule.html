@@ -36,25 +36,23 @@
             --btn-nav-hover: #c5cae9;
             --btn-today-bg: #1976d2;
             --btn-today-hover: #1565c0;
-            --btn-primary-bg: #1565c0;
-            --btn-primary-hover: #0d47a1;
-            --btn-success-bg: #2e7d32;
-            --btn-success-hover: #1b5e20;
-            --btn-warning-bg: #e65100;
-            --btn-warning-hover: #bf360c;
-            --btn-danger-bg: #c62828;
-            --btn-danger-hover: #b71c1c;
-            --btn-print: #607d8b;
-            --btn-print-hover: #546e7a;
+            --btn-primary-bg: #1976d2;
+            --btn-primary-hover: #1565c0;
+            --btn-success-bg: #388e3c;
+            --btn-success-hover: #2e7d32;
+            --btn-warning-bg: #f57c00;
+            --btn-warning-hover: #e65100;
             --current-date-bg: #e8eaf6;
             --current-date-color: #1a237e;
             --toast-success: #2e7d32;
             --toast-error: #c62828;
             --stats-header-bg: #1a237e;
             --stats-header-border: #283593;
-            --stat-num-color: #1976d2;
+            --btn-print: #607d8b;
+            --btn-print-hover: #546e7a;
         }
 
+        /* Темна тема */
         body.dark-theme {
             --bg-body: #1e1e24;
             --bg-card: #2d2d35;
@@ -84,21 +82,18 @@
             --btn-nav-hover: #4a4a5a;
             --btn-today-bg: #4a7ab5;
             --btn-today-hover: #5a8ac5;
-            --btn-primary-bg: #2a4a7a;
-            --btn-primary-hover: #3a5a8a;
-            --btn-success-bg: #2a4a2a;
-            --btn-success-hover: #3a5a3a;
-            --btn-warning-bg: #7a5a2a;
-            --btn-warning-hover: #8a6a3a;
-            --btn-danger-bg: #6a2a3a;
-            --btn-danger-hover: #7a3a4a;
-            --btn-print: #4a5a6a;
-            --btn-print-hover: #5a6a7a;
+            --btn-primary-bg: #4a7ab5;
+            --btn-primary-hover: #5a8ac5;
+            --btn-success-bg: #3a6a3a;
+            --btn-success-hover: #4a7a4a;
+            --btn-warning-bg: #b87a2a;
+            --btn-warning-hover: #c88a3a;
             --current-date-bg: #3a3a4a;
             --current-date-color: #90caf9;
             --stats-header-bg: #2a2a3a;
             --stats-header-border: #3d3d48;
-            --stat-num-color: #5a8ac5;
+            --btn-print: #4a5a6a;
+            --btn-print-hover: #5a6a7a;
         }
 
         /* ===== АНІМАЦІЯ ПОЯВИ ===== */
@@ -144,32 +139,6 @@
         #tableBody tr:nth-child(19) { animation-delay: 0.38s; }
         #tableBody tr:nth-child(20) { animation-delay: 0.40s; }
 
-        /* Анімація рядків статистики */
-        #statsTableBody tr {
-            animation: fadeInRow 0.3s ease forwards;
-            opacity: 0;
-        }
-        #statsTableBody tr:nth-child(1) { animation-delay: 0.02s; }
-        #statsTableBody tr:nth-child(2) { animation-delay: 0.04s; }
-        #statsTableBody tr:nth-child(3) { animation-delay: 0.06s; }
-        #statsTableBody tr:nth-child(4) { animation-delay: 0.08s; }
-        #statsTableBody tr:nth-child(5) { animation-delay: 0.10s; }
-        #statsTableBody tr:nth-child(6) { animation-delay: 0.12s; }
-        #statsTableBody tr:nth-child(7) { animation-delay: 0.14s; }
-        #statsTableBody tr:nth-child(8) { animation-delay: 0.16s; }
-        #statsTableBody tr:nth-child(9) { animation-delay: 0.18s; }
-        #statsTableBody tr:nth-child(10) { animation-delay: 0.20s; }
-        #statsTableBody tr:nth-child(11) { animation-delay: 0.22s; }
-        #statsTableBody tr:nth-child(12) { animation-delay: 0.24s; }
-        #statsTableBody tr:nth-child(13) { animation-delay: 0.26s; }
-        #statsTableBody tr:nth-child(14) { animation-delay: 0.28s; }
-        #statsTableBody tr:nth-child(15) { animation-delay: 0.30s; }
-        #statsTableBody tr:nth-child(16) { animation-delay: 0.32s; }
-        #statsTableBody tr:nth-child(17) { animation-delay: 0.34s; }
-        #statsTableBody tr:nth-child(18) { animation-delay: 0.36s; }
-        #statsTableBody tr:nth-child(19) { animation-delay: 0.38s; }
-        #statsTableBody tr:nth-child(20) { animation-delay: 0.40s; }
-
         /* ===== ОСНОВНІ СТИЛІ ===== */
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -181,7 +150,6 @@
 
         .container { padding: 16px 20px; max-width: 100%; overflow-x: auto; }
 
-        /* ===== ТУЛБАР ===== */
         .toolbar {
             background: var(--bg-toolbar);
             padding: 12px 16px;
@@ -198,7 +166,6 @@
             box-shadow: 0 4px 12px var(--shadow-color);
         }
 
-        /* ===== КНОПКИ З АНІМАЦІЄЮ ===== */
         .btn {
             padding: 6px 14px;
             border: none;
@@ -210,7 +177,6 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            line-height: 1.4;
             box-shadow: 0 1px 2px var(--shadow-light);
         }
         .btn:hover {
@@ -220,7 +186,6 @@
         .btn:active {
             transform: translateY(1px);
         }
-        .btn i { line-height: 1; }
 
         .btn-nav {
             background: var(--btn-nav-bg);
@@ -262,14 +227,6 @@
             background: var(--btn-warning-hover);
         }
 
-        .btn-danger {
-            background: var(--btn-danger-bg);
-            color: white;
-        }
-        .btn-danger:hover {
-            background: var(--btn-danger-hover);
-        }
-
         .btn-print {
             background: var(--btn-print);
             color: white;
@@ -278,9 +235,6 @@
             background: var(--btn-print-hover);
         }
 
-        .btn-sm { padding: 4px 9px; font-size: 11px; }
-
-        /* ===== ПОЛЯ ВВОДУ ===== */
         select, input[type="text"] {
             padding: 6px 10px;
             border: 1px solid var(--border-color);
@@ -289,7 +243,7 @@
             background: var(--bg-input);
             color: var(--text-primary);
             cursor: pointer;
-            transition: border-color 0.2s, background 0.3s, color 0.3s;
+            transition: all 0.2s;
             outline: none;
         }
         select:hover, input:hover {
@@ -315,7 +269,6 @@
             transition: color 0.3s;
         }
 
-        /* ===== ТАБЛИЦЯ ===== */
         .table-wrap {
             overflow-x: auto;
             border-radius: 12px;
@@ -415,28 +368,37 @@
             position: relative;
             height: 28px;
             vertical-align: middle;
-            transition: background 0.15s;
+            padding: 0 !important;
+            text-align: center;
+            transition: transform 0.2s ease;
         }
-        .day-cell:hover { background: var(--bg-hover) !important; }
+        .day-cell:hover {
+            background: var(--bg-hover) !important;
+            transform: translateY(-2px);
+        }
         .day-cell.weekend { background: var(--bg-weekend); }
         .day-cell.today-col { background: var(--bg-today) !important; }
 
         .cell-badge {
             display: inline-block;
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-size: 11px;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 10px;
             font-weight: 700;
             line-height: 1.4;
+            text-align: center;
+            width: 90%;
+            max-width: 90%;
             white-space: nowrap;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-sizing: border-box;
+            transition: none;
         }
         .day-cell:hover .cell-badge {
-            transform: scale(1.05);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            transform: none !important;
+            box-shadow: none !important;
         }
 
-        /* Кольори статусів */
+        /* ===== КОЛЬОРИ СТАТУСІВ ===== */
         .s-БЧ     { background: #ffcdd2; color: #b71c1c; }
         .s-БЧ_БАТ { background: #ef9a9a; color: #7f0000; }
         .s-БЧ_РКП { background: #ffab91; color: #bf360c; }
@@ -460,6 +422,8 @@
             box-shadow: 0 8px 24px var(--shadow-medium);
             padding: 6px;
             min-width: 160px;
+            max-height: 320px;
+            overflow-y: auto;
             transition: background 0.3s, box-shadow 0.3s;
         }
         .status-menu.open { display: block; }
@@ -469,6 +433,10 @@
             padding: 4px 6px 6px;
             border-bottom: 1px solid var(--border-color);
             margin-bottom: 4px;
+            position: sticky;
+            top: 0;
+            background: var(--bg-menu);
+            z-index: 1;
         }
         .status-option {
             padding: 5px 8px;
@@ -493,8 +461,10 @@
             color: var(--text-light);
             font-weight: 400;
         }
+        .status-menu::-webkit-scrollbar { width: 4px; }
+        .status-menu::-webkit-scrollbar-track { background: transparent; }
+        .status-menu::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
 
-        /* ===== ЛЕГЕНДА ===== */
         .legend {
             background: var(--bg-legend);
             border-radius: 12px;
@@ -518,13 +488,13 @@
             font-weight: 700;
             padding: 2px 7px;
             border-radius: 6px;
-            transition: transform 0.2s ease;
+            transition: none;
         }
         .legend-item:hover {
-            transform: scale(1.05);
+            transform: none !important;
+            box-shadow: none !important;
         }
 
-        /* ===== СТАТИСТИКА ===== */
         .stats-container {
             margin-top: 14px;
             background: var(--bg-stats);
@@ -550,53 +520,55 @@
             width: 100%;
             font-size: 12px;
             transition: background 0.3s;
+            border: 1px solid var(--border-color);
         }
-        .stats-table thead tr th {
+        .stats-table th,
+        .stats-table td {
+            border: 1px solid var(--border-color);
+            padding: 6px 4px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .stats-table td:nth-child(2),
+        .stats-table th:nth-child(2),
+        .stats-table td:nth-child(3),
+        .stats-table th:nth-child(3) {
+            text-align: left;
+            padding-left: 8px;
+        }
+        .stats-table thead th {
             background: var(--stats-header-bg);
             color: var(--text-white);
             font-size: 12px;
-            padding: 8px 4px;
-            border-bottom: 1px solid var(--stats-header-border);
+            border: 1px solid var(--stats-header-border);
             white-space: nowrap;
             transition: background 0.3s;
-        }
-        .stats-table td.num-cell {
-            width: 32px;
-            min-width: 32px;
-            text-align: center;
-        }
-        .stats-table td.rank-cell {
-            text-align: left;
-            padding: 4px 4px 4px 6px;
-            font-size: 11px;
-            color: var(--text-secondary);
-            white-space: nowrap;
-        }
-        .stats-table td {
-            padding: 6px 4px;
-            text-align: center;
-            border-bottom: 1px solid var(--border-light);
-            border-right: 1px solid var(--border-lighter);
-            font-size: 12px;
-            color: var(--text-primary);
-            transition: border-color 0.3s, color 0.3s;
-        }
-        .stats-table td.name-cell-stats {
-            text-align: left;
-            padding-left: 8px;
-            font-weight: 500;
         }
         .stats-table tr:hover td {
             background: var(--bg-hover);
         }
-
-        /* Ширина колонок у статистиці: № (32px), Звання (125px), ПІБ (130px) */
         .stats-table th:nth-child(1),
-        .stats-table td:nth-child(1) { width: 32px; min-width: 32px; }
+        .stats-table td:nth-child(1) {
+            width: 32px;
+            min-width: 32px;
+            max-width: 32px;
+        }
         .stats-table th:nth-child(2),
-        .stats-table td:nth-child(2) { width: 125px; min-width: 125px; }
+        .stats-table td:nth-child(2) {
+            width: 125px;
+            min-width: 125px;
+            max-width: 125px;
+        }
         .stats-table th:nth-child(3),
-        .stats-table td:nth-child(3) { width: 130px; min-width: 130px; }
+        .stats-table td:nth-child(3) {
+            width: 130px;
+            min-width: 130px;
+            max-width: 130px;
+        }
+        .stats-table th:nth-child(n+4),
+        .stats-table td:nth-child(n+4) {
+            min-width: 40px;
+        }
 
         /* Стрілки сортування для обох таблиць */
         thead th[data-col] {
@@ -609,11 +581,9 @@
         thead th.sort-asc::after  { content: ' ▲'; font-size: 10px; }
         thead th.sort-desc::after { content: ' ▼'; font-size: 10px; }
 
-        /* ===== TOAST ===== */
         .toast {
             position: fixed; bottom: 20px; right: 20px;
-            padding: 10px 18px; border-radius: 8px;
-            color: white;
+            padding: 10px 18px; border-radius: 8px; color: white;
             font-size: 13px; font-weight: 600;
             opacity: 0; transition: opacity 0.3s;
             z-index: 9999;
@@ -664,7 +634,6 @@
             padding: 4px 8px;
         }
 
-        /* ===== КНОПКА "ЗАВАНТАЖИТИ ЩЕ" ===== */
         .load-more-container {
             display: flex;
             justify-content: center;
@@ -688,16 +657,31 @@
             .name-cell { left: calc(28px + 80px); }
             .stats-table td:nth-child(2) { min-width: 80px; }
             .stats-table td:nth-child(3) { min-width: 90px; }
-            .stats-container h3 { font-size: 13px; }
         }
 
         /* ===== ДРУК ===== */
         @media print {
-            .sidebar, .toolbar, .legend, .no-print, .btn, .btn-print, .btn-primary,
-            .btn-success, .btn-nav, .btn-today, select, input, .status-menu,
-            .pagination, .load-more-container {
+            @page {
+                size: landscape;
+                margin: 4mm 3mm 4mm 3mm;
+            }
+
+            .sidebar,
+            .toolbar,
+            .legend,
+            .no-print,
+            .btn,
+            .btn-print,
+            .btn-primary,
+            .btn-success,
+            .btn-nav,
+            .btn-today,
+            select,
+            input,
+            .status-menu {
                 display: none !important;
             }
+
             body {
                 background: white !important;
                 color: black !important;
@@ -712,6 +696,7 @@
                 max-width: 100% !important;
                 margin: 0 !important;
             }
+
             .table-wrap {
                 overflow: visible !important;
                 box-shadow: none !important;
@@ -726,23 +711,232 @@
                 font-size: 6px !important;
                 table-layout: fixed !important;
             }
-            .col-num, .num-cell { width: 20px !important; min-width: 20px !important; max-width: 20px !important; text-align: center !important; }
-            .col-rank, .rank-cell { width: 40px !important; min-width: 40px !important; max-width: 40px !important; padding-left: 3px !important; }
-            .col-name, .name-cell { width: 50px !important; min-width: 50px !important; max-width: 50px !important; padding-left: 4px !important; font-size: 5.5px !important; }
-            .col-day { width: 18px !important; min-width: 18px !important; max-width: 18px !important; padding: 1px 0 !important; font-size: 5px !important; text-align: center !important; }
-            thead th { background: #1a237e !important; color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            td { color: black !important; border: 1px solid #ddd !important; font-size: 5px !important; padding: 1px 0 !important; background: white !important; text-align: center !important; }
-            tr { page-break-inside: avoid; }
+
+            .col-num,
+            .col-rank,
+            .col-name,
+            .num-cell,
+            .rank-cell,
+            .name-cell {
+                display: table-cell !important;
+                position: static !important;
+                left: auto !important;
+                z-index: auto !important;
+                background: white !important;
+                padding: 1px 2px !important;
+                font-size: 6px !important;
+                text-align: left !important;
+                vertical-align: middle !important;
+                border: 1px solid #ccc !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+            .col-num,
+            .num-cell {
+                width: 20px !important;
+                min-width: 20px !important;
+                max-width: 20px !important;
+                text-align: center !important;
+            }
+            .col-rank,
+            .rank-cell {
+                width: 40px !important;
+                min-width: 40px !important;
+                max-width: 40px !important;
+                padding-left: 3px !important;
+            }
+            .col-name,
+            .name-cell {
+                width: 50px !important;
+                min-width: 50px !important;
+                max-width: 50px !important;
+                padding-left: 4px !important;
+                font-size: 5.5px !important;
+            }
+
+            .col-day {
+                width: 18px !important;
+                min-width: 18px !important;
+                max-width: 18px !important;
+                padding: 1px 0 !important;
+                font-size: 5px !important;
+                text-align: center !important;
+                border: 1px solid #ccc !important;
+            }
+            td.col-day {
+                padding: 0 !important;
+                height: auto !important;
+                font-size: 5px !important;
+            }
+            .col-day .cell-badge {
+                font-size: 4.5px !important;
+                padding: 0 1px !important;
+                line-height: 1.2 !important;
+                border-radius: 2px !important;
+                display: inline-block !important;
+                width: 100% !important;
+                text-align: center !important;
+            }
+
+            thead th.col-day {
+                font-size: 5px !important;
+                padding: 1px 0 !important;
+            }
+            thead tr:last-child th {
+                font-size: 4.5px !important;
+                padding: 1px 0 !important;
+            }
+
+            thead th.col-num,
+            thead th.col-rank,
+            thead th.col-name {
+                background: #1a237e !important;
+                color: white !important;
+                border: 1px solid #1a237e !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                padding: 1px 2px !important;
+                font-size: 6px !important;
+                text-align: center !important;
+            }
+            thead th.col-num { width: 20px !important; }
+            thead th.col-rank { width: 40px !important; }
+            thead th.col-name { width: 50px !important; }
+
+            td {
+                color: black !important;
+                border: 1px solid #ddd !important;
+                font-size: 5px !important;
+                padding: 1px 0 !important;
+                line-height: 1.2 !important;
+                background: white !important;
+                text-align: center !important;
+            }
+            thead th {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                padding: 1px 2px !important;
+                font-size: 6px !important;
+                border: 1px solid #1a237e !important;
+                text-align: center !important;
+            }
+            tr {
+                page-break-inside: avoid;
+            }
+
+            .s-БЧ { background: #ffcdd2 !important; color: #b71c1c !important; }
+            .s-БЧ_БАТ { background: #ef9a9a !important; color: #7f0000 !important; }
+            .s-БЧ_РКП { background: #ffab91 !important; color: #bf360c !important; }
+            .s-Р-НЯ { background: #c8e6c9 !important; color: #1b5e20 !important; }
+            .s-В-НЯ { background: #bbdefb !important; color: #0d47a1 !important; }
+            .s-В-КА { background: #b3e5fc !important; color: #01579b !important; }
+            .s-ХВ { background: #f8bbd0 !important; color: #880e4f !important; }
+            .s-СЗЧ { background: #ffe0b2 !important; color: #e65100 !important; }
+            .s-ПЛЮ { background: #e1bee7 !important; color: #4a148c !important; }
+            .s-ППД { background: #dcedc8 !important; color: #33691e !important; }
+            .s-НАВ { background: #fff9c4 !important; color: #f57f17 !important; }
+            .s-ПЕРЕВ { background: #cfd8dc !important; color: #37474f !important; }
             .weekend { background: #f5f5f5 !important; }
             .today-col { background: #fffde7 !important; }
-            .cell-badge { font-size: 4.5px !important; padding: 0 1px !important; }
-            .stats-container { display: block !important; margin-top: 4px !important; box-shadow: none !important; border: 1px solid #ccc !important; border-radius: 0 !important; background: white !important; }
-            .stats-table { background: white !important; }
-            .stats-table thead th { background: #1a237e !important; color: white !important; }
-            .stats-table td { color: black !important; border: 1px solid #ddd !important; background: white !important; }
-            .dark-theme td { color: black !important; background: white !important; }
-            .dark-theme thead th { background: #1a237e !important; color: white !important; }
-            @page { size: landscape; margin: 4mm 3mm 4mm 3mm; }
+
+            .stats-container {
+                display: block !important;
+                margin-top: 4px !important;
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                border-radius: 0 !important;
+                background: white !important;
+                page-break-inside: avoid !important;
+            }
+            .stats-container h3 {
+                font-size: 8px !important;
+                padding: 2px 6px !important;
+                margin: 0 !important;
+                border-bottom: 1px solid #ddd !important;
+                color: #222 !important;
+            }
+            .stats-table-wrap {
+                overflow: visible !important;
+            }
+            .stats-table {
+                background: white !important;
+                width: 100% !important;
+                border-collapse: collapse;
+                font-size: 5.5px !important;
+                table-layout: fixed !important;
+                border: 1px solid #ccc !important;
+            }
+            .stats-table thead th {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                padding: 1px 2px !important;
+                font-size: 5.5px !important;
+                border: 1px solid #1a237e !important;
+                text-align: center !important;
+            }
+            .stats-table td {
+                color: black !important;
+                border: 1px solid #ddd !important;
+                font-size: 5px !important;
+                padding: 1px 2px !important;
+                text-align: center !important;
+                background: white !important;
+            }
+            .stats-table td:first-child {
+                width: 20px !important;
+                text-align: center !important;
+            }
+            .stats-table td:nth-child(2) {
+                width: 40px !important;
+                text-align: left !important;
+                padding-left: 4px !important;
+            }
+            .stats-table td:nth-child(3) {
+                width: 50px !important;
+                text-align: left !important;
+                padding-left: 4px !important;
+            }
+            .stats-table td:not(:first-child):not(:nth-child(2)):not(:nth-child(3)) {
+                width: 18px !important;
+                min-width: 18px !important;
+                max-width: 18px !important;
+            }
+            .stats-table .num-cell,
+            .stats-table .rank-cell,
+            .stats-table td:first-child,
+            .stats-table td:nth-child(2) {
+                position: static !important;
+                background: white !important;
+                left: auto !important;
+            }
+
+            .dark-theme td,
+            .dark-theme .num-cell,
+            .dark-theme .rank-cell,
+            .dark-theme .name-cell,
+            .dark-theme .col-day {
+                color: black !important;
+                background: white !important;
+            }
+            .dark-theme thead th {
+                background: #1a237e !important;
+                color: white !important;
+            }
+            .dark-theme .stats-container {
+                background: white !important;
+            }
+            .dark-theme .stats-container h3 {
+                color: #222 !important;
+            }
+            .dark-theme .stats-table td {
+                color: black !important;
+                background: white !important;
+            }
         }
     </style>
 </head>
@@ -870,7 +1064,7 @@
 
             // Пагінація
             let currentPage = 0;
-            let pageSize = 50; // багато людей, але з пагінацією
+            let pageSize = 50;
             let totalElements = 0;
 
             // Мапа для порядкових номерів
@@ -880,11 +1074,10 @@
             async function loadPersonnelMap() {
                 if (personnelMapLoaded) return;
                 try {
-                    // Використовуємо великий розмір сторінки, щоб отримати всіх (або краще зробити окремий ендпоінт без пагінації)
                     const res = await fetch('/personnel/api?page=0&size=1000');
                     if (!res.ok) return;
                     const pageData = await res.json();
-                    const list = pageData.content || []; // витягуємо масив
+                    const list = pageData.content || [];
                     list.forEach(p => {
                         personnelMap[p.id] = p.personnelNumber;
                     });
@@ -942,7 +1135,7 @@
 
                 await loadPersonnelMap();
                 tableData = enrichWithPersonnelNumber(data);
-                totalElements = tableData.length; // загальна кількість для пагінації
+                totalElements = tableData.length;
 
                 sortCol = 'num';
                 sortDir = 1;
@@ -980,7 +1173,6 @@
                     });
                 }
                 filteredData = sorted;
-                // Пагінація: вирізаємо частину
                 const start = currentPage * pageSize;
                 const end = start + pageSize;
                 const pagedData = filteredData.slice(start, end);
@@ -1022,9 +1214,9 @@
                 const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
 
                 let headRow1 = `<tr>
-            <th class="col-num" data-col="num" onclick="sortBy('num')">№</th>
-            <th class="col-rank" data-col="rank" onclick="sortBy('rank')" style="text-align:left">Звання</th>
-            <th class="col-name" data-col="name" onclick="sortBy('name')" style="text-align:left">ПІБ</th>`;
+                    <th class="col-num" data-col="num" onclick="sortBy('num')">№</th>
+                    <th class="col-rank" data-col="rank" onclick="sortBy('rank')" style="text-align:left">Звання</th>
+                    <th class="col-name" data-col="name" onclick="sortBy('name')" style="text-align:left">ПІБ</th>`;
                 for (let d = 1; d <= daysInMonth; d++) {
                     const dow = new Date(currentYear, currentMonth - 1, d).getDay();
                     const isWE = (dow === 0 || dow === 6);
@@ -1032,7 +1224,7 @@
                         currentMonth === today.getMonth() + 1 &&
                         d === today.getDate());
                     headRow1 += `<th class="col-day${isWE ? ' weekend' : ''}${isTod ? ' today-col' : ''}"
-                 style="font-size:11px;padding:4px 2px">${d}</th>`;
+                         style="font-size:11px;padding:4px 2px">${d}</th>`;
                 }
                 headRow1 += `</tr>`;
 
@@ -1054,9 +1246,9 @@
                 pagedData.forEach((row, idx) => {
                     const rowNum = row.personnelNumber ?? (idx + 1);
                     let rowHtml = `<tr>
-                <td class="num-cell">${rowNum}</td>
-                <td class="rank-cell">${escapeHtml(row.rank)}</td>
-                <td class="name-cell">${escapeHtml(row.shortName)}</td>`;
+                        <td class="num-cell">${rowNum}</td>
+                        <td class="rank-cell">${escapeHtml(row.rank)}</td>
+                        <td class="name-cell">${escapeHtml(row.shortName)}</td>`;
                     for (let d = 1; d <= daysInMonth; d++) {
                         const status = row.days[d] || '';
                         const dow = new Date(currentYear, currentMonth - 1, d).getDay();
@@ -1078,11 +1270,11 @@
                             }
                         }
                         rowHtml += `<td class="${cls}"
-                    data-pid="${row.id}"
-                    data-day="${d}"
-                    data-date="${dateStr}"
-                    data-status="${status}"
-                    onclick="openMenu(event, this)">${badge}</td>`;
+                            data-pid="${row.id}"
+                            data-day="${d}"
+                            data-date="${dateStr}"
+                            data-status="${status}"
+                            onclick="openMenu(event, this)">${badge}</td>`;
                     }
                     rowHtml += `</tr>`;
                     html += rowHtml;
@@ -1133,22 +1325,22 @@
                         }
                     }
                     rowsHtml += `<tr>
-                <td class="num-cell">${rowNum}</td>
-                <td class="rank-cell">${escapeHtml(person.rank)}</td>
-                <td class="name-cell-stats">${escapeHtml(person.shortName)}</td>
-                <td>${counts['БЧ']}</td>
-                <td>${counts['Бат БЧ']}</td>
-                <td>${counts['БЧ РКП']}</td>
-                <td>${counts['Р-ня']}</td>
-                <td>${counts['В-ня']}</td>
-                <td>${counts['В-ка']}</td>
-                <td>${counts['Х-й']}</td>
-                <td>${counts['СЗЧ']}</td>
-                <td>${counts['Плюс']}</td>
-                <td>${counts['ППД']}</td>
-                <td>${counts['Навчання']}</td>
-                <td>${counts['Перевівся']}</td>
-            </tr>`;
+                        <td class="num-cell">${rowNum}</td>
+                        <td class="rank-cell">${escapeHtml(person.rank)}</td>
+                        <td class="name-cell-stats">${escapeHtml(person.shortName)}</td>
+                        <td>${counts['БЧ']}</td>
+                        <td>${counts['Бат БЧ']}</td>
+                        <td>${counts['БЧ РКП']}</td>
+                        <td>${counts['Р-ня']}</td>
+                        <td>${counts['В-ня']}</td>
+                        <td>${counts['В-ка']}</td>
+                        <td>${counts['Х-й']}</td>
+                        <td>${counts['СЗЧ']}</td>
+                        <td>${counts['Плюс']}</td>
+                        <td>${counts['ППД']}</td>
+                        <td>${counts['Навчання']}</td>
+                        <td>${counts['Перевівся']}</td>
+                    </tr>`;
                 });
                 tbody.innerHTML = rowsHtml;
             }
@@ -1203,9 +1395,9 @@
                 let html = `<div class="status-menu-title">${escapeHtml(title)}</div>`;
                 STATUSES.forEach(s => {
                     html += `<div class="status-option" style="background:${s.color};color:${s.text}"
-                onclick="event.stopPropagation();selectStatus('${s.code}')">
-                <span class="dot" style="background:${s.text}"></span> ${s.label}
-            </div>`;
+                        onclick="event.stopPropagation();selectStatus('${s.code}')">
+                        <span class="dot" style="background:${s.text}"></span> ${s.label}
+                    </div>`;
                 });
                 html += `<div class="status-option clear" onclick="event.stopPropagation();selectStatus('')">✕ Очистити</div>`;
                 menu.innerHTML = html;

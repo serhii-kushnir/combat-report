@@ -99,18 +99,19 @@ public class FlightRecordService {
 
     public Page<FlightRecord> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size,
-                Sort.by("flightDate").ascending().and(Sort.by("recordNumber").ascending()));
+                Sort.by("flightDate").descending().and(Sort.by("recordNumber").descending()));
         return repository.findAll(pageable);
     }
 
     public Page<FlightRecord> getByMonth(String month, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("recordNumber").ascending());
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by("flightDate").descending().and(Sort.by("recordNumber").descending()));
         return repository.findByMonth(month, pageable);
     }
 
     public Page<FlightRecord> getByYear(int year, int page, int size) {
         Pageable pageable = PageRequest.of(page, size,
-                Sort.by("flightDate").ascending().and(Sort.by("recordNumber").ascending()));
+                Sort.by("flightDate").descending().and(Sort.by("recordNumber").descending()));
         return repository.findByYear(year, pageable);
     }
 
