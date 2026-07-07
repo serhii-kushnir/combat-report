@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Майно / Склад</title>
     <link rel="icon" type="image/png" href="/favicon.png">
+    <link th:replace="~{fragments :: sidebar-css}">
     <style>
         /* ===== CSS ЗМІННІ ===== */
         :root {
@@ -24,6 +25,7 @@
             --border-light: #f0f0f0;
             --shadow-color: rgba(0,0,0,0.1);
             --shadow-strong: rgba(0,0,0,0.2);
+            --shadow-light: rgba(0,0,0,0.05);
             --toast-success: #2e7d32;
             --toast-error: #c62828;
             --btn-primary-bg: #1565c0;
@@ -34,8 +36,9 @@
             --btn-warning-hover: #bf360c;
             --btn-danger-bg: #c62828;
             --btn-danger-hover: #b71c1c;
-            --shadow-light: rgba(0,0,0,0.05);
             --stat-num-color: #1976d2;
+            --btn-print: #607d8b;
+            --btn-print-hover: #546e7a;
         }
 
         body.dark-theme {
@@ -56,6 +59,7 @@
             --border-light: #3d3d48;
             --shadow-color: rgba(0,0,0,0.4);
             --shadow-strong: rgba(0,0,0,0.5);
+            --shadow-light: rgba(0,0,0,0.3);
             --btn-primary-bg: #2a4a7a;
             --btn-primary-hover: #3a5a8a;
             --btn-success-bg: #2a4a2a;
@@ -64,8 +68,9 @@
             --btn-warning-hover: #8a6a3a;
             --btn-danger-bg: #6a2a3a;
             --btn-danger-hover: #7a3a4a;
-            --shadow-light: rgba(0,0,0,0.3);
             --stat-num-color: #5a8ac5;
+            --btn-print: #4a5a6a;
+            --btn-print-hover: #5a6a7a;
         }
 
         /* ===== ОСНОВНІ СТИЛІ ===== */
@@ -86,6 +91,48 @@
             margin: 0;
         }
         .container { padding: 16px 20px; }
+
+        /* ===== АНІМАЦІЯ ПОЯВИ ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInRow {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .toolbar { animation: fadeIn 0.4s ease forwards; opacity: 0; }
+        .stats-row { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.05s; }
+        .table-wrap { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.10s; }
+        .load-more-container { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.15s; }
+        .pagination { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.20s; }
+
+        /* Анімація рядків таблиці */
+        #tableBody tr {
+            animation: fadeInRow 0.3s ease forwards;
+            opacity: 0;
+        }
+        #tableBody tr:nth-child(1) { animation-delay: 0.02s; }
+        #tableBody tr:nth-child(2) { animation-delay: 0.04s; }
+        #tableBody tr:nth-child(3) { animation-delay: 0.06s; }
+        #tableBody tr:nth-child(4) { animation-delay: 0.08s; }
+        #tableBody tr:nth-child(5) { animation-delay: 0.10s; }
+        #tableBody tr:nth-child(6) { animation-delay: 0.12s; }
+        #tableBody tr:nth-child(7) { animation-delay: 0.14s; }
+        #tableBody tr:nth-child(8) { animation-delay: 0.16s; }
+        #tableBody tr:nth-child(9) { animation-delay: 0.18s; }
+        #tableBody tr:nth-child(10) { animation-delay: 0.20s; }
+        #tableBody tr:nth-child(11) { animation-delay: 0.22s; }
+        #tableBody tr:nth-child(12) { animation-delay: 0.24s; }
+        #tableBody tr:nth-child(13) { animation-delay: 0.26s; }
+        #tableBody tr:nth-child(14) { animation-delay: 0.28s; }
+        #tableBody tr:nth-child(15) { animation-delay: 0.30s; }
+        #tableBody tr:nth-child(16) { animation-delay: 0.32s; }
+        #tableBody tr:nth-child(17) { animation-delay: 0.34s; }
+        #tableBody tr:nth-child(18) { animation-delay: 0.36s; }
+        #tableBody tr:nth-child(19) { animation-delay: 0.38s; }
+        #tableBody tr:nth-child(20) { animation-delay: 0.40s; }
 
         /* ===== ТУЛБАР ===== */
         .toolbar {
@@ -158,10 +205,10 @@
         .btn-sm { padding: 4px 9px; font-size: 11px; }
 
         .btn-print {
-            background: #607d8b;
+            background: var(--btn-print);
             color: white;
         }
-        .btn-print:hover { background: #546e7a; }
+        .btn-print:hover { background: var(--btn-print-hover); }
         .dark-theme .btn-print {
             background: #4a5a6a;
             color: white;
@@ -491,10 +538,14 @@
         }
         .pagination button:hover:not(:disabled) {
             background: var(--bg-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px var(--shadow-color);
         }
         .pagination button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         .pagination .page-info {
             font-size: 13px;
@@ -506,7 +557,10 @@
         .load-more-container {
             display: flex;
             justify-content: center;
-            margin-top: 8px;
+            margin-top: 14px;
+        }
+        .load-more-container .btn {
+            padding: 6px 18px;
         }
 
         /* ===== TOAST ===== */
@@ -632,7 +686,6 @@
             }
         }
     </style>
-    <link th:replace="~{fragments :: sidebar-css}">
 </head>
 <body>
 <div class="layout">

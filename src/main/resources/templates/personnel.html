@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Особовий склад</title>
+    <link th:replace="~{fragments :: sidebar-css}">
     <style>
         /* ===== CSS ЗМІННІ ===== */
         :root {
@@ -28,6 +29,7 @@
             --border-light: #f0f0f0;
             --shadow-color: rgba(0,0,0,0.1);
             --shadow-strong: rgba(0,0,0,0.2);
+            --shadow-light: rgba(0,0,0,0.05);
             --btn-primary-bg: #1565c0;
             --btn-primary-hover: #0d47a1;
             --btn-success-bg: #2e7d32;
@@ -44,7 +46,8 @@
             --detail-tab-color: #666;
             --detail-tab-active: #1a237e;
             --detail-close-color: #fff;
-            --shadow-light: rgba(0,0,0,0.05);
+            --btn-print: #607d8b;
+            --btn-print-hover: #546e7a;
         }
 
         /* Темна тема */
@@ -71,6 +74,7 @@
             --border-light: #3d3d48;
             --shadow-color: rgba(0,0,0,0.4);
             --shadow-strong: rgba(0,0,0,0.5);
+            --shadow-light: rgba(0,0,0,0.3);
             --btn-primary-bg: #2a4a7a;
             --btn-primary-hover: #3a5a8a;
             --btn-success-bg: #2a4a2a;
@@ -85,8 +89,104 @@
             --detail-tab-color: #a0a0a8;
             --detail-tab-active: #90caf9;
             --detail-close-color: #90caf9;
-            --shadow-light: rgba(0,0,0,0.3);
+            --btn-print: #4a5a6a;
+            --btn-print-hover: #5a6a7a;
         }
+
+        /* ===== АНІМАЦІЯ ПОЯВИ ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInRow {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .toolbar { animation: fadeIn 0.4s ease forwards; opacity: 0; }
+        .stats-row { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.05s; }
+        .table-tabs { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.08s; }
+        .table-section.visible .table-wrap { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.10s; }
+        .load-more-container { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.15s; }
+        .pagination { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.20s; }
+
+        /* Анімація рядків для короткої таблиці */
+        #shortBody tr {
+            animation: fadeInRow 0.3s ease forwards;
+            opacity: 0;
+        }
+        #shortBody tr:nth-child(1) { animation-delay: 0.02s; }
+        #shortBody tr:nth-child(2) { animation-delay: 0.04s; }
+        #shortBody tr:nth-child(3) { animation-delay: 0.06s; }
+        #shortBody tr:nth-child(4) { animation-delay: 0.08s; }
+        #shortBody tr:nth-child(5) { animation-delay: 0.10s; }
+        #shortBody tr:nth-child(6) { animation-delay: 0.12s; }
+        #shortBody tr:nth-child(7) { animation-delay: 0.14s; }
+        #shortBody tr:nth-child(8) { animation-delay: 0.16s; }
+        #shortBody tr:nth-child(9) { animation-delay: 0.18s; }
+        #shortBody tr:nth-child(10) { animation-delay: 0.20s; }
+        #shortBody tr:nth-child(11) { animation-delay: 0.22s; }
+        #shortBody tr:nth-child(12) { animation-delay: 0.24s; }
+        #shortBody tr:nth-child(13) { animation-delay: 0.26s; }
+        #shortBody tr:nth-child(14) { animation-delay: 0.28s; }
+        #shortBody tr:nth-child(15) { animation-delay: 0.30s; }
+        #shortBody tr:nth-child(16) { animation-delay: 0.32s; }
+        #shortBody tr:nth-child(17) { animation-delay: 0.34s; }
+        #shortBody tr:nth-child(18) { animation-delay: 0.36s; }
+        #shortBody tr:nth-child(19) { animation-delay: 0.38s; }
+        #shortBody tr:nth-child(20) { animation-delay: 0.40s; }
+
+        /* Анімація рядків для повної таблиці */
+        #fullBody tr {
+            animation: fadeInRow 0.3s ease forwards;
+            opacity: 0;
+        }
+        #fullBody tr:nth-child(1) { animation-delay: 0.02s; }
+        #fullBody tr:nth-child(2) { animation-delay: 0.04s; }
+        #fullBody tr:nth-child(3) { animation-delay: 0.06s; }
+        #fullBody tr:nth-child(4) { animation-delay: 0.08s; }
+        #fullBody tr:nth-child(5) { animation-delay: 0.10s; }
+        #fullBody tr:nth-child(6) { animation-delay: 0.12s; }
+        #fullBody tr:nth-child(7) { animation-delay: 0.14s; }
+        #fullBody tr:nth-child(8) { animation-delay: 0.16s; }
+        #fullBody tr:nth-child(9) { animation-delay: 0.18s; }
+        #fullBody tr:nth-child(10) { animation-delay: 0.20s; }
+        #fullBody tr:nth-child(11) { animation-delay: 0.22s; }
+        #fullBody tr:nth-child(12) { animation-delay: 0.24s; }
+        #fullBody tr:nth-child(13) { animation-delay: 0.26s; }
+        #fullBody tr:nth-child(14) { animation-delay: 0.28s; }
+        #fullBody tr:nth-child(15) { animation-delay: 0.30s; }
+        #fullBody tr:nth-child(16) { animation-delay: 0.32s; }
+        #fullBody tr:nth-child(17) { animation-delay: 0.34s; }
+        #fullBody tr:nth-child(18) { animation-delay: 0.36s; }
+        #fullBody tr:nth-child(19) { animation-delay: 0.38s; }
+        #fullBody tr:nth-child(20) { animation-delay: 0.40s; }
+
+        /* Анімація рядків для архівної таблиці */
+        #archivedBody tr {
+            animation: fadeInRow 0.3s ease forwards;
+            opacity: 0;
+        }
+        #archivedBody tr:nth-child(1) { animation-delay: 0.02s; }
+        #archivedBody tr:nth-child(2) { animation-delay: 0.04s; }
+        #archivedBody tr:nth-child(3) { animation-delay: 0.06s; }
+        #archivedBody tr:nth-child(4) { animation-delay: 0.08s; }
+        #archivedBody tr:nth-child(5) { animation-delay: 0.10s; }
+        #archivedBody tr:nth-child(6) { animation-delay: 0.12s; }
+        #archivedBody tr:nth-child(7) { animation-delay: 0.14s; }
+        #archivedBody tr:nth-child(8) { animation-delay: 0.16s; }
+        #archivedBody tr:nth-child(9) { animation-delay: 0.18s; }
+        #archivedBody tr:nth-child(10) { animation-delay: 0.20s; }
+        #archivedBody tr:nth-child(11) { animation-delay: 0.22s; }
+        #archivedBody tr:nth-child(12) { animation-delay: 0.24s; }
+        #archivedBody tr:nth-child(13) { animation-delay: 0.26s; }
+        #archivedBody tr:nth-child(14) { animation-delay: 0.28s; }
+        #archivedBody tr:nth-child(15) { animation-delay: 0.30s; }
+        #archivedBody tr:nth-child(16) { animation-delay: 0.32s; }
+        #archivedBody tr:nth-child(17) { animation-delay: 0.34s; }
+        #archivedBody tr:nth-child(18) { animation-delay: 0.36s; }
+        #archivedBody tr:nth-child(19) { animation-delay: 0.38s; }
+        #archivedBody tr:nth-child(20) { animation-delay: 0.40s; }
 
         /* ===== ОСНОВНІ СТИЛІ ===== */
         * { box-sizing: border-box; }
@@ -99,16 +199,16 @@
         }
 
         .btn-print {
-            background: #607d8b;
+            background: var(--btn-print);
             color: white;
         }
-        .btn-print:hover { background: #546e7a; }
+        .btn-print:hover { background: var(--btn-print-hover); }
 
         .dark-theme .btn-print {
-            background: #4a5a6a;
+            background: var(--btn-print);
             color: white;
         }
-        .dark-theme .btn-print:hover { background: #5a6a7a; }
+        .dark-theme .btn-print:hover { background: var(--btn-print-hover); }
 
         .container { padding: 16px 20px; }
 
@@ -187,7 +287,7 @@
 
         .btn-sm { padding: 4px 9px; font-size: 11px; }
 
-        /* ===== ВКЛАДКИ (оновлено) ===== */
+        /* ===== ВКЛАДКИ ===== */
         .table-tabs {
             display: flex;
             gap: 8px;
@@ -275,10 +375,10 @@
         .table-wrap table tr:last-child td { border-bottom: none; }
         .actions-col {
             white-space: nowrap;
-            text-align: center; /* вирівнювання по центру */
+            text-align: center;
         }
 
-        /* ===== СТАТИСТИКА (зліва) ===== */
+        /* ===== СТАТИСТИКА ===== */
         .stats-row {
             display: flex;
             align-items: center;
@@ -424,6 +524,7 @@
             text-align: center;
             padding: 40px;
             color: var(--text-light);
+            transition: color 0.3s;
         }
 
         /* ===== ПАГІНАЦІЯ ===== */
@@ -446,10 +547,14 @@
         }
         .pagination button:hover:not(:disabled) {
             background: var(--bg-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px var(--shadow-color);
         }
         .pagination button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         .pagination .page-info {
             font-size: 13px;
@@ -457,7 +562,7 @@
             padding: 4px 8px;
         }
 
-        /* ===== КНОПКА "ЗАВАНТАЖИТИ ЩЕ" (без min-width) ===== */
+        /* ===== КНОПКА "ЗАВАНТАЖИТИ ЩЕ" ===== */
         .load-more-container {
             display: flex;
             justify-content: center;
@@ -600,7 +705,6 @@
             }
         }
     </style>
-    <link th:replace="~{fragments :: sidebar-css}">
 </head>
 <body>
 <div class="layout">

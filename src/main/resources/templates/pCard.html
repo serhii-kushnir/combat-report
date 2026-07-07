@@ -17,6 +17,67 @@
     }
     .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
 
+    /* ===== АНІМАЦІЯ ПОЯВИ ===== */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInRow {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      animation: fadeIn 0.5s ease forwards;
+      opacity: 0;
+    }
+    .card-header {
+      animation: fadeIn 0.4s ease forwards;
+      opacity: 0;
+      animation-delay: 0.05s;
+    }
+    .section-title {
+      animation: fadeIn 0.4s ease forwards;
+      opacity: 0;
+      animation-delay: 0.10s;
+    }
+    .info-grid {
+      animation: fadeIn 0.4s ease forwards;
+      opacity: 0;
+      animation-delay: 0.15s;
+    }
+    .sub-section {
+      animation: fadeIn 0.4s ease forwards;
+      opacity: 0;
+      animation-delay: 0.20s;
+    }
+    .sub-table {
+      animation: fadeIn 0.5s ease forwards;
+      opacity: 0;
+      animation-delay: 0.25s;
+    }
+
+    /* Анімація рядків у підтаблицях */
+    .sub-table tbody tr {
+      animation: fadeInRow 0.3s ease forwards;
+      opacity: 0;
+    }
+    .sub-table tbody tr:nth-child(1) { animation-delay: 0.02s; }
+    .sub-table tbody tr:nth-child(2) { animation-delay: 0.04s; }
+    .sub-table tbody tr:nth-child(3) { animation-delay: 0.06s; }
+    .sub-table tbody tr:nth-child(4) { animation-delay: 0.08s; }
+    .sub-table tbody tr:nth-child(5) { animation-delay: 0.10s; }
+    .sub-table tbody tr:nth-child(6) { animation-delay: 0.12s; }
+    .sub-table tbody tr:nth-child(7) { animation-delay: 0.14s; }
+    .sub-table tbody tr:nth-child(8) { animation-delay: 0.16s; }
+    .sub-table tbody tr:nth-child(9) { animation-delay: 0.18s; }
+    .sub-table tbody tr:nth-child(10) { animation-delay: 0.20s; }
+
+    /* ===== КАРТКА ===== */
     .card {
       background: var(--bg-card);
       border-radius: 16px;
@@ -41,16 +102,31 @@
     .card-header h1 { margin: 0; font-size: 22px; }
     .card-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
+    /* ===== КНОПКИ ===== */
     .btn {
-      padding: 7px 14px;
+      padding: 6px 14px;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       cursor: pointer;
       font-size: 13px;
       font-weight: 600;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      line-height: 1.4;
+      box-shadow: 0 1px 2px var(--shadow-light);
     }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px var(--shadow-color);
+    }
+    .btn:active {
+      transform: translateY(1px);
+    }
+    .btn i { line-height: 1; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
     .btn-primary {
       background: var(--bg-btn-primary, #1976d2);
       color: white;
@@ -58,31 +134,41 @@
     .btn-primary:hover:not(:disabled) {
       background: var(--bg-btn-primary-hover, #1565c0);
     }
+
     .btn-warning {
       background: #f57c00;
       color: white;
     }
     .btn-warning:hover:not(:disabled) { background: #e65100; }
+
     .btn-secondary {
       background: #6c757d;
       color: white;
     }
     .btn-secondary:hover:not(:disabled) { background: #5a6268; }
-    .btn-outline {
-      background: none;
-      border: 1px solid var(--border-color, rgba(255,255,255,0.3));
-      color: var(--text-white, #fff);
-    }
-    .btn-outline:hover { background: rgba(255,255,255,0.1); }
+
     .btn-danger {
       background: #dc3545;
       color: white;
     }
     .btn-danger:hover:not(:disabled) { background: #c82333; }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+    .btn-success:hover:not(:disabled) { background: #218838; }
+
+    .btn-outline {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.1); }
+
     .btn-sm { padding: 4px 9px; font-size: 11px; }
 
-    .hidden-action { display: none !important; }
-
+    /* ===== ІНФОРМАЦІЙНІ ПОЛЯ ===== */
     .info-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -110,16 +196,21 @@
       border-radius: 8px;
       min-height: 38px;
       cursor: pointer;
-      transition: background 0.2s, color 0.2s, border 0.2s;
+      transition: background 0.2s, color 0.2s, border 0.2s, transform 0.15s ease;
       border: 1px solid transparent;
     }
     .info-value:hover {
       background: var(--bg-hover, #e3f2fd);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px var(--shadow-color);
     }
     .info-value.editable {
       background: var(--bg-input, #fff);
       border-color: var(--border-color, #ccc);
       padding: 0;
+      cursor: default;
+      transform: none !important;
+      box-shadow: none !important;
     }
     .info-value.editable input,
     .info-value.editable select,
@@ -136,25 +227,14 @@
       outline: none;
       transition: border-color 0.2s, background 0.3s, color 0.3s;
     }
-    /* Додаткове вирівнювання для select */
-    .info-value.editable select {
-      appearance: auto;
-      -webkit-appearance: auto;
-    }
-    .info-value.editable textarea {
-      height: 60px;
-      resize: vertical;
-    }
     .info-value.editable input:focus,
     .info-value.editable select:focus,
     .info-value.editable textarea:focus {
       border-color: var(--bg-btn-primary);
       box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
     }
+    .info-value.editable textarea { height: 60px; resize: vertical; }
 
-    .info-value:empty::before { content: "—"; color: var(--text-light, #bbb); }
-
-    /* Для обов'язкових полів – підсвічування */
     .info-value.required::after {
       content: " *";
       color: #d32f2f;
@@ -163,20 +243,6 @@
     .info-value.error {
       border-color: #d32f2f !important;
       background: #ffebee !important;
-    }
-
-    .btn-success {
-      background: var(--btn-success-bg, #388e3c);
-      color: white;
-    }
-    .btn-success:hover {
-      background: var(--btn-success-hover, #2e7d32);
-    }
-    .dark-theme .btn-success {
-      background: var(--btn-success-bg, #3a6a3a);
-    }
-    .dark-theme .btn-success:hover {
-      background: var(--btn-success-hover, #4a7a4a);
     }
 
     .section-title {
@@ -189,6 +255,7 @@
       transition: color 0.3s, border-color 0.3s;
     }
 
+    /* ===== ПІДТАБЛИЦІ ===== */
     .sub-table {
       width: 100%;
       border-collapse: collapse;
@@ -222,6 +289,14 @@
       text-align: center;
     }
 
+    /* ===== КНОПКИ В ПІДТАБЛИЦЯХ ===== */
+    .sub-table .btn {
+      padding: 3px 8px;
+      font-size: 12px;
+      border-radius: 4px;
+    }
+
+    /* ===== МОДАЛЬНІ ВІКНА ===== */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -244,6 +319,8 @@
       overflow-y: auto;
       box-shadow: 0 8px 32px var(--shadow-color);
       transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+      animation: fadeInUp 0.3s ease forwards;
+      opacity: 0;
     }
     .modal h3 { margin: 0 0 16px; color: var(--text-primary); transition: color 0.3s; }
     .form-group { margin-bottom: 12px; }
@@ -276,6 +353,7 @@
       margin-top: 20px;
     }
 
+    /* ===== TOAST ===== */
     .toast {
       position: fixed;
       bottom: 20px;
@@ -298,39 +376,64 @@
       transition: border-color 0.3s;
     }
 
-    /* ===== ПЕРЕВИЗНАЧЕННЯ ДЛЯ ТЕМНОЇ ТЕМИ ===== */
-    .dark-theme .btn-warning {
-      background: #b87a2a;
-      color: white;
+    /* ===== ТЕМНА ТЕМА (перевизначення) ===== */
+    body.dark-theme {
+      --bg-body: #1e1e24;
+      --bg-card: #2d2d35;
+      --bg-header: #919191;
+      --bg-input: #3a3a44;
+      --bg-editable: #3a3a44;
+      --bg-hover: #3a3a44;
+      --bg-modal: rgba(0,0,0,0.7);
+      --text-primary: #e8e8ec;
+      --text-secondary: #b0b0b8;
+      --text-light: #88888f;
+      --text-white: #ffffff;
+      --border-color: #3d3d48;
+      --shadow-color: rgba(0,0,0,0.4);
+      --bg-table-header: #2a2a3a;
+      --bg-table-hover: #3a3a44;
+      --bg-btn-primary: #4a7ab5;
+      --bg-btn-primary-hover: #5a8ac5;
+      --toast-success: #2e7d32;
+      --toast-error: #c62828;
+      --shadow-light: rgba(0,0,0,0.3);
     }
-    .dark-theme .btn-warning:hover:not(:disabled) {
-      background: #c88a3a;
-    }
-    .dark-theme .btn-secondary {
+
+    body.dark-theme .btn-secondary {
       background: #4a4a55;
       color: white;
     }
-    .dark-theme .btn-secondary:hover:not(:disabled) {
+    body.dark-theme .btn-secondary:hover:not(:disabled) {
       background: #5a5a65;
     }
-    .dark-theme .btn-danger {
+    body.dark-theme .btn-warning {
+      background: #b87a2a;
+      color: white;
+    }
+    body.dark-theme .btn-warning:hover:not(:disabled) {
+      background: #c88a3a;
+    }
+    body.dark-theme .btn-danger {
       background: #a03040;
       color: white;
     }
-    .dark-theme .btn-danger:hover:not(:disabled) {
+    body.dark-theme .btn-danger:hover:not(:disabled) {
       background: #b04050;
     }
-    .dark-theme .btn-outline {
+    body.dark-theme .btn-outline {
       border-color: rgba(255,255,255,0.3);
       color: #ccc;
     }
-    .dark-theme .btn-outline:hover {
+    body.dark-theme .btn-outline:hover {
       background: rgba(255,255,255,0.1);
     }
-    .dark-theme .info-value.error {
+    body.dark-theme .info-value.error {
       border-color: #ef9a9a !important;
       background: #3a1a1a !important;
     }
+
+    /* ===== ДРУК ===== */
     @media print {
       .sidebar,
       .card-actions,

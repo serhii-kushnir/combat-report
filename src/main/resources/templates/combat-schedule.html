@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>БЧ Графік чергувань</title>
     <link rel="icon" type="image/png" href="/favicon.png">
+    <link th:replace="~{fragments :: sidebar-css}">
     <style>
         /* ===== CSS ЗМІННІ ===== */
         :root {
@@ -81,6 +82,75 @@
             transition: background 0.3s, color 0.3s;
         }
         .container { padding: 16px 20px; max-width: 100%; overflow-x: auto; }
+
+        /* ===== АНІМАЦІЯ ПОЯВИ ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInRow {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .toolbar { animation: fadeIn 0.4s ease forwards; opacity: 0; }
+        .table-wrap { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.05s; }
+        .legend { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.10s; }
+        .stats-container { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.15s; }
+        .load-more-container { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.20s; }
+        .pagination { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.25s; }
+
+        /* Анімація рядків основної таблиці */
+        #tableBody tr {
+            animation: fadeInRow 0.3s ease forwards;
+            opacity: 0;
+        }
+        #tableBody tr:nth-child(1) { animation-delay: 0.02s; }
+        #tableBody tr:nth-child(2) { animation-delay: 0.04s; }
+        #tableBody tr:nth-child(3) { animation-delay: 0.06s; }
+        #tableBody tr:nth-child(4) { animation-delay: 0.08s; }
+        #tableBody tr:nth-child(5) { animation-delay: 0.10s; }
+        #tableBody tr:nth-child(6) { animation-delay: 0.12s; }
+        #tableBody tr:nth-child(7) { animation-delay: 0.14s; }
+        #tableBody tr:nth-child(8) { animation-delay: 0.16s; }
+        #tableBody tr:nth-child(9) { animation-delay: 0.18s; }
+        #tableBody tr:nth-child(10) { animation-delay: 0.20s; }
+        #tableBody tr:nth-child(11) { animation-delay: 0.22s; }
+        #tableBody tr:nth-child(12) { animation-delay: 0.24s; }
+        #tableBody tr:nth-child(13) { animation-delay: 0.26s; }
+        #tableBody tr:nth-child(14) { animation-delay: 0.28s; }
+        #tableBody tr:nth-child(15) { animation-delay: 0.30s; }
+        #tableBody tr:nth-child(16) { animation-delay: 0.32s; }
+        #tableBody tr:nth-child(17) { animation-delay: 0.34s; }
+        #tableBody tr:nth-child(18) { animation-delay: 0.36s; }
+        #tableBody tr:nth-child(19) { animation-delay: 0.38s; }
+        #tableBody tr:nth-child(20) { animation-delay: 0.40s; }
+
+        /* ===== АНІМАЦІЯ ДЛЯ РЯДКІВ СТАТИСТИКИ ===== */
+        #statsBody tr {
+            animation: fadeInRow 0.3s ease forwards;
+            opacity: 0;
+        }
+        #statsBody tr:nth-child(1) { animation-delay: 0.02s; }
+        #statsBody tr:nth-child(2) { animation-delay: 0.04s; }
+        #statsBody tr:nth-child(3) { animation-delay: 0.06s; }
+        #statsBody tr:nth-child(4) { animation-delay: 0.08s; }
+        #statsBody tr:nth-child(5) { animation-delay: 0.10s; }
+        #statsBody tr:nth-child(6) { animation-delay: 0.12s; }
+        #statsBody tr:nth-child(7) { animation-delay: 0.14s; }
+        #statsBody tr:nth-child(8) { animation-delay: 0.16s; }
+        #statsBody tr:nth-child(9) { animation-delay: 0.18s; }
+        #statsBody tr:nth-child(10) { animation-delay: 0.20s; }
+        #statsBody tr:nth-child(11) { animation-delay: 0.22s; }
+        #statsBody tr:nth-child(12) { animation-delay: 0.24s; }
+        #statsBody tr:nth-child(13) { animation-delay: 0.26s; }
+        #statsBody tr:nth-child(14) { animation-delay: 0.28s; }
+        #statsBody tr:nth-child(15) { animation-delay: 0.30s; }
+        #statsBody tr:nth-child(16) { animation-delay: 0.32s; }
+        #statsBody tr:nth-child(17) { animation-delay: 0.34s; }
+        #statsBody tr:nth-child(18) { animation-delay: 0.36s; }
+        #statsBody tr:nth-child(19) { animation-delay: 0.38s; }
+        #statsBody tr:nth-child(20) { animation-delay: 0.40s; }
 
         /* ===== ТУЛБАР ===== */
         .toolbar {
@@ -243,36 +313,6 @@
             padding: 6px 2px;
             transition: background 0.3s;
         }
-
-        /* Анімація рядків при завантаженні */
-        @keyframes fadeInRow {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        #tableBody tr {
-            animation: fadeInRow 0.3s ease forwards;
-            opacity: 0;
-        }
-        #tableBody tr:nth-child(1) { animation-delay: 0.02s; }
-        #tableBody tr:nth-child(2) { animation-delay: 0.04s; }
-        #tableBody tr:nth-child(3) { animation-delay: 0.06s; }
-        #tableBody tr:nth-child(4) { animation-delay: 0.08s; }
-        #tableBody tr:nth-child(5) { animation-delay: 0.10s; }
-        #tableBody tr:nth-child(6) { animation-delay: 0.12s; }
-        #tableBody tr:nth-child(7) { animation-delay: 0.14s; }
-        #tableBody tr:nth-child(8) { animation-delay: 0.16s; }
-        #tableBody tr:nth-child(9) { animation-delay: 0.18s; }
-        #tableBody tr:nth-child(10) { animation-delay: 0.20s; }
-        #tableBody tr:nth-child(11) { animation-delay: 0.22s; }
-        #tableBody tr:nth-child(12) { animation-delay: 0.24s; }
-        #tableBody tr:nth-child(13) { animation-delay: 0.26s; }
-        #tableBody tr:nth-child(14) { animation-delay: 0.28s; }
-        #tableBody tr:nth-child(15) { animation-delay: 0.30s; }
-        #tableBody tr:nth-child(16) { animation-delay: 0.32s; }
-        #tableBody tr:nth-child(17) { animation-delay: 0.34s; }
-        #tableBody tr:nth-child(18) { animation-delay: 0.36s; }
-        #tableBody tr:nth-child(19) { animation-delay: 0.38s; }
-        #tableBody tr:nth-child(20) { animation-delay: 0.40s; }
 
         /* ===== ШИРИНИ КОЛОНОК ===== */
         .col-num  { width: 32px; min-width: 32px; }
@@ -593,7 +633,6 @@
             @page { size: landscape; margin: 4mm 3mm; }
         }
     </style>
-    <link th:replace="~{fragments :: sidebar-css}">
 </head>
 <body>
 <div class="layout">

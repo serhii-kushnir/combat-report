@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Нотатки</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link th:replace="~{fragments :: sidebar-css}">
     <style>
         /* ===== CSS ЗМІННІ ===== */
         :root {
@@ -82,6 +83,59 @@
         body.dark-theme .note-color-teal { background: #2a6a5a; }
         body.dark-theme .note-color-blue { background: #2a4a6a; }
         body.dark-theme .note-color-purple { background: #5a3a7a; }
+
+        /* ===== АНІМАЦІЯ ПОЯВИ ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInCard {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .toolbar { animation: fadeIn 0.4s ease forwards; opacity: 0; }
+        .stats-row { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.05s; }
+        .notes-grid { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.10s; }
+        .archived-section { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.15s; }
+        .load-more-container { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.20s; }
+        .pagination { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.25s; }
+
+        /* Анімація карток нотаток (з затримкою) */
+        .note-card {
+            animation: fadeInCard 0.4s ease forwards;
+            opacity: 0;
+        }
+        .note-card:nth-child(1) { animation-delay: 0.02s; }
+        .note-card:nth-child(2) { animation-delay: 0.04s; }
+        .note-card:nth-child(3) { animation-delay: 0.06s; }
+        .note-card:nth-child(4) { animation-delay: 0.08s; }
+        .note-card:nth-child(5) { animation-delay: 0.10s; }
+        .note-card:nth-child(6) { animation-delay: 0.12s; }
+        .note-card:nth-child(7) { animation-delay: 0.14s; }
+        .note-card:nth-child(8) { animation-delay: 0.16s; }
+        .note-card:nth-child(9) { animation-delay: 0.18s; }
+        .note-card:nth-child(10) { animation-delay: 0.20s; }
+        .note-card:nth-child(11) { animation-delay: 0.22s; }
+        .note-card:nth-child(12) { animation-delay: 0.24s; }
+        .note-card:nth-child(13) { animation-delay: 0.26s; }
+        .note-card:nth-child(14) { animation-delay: 0.28s; }
+        .note-card:nth-child(15) { animation-delay: 0.30s; }
+        .note-card:nth-child(16) { animation-delay: 0.32s; }
+        .note-card:nth-child(17) { animation-delay: 0.34s; }
+        .note-card:nth-child(18) { animation-delay: 0.36s; }
+        .note-card:nth-child(19) { animation-delay: 0.38s; }
+        .note-card:nth-child(20) { animation-delay: 0.40s; }
+        .note-card:nth-child(21) { animation-delay: 0.42s; }
+        .note-card:nth-child(22) { animation-delay: 0.44s; }
+        .note-card:nth-child(23) { animation-delay: 0.46s; }
+        .note-card:nth-child(24) { animation-delay: 0.48s; }
+        .note-card:nth-child(25) { animation-delay: 0.50s; }
+        .note-card:nth-child(26) { animation-delay: 0.52s; }
+        .note-card:nth-child(27) { animation-delay: 0.54s; }
+        .note-card:nth-child(28) { animation-delay: 0.56s; }
+        .note-card:nth-child(29) { animation-delay: 0.58s; }
+        .note-card:nth-child(30) { animation-delay: 0.60s; }
 
         /* ===== ОСНОВНІ СТИЛІ ===== */
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -386,10 +440,14 @@
         }
         .pagination button:hover:not(:disabled) {
             background: var(--bg-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px var(--shadow-color);
         }
         .pagination button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         .pagination .page-info {
             font-size: 13px;
@@ -638,7 +696,6 @@
             }
         }
     </style>
-    <link th:replace="~{fragments :: sidebar-css}">
 </head>
 <body>
 <div class="layout">
