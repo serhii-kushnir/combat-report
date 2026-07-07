@@ -133,7 +133,6 @@
             transition: background 0.8s ease;
         }
 
-        /* Зірки */
         .stars {
             position: absolute;
             inset: 0;
@@ -160,7 +159,6 @@
         .star:nth-child(11) { top: 40%; left: 60%; animation-delay: 2.5s; width: 2px; height: 2px; }
         .star:nth-child(12) { top: 50%; left: 78%; animation-delay: 1.0s; width: 3px; height: 3px; }
 
-        /* Дрони */
         .drones {
             position: absolute;
             inset: 0;
@@ -217,7 +215,6 @@
         .drone-7 { top: 25%; animation-duration: 24s; animation-delay: 5s; font-size: 15px; }
         .drone-8 { top: 38%; animation-duration: 16s; animation-delay: 8s; font-size: 18px; }
 
-        /* Частинки */
         .particles {
             position: absolute;
             inset: 0;
@@ -244,7 +241,6 @@
         .particle:nth-child(9) { left: 88%; animation-delay: 3.5s; width: 3px; height: 3px; }
         .particle:nth-child(10) { left: 95%; animation-delay: 2s; }
 
-        /* Великий силует */
         .big-drone {
             position: absolute;
             bottom: 12%;
@@ -280,7 +276,6 @@
             box-shadow: 0 12px 60px var(--shadow-color);
         }
 
-        /* ===== ЕЛЕМЕНТИ ФОРМИ ===== */
         .login-container h2 {
             color: var(--text-primary);
             text-align: center;
@@ -416,7 +411,6 @@
             transform: scale(0.9) rotate(0deg);
         }
 
-        /* ===== ПОВІДОМЛЕННЯ ===== */
         .error, .success {
             animation: fadeIn 0.4s ease forwards;
             opacity: 0;
@@ -445,7 +439,6 @@
             border-left: 3px solid var(--success-text);
         }
 
-        /* ===== АДАПТИВ ===== */
         @media (max-width: 480px) {
             .login-container {
                 padding: 24px 18px;
@@ -460,16 +453,13 @@
             .big-drone { font-size: 40px; }
         }
 
-        /* ===== ПРИБИРАЄМО СКРОЛ ===== */
         ::-webkit-scrollbar { width: 0; }
         body { overflow: hidden; }
     </style>
 </head>
 <body>
 
-<!-- ===== ФОНОВА АНІМАЦІЯ ===== -->
 <div class="bg-animation">
-    <!-- Зірки -->
     <div class="stars">
         <div class="star"></div><div class="star"></div><div class="star"></div>
         <div class="star"></div><div class="star"></div><div class="star"></div>
@@ -477,7 +467,6 @@
         <div class="star"></div><div class="star"></div><div class="star"></div>
     </div>
 
-    <!-- Дрони -->
     <div class="drones">
         <div class="drone drone-1"><span class="trail"><span></span><span></span><span></span><span></span></span><i class="fas fa-drone"></i></div>
         <div class="drone drone-2"><span class="trail"><span></span><span></span><span></span><span></span></span><i class="fas fa-drone"></i></div>
@@ -489,7 +478,6 @@
         <div class="drone drone-reverse drone-8"><i class="fas fa-drone"></i><span class="trail"><span></span><span></span><span></span><span></span></span></div>
     </div>
 
-    <!-- Частинки -->
     <div class="particles">
         <div class="particle"></div><div class="particle"></div><div class="particle"></div>
         <div class="particle"></div><div class="particle"></div><div class="particle"></div>
@@ -497,18 +485,13 @@
         <div class="particle"></div>
     </div>
 
-    <!-- Великий силует -->
     <div class="big-drone"><i class="fas fa-drone"></i></div>
 </div>
 
-<!-- ===== КОНТЕЙНЕР ЛОГІНУ ===== -->
 <div class="login-container">
-    <!-- Кнопка теми -->
     <button class="theme-toggle" id="themeToggle" title="Перемкнути тему">🌙</button>
-
     <h2><i class="fas fa-drone"></i> 🔐 Вхід до системи</h2>
 
-    <!-- Повідомлення -->
     <div th:if="${param.error}" class="error">❌ Невірне ім'я або пароль</div>
     <div th:if="${param.logout}" class="success">✅ Ви успішно вийшли</div>
 

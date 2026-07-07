@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛩️ Дрон проти Шахедів</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <th:block th:replace="~{fragments :: sidebar-css}"></th:block>
+    <style>
+        /* ===== ФОНОВА АНІМАЦІЯ (як на login) ===== */
+        .game-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a0a2a, #0d1b3e, #1a0a2a);
+            background-size: 400% 400%;
+            animation: gradientShift 25s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 50% 0%; }
+            50% { background-position: 100% 50%; }
+            75% { background-position: 50% 100%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .game-stars {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+        .game-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: starTwinkle 3s ease-in-out infinite;
+        }
+        @keyframes starTwinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.4); }
+        }
+
+        .game-drones {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+        .game-drone {
+            position: absolute;
+            font-size: 24px;
+            color: rgba(100, 200, 255, 0.08);
+            animation: droneFloat 20s linear infinite;
+        }
+        @keyframes droneFloat {
+            0% { transform: translate(-120px, 20px) rotate(-5deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translate(calc(100vw + 120px), -60px) rotate(5deg); opacity: 0; }
+        }
+        .game-drone:nth-child(1) { top: 10%; animation-duration: 22s; font-size: 30px; }
+        .game-drone:nth-child(2) { top: 30%; animation-duration: 18s; animation-delay: 4s; font-size: 20px; }
+        .game-drone:nth-child(3) { top: 50%; animation-duration: 25s; animation-delay: 8s; font-size: 26px; }
+        .game-drone:nth-child(4) { top: 70%; animation-duration: 16s; animation-delay: 12s; font-size: 18px; }
+        .game-drone:nth-child(5) { top: 85%; animation-duration: 20s; animation-delay: 16s; font-size: 22px; }
+
+        .game-particles {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .game-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(100, 200, 255, 0.3);
+            border-radius: 50%;
+            animation: particleRise 8s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(100, 200, 255, 0.1);
+        }
+        @keyframes particleRise {
+            0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+            15% { opacity: 0.6; }
+            85% { opacity: 0.6; }
+            100% { transform: translateY(-160px) translateX(50px) scale(0.3); opacity: 0; }
+        }
+        .game-particle:nth-child(1) { left: 8%; animation-delay: 0s; }
+        .game-particle:nth-child(2) { left: 18%; animation-delay: 1.2s; width: 3px; height: 3px; }
+        .game-particle:nth-child(3) { left: 28%; animation-delay: 2.5s; background: rgba(255, 180, 50, 0.25); }
+        .game-particle:nth-child(4) { left: 38%; animation-delay: 0.8s; width: 5px; height: 5px; }
+        .game-particle:nth-child(5) { left: 48%; animation-delay: 3.2s; }
+        .game-particle:nth-child(6) { left: 58%; animation-delay: 1.8s; width: 3px; height: 3px; background: rgba(255, 180, 50, 0.2); }
+        .game-particle:nth-child(7) { left: 68%; animation-delay: 4s; }
+        .game-particle:nth-child(8) { left: 78%; animation-delay: 0.5s; width: 6px; height: 6px; }
+        .game-particle:nth-child(9) { left: 88%; animation-delay: 3.5s; width: 3px; height: 3px; }
+        .game-particle:nth-child(10) { left: 95%; animation-delay: 2s; }
+
+        /* ===== ОСНОВНИЙ КОНТЕЙНЕР ГРИ ===== */
+        .game-container {
+            position: relative;
+            z-index: 1;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            min-height: calc(100vh - 60px);
+        }
+
+        .game-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(10px);
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .game-toolbar .title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary, #fff);
+            margin-right: auto;
+        }
+        .game-toolbar .title i {
+            color: #90caf9;
+            margin-right: 8px;
+        }
+        .game-toolbar .effects-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .game-toolbar .effects-toggle input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #90caf9;
+        }
+
+        .btn-game {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            box-shadow: 0 2px 12px rgba(46, 125, 50, 0.4);
+        }
+        .btn-game:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(46, 125, 50, 0.5);
+        }
+        .btn-game:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .btn-pause {
+            background: linear-gradient(135deg, #e65100, #bf360c);
+            box-shadow: 0 2px 12px rgba(230, 81, 0, 0.4);
+        }
+        .btn-pause:hover {
+            box-shadow: 0 6px 24px rgba(230, 81, 0, 0.5);
+        }
+        .btn-pause.paused {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            box-shadow: 0 2px 12px rgba(46, 125, 50, 0.4);
+        }
+        .btn-pause.paused:hover {
+            box-shadow: 0 6px 24px rgba(46, 125, 50, 0.5);
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #c62828, #b71c1c);
+            box-shadow: 0 2px 12px rgba(198, 40, 40, 0.4);
+        }
+        .btn-reset:hover {
+            box-shadow: 0 6px 24px rgba(198, 40, 40, 0.5);
+        }
+
+        /* ===== CANVAS ===== */
+        .canvas-wrapper {
+            flex: 1;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.3);
+            position: relative;
+            min-height: 500px;
+        }
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        /* ===== СТАТИСТИКА НА CANVAS ===== */
+        .game-stats-overlay {
+            position: absolute;
+            top: 16px;
+            left: 20px;
+            z-index: 5;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 18px;
+            font-weight: 600;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+            user-select: none;
+        }
+        .game-stats-overlay span {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 768px) {
+            .game-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .game-toolbar .title {
+                text-align: center;
+                margin-right: 0;
+            }
+            .btn-game {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <!-- Сайдбар (не ховаємо) -->
+    <div th:replace="~{fragments :: sidebar('game')}"></div>
+
+    <div class="main-content">
+        <!-- Фонова анімація (як на login) -->
+        <div class="game-bg">
+            <div class="game-stars" id="gameStars"></div>
+            <div class="game-drones">
+                <div class="game-drone"><i class="fas fa-drone"></i></div>
+                <div class="game-drone"><i class="fas fa-drone"></i></div>
+                <div class="game-drone"><i class="fas fa-drone"></i></div>
+                <div class="game-drone"><i class="fas fa-drone"></i></div>
+                <div class="game-drone"><i class="fas fa-drone"></i></div>
+            </div>
+            <div class="game-particles">
+                <div class="game-particle"></div>
+                <div class="game-particle"></div>
+                <div class="game-particle"></div>
+                <div class="game-particle"></div>
+                <div class="game-particle"></div>
+                <div class="game-particle"></div>
+                <div class="game-particle"></div>
+                <div class="game-particle"></div>
+                <div class="game-particle"></div>
+                <div class="game-particle"></div>
+            </div>
+        </div>
+
+        <!-- Контейнер гри -->
+        <div class="game-container">
+            <!-- Тулбар -->
+            <div class="game-toolbar">
+                <span class="title"><i class="fas fa-gamepad"></i> Дрон проти Шахедів</span>
+                <label class="effects-toggle">
+                    <input type="checkbox" id="effectsCheckbox" checked> 🎆 Ефекти
+                </label>
+                <button class="btn-game" id="startBtn"><i class="fas fa-play"></i> Почати гру</button>
+                <button class="btn-game btn-pause" id="pauseBtn" disabled><i class="fas fa-pause"></i> Пауза</button>
+                <button class="btn-game btn-reset" id="resetBtn"><i class="fas fa-undo"></i> Рестарт</button>
+            </div>
+
+            <!-- Canvas -->
+            <div class="canvas-wrapper">
+                <canvas id="gameCanvas"></canvas>
+                <div class="game-stats-overlay" id="statsOverlay">
+                    <span id="scoreDisplay">🎯 0</span>
+                    <span id="livesDisplay">❤️ 5</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:replace="~{fragments :: sidebar-js}"></script>
+<script>
+    (function() {
+        // ===== ЗІРКИ =====
+        const starsContainer = document.getElementById('gameStars');
+        for (let i = 0; i < 60; i++) {
+            const star = document.createElement('div');
+            star.className = 'game-star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.width = (Math.random() * 3 + 1) + 'px';
+            star.style.height = star.style.width;
+            star.style.animationDelay = (Math.random() * 4) + 's';
+            star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // ===== CANVAS =====
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const wrapper = canvas.parentElement;
+        let w, h;
+
+        function resizeCanvas() {
+            const rect = wrapper.getBoundingClientRect();
+            w = canvas.width = rect.width;
+            h = canvas.height = rect.height;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // ===== СТАН ГРИ =====
+        const player = {
+            x: w / 2,
+            y: h - 60,
+            radius: 20
+        };
+
+        let enemies = [];
+        let bullets = [];
+        let effects = [];
+        let score = 0;
+        let lives = 5;
+        let gameOver = false;
+        let gameRunning = false;
+        let paused = false;
+        let frame = 0;
+        let spawnRate = 30;
+        let countdown = 0;
+        let countdownInterval = null;
+
+        // КУЛДАУН ДЛЯ СТРІЛЬБИ (зменшує скорострільність)
+        let shotCooldown = 0;
+        const SHOT_DELAY = 10; // кількість кадрів між пострілами (раніше було 0)
+
+        // Ефекти ввімкнено за замовчуванням
+        let effectsEnabled = true;
+        const effectsCheckbox = document.getElementById('effectsCheckbox');
+        effectsCheckbox.addEventListener('change', () => {
+            effectsEnabled = effectsCheckbox.checked;
+        });
+
+        const ENEMY_SPEED_MIN = 1.5;
+        const ENEMY_SPEED_MAX = 3.5;
+        const ENEMY_RADIUS = 16;
+
+        // ===== ЕФЕКТИ =====
+        class Explosion {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.life = 1.0;
+                this.particles = [];
+                const numParticles = 14;
+                for (let i = 0; i < numParticles; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 4 + 1.5;
+                    this.particles.push({
+                        x: x,
+                        y: y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        radius: Math.random() * 4 + 2,
+                        color: Math.random() > 0.5 ? '#ff6644' : '#ffcc44'
+                    });
+                }
+            }
+            update() {
+                this.life -= 0.03;
+                for (const p of this.particles) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.08;
+                    p.vx *= 0.98;
+                    p.vy *= 0.98;
+                    p.radius *= 0.97;
+                }
+                return this.life > 0;
+            }
+            draw(ctx) {
+                const alpha = this.life;
+                const radius = 20 + (1 - this.life) * 40;
+                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, radius);
+                gradient.addColorStop(0, `rgba(255, 200, 100, ${alpha * 0.7})`);
+                gradient.addColorStop(0.5, `rgba(255, 100, 50, ${alpha * 0.5})`);
+                gradient.addColorStop(1, `rgba(255, 50, 0, 0)`);
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, radius, 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                ctx.restore();
+                for (const p of this.particles) {
+                    ctx.save();
+                    ctx.globalAlpha = alpha * 0.8;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, Math.max(p.radius, 0.3), 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+        }
+
+        class Flash {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.life = 0.35;
+            }
+            update() {
+                this.life -= 0.025;
+                return this.life > 0;
+            }
+            draw(ctx) {
+                const alpha = this.life * 2.5;
+                const radius = 25 * (1 - this.life / 0.35);
+                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, radius);
+                gradient.addColorStop(0, `rgba(255, 255, 255, ${alpha * 0.8})`);
+                gradient.addColorStop(0.3, `rgba(255, 255, 200, ${alpha * 0.5})`);
+                gradient.addColorStop(1, `rgba(255, 200, 100, 0)`);
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, radius, 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class BulletTrail {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.life = 0.2;
+                this.radius = 4;
+            }
+            update() {
+                this.life -= 0.025;
+                this.radius *= 0.95;
+                return this.life > 0;
+            }
+            draw(ctx) {
+                const alpha = this.life * 4;
+                ctx.save();
+                ctx.globalAlpha = alpha * 0.5;
+                ctx.shadowColor = '#ffff44';
+                ctx.shadowBlur = 15;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffff44';
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        // ===== КЕРУВАННЯ =====
+        function updatePlayerPosition(clientX) {
+            if (gameRunning && !gameOver && !paused) {
+                player.x = clientX;
+                if (player.x < player.radius) player.x = player.radius;
+                if (player.x > w - player.radius) player.x = w - player.radius;
+            }
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            updatePlayerPosition(x);
+        });
+
+        canvas.addEventListener('click', (e) => {
+            if (gameRunning && !gameOver && !paused) {
+                shoot();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && gameRunning && !gameOver && !paused) {
+                e.preventDefault();
+                shoot();
+            }
+            if (e.code === 'KeyR') {
+                resetGame();
+            }
+            if (e.code === 'KeyP') {
+                togglePause();
+            }
+        });
+
+        function shoot() {
+            // Перевірка кулдауну
+            if (shotCooldown > 0) return;
+            shotCooldown = SHOT_DELAY;
+
+            const b = {
+                x: player.x,
+                y: player.y - 25,
+                radius: 6,
+                dy: -6
+            };
+            bullets.push(b);
+            if (effectsEnabled) {
+                for (let i = 0; i < 3; i++) {
+                    effects.push(new BulletTrail(
+                        b.x + (Math.random() - 0.5) * 8,
+                        b.y + (Math.random() - 0.5) * 8
+                    ));
+                }
+            }
+        }
+
+        function resetGame() {
+            enemies = [];
+            bullets = [];
+            effects = [];
+            score = 0;
+            lives = 5;
+            gameOver = false;
+            gameRunning = false;
+            paused = false;
+            frame = 0;
+            spawnRate = 30;
+            shotCooldown = 0;
+            player.x = w / 2;
+            countdown = 0;
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+            updateUI();
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('pauseBtn').textContent = '⏸ Пауза';
+            document.getElementById('pauseBtn').classList.remove('paused');
+        }
+
+        function togglePause() {
+            if (!gameRunning || gameOver) return;
+            paused = !paused;
+            const btn = document.getElementById('pauseBtn');
+            if (paused) {
+                btn.innerHTML = '<i class="fas fa-play"></i> Продовжити';
+                btn.classList.add('paused');
+            } else {
+                btn.innerHTML = '<i class="fas fa-pause"></i> Пауза';
+                btn.classList.remove('paused');
+            }
+        }
+
+        function spawnEnemy() {
+            const x = Math.random() * (w - 40) + 20;
+            const speed = Math.random() * (ENEMY_SPEED_MAX - ENEMY_SPEED_MIN) + ENEMY_SPEED_MIN;
+            enemies.push({
+                x: x,
+                y: -ENEMY_RADIUS,
+                radius: ENEMY_RADIUS,
+                speed: speed
+            });
+        }
+
+        // ===== ОНОВЛЕННЯ =====
+        function update() {
+            if (!gameRunning || gameOver || paused) return;
+            frame++;
+
+            // Зменшуємо кулдаун
+            if (shotCooldown > 0) shotCooldown--;
+
+            if (frame % spawnRate === 0) {
+                spawnEnemy();
+                if (spawnRate > 15 && frame % 100 === 0) {
+                    spawnRate = Math.max(15, spawnRate - 1);
+                }
+            }
+
+            // Вороги
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const e = enemies[i];
+                e.y += e.speed;
+                if (e.y > h + 50) {
+                    enemies.splice(i, 1);
+                    lives--;
+                    if (lives <= 0) {
+                        gameOver = true;
+                        gameRunning = false;
+                    }
+                    updateUI();
+                }
+            }
+
+            // Кулі
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const b = bullets[i];
+                b.y += b.dy;
+                if (effectsEnabled && i % 2 === 0) {
+                    effects.push(new BulletTrail(b.x, b.y + 5));
+                }
+                if (b.y < -20) {
+                    bullets.splice(i, 1);
+                    continue;
+                }
+                let bulletUsed = false;
+                for (let j = enemies.length - 1; j >= 0; j--) {
+                    const e = enemies[j];
+                    const dx = b.x - e.x;
+                    const dy = b.y - e.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < b.radius + e.radius) {
+                        if (effectsEnabled) {
+                            effects.push(new Explosion(e.x, e.y));
+                            effects.push(new Flash(e.x, e.y));
+                        }
+                        enemies.splice(j, 1);
+                        score++;
+                        bulletUsed = true;
+                        updateUI();
+                        break;
+                    }
+                }
+                if (bulletUsed) {
+                    bullets.splice(i, 1);
+                }
+            }
+
+            // Ефекти (оновлюємо незалежно від налаштування, але не додаємо нові)
+            for (let i = effects.length - 1; i >= 0; i--) {
+                if (!effects[i].update()) {
+                    effects.splice(i, 1);
+                }
+            }
+        }
+
+        // ===== МАЛЮВАННЯ =====
+        function draw() {
+            ctx.clearRect(0, 0, w, h);
+
+            // Літак (вгору)
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            ctx.shadowColor = 'rgba(100, 200, 255, 0.6)';
+            ctx.shadowBlur = 35;
+            ctx.font = '900 46px "Font Awesome 6 Free"';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillStyle = 'rgba(100, 200, 255, 0.95)';
+            ctx.fillText('\uf072', 0, 0);
+            ctx.restore();
+
+            // Вороги (вниз)
+            for (const e of enemies) {
+                ctx.save();
+                ctx.shadowColor = 'rgba(255, 50, 50, 0.8)';
+                ctx.shadowBlur = 15;
+                ctx.beginPath();
+                ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#ff4444';
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = '#aa2222';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.font = '16px Arial';
+                ctx.fillStyle = 'white';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.translate(e.x, e.y);
+                ctx.rotate(Math.PI / 2);
+                ctx.fillText('✈', 0, 0);
+                ctx.restore();
+            }
+
+            // Кулі
+            for (const b of bullets) {
+                ctx.save();
+                ctx.shadowColor = 'rgba(255, 255, 100, 0.8)';
+                ctx.shadowBlur = 25;
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffff44';
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // Ефекти
+            for (const effect of effects) {
+                effect.draw(ctx);
+            }
+
+            // Зворотний відлік
+            if (countdown > 0) {
+                ctx.font = 'bold 100px "Segoe UI", sans-serif';
+                ctx.fillStyle = 'rgba(255,255,255,0.9)';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                ctx.shadowBlur = 20;
+                ctx.fillText(countdown, w/2, h/2 - 20);
+                ctx.shadowBlur = 0;
+            }
+
+            // Game Over
+            if (gameOver) {
+                ctx.font = 'bold 52px "Segoe UI", sans-serif';
+                ctx.fillStyle = 'rgba(255,50,50,0.9)';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                ctx.shadowBlur = 20;
+                ctx.fillText('💥 GAME OVER', w / 2, h / 2 - 40);
+                ctx.font = '24px "Segoe UI", sans-serif';
+                ctx.fillStyle = 'rgba(255,255,255,0.8)';
+                ctx.fillText('Натисніть R для рестарту', w / 2, h / 2 + 30);
+                ctx.shadowBlur = 0;
+            }
+
+            // Пауза
+            if (paused && !gameOver) {
+                ctx.font = 'bold 40px "Segoe UI", sans-serif';
+                ctx.fillStyle = 'rgba(255,255,255,0.7)';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                ctx.shadowBlur = 20;
+                ctx.fillText('⏸ ПАУЗА', w/2, h/2);
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        // ===== ОНОВЛЕННЯ UI =====
+        function updateUI() {
+            document.getElementById('scoreDisplay').textContent = '🎯 ' + score;
+            document.getElementById('livesDisplay').textContent = '❤️ ' + lives;
+        }
+
+        // ===== ЦИКЛ =====
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+        gameLoop();
+
+        // ===== КНОПКИ =====
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.getElementById('pauseBtn').addEventListener('click', togglePause);
+        document.getElementById('resetBtn').addEventListener('click', resetGame);
+
+        function startGame() {
+            if (gameRunning) return;
+            resetGame();
+            countdown = 3;
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('pauseBtn').disabled = true;
+
+            if (countdownInterval) clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                    gameRunning = true;
+                    paused = false;
+                    document.getElementById('pauseBtn').disabled = false;
+                    document.getElementById('pauseBtn').textContent = '⏸ Пауза';
+                    document.getElementById('pauseBtn').classList.remove('paused');
+                    updateUI();
+                }
+            }, 1000);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            player.x = Math.min(w - player.radius, Math.max(player.radius, player.x));
+            player.y = h - 60;
+        });
+
+        resetGame();
+        updateUI();
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'KeyR') {
+                resetGame();
+            }
+            if (e.code === 'KeyP') {
+                togglePause();
+            }
+        });
+    })();
+</script>
+</body>
+</html>
