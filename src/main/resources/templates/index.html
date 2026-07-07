@@ -10,16 +10,17 @@
             --bg-body: #f5f5f5;
             --bg-card: #ffffff;
             --bg-toolbar: #ffffff;
-            --bg-params: #e3f2fd;          /* замість зеленого - світло-синій */
-            --bg-additional: #e3f2fd;      /* залишимо той самий синій */
-            --bg-actions: #e3f2fd;         /* замість зеленого - світло-синій */
+            --bg-params: #e3f2fd;
+            --bg-additional: #e3f2fd;
+            --bg-actions: #e3f2fd;
             --bg-status: #e3f2fd;
             --bg-json-panel: #fafafa;
             --bg-report-panel: #fafafa;
             --bg-textarea: #ffffff;
             --border-color: #ddd;
             --border-light: #ccc;
-            --shadow-color: rgba(0,0,0,0.1);
+            --shadow-color: rgba(0,0,0,0.08);
+            --shadow-light: rgba(0,0,0,0.05);
             --text-primary: #333333;
             --text-secondary: #555555;
             --text-light: #999999;
@@ -29,22 +30,24 @@
             --text-status-error: #c62828;
             --btn-file-bg: #9C27B0;
             --btn-file-hover: #7B1FA2;
-            --btn-convert-bg: #1976d2;     /* синій замість зеленого */
-            --btn-convert-hover: #1565c0;
+            --btn-convert-bg: #1565c0;
+            --btn-convert-hover: #0d47a1;
             --btn-copy-bg: #607D8B;
             --btn-copy-hover: #546E7A;
-            --btn-clear-bg: #f44336;
-            --btn-clear-hover: #d32f2f;
-            --btn-save-txt-bg: #2196F3;
-            --btn-save-txt-hover: #1976D2;
-            --btn-save-docx-bg: #ff9800;
-            --btn-save-docx-hover: #fb8c00;
+            --btn-clear-bg: #c62828;
+            --btn-clear-hover: #b71c1c;
+            --btn-save-txt-bg: #1976D2;
+            --btn-save-txt-hover: #1565C0;
+            --btn-save-docx-bg: #e65100;
+            --btn-save-docx-hover: #bf360c;
             --btn-flight-bg: #6a1b9a;
             --btn-flight-hover: #4a148c;
-            --border-header: #1976d2;      /* синій замість зеленого */
+            --border-header: #1565c0;
             --topbar-bg: #ffffff;
             --topbar-color: #1a237e;
             --separator-color: #ccc;
+            --toast-success: #2e7d32;
+            --toast-error: #c62828;
         }
 
         /* Темна тема */
@@ -52,9 +55,9 @@
             --bg-body: #1e1e24;
             --bg-card: #2d2d35;
             --bg-toolbar: #2d2d35;
-            --bg-params: #1a2a3a;          /* темно-синій */
+            --bg-params: #1a2a3a;
             --bg-additional: #1a2a3a;
-            --bg-actions: #1a2a3a;         /* темно-синій */
+            --bg-actions: #1a2a3a;
             --bg-status: #1a2a3a;
             --bg-json-panel: #2d2d35;
             --bg-report-panel: #2d2d35;
@@ -62,6 +65,7 @@
             --border-color: #3d3d48;
             --border-light: #3d3d48;
             --shadow-color: rgba(0,0,0,0.4);
+            --shadow-light: rgba(0,0,0,0.3);
             --text-primary: #e8e8ec;
             --text-secondary: #b0b0b8;
             --text-light: #88888f;
@@ -71,19 +75,19 @@
             --text-status-error: #ef9a9a;
             --btn-file-bg: #8e24aa;
             --btn-file-hover: #6a1b9a;
-            --btn-convert-bg: #4a7ab5;     /* синій для темної теми */
-            --btn-convert-hover: #5a8ac5;
+            --btn-convert-bg: #2a4a7a;
+            --btn-convert-hover: #3a5a8a;
             --btn-copy-bg: #4a5a6a;
             --btn-copy-hover: #5a6a7a;
-            --btn-clear-bg: #8a2a2a;
-            --btn-clear-hover: #6a1a1a;
+            --btn-clear-bg: #6a2a2a;
+            --btn-clear-hover: #8a3a3a;
             --btn-save-txt-bg: #1a5a8a;
             --btn-save-txt-hover: #2a6a9a;
-            --btn-save-docx-bg: #8a5a1a;
-            --btn-save-docx-hover: #9a6a2a;
+            --btn-save-docx-bg: #7a5a2a;
+            --btn-save-docx-hover: #8a6a3a;
             --btn-flight-bg: #4a1a6a;
             --btn-flight-hover: #5a2a7a;
-            --border-header: #4a7ab5;      /* синій для темної теми */
+            --border-header: #4a7ab5;
             --topbar-bg: #2d2d35;
             --topbar-color: #90caf9;
             --separator-color: #3d3d48;
@@ -114,6 +118,8 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px var(--shadow-color);
             transition: background 0.3s, box-shadow 0.3s;
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
         }
         h1 {
             color: var(--text-primary);
@@ -121,6 +127,47 @@
             padding-bottom: 10px;
             margin-top: 0;
             transition: color 0.3s, border-color 0.3s;
+        }
+
+        /* ===== АНІМАЦІЯ ПОЯВИ ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .params-bar {
+            animation: fadeIn 0.4s ease forwards;
+            opacity: 0;
+            animation-delay: 0.05s;
+        }
+        .additional-bar {
+            animation: fadeIn 0.4s ease forwards;
+            opacity: 0;
+            animation-delay: 0.10s;
+        }
+        .actions-bar {
+            animation: fadeIn 0.4s ease forwards;
+            opacity: 0;
+            animation-delay: 0.15s;
+        }
+        .status {
+            animation: fadeIn 0.4s ease forwards;
+            opacity: 0;
+            animation-delay: 0.20s;
+        }
+        .json-panel {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+            animation-delay: 0.25s;
+        }
+        .report-panel {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+            animation-delay: 0.30s;
+        }
+        .footer {
+            animation: fadeIn 0.4s ease forwards;
+            opacity: 0;
+            animation-delay: 0.35s;
         }
 
         /* ===== ПАНЕЛІ ПАРАМЕТРІВ ===== */
@@ -172,19 +219,31 @@
         .params-bar input { width: 80px; }
         .additional-bar input { width: 80px; }
 
-        /* ===== КНОПКИ ===== */
+        /* ===== КНОПКИ З АНІМАЦІЄЮ ===== */
         .file-button {
             background: var(--btn-file-bg);
             color: var(--text-white);
             border: none;
             padding: 6px 14px;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
             font-weight: bold;
-            transition: background 0.2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px var(--shadow-light);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            line-height: 1.4;
         }
-        .file-button:hover { background: var(--btn-file-hover); }
+        .file-button:hover {
+            background: var(--btn-file-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+        .file-button:active {
+            transform: translateY(1px);
+        }
 
         .actions-bar {
             background: var(--bg-actions);
@@ -200,47 +259,67 @@
         .actions-bar button {
             border: none;
             padding: 6px 14px;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
             font-weight: bold;
             color: var(--text-white);
-            transition: background 0.2s, opacity 0.2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px var(--shadow-light);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            line-height: 1.4;
+        }
+        .actions-bar button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+        .actions-bar button:active:not(:disabled) {
+            transform: translateY(1px);
         }
         .actions-bar button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
+
         .actions-bar .convert-btn {
             background: var(--btn-convert-bg);
         }
         .actions-bar .convert-btn:hover:not(:disabled) {
             background: var(--btn-convert-hover);
         }
+
         .actions-bar .save-txt {
             background: var(--btn-save-txt-bg);
         }
         .actions-bar .save-txt:hover:not(:disabled) {
             background: var(--btn-save-txt-hover);
         }
+
         .actions-bar .save-docx {
             background: var(--btn-save-docx-bg);
         }
         .actions-bar .save-docx:hover:not(:disabled) {
             background: var(--btn-save-docx-hover);
         }
+
         .actions-bar .copy-btn {
             background: var(--btn-copy-bg);
         }
         .actions-bar .copy-btn:hover:not(:disabled) {
             background: var(--btn-copy-hover);
         }
+
         .actions-bar .clear-btn {
             background: var(--btn-clear-bg);
         }
         .actions-bar .clear-btn:hover:not(:disabled) {
             background: var(--btn-clear-hover);
         }
+
         .actions-bar .save-flight-btn {
             background: var(--btn-flight-bg);
             color: var(--text-white);
@@ -304,6 +383,13 @@
             color: var(--text-primary);
             transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
+        /* Анімація появи тексту в textarea */
+        #reportOutput {
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        #reportOutput:not(:empty) {
+            animation: fadeIn 0.3s ease forwards;
+        }
 
         /* ===== РІЗНЕ ===== */
         .footer {
@@ -337,68 +423,65 @@
         }
         .additional-bar input#explosionArea { width: 150px; }
 
-        /* ===== КОЛЬОРИ В ТЕМНІЙ ТЕМІ (ДОДАТКОВІ) ===== */
-        .dark-theme .params-bar label,
-        .dark-theme .additional-bar label {
-            color: var(--text-secondary);
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+                margin: 10px;
+            }
+            .params-bar,
+            .additional-bar,
+            .actions-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .actions-bar .separator {
+                display: none;
+            }
+            .split-pane {
+                flex-direction: column;
+            }
+            textarea {
+                height: 300px;
+            }
         }
-        .dark-theme .params-bar select,
-        .dark-theme .params-bar input,
-        .dark-theme .additional-bar select,
-        .dark-theme .additional-bar input {
-            background: var(--bg-textarea);
-            color: var(--text-primary);
-            border-color: var(--border-light);
-        }
-        .dark-theme .json-panel,
-        .dark-theme .report-panel {
-            background: var(--bg-json-panel);
-            border-color: var(--border-color);
-        }
-        .dark-theme .status {
-            background: var(--bg-status);
-            color: var(--text-status);
-        }
-        .dark-theme .status.error {
-            background: var(--bg-status);
-            color: var(--text-status-error);
-        }
-        .dark-theme .actions-bar {
-            background: var(--bg-actions);
-        }
-        .dark-theme .file-button {
-            background: var(--btn-file-bg);
-        }
-        .dark-theme .file-button:hover {
-            background: var(--btn-file-hover);
-        }
-        .dark-theme .topbar {
-            background: var(--topbar-bg);
-            color: var(--topbar-color);
-            border-bottom-color: var(--border-color);
-        }
-        .dark-theme .container {
-            background: var(--bg-card);
-        }
-        .dark-theme h1 {
-            color: var(--text-primary);
-            border-bottom-color: var(--border-header);
-        }
-        .dark-theme .footer {
-            color: var(--text-light);
-            border-top-color: var(--border-color);
-        }
-        .dark-theme .separator {
-            background: var(--separator-color);
-        }
-        .dark-theme textarea {
-            background: var(--bg-textarea);
-            color: var(--text-primary);
-            border-color: var(--border-light);
-        }
-        .dark-theme .json-panel h3,
-        .dark-theme .report-panel h3 {
-            color: var(--text-secondary);
+
+        /* ===== ДРУК ===== */
+        @media print {
+            .sidebar, .toolbar, .params-bar, .additional-bar, .actions-bar,
+            .status, .no-print, .file-button, .btn, .btn-print {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .container {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            .split-pane {
+                flex-direction: column !important;
+            }
+            textarea {
+                border: 1px solid #ddd !important;
+                background: white !important;
+                color: black !important;
+                height: auto !important;
+                min-height: 400px !important;
+            }
+            .json-panel, .report-panel {
+                border: 1px solid #ddd !important;
+                background: white !important;
+            }
+            .report-panel textarea {
+                min-height: 600px !important;
+            }
         }
     </style>
     <link th:replace="~{fragments :: sidebar-css}">
@@ -430,7 +513,7 @@
                 </select>
             </div>
 
-            <!-- ДРУГИЙ РЯДОК: додаткові параметри (А, Д, В, швидкість, район підриву) -->
+            <!-- ДРУГИЙ РЯДОК: додаткові параметри -->
             <div class="additional-bar">
                 <label style="color: var(--text-status);">Азимут (А):</label>
                 <input type="number" id="course" value="50" step="1" style="width: 60px;">
@@ -452,7 +535,6 @@
 
                 <div class="separator"></div>
 
-                <!-- НОВЕ ПОЛЕ: Район підриву -->
                 <label>Район підриву:</label>
                 <input type="text" id="explosionArea" value="Море" style="width: 150px;">
             </div>

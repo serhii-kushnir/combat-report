@@ -19,17 +19,23 @@
             --border-color: #e0e0e0;
             --shadow-color: rgba(0,0,0,0.08);
             --shadow-strong: rgba(0,0,0,0.2);
-            --btn-primary-bg: #1a73e8;
-            --btn-primary-hover: #1557b0;
-            --btn-success-bg: #34a853;
-            --btn-success-hover: #2d9248;
-            --btn-danger-bg: #ea4335;
-            --btn-danger-hover: #c5221f;
+            --shadow-light: rgba(0,0,0,0.05);
+            --btn-primary-bg: #1565c0;
+            --btn-primary-hover: #0d47a1;
+            --btn-success-bg: #2e7d32;
+            --btn-success-hover: #1b5e20;
+            --btn-danger-bg: #c62828;
+            --btn-danger-hover: #b71c1c;
+            --btn-warning-bg: #e65100;
+            --btn-warning-hover: #bf360c;
             --toast-success: #2e7d32;
             --toast-error: #c62828;
             --note-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 2px 6px 2px rgba(60,64,67,0.15);
             --note-shadow-hover: 0 4px 8px 0 rgba(60,64,67,0.3), 0 8px 16px 4px rgba(60,64,67,0.15);
             --radius: 12px;
+            --stat-num-color: #1976d2;
+            --btn-print: #607d8b;
+            --btn-print-hover: #546e7a;
         }
 
         /* Темна тема */
@@ -44,17 +50,23 @@
             --border-color: #3d3d48;
             --shadow-color: rgba(0,0,0,0.4);
             --shadow-strong: rgba(0,0,0,0.5);
+            --shadow-light: rgba(0,0,0,0.3);
             --note-shadow: 0 1px 2px 0 rgba(0,0,0,0.4), 0 2px 6px 2px rgba(0,0,0,0.3);
             --note-shadow-hover: 0 4px 8px 0 rgba(0,0,0,0.5), 0 8px 16px 4px rgba(0,0,0,0.4);
-            --btn-primary-bg: #4a7ab5;
-            --btn-primary-hover: #5a8ac5;
-            --btn-success-bg: #3a6a3a;
-            --btn-success-hover: #4a7a4a;
-            --btn-danger-bg: #a03040;
-            --btn-danger-hover: #b04050;
+            --btn-primary-bg: #2a4a7a;
+            --btn-primary-hover: #3a5a8a;
+            --btn-success-bg: #2a4a2a;
+            --btn-success-hover: #3a5a3a;
+            --btn-danger-bg: #6a2a3a;
+            --btn-danger-hover: #7a3a4a;
+            --btn-warning-bg: #7a5a2a;
+            --btn-warning-hover: #8a6a3a;
+            --stat-num-color: #5a8ac5;
+            --btn-print: #4a5a6a;
+            --btn-print-hover: #5a6a7a;
         }
 
-        /* ===== КОЛЬОРИ НОТАТОК (для зворотної сумісності) ===== */
+        /* ===== КОЛЬОРИ НОТАТОК ===== */
         .note-color-default { background: var(--bg-card); }
         .note-color-red { background: #f28b82; }
         .note-color-orange { background: #fbbc04; }
@@ -63,14 +75,13 @@
         .note-color-teal { background: #a7ffeb; }
         .note-color-blue { background: #cbf0f8; }
         .note-color-purple { background: #d2b3ff; }
-
-        body.dark-theme .note-color-red { background: #5c2b2a; }
-        body.dark-theme .note-color-orange { background: #5c3d1a; }
-        body.dark-theme .note-color-yellow { background: #5c4d1a; }
-        body.dark-theme .note-color-green { background: #1a3d1a; }
-        body.dark-theme .note-color-teal { background: #1a3d3a; }
-        body.dark-theme .note-color-blue { background: #1a2d3d; }
-        body.dark-theme .note-color-purple { background: #2a1a3d; }
+        body.dark-theme .note-color-red { background: #8a4b4b; }
+        body.dark-theme .note-color-orange { background: #8a6a2a; }
+        body.dark-theme .note-color-yellow { background: #7a7a2a; }
+        body.dark-theme .note-color-green { background: #3a6a3a; }
+        body.dark-theme .note-color-teal { background: #2a6a5a; }
+        body.dark-theme .note-color-blue { background: #2a4a6a; }
+        body.dark-theme .note-color-purple { background: #5a3a7a; }
 
         /* ===== ОСНОВНІ СТИЛІ ===== */
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -130,47 +141,52 @@
             flex-wrap: wrap;
         }
 
+        /* ===== КНОПКИ ===== */
         .btn {
-            padding: 7px 14px;
+            padding: 6px 14px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            white-space: nowrap;
+            line-height: 1.4;
+            box-shadow: 0 1px 2px var(--shadow-light);
         }
-        .btn:hover { transform: translateY(-1px); box-shadow: 0 2px 8px var(--shadow-color); }
-        .btn:active { transform: translateY(0); }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+        .btn:active {
+            transform: translateY(1px);
+        }
+        .btn i { line-height: 1; }
 
-        .btn-primary {
-            background: var(--btn-primary-bg);
-            color: white;
-        }
+        .btn-primary { background: var(--btn-primary-bg); color: var(--text-white); }
         .btn-primary:hover { background: var(--btn-primary-hover); }
 
-        .btn-success {
-            background: var(--btn-success-bg);
-            color: white;
-        }
+        .btn-success { background: var(--btn-success-bg); color: var(--text-white); }
         .btn-success:hover { background: var(--btn-success-hover); }
 
-        .btn-danger {
-            background: var(--btn-danger-bg);
-            color: white;
-        }
+        .btn-danger { background: var(--btn-danger-bg); color: var(--text-white); }
         .btn-danger:hover { background: var(--btn-danger-hover); }
 
+        .btn-warning { background: var(--btn-warning-bg); color: var(--text-white); }
+        .btn-warning:hover { background: var(--btn-warning-hover); }
+
         .btn-print {
-            background: #607d8b;
+            background: var(--btn-print);
             color: white;
         }
-        .btn-print:hover { background: #546e7a; }
-        .dark-theme .btn-print { background: #4a5a6a; }
-        .dark-theme .btn-print:hover { background: #5a6a7a; }
+        .btn-print:hover {
+            background: var(--btn-print-hover);
+        }
+
+        .btn-sm { padding: 4px 10px; font-size: 12px; }
+        .btn-xs { padding: 3px 6px; font-size: 11px; border-radius: 6px; }
 
         .btn-outline {
             background: transparent;
@@ -181,33 +197,44 @@
             background: var(--bg-input);
         }
 
-        .btn-sm { padding: 4px 10px; font-size: 12px; }
-        .btn-xs { padding: 3px 6px; font-size: 11px; border-radius: 6px; }
-
-        /* ===== СТАТИСТИКА ===== */
-        .stats {
+        /* ===== СТАТИСТИКА – зліва три, справа одна ===== */
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        .stats-left {
             display: flex;
             gap: 10px;
-            margin-bottom: 16px;
             flex-wrap: wrap;
         }
         .stat-card {
             background: var(--bg-card);
             border-radius: 8px;
-            padding: 8px 16px;
+            padding: 10px 16px;
             text-align: center;
             box-shadow: 0 1px 4px var(--shadow-color);
+            min-width: 100px;
             transition: background 0.3s, box-shadow 0.3s;
         }
         .stat-card .num {
-            font-size: 22px;
+            font-size: 26px;
             font-weight: bold;
-            color: var(--btn-primary-bg);
+            color: var(--stat-num-color);
+            transition: color 0.3s;
         }
         .stat-card .lbl {
             font-size: 11px;
             color: var(--text-secondary);
+            transition: color 0.3s;
         }
+        .stat-card .num.pinned-color { color: #fbbc04; }
+        .stat-card .num.archived-color { color: #888; }
+        .stat-card.right-card .num { color: var(--stat-num-color); }
 
         /* ===== СІТКА НОТАТОК ===== */
         .notes-grid {
@@ -297,10 +324,13 @@
             font-size: 12px;
             background: transparent;
             color: var(--text-secondary);
+            box-shadow: none;
         }
         .note-card .note-actions .btn:hover {
-            background: var(--bg-hover, rgba(0,0,0,0.05));
+            background: var(--bg-hover);
             color: var(--text-primary);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px var(--shadow-color);
         }
         .dark-theme .note-card .note-actions .btn:hover {
             background: rgba(255,255,255,0.08);
@@ -334,6 +364,47 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        /* ===== ПАГІНАЦІЯ ===== */
+        .pagination {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+        }
+        .pagination button {
+            padding: 4px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+        .pagination button:hover:not(:disabled) {
+            background: var(--bg-hover);
+        }
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .pagination .page-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 4px 8px;
+        }
+
+        /* ===== КНОПКА "ЗАВАНТАЖИТИ ЩЕ" ===== */
+        .load-more-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 14px;
+        }
+        .load-more-container .btn {
+            padding: 6px 18px;
         }
 
         /* ===== МОДАЛЬНЕ ВІКНО ===== */
@@ -399,6 +470,36 @@
             resize: vertical;
         }
 
+        /* ===== ПАЛІТРА КОЛЬОРІВ (Google Keep style) ===== */
+        .color-picker {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 8px 0 4px;
+        }
+        .color-option {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+        }
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        .color-option.selected {
+            border-color: var(--btn-primary-bg);
+            box-shadow: 0 0 0 2px var(--btn-primary-bg);
+            transform: scale(1.1);
+        }
+        body.dark-theme .color-option.selected {
+            border-color: #90caf9;
+            box-shadow: 0 0 0 2px #90caf9;
+        }
+
         .modal-actions {
             display: flex;
             justify-content: space-between;
@@ -417,16 +518,6 @@
             font-weight: 600;
             color: var(--text-secondary);
             margin-bottom: 0;
-        }
-        .modal-actions .color-block input[type="color"] {
-            width: 40px;
-            height: 32px;
-            padding: 2px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            cursor: pointer;
-            background: var(--bg-input);
-            flex-shrink: 0;
         }
         .modal-actions .btn-group {
             display: flex;
@@ -451,14 +542,54 @@
         .toast.success { background: var(--toast-success); }
         .toast.error { background: var(--toast-error); }
 
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .toolbar input {
+                width: 100%;
+            }
+            .toolbar .btn-group {
+                justify-content: center;
+            }
+            .notes-grid {
+                grid-template-columns: 1fr;
+            }
+            .modal {
+                padding: 20px;
+            }
+            .modal-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .modal-actions .color-block {
+                justify-content: center;
+            }
+            .modal-actions .btn-group {
+                justify-content: center;
+            }
+            .stats-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .stats-left {
+                justify-content: center;
+            }
+            .stat-card {
+                min-width: 80px;
+                padding: 8px 12px;
+            }
+            .stat-card .num {
+                font-size: 20px;
+            }
+        }
+
         /* ===== ДРУК ===== */
         @media print {
-            .sidebar,
-            .toolbar,
-            .stats,
-            .no-print,
-            .btn,
-            .modal-overlay {
+            .sidebar, .toolbar, .stats-row, .no-print, .btn, .btn-print, .btn-success,
+            .btn-primary, .pagination, .load-more-container, .modal-overlay {
                 display: none !important;
             }
             body {
@@ -501,44 +632,9 @@
             .dark-theme .note-card {
                 background: white !important;
             }
-            .note-color-red,
-            .note-color-orange,
-            .note-color-yellow,
-            .note-color-green,
-            .note-color-teal,
-            .note-color-blue,
-            .note-color-purple {
+            .note-color-red, .note-color-orange, .note-color-yellow,
+            .note-color-green, .note-color-teal, .note-color-blue, .note-color-purple {
                 background: white !important;
-            }
-        }
-
-        /* ===== АДАПТИВ ===== */
-        @media (max-width: 768px) {
-            .toolbar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .toolbar input {
-                width: 100%;
-            }
-            .toolbar .btn-group {
-                justify-content: center;
-            }
-            .notes-grid {
-                grid-template-columns: 1fr;
-            }
-            .modal {
-                padding: 20px;
-            }
-            .modal-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .modal-actions .color-block {
-                justify-content: center;
-            }
-            .modal-actions .btn-group {
-                justify-content: center;
             }
         }
     </style>
@@ -555,16 +651,35 @@
                 <input type="text" id="searchInput" placeholder="🔍 Пошук нотаток...">
                 <div class="btn-group">
                     <button class="btn btn-success" onclick="openAddModal()"><i class="fas fa-plus"></i> Додати</button>
-                    <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> Друк</button>
                     <button class="btn btn-primary" onclick="exportXlsx()"><i class="fas fa-file-excel"></i> Експорт</button>
+                    <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> Друк</button>
                     <button class="btn btn-outline" onclick="toggleArchived()" id="archiveToggleBtn">
                         <i class="fas fa-archive"></i> Архів
                     </button>
                 </div>
             </div>
 
-            <!-- СТАТИСТИКА -->
-            <div class="stats" id="statsBar"></div>
+            <!-- СТАТИСТИКА – зліва три, справа одна -->
+            <div class="stats-row">
+                <div class="stats-left">
+                    <div class="stat-card">
+                        <div class="num" id="pageTotal">—</div>
+                        <div class="lbl">На сторінці</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="num pinned-color" id="statsPinned">—</div>
+                        <div class="lbl">Закріплено</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="num archived-color" id="statsArchivedCount">—</div>
+                        <div class="lbl">Архів</div>
+                    </div>
+                </div>
+                <div class="stat-card right-card">
+                    <div class="num" id="genTotal">—</div>
+                    <div class="lbl">Всього в БД</div>
+                </div>
+            </div>
 
             <!-- НОТАТКИ -->
             <div class="notes-grid" id="notesGrid">
@@ -587,6 +702,14 @@
                     </div>
                 </div>
             </div>
+
+            <!-- КНОПКА "ЗАВАНТАЖИТИ ЩЕ" -->
+            <div class="load-more-container no-print">
+                <button class="btn btn-primary" id="loadMoreBtn" onclick="loadMore()">Завантажити ще</button>
+            </div>
+
+            <!-- ПАГІНАЦІЯ -->
+            <div class="pagination" id="pagination"></div>
         </div>
     </div>
 </div>
@@ -607,8 +730,10 @@
 
         <div class="modal-actions">
             <div class="color-block">
-                <label for="noteColor">Колір фону</label>
-                <input type="color" id="noteColor" value="#ffffff">
+                <label>Колір фону</label>
+                <div class="color-picker" id="colorPicker">
+                    <!-- Цвета будут добавлены JS -->
+                </div>
             </div>
             <div class="btn-group">
                 <button class="btn" onclick="closeModal('noteModal')" style="background:#eee;color:#333;">Скасувати</button>
@@ -640,6 +765,27 @@
     let deleteTargetId = null;
     let showArchived = false;
 
+    // Пагінація (клієнтська)
+    let currentPage = 0;
+    let pageSize = 20;
+    let totalElements = 0;
+
+    // Колір
+    let selectedColor = null;
+
+    // ===== НАБОРИ КОЛЬОРІВ ДЛЯ РІЗНИХ ТЕМ =====
+    const COLOR_PALETTES = {
+        light: [
+            '#ffffff', '#f28b82', '#fbbc04', '#fff475', '#ccff90',
+            '#a7ffeb', '#cbf0f8', '#d2b3ff', '#e8eaed'
+        ],
+        dark: [
+            '#2d2d35', '#8a4b4b', '#8a6a2a', '#7a7a2a', '#3a6a3a',
+            '#2a6a5a', '#2a4a6a', '#5a3a7a', '#3a3a44'
+        ]
+    };
+
+    // ===== ДОПОМІЖНІ =====
     function escapeHtml(str) {
         if (!str) return '';
         return str.replace(/[&<>]/g, function(m) {
@@ -656,11 +802,85 @@
         return d.toLocaleDateString('uk-UA') + ' ' + d.toLocaleTimeString('uk-UA', {hour:'2-digit', minute:'2-digit'});
     }
 
-    // Функція для визначення класу кольору (для зворотної сумісності)
     function getColorClass(color) {
         if (!color) return 'note-color-default';
-        if (color.startsWith('#')) return ''; // hex – не використовуємо клас
+        if (color.startsWith('#')) return '';
         return 'note-color-' + color;
+    }
+
+    function showToast(msg, type) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = `toast ${type} show`;
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    // ===== ПАЛІТРА КОЛЬОРІВ (з адаптацією до теми) =====
+    function initColorPicker(selected) {
+        const container = document.getElementById('colorPicker');
+        const isDark = document.body.classList.contains('dark-theme');
+        const colors = isDark ? COLOR_PALETTES.dark : COLOR_PALETTES.light;
+
+        container.innerHTML = '';
+        colors.forEach(color => {
+            const div = document.createElement('div');
+            div.className = 'color-option';
+            if (color === selected) div.classList.add('selected');
+            div.style.backgroundColor = color;
+            if (color === '#ffffff' || color === '#e8eaed' || color === '#2d2d35' || color === '#3a3a44') {
+                div.style.border = '1px solid #ccc';
+            }
+            div.dataset.color = color;
+            div.addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.querySelectorAll('.color-option').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedColor = this.dataset.color;
+            });
+            container.appendChild(div);
+        });
+        // Встановлюємо вибраний колір
+        if (!selected) {
+            const first = container.querySelector('.color-option');
+            if (first) { first.classList.add('selected'); selectedColor = first.dataset.color; }
+        } else {
+            let found = false;
+            container.querySelectorAll('.color-option').forEach(el => {
+                if (el.dataset.color === selected) {
+                    el.classList.add('selected');
+                    selectedColor = selected;
+                    found = true;
+                }
+            });
+            if (!found) {
+                const first = container.querySelector('.color-option');
+                if (first) { first.classList.add('selected'); selectedColor = first.dataset.color; }
+            }
+        }
+    }
+
+    // ===== ОБСЕРВЕР ДЛЯ ЗМІНИ ТЕМИ ПРИ ВІДКРИТОМУ МОДАЛЬНОМУ ВІКНІ =====
+    let themeObserver = null;
+
+    function startThemeObserver() {
+        if (themeObserver) return;
+        const targetNode = document.body;
+        const config = { attributes: true, attributeFilter: ['class'] };
+        themeObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.attributeName === 'class') {
+                    // Якщо модальне вікно відкрите – оновити палітру
+                    if (document.getElementById('noteModal').classList.contains('open')) {
+                        const currentSelected = selectedColor;
+                        initColorPicker(currentSelected);
+                    }
+                }
+            });
+        });
+        themeObserver.observe(targetNode, config);
     }
 
     // ===== ЗАВАНТАЖЕННЯ =====
@@ -670,37 +890,143 @@
                 fetch('/notes/api'),
                 fetch('/notes/api/archived')
             ]);
-            if (!activeRes.ok || !archivedRes.ok) {
-                showToast('Помилка завантаження', 'error');
+            if (!activeRes.ok) {
+                const errText = await activeRes.text();
+                showToast('Помилка завантаження активних: ' + errText, 'error');
                 return;
             }
-            notes = await activeRes.json();
-            archivedNotes = await archivedRes.json();
+            if (!archivedRes.ok) {
+                // архів може бути пустим, не показуємо помилку
+            }
+            const activeData = await activeRes.json();
+            const archivedData = archivedRes.ok ? await archivedRes.json() : [];
+
+            // Розпізнавання формату
+            let notesArray = [];
+            let total = 0;
+
+            if (Array.isArray(activeData)) {
+                notesArray = activeData;
+                total = notesArray.length;
+            } else if (activeData && typeof activeData === 'object' && Array.isArray(activeData.content)) {
+                notesArray = activeData.content;
+                total = activeData.totalElements || notesArray.length;
+            } else if (activeData && typeof activeData === 'object') {
+                const possibleArrays = Object.values(activeData).filter(v => Array.isArray(v));
+                if (possibleArrays.length > 0) {
+                    notesArray = possibleArrays[0];
+                    total = notesArray.length;
+                } else {
+                    notesArray = [];
+                    total = 0;
+                }
+            } else {
+                notesArray = [];
+                total = 0;
+            }
+
+            let archivedArray = [];
+            if (Array.isArray(archivedData)) {
+                archivedArray = archivedData;
+            } else if (archivedData && typeof archivedData === 'object' && Array.isArray(archivedData.content)) {
+                archivedArray = archivedData.content;
+            }
+
+            notes = notesArray;
+            archivedNotes = archivedArray;
+            totalElements = total;
+
+            currentPage = 0;
             renderNotes();
             renderArchived();
             renderStats();
+            renderPagination();
+            updateLoadMoreButton();
         } catch (e) {
             console.error(e);
-            showToast('Помилка завантаження', 'error');
+            showToast('Помилка завантаження: ' + e.message, 'error');
         }
     }
+
+    // ===== ПАГІНАЦІЯ (КЛІЄНТСЬКА) =====
+    function getCurrentPageData() {
+        const start = currentPage * pageSize;
+        const end = Math.min(start + pageSize, totalElements);
+        return notes.slice(start, end);
+    }
+
+    function goToPage(page) {
+        const totalPages = Math.ceil(totalElements / pageSize);
+        if (page < 0 || page >= totalPages) return;
+        currentPage = page;
+        renderNotes();
+        renderPagination();
+        updateLoadMoreButton();
+    }
+    window.goToPage = goToPage;
+
+    function renderPagination() {
+        const totalPages = Math.ceil(totalElements / pageSize);
+        const pag = document.getElementById('pagination');
+        let html = '';
+        html += `<button onclick="goToPage(0)" ${currentPage === 0 ? 'disabled' : ''}>⏮</button>`;
+        html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>`;
+        html += `<span class="page-info">Сторінка ${currentPage + 1} з ${totalPages} (всього ${totalElements} нотаток)</span>`;
+        html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>▶</button>`;
+        html += `<button onclick="goToPage(${totalPages - 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>⏭</button>`;
+        pag.innerHTML = html;
+    }
+
+    function updateLoadMoreButton() {
+        const totalPages = Math.ceil(totalElements / pageSize);
+        const btn = document.getElementById('loadMoreBtn');
+        const remaining = totalElements - (currentPage + 1) * pageSize;
+        if (remaining <= 0 || totalPages <= 1) {
+            btn.disabled = true;
+            btn.textContent = 'Всі завантажено';
+        } else {
+            const nextBatch = Math.min(20, remaining);
+            btn.disabled = false;
+            btn.textContent = `Завантажити ще ${nextBatch}`;
+        }
+    }
+
+    function loadMore() {
+        const totalPages = Math.ceil(totalElements / pageSize);
+        if (currentPage < totalPages - 1) {
+            const newSize = Math.min(pageSize + 20, totalElements);
+            if (newSize > pageSize) {
+                pageSize = newSize;
+                currentPage = 0;
+                renderNotes();
+                renderPagination();
+                updateLoadMoreButton();
+            } else {
+                showToast('Всі нотатки вже завантажені', 'ok');
+            }
+        } else {
+            showToast('Всі нотатки вже завантажені', 'ok');
+        }
+    }
+    window.loadMore = loadMore;
 
     // ===== РЕНДЕРИНГ =====
     function renderNotes() {
         const grid = document.getElementById('notesGrid');
-        if (!notes || !notes.length) {
+        const pageData = getCurrentPageData();
+        if (!pageData || !pageData.length) {
             grid.innerHTML = `<div class="empty-state">
                 <i class="fas fa-sticky-note"></i>
                 <span>Немає нотаток. Створіть першу!</span>
             </div>`;
             return;
         }
-        grid.innerHTML = notes.map(n => {
+        grid.innerHTML = pageData.map(n => {
             let bgStyle = '';
             let colorClass = getColorClass(n.color);
             if (n.color && n.color.startsWith('#')) {
                 bgStyle = `style="background-color: ${n.color};"`;
-                colorClass = ''; // клас не потрібен, використовуємо inline
+                colorClass = '';
             }
             return `
                 <div class="note-card ${colorClass} ${n.pinned ? 'pinned' : ''}" ${bgStyle} onclick="openEditModal(${n.id})">
@@ -756,31 +1082,41 @@
     }
 
     function renderStats() {
-        const total = notes.length;
+        const total = totalElements;
         const pinned = notes.filter(n => n.pinned).length;
         const archived = archivedNotes.length;
-        document.getElementById('statsBar').innerHTML = `
-            <div class="stat-card"><div class="num">${total}</div><div class="lbl">Всього</div></div>
-            <div class="stat-card"><div class="num" style="color:#fbbc04;">${pinned}</div><div class="lbl">Закріплено</div></div>
-            <div class="stat-card"><div class="num" style="color:#888;">${archived}</div><div class="lbl">Архів</div></div>
-        `;
+        const pageCount = getCurrentPageData().length;
+        document.getElementById('pageTotal').textContent = pageCount;
+        document.getElementById('genTotal').textContent = total;
+        document.getElementById('statsPinned').textContent = pinned;
+        document.getElementById('statsArchivedCount').textContent = archived;
     }
 
     // ===== ПОШУК =====
     document.getElementById('searchInput').addEventListener('input', function() {
         const q = this.value.trim();
-        if (!q) {
+        if (q) {
+            fetch(`/notes/api/search?q=${encodeURIComponent(q)}`)
+                .then(r => r.json())
+                .then(data => {
+                    let arr = [];
+                    if (Array.isArray(data)) arr = data;
+                    else if (data && Array.isArray(data.content)) arr = data.content;
+                    notes = arr;
+                    totalElements = notes.length;
+                    currentPage = 0;
+                    renderNotes();
+                    renderStats();
+                    renderPagination();
+                    updateLoadMoreButton();
+                })
+                .catch(e => {
+                    console.error(e);
+                    showToast('Помилка пошуку', 'error');
+                });
+        } else {
             loadNotes();
-            return;
         }
-        fetch(`/notes/api/search?q=${encodeURIComponent(q)}`)
-            .then(r => r.json())
-            .then(data => {
-                notes = data;
-                renderNotes();
-                renderStats();
-            })
-            .catch(e => console.error(e));
     });
 
     // ===== ТОГЛ АРХІВ =====
@@ -791,26 +1127,35 @@
         renderArchived();
     }
 
-    // ===== МОДАЛЬНІ ВІКНА =====
+    // ===== ДІЇ З НОТАТКАМИ =====
     function openAddModal() {
         document.getElementById('modalTitle').textContent = '📝 Нова нотатка';
         document.getElementById('editId').value = '';
         document.getElementById('noteTitle').value = '';
         document.getElementById('noteContent').value = '';
-        document.getElementById('noteColor').value = '#ffffff';
+        const isDark = document.body.classList.contains('dark-theme');
+        const defaultColor = isDark ? '#2d2d35' : '#ffffff';
+        initColorPicker(defaultColor);
+        startThemeObserver(); // запускаємо спостереження за темою
         openModal('noteModal');
     }
 
     function openEditModal(id) {
-        const note = notes.find(n => n.id === id) || archivedNotes.find(n => n.id === id);
-        if (!note) return;
+        let note = notes.find(n => n.id === id);
+        if (!note) note = archivedNotes.find(n => n.id === id);
+        if (!note) {
+            showToast('Нотатку не знайдено', 'error');
+            return;
+        }
         document.getElementById('modalTitle').textContent = '✏️ Редагувати нотатку';
         document.getElementById('editId').value = id;
         document.getElementById('noteTitle').value = note.title || '';
         document.getElementById('noteContent').value = note.content || '';
-        // Якщо колір є hex-кодом – використовуємо його, інакше – білий
-        const color = note.color && note.color.startsWith('#') ? note.color : '#ffffff';
-        document.getElementById('noteColor').value = color;
+        const currentColor = note.color && note.color.startsWith('#') ? note.color : null;
+        const isDark = document.body.classList.contains('dark-theme');
+        const defaultColor = isDark ? '#2d2d35' : '#ffffff';
+        initColorPicker(currentColor || defaultColor);
+        startThemeObserver();
         openModal('noteModal');
     }
 
@@ -818,21 +1163,18 @@
         const id = document.getElementById('editId').value;
         const title = document.getElementById('noteTitle').value.trim();
         const content = document.getElementById('noteContent').value.trim();
-        const color = document.getElementById('noteColor').value.trim();
+        let color = selectedColor;
+
+        const isDark = document.body.classList.contains('dark-theme');
+        const defaultColor = isDark ? '#2d2d35' : '#ffffff';
+        if (color === defaultColor || !color) color = null;
 
         if (!title) {
             showToast('Заголовок обов\'язковий', 'error');
             return;
         }
 
-        // Якщо колір білий – зберігаємо null, щоб використовувати дефолтний фон
-        const finalColor = (color && color !== '#ffffff') ? color : null;
-
-        const body = {
-            title: title,
-            content: content,
-            color: finalColor
-        };
+        const body = { title, content, color };
 
         const url = id ? `/notes/api/${id}` : '/notes/api';
         const method = id ? 'PUT' : 'POST';
@@ -856,7 +1198,6 @@
         }
     }
 
-    // ===== ДІЇ З НОТАТКАМИ =====
     async function togglePin(id) {
         try {
             const res = await fetch(`/notes/api/${id}/pin`, { method: 'PATCH' });
@@ -867,20 +1208,14 @@
     async function archiveNote(id) {
         try {
             const res = await fetch(`/notes/api/${id}/archive`, { method: 'PATCH' });
-            if (res.ok) {
-                await loadNotes();
-                showToast('Нотатку архівовано', 'success');
-            }
+            if (res.ok) { await loadNotes(); showToast('Нотатку архівовано', 'success'); }
         } catch (e) { showToast('Помилка', 'error'); }
     }
 
     async function unarchiveNote(id) {
         try {
             const res = await fetch(`/notes/api/${id}/unarchive`, { method: 'PATCH' });
-            if (res.ok) {
-                await loadNotes();
-                showToast('Нотатку відновлено', 'success');
-            }
+            if (res.ok) { await loadNotes(); showToast('Нотатку відновлено', 'success'); }
         } catch (e) { showToast('Помилка', 'error'); }
     }
 
@@ -899,33 +1234,35 @@
         openModal('confirmModal');
     }
 
-    // ===== ЕКСПОРТ =====
     function exportXlsx() {
         window.location.href = '/notes/api/export';
     }
 
-    // ===== ДОПОМІЖНІ =====
-    function openModal(id) { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
+    // ===== ЗАКРИТТЯ МОДАЛЬНИХ ВІКОН =====
     document.querySelectorAll('.modal-overlay').forEach(el => {
         el.addEventListener('click', function(e) {
             if (e.target === this) this.classList.remove('open');
+            if (this.id === 'noteModal') {
+                // при закритті зупиняємо обсервер, щоб не витрачати ресурси
+                if (themeObserver) {
+                    themeObserver.disconnect();
+                    themeObserver = null;
+                }
+            }
         });
     });
 
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            document.querySelectorAll('.modal-overlay.open').forEach(el => el.classList.remove('open'));
+            document.querySelectorAll('.modal-overlay.open').forEach(el => {
+                el.classList.remove('open');
+                if (el.id === 'noteModal' && themeObserver) {
+                    themeObserver.disconnect();
+                    themeObserver = null;
+                }
+            });
         }
     });
-
-    function showToast(msg, type) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.className = `toast ${type} show`;
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
 
     // ===== ІНІЦІАЛІЗАЦІЯ =====
     loadNotes();

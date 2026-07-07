@@ -5,7 +5,7 @@
     <title>БЧ Графік чергувань</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     <style>
-        /* ===== СТИЛІ (як у schedule) ===== */
+        /* ===== CSS ЗМІННІ ===== */
         :root {
             --bg-body: #f0f2f5;
             --bg-card: #ffffff;
@@ -20,14 +20,24 @@
             --text-white: #fff;
             --border-color: #ddd;
             --shadow-color: rgba(0,0,0,0.08);
+            --shadow-light: rgba(0,0,0,0.05);
             --btn-nav-bg: #e8eaf6;
             --btn-nav-color: #1a237e;
             --btn-today-bg: #1976d2;
             --btn-today-hover: #1565c0;
-            --btn-primary-bg: #1976d2;
-            --btn-primary-hover: #1565c0;
+            --btn-primary-bg: #1565c0;
+            --btn-primary-hover: #0d47a1;
+            --btn-success-bg: #2e7d32;
+            --btn-success-hover: #1b5e20;
+            --btn-warning-bg: #e65100;
+            --btn-warning-hover: #bf360c;
+            --btn-danger-bg: #c62828;
+            --btn-danger-hover: #b71c1c;
+            --btn-print-bg: #607d8b;
+            --btn-print-hover: #546e7a;
             --toast-success: #2e7d32;
             --toast-error: #c62828;
+            --stat-num-color: #1976d2;
         }
 
         body.dark-theme {
@@ -44,17 +54,35 @@
             --text-white: #fff;
             --border-color: #3d3d48;
             --shadow-color: rgba(0,0,0,0.4);
+            --shadow-light: rgba(0,0,0,0.3);
             --btn-nav-bg: #3a3a4a;
             --btn-nav-color: #90caf9;
             --btn-today-bg: #4a7ab5;
             --btn-today-hover: #5a8ac5;
-            --btn-primary-bg: #4a7ab5;
-            --btn-primary-hover: #5a8ac5;
+            --btn-primary-bg: #2a4a7a;
+            --btn-primary-hover: #3a5a8a;
+            --btn-success-bg: #2a4a2a;
+            --btn-success-hover: #3a5a3a;
+            --btn-warning-bg: #7a5a2a;
+            --btn-warning-hover: #8a6a3a;
+            --btn-danger-bg: #6a2a3a;
+            --btn-danger-hover: #7a3a4a;
+            --btn-print-bg: #4a5a6a;
+            --btn-print-hover: #5a6a7a;
+            --stat-num-color: #5a8ac5;
         }
 
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); color: var(--text-primary); margin: 0; }
+        /* ===== ОСНОВНІ СТИЛІ ===== */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            margin: 0;
+            transition: background 0.3s, color 0.3s;
+        }
         .container { padding: 16px 20px; max-width: 100%; overflow-x: auto; }
 
+        /* ===== ТУЛБАР ===== */
         .toolbar {
             background: var(--bg-toolbar);
             padding: 12px 16px;
@@ -65,7 +93,13 @@
             gap: 12px;
             flex-wrap: wrap;
             box-shadow: 0 2px 8px var(--shadow-color);
+            transition: background 0.3s, box-shadow 0.3s;
         }
+        .toolbar:hover {
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        /* ===== КНОПКИ З АНІМАЦІЄЮ ===== */
         .btn {
             padding: 6px 14px;
             border: none;
@@ -73,22 +107,81 @@
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
+            line-height: 1.4;
+            box-shadow: 0 1px 2px var(--shadow-light);
         }
-        .btn-nav { background: var(--btn-nav-bg); color: var(--btn-nav-color); }
-        .btn-nav:hover { background: var(--btn-nav-hover); }
-        .btn-today { background: var(--btn-today-bg); color: white; }
-        .btn-today:hover { background: var(--btn-today-hover); }
-        .btn-primary { background: var(--btn-primary-bg); color: white; }
-        .btn-primary:hover { background: var(--btn-primary-hover); }
-        .btn-print { background: #607d8b; color: white; }
-        .btn-print:hover { background: #546e7a; }
-        .dark-theme .btn-print { background: #4a5a6a; }
-        .dark-theme .btn-print:hover { background: #5a6a7a; }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+        .btn:active {
+            transform: translateY(1px);
+        }
+        .btn i { line-height: 1; }
 
+        .btn-nav {
+            background: var(--btn-nav-bg);
+            color: var(--btn-nav-color);
+        }
+        .btn-nav:hover {
+            background: var(--btn-nav-hover);
+        }
+
+        .btn-today {
+            background: var(--btn-today-bg);
+            color: white;
+        }
+        .btn-today:hover {
+            background: var(--btn-today-hover);
+        }
+
+        .btn-primary {
+            background: var(--btn-primary-bg);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: var(--btn-primary-hover);
+        }
+
+        .btn-success {
+            background: var(--btn-success-bg);
+            color: white;
+        }
+        .btn-success:hover {
+            background: var(--btn-success-hover);
+        }
+
+        .btn-warning {
+            background: var(--btn-warning-bg);
+            color: white;
+        }
+        .btn-warning:hover {
+            background: var(--btn-warning-hover);
+        }
+
+        .btn-danger {
+            background: var(--btn-danger-bg);
+            color: white;
+        }
+        .btn-danger:hover {
+            background: var(--btn-danger-hover);
+        }
+
+        .btn-print {
+            background: var(--btn-print-bg);
+            color: white;
+        }
+        .btn-print:hover {
+            background: var(--btn-print-hover);
+        }
+
+        .btn-sm { padding: 4px 9px; font-size: 11px; }
+
+        /* ===== ПОЛЯ ВВОДУ ===== */
         select, input[type="text"] {
             padding: 6px 10px;
             border: 1px solid var(--border-color);
@@ -96,79 +189,125 @@
             font-size: 13px;
             background: var(--bg-input);
             color: var(--text-primary);
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.3s, color 0.3s;
+            outline: none;
+        }
+        select:hover, input:hover {
+            border-color: var(--btn-primary-bg);
+        }
+        select:focus, input:focus {
+            border-color: var(--btn-primary-bg);
+            box-shadow: 0 0 0 2px rgba(25,118,210,0.2);
         }
 
         .current-date {
             font-size: 13px;
             color: var(--text-secondary);
+            background: var(--bg-card);
             padding: 5px 12px;
             border-radius: 20px;
-            background: var(--bg-card);
             border: 1px solid var(--border-color);
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
 
         #monthTitle {
             color: var(--text-primary);
-            font-weight: 600;
+            transition: color 0.3s;
         }
 
+        /* ===== ТАБЛИЦЯ ===== */
         .table-wrap {
-            overflow: hidden !important;
+            overflow-x: auto;
             border-radius: 12px;
             box-shadow: 0 2px 8px var(--shadow-color);
-            margin-bottom: 20px;
+            transition: box-shadow 0.3s;
         }
-
         table {
             border-collapse: collapse;
             background: var(--bg-table);
             min-width: 100%;
+            transition: background 0.3s;
         }
-
         thead tr:first-child th {
             background: var(--bg-header);
             color: var(--text-white);
             font-size: 12px;
             padding: 10px 4px;
-            border: 1px solid var(--bg-header);
-            cursor: pointer;
-            user-select: none;
-            text-align: center;
+            transition: background 0.3s;
         }
-        thead tr:first-child th:hover {
-            background: var(--bg-header-light, #283593);
-        }
-        thead tr:first-child th.sort-asc::after { content: ' ▲'; font-size: 10px; }
-        thead tr:first-child th.sort-desc::after { content: ' ▼'; font-size: 10px; }
-
         thead tr:last-child th {
             background: var(--bg-header);
             color: #c5cae9;
             font-size: 11px;
             padding: 6px 2px;
-            border: 1px solid var(--bg-header);
-            text-align: center;
+            transition: background 0.3s;
         }
 
-        .col-num { width: 40px; min-width: 40px; }
-        .col-rank { width: 125px; min-width: 125px; text-align: left; padding-left: 6px; }
-        .col-name { width: 130px; min-width: 130px; text-align: left; padding-left: 8px; }
-        .col-day { width: 36px; min-width: 32px; text-align: center; }
+        /* Анімація рядків при завантаженні */
+        @keyframes fadeInRow {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        #tableBody tr {
+            animation: fadeInRow 0.3s ease forwards;
+            opacity: 0;
+        }
+        #tableBody tr:nth-child(1) { animation-delay: 0.02s; }
+        #tableBody tr:nth-child(2) { animation-delay: 0.04s; }
+        #tableBody tr:nth-child(3) { animation-delay: 0.06s; }
+        #tableBody tr:nth-child(4) { animation-delay: 0.08s; }
+        #tableBody tr:nth-child(5) { animation-delay: 0.10s; }
+        #tableBody tr:nth-child(6) { animation-delay: 0.12s; }
+        #tableBody tr:nth-child(7) { animation-delay: 0.14s; }
+        #tableBody tr:nth-child(8) { animation-delay: 0.16s; }
+        #tableBody tr:nth-child(9) { animation-delay: 0.18s; }
+        #tableBody tr:nth-child(10) { animation-delay: 0.20s; }
+        #tableBody tr:nth-child(11) { animation-delay: 0.22s; }
+        #tableBody tr:nth-child(12) { animation-delay: 0.24s; }
+        #tableBody tr:nth-child(13) { animation-delay: 0.26s; }
+        #tableBody tr:nth-child(14) { animation-delay: 0.28s; }
+        #tableBody tr:nth-child(15) { animation-delay: 0.30s; }
+        #tableBody tr:nth-child(16) { animation-delay: 0.32s; }
+        #tableBody tr:nth-child(17) { animation-delay: 0.34s; }
+        #tableBody tr:nth-child(18) { animation-delay: 0.36s; }
+        #tableBody tr:nth-child(19) { animation-delay: 0.38s; }
+        #tableBody tr:nth-child(20) { animation-delay: 0.40s; }
 
-        .col-num, .col-rank, .col-name,
-        .num-cell, .rank-cell, .name-cell {
+        /* ===== ШИРИНИ КОЛОНОК ===== */
+        .col-num  { width: 32px; min-width: 32px; }
+        .col-rank { width: 125px; min-width: 125px; text-align: left !important; padding-left: 6px !important; }
+        .col-name { width: 130px; min-width: 130px; text-align: left !important; padding-left: 8px !important; }
+        .col-day  { width: 36px; min-width: 32px; }
+
+        /* ===== ФІКСАЦІЯ ПЕРШИХ ТРЬОХ КОЛОНОК ===== */
+        .col-num,
+        .col-rank,
+        .col-name,
+        .num-cell,
+        .rank-cell,
+        .name-cell {
             position: sticky;
             z-index: 2;
             background: var(--bg-table);
         }
-        thead .col-num, thead .col-rank, thead .col-name { z-index: 3; }
-        .col-num, .num-cell { left: 0; }
-        .col-rank, .rank-cell { left: 40px; }
-        .col-name, .name-cell { left: calc(40px + 125px); }
+        thead .col-num,
+        thead .col-rank,
+        thead .col-name {
+            z-index: 3;
+        }
+        .col-num,
+        .num-cell { left: 0; }
+        .col-rank,
+        .rank-cell { left: 32px; }
+        .col-name,
+        .name-cell { left: calc(32px + 125px); }
 
         tr:hover td.num-cell,
         tr:hover td.rank-cell,
-        tr:hover td.name-cell { background: var(--bg-hover); }
+        tr:hover td.name-cell {
+            background: var(--bg-hover);
+        }
 
         td {
             padding: 2px;
@@ -177,13 +316,14 @@
             border-right: 1px solid var(--border-color);
             font-size: 12px;
             color: var(--text-primary);
-            vertical-align: middle;
+            transition: background 0.15s, border-color 0.3s, color 0.3s;
         }
         td.name-cell {
             text-align: left;
             padding: 4px 6px 4px 8px;
             font-size: 12px;
             white-space: nowrap;
+            color: var(--text-primary);
         }
         td.rank-cell {
             text-align: left;
@@ -197,13 +337,16 @@
             font-size: 11px;
             text-align: center;
         }
-        tr:hover td { background: var(--bg-hover); }
+        tr:hover td {
+            background: var(--bg-hover);
+        }
 
         .day-cell {
             cursor: default;
             position: relative;
             height: 28px;
             vertical-align: middle;
+            transition: background 0.15s;
         }
         .day-cell.weekend { background: var(--bg-weekend); }
         .day-cell.today-col { background: var(--bg-today) !important; }
@@ -216,13 +359,20 @@
             font-weight: 700;
             line-height: 1.4;
             white-space: nowrap;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+        .day-cell:hover .cell-badge {
+            transform: scale(1.05);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        /* Кольори статусів */
         .s-К { background: #ffcdd2; color: #b71c1c; }
         .s-П { background: #c8e6c9; color: #1b5e20; }
         .s-Ш { background: #bbdefb; color: #0d47a1; }
         .s-Т { background: #fff9c4; color: #f57f17; }
 
-        /* СТАТИСТИКА */
+        /* ===== СТАТИСТИКА ===== */
         .stats-container {
             margin-top: 20px;
         }
@@ -231,12 +381,14 @@
             margin: 0 0 10px 0;
             color: var(--text-primary);
             font-weight: 600;
+            transition: color 0.3s;
         }
 
         .stats-table {
             width: 100%;
             border-collapse: collapse;
             background: var(--bg-table);
+            transition: background 0.3s;
         }
         .stats-table thead th {
             background: var(--bg-header);
@@ -247,9 +399,11 @@
             border: 1px solid var(--bg-header);
             cursor: pointer;
             user-select: none;
+            transition: background 0.3s;
         }
         .stats-table thead th:hover {
-            background: var(--bg-header-light, #283593);
+            background: var(--bg-header);
+            opacity: 0.85;
         }
         .stats-table thead th.sort-asc::after { content: ' ▲'; font-size: 10px; }
         .stats-table thead th.sort-desc::after { content: ' ▼'; font-size: 10px; }
@@ -258,6 +412,7 @@
             text-align: center;
             border-bottom: 1px solid var(--border-color);
             color: var(--text-primary);
+            transition: background 0.15s, border-color 0.3s, color 0.3s;
         }
         .stats-table td:first-child { width: 40px; min-width: 40px; }
         .stats-table td:nth-child(2) { text-align: left; padding-left: 6px; min-width: 125px; }
@@ -269,6 +424,7 @@
         .stats-table td:nth-child(8) { text-align: center; min-width: 60px; font-weight: 600; }
         .stats-table tr:hover td { background: var(--bg-hover); }
 
+        /* ===== ЛЕГЕНДА ===== */
         .legend {
             background: var(--bg-card);
             border-radius: 12px;
@@ -279,23 +435,30 @@
             flex-wrap: wrap;
             gap: 6px;
             align-items: center;
+            transition: background 0.3s, box-shadow 0.3s;
         }
         .legend-title {
             font-size: 12px;
             color: var(--text-secondary);
             margin-right: 4px;
+            transition: color 0.3s;
         }
         .legend-item {
             font-size: 11px;
             font-weight: 700;
             padding: 2px 7px;
             border-radius: 6px;
+            transition: transform 0.2s ease;
+        }
+        .legend-item:hover {
+            transform: scale(1.05);
         }
         .legend-item.К { background: #ffcdd2; color: #b71c1c; }
         .legend-item.П { background: #c8e6c9; color: #1b5e20; }
         .legend-item.Ш { background: #bbdefb; color: #0d47a1; }
         .legend-item.Т { background: #fff9c4; color: #f57f17; }
 
+        /* ===== TOAST ===== */
         .toast {
             position: fixed; bottom: 20px; right: 20px;
             padding: 10px 18px; border-radius: 8px;
@@ -304,72 +467,128 @@
             z-index: 9999;
         }
         .toast.show { opacity: 1; }
-        .toast.ok { background: var(--toast-success); }
+        .toast.ok  { background: var(--toast-success); }
         .toast.err { background: var(--toast-error); }
 
         .empty-state {
             text-align: center;
             padding: 40px;
             color: var(--text-light);
+            transition: color 0.3s;
         }
 
-        /* ===== СТИЛІ ДЛЯ ДРУКУ (як у schedule) ===== */
+        /* ===== ПАГІНАЦІЯ ===== */
+        .pagination {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+        }
+        .pagination button {
+            padding: 4px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+        .pagination button:hover:not(:disabled) {
+            background: var(--bg-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px var(--shadow-color);
+        }
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .pagination .page-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 4px 8px;
+        }
+
+        /* ===== КНОПКА "ЗАВАНТАЖИТИ ЩЕ" ===== */
+        .load-more-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 14px;
+        }
+        .load-more-container .btn {
+            padding: 6px 18px;
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .col-rank { width: 80px; min-width: 80px; }
+            .col-name { width: 90px; min-width: 90px; }
+            .col-day { width: 28px; min-width: 28px; }
+            .col-num { width: 28px; min-width: 28px; }
+            .rank-cell { left: 28px; }
+            .name-cell { left: calc(28px + 80px); }
+            .stats-table td:nth-child(2) { min-width: 80px; }
+            .stats-table td:nth-child(3) { min-width: 90px; }
+        }
+
+        /* ===== ДРУК ===== */
         @media print {
-            .sidebar, .toolbar, .legend, .no-print, .btn { display: none !important; }
-            body { background: white !important; color: black !important; font-size: 7px !important; }
-            .main-content { margin-left: 0 !important; padding: 0 !important; }
-            .container { padding: 4px !important; max-width: 100% !important; margin: 0 !important; }
-            .table-wrap { overflow: visible !important; box-shadow: none !important; border: 1px solid #ccc !important; border-radius: 0 !important; }
-            table { background: white !important; width: 100% !important; border-collapse: collapse; font-size: 5px !important; table-layout: fixed !important; }
-            thead th { background: #1a237e !important; color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .sidebar, .toolbar, .legend, .no-print, .btn, .btn-print,
+            .pagination, .load-more-container {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+                font-size: 7px !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            .container {
+                padding: 4px !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+            }
+            .table-wrap {
+                overflow: visible !important;
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                border-radius: 0 !important;
+            }
+            table {
+                background: white !important;
+                width: 100% !important;
+                border-collapse: collapse;
+                font-size: 5px !important;
+                table-layout: fixed !important;
+            }
+            thead th {
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
             .weekend { background: #f5f5f5 !important; }
             .today-col { background: #fffde7 !important; }
-
-            /* УСІ КОМІРКИ – ОДНАКОВИЙ ШРИФТ 5px */
-            table th, table td {
-                font-size: 5px !important;
-                padding: 2px 1px !important;
-            }
-
-            /* № */
-            table th:nth-child(1), table td:nth-child(1) {
-                width: 25px !important;
-                min-width: 25px !important;
-                max-width: 25px !important;
-            }
-            /* Звання */
-            table th:nth-child(2), table td:nth-child(2) {
-                width: 45px !important;
-                min-width: 45px !important;
-                max-width: 45px !important;
-                padding-left: 3px !important;
-                text-align: left !important;
-            }
-            /* ПІБ */
-            table th:nth-child(3), table td:nth-child(3) {
-                width: 55px !important;
-                min-width: 55px !important;
-                max-width: 55px !important;
-                padding-left: 4px !important;
-                text-align: left !important;
-            }
-            /* Дні місяця */
-            table th:nth-child(n+4), table td:nth-child(n+4) {
-                width: 18px !important;
-                min-width: 18px !important;
-                max-width: 18px !important;
-                padding: 1px 0 !important;
-                text-align: center !important;
-            }
-            .cell-badge {
-                font-size: 4.5px !important;
-                padding: 0 2px !important;
-                border-radius: 2px !important;
-                display: inline-block !important;
-            }
-            tr { page-break-inside: avoid; }
+            .col-num, .num-cell { width: 20px !important; min-width: 20px !important; }
+            .col-rank, .rank-cell { width: 40px !important; min-width: 40px !important; }
+            .col-name, .name-cell { width: 50px !important; min-width: 50px !important; }
+            .col-day { width: 16px !important; min-width: 16px !important; }
+            .cell-badge { font-size: 4px !important; padding: 0 2px !important; }
+            .stats-container { display: block !important; }
+            .stats-table { background: white !important; }
+            .stats-table thead th { background: #1a237e !important; color: white !important; }
+            .stats-table td { color: black !important; border: 1px solid #ddd !important; }
             .dark-theme td { color: black !important; background: white !important; }
-            .dark-theme thead { background: #1a237e !important; color: white !important; }
             .dark-theme thead th { background: #1a237e !important; color: white !important; }
             @page { size: landscape; margin: 4mm 3mm; }
         }
@@ -381,6 +600,7 @@
     <div th:replace="~{fragments :: sidebar('combat-schedule')}"></div>
     <div class="main-content">
         <div class="container">
+            <!-- ТУЛБАР -->
             <div class="toolbar">
                 <div class="current-date" id="currentDate"></div>
                 <button class="btn btn-nav" id="prevBtn">◀</button>
@@ -395,7 +615,7 @@
                     <option value="">— Всі місяці —</option>
                 </select>
                 <button class="btn btn-primary" id="applyFilterBtn">Показати</button>
-                <button class="btn btn-primary" id="exportXlsxBtn">📊 Експорт XLSX</button>
+                <button class="btn btn-success" id="exportXlsxBtn">📊 Експорт XLSX</button>
                 <button class="btn btn-print" onclick="window.print()">🖨️ Друк</button>
             </div>
 
@@ -419,7 +639,7 @@
                 <span class="legend-item Ш">Ш</span>
                 <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Штурман</span>
                 <span class="legend-item Т">Т</span>
-                <span style="font-size:11px;color:var(--text-secondary);">— Технік</span>
+                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Технік</span>
             </div>
 
             <!-- СТАТИСТИКА -->
@@ -445,6 +665,14 @@
                     </table>
                 </div>
             </div>
+
+            <!-- КНОПКА "ЗАВАНТАЖИТИ ЩЕ" -->
+            <div class="load-more-container no-print">
+                <button class="btn btn-primary" id="loadMoreBtn" onclick="loadMore()">Завантажити ще</button>
+            </div>
+
+            <!-- ПАГІНАЦІЯ -->
+            <div class="pagination" id="pagination"></div>
         </div>
     </div>
 </div>
@@ -465,6 +693,12 @@
         let sortDir = 1;
         let statsSortCol = 'num';
         let statsSortDir = 1;
+
+        // Пагінація
+        let currentPage = 0;
+        let pageSize = 20;
+        let totalElements = 0;
+
         const today = new Date();
         currentYear = today.getFullYear();
         currentMonth = today.getMonth() + 1;
@@ -525,8 +759,12 @@
                 .then(([data, stats]) => {
                     tableData = data;
                     statsData = stats;
+                    totalElements = tableData.length;
+                    currentPage = 0;
                     applySortAndRender();
                     renderStats();
+                    renderPagination();
+                    updateLoadMoreButton();
                     bindSortEvents();
                 })
                 .catch(err => {
@@ -538,6 +776,60 @@
                         '<tr><td colspan="8" style="text-align:center;color:var(--text-light);">Помилка завантаження статистики</td></tr>';
                 });
         }
+
+        // ===== ПАГІНАЦІЯ =====
+        function goToPage(page) {
+            const totalPages = Math.ceil(totalElements / pageSize);
+            if (page < 0 || page >= totalPages) return;
+            currentPage = page;
+            applySortAndRender();
+        }
+        window.goToPage = goToPage;
+
+        function renderPagination() {
+            const totalPages = Math.ceil(totalElements / pageSize);
+            const pag = document.getElementById('pagination');
+            let html = '';
+            html += `<button onclick="goToPage(0)" ${currentPage === 0 ? 'disabled' : ''}>⏮</button>`;
+            html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>`;
+            html += `<span class="page-info">Сторінка ${currentPage + 1} з ${totalPages} (всього ${totalElements} осіб)</span>`;
+            html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>▶</button>`;
+            html += `<button onclick="goToPage(${totalPages - 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>⏭</button>`;
+            pag.innerHTML = html;
+        }
+
+        function updateLoadMoreButton() {
+            const totalPages = Math.ceil(totalElements / pageSize);
+            const btn = document.getElementById('loadMoreBtn');
+            const remaining = totalElements - (currentPage + 1) * pageSize;
+            if (remaining <= 0 || totalPages <= 1) {
+                btn.disabled = true;
+                btn.textContent = 'Всі завантажено';
+            } else {
+                const nextBatch = Math.min(20, remaining);
+                btn.disabled = false;
+                btn.textContent = `Завантажити ще ${nextBatch}`;
+            }
+        }
+
+        function loadMore() {
+            const totalPages = Math.ceil(totalElements / pageSize);
+            if (currentPage < totalPages - 1) {
+                const newSize = Math.min(pageSize + 20, totalElements);
+                if (newSize > pageSize) {
+                    pageSize = newSize;
+                    currentPage = 0;
+                    applySortAndRender();
+                    renderPagination();
+                    updateLoadMoreButton();
+                } else {
+                    showToast('Всі записи вже завантажені', 'ok');
+                }
+            } else {
+                showToast('Всі записи вже завантажені', 'ok');
+            }
+        }
+        window.loadMore = loadMore;
 
         // ===== СОРТУВАННЯ =====
         function sortBy(col) {
@@ -587,7 +879,7 @@
 
         function applySortAndRender() {
             if (!tableData || !tableData.length) {
-                renderTable();
+                renderTable([]);
                 bindSortEvents();
                 return;
             }
@@ -603,12 +895,15 @@
                 if (va > vb) return 1 * sortDir;
                 return 0;
             });
-            renderTable(sorted);
+            // Пагінація
+            const start = currentPage * pageSize;
+            const end = Math.min(start + pageSize, totalElements);
+            const pagedData = sorted.slice(start, end);
+            renderTable(pagedData);
             bindSortEvents();
         }
 
-        function renderTable(sortedData) {
-            const data = sortedData || tableData;
+        function renderTable(pagedData) {
             const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
 
             let headRow1 = `<tr>
@@ -634,14 +929,14 @@
             headRow2 += `</tr>`;
             document.getElementById('tableHead').innerHTML = headRow1 + headRow2;
 
-            if (!data || !data.length) {
+            if (!pagedData || !pagedData.length) {
                 document.getElementById('tableBody').innerHTML =
                     `<tr><td colspan="${daysInMonth + 3}" style="text-align:center;padding:32px;color:var(--text-light)">Немає даних про чергування</td></tr>`;
                 return;
             }
 
             let html = '';
-            data.forEach((row, idx) => {
+            pagedData.forEach((row, idx) => {
                 const rowNum = row.personnelNumber ?? (idx + 1);
                 let rowHtml = `<tr>
                     <td class="num-cell">${rowNum}</td>
@@ -766,6 +1061,7 @@
             currentMonth += delta;
             if (currentMonth > 12) { currentMonth = 1; currentYear++; }
             if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+            currentPage = 0;
             loadMonth();
         }
 
@@ -774,6 +1070,7 @@
         document.getElementById('todayBtn').onclick = () => {
             currentYear = today.getFullYear();
             currentMonth = today.getMonth() + 1;
+            currentPage = 0;
             loadMonth();
         };
 
@@ -785,15 +1082,18 @@
                 if (idx !== -1) {
                     currentYear = parseInt(yearVal) || new Date().getFullYear();
                     currentMonth = idx + 1;
+                    currentPage = 0;
                     loadMonth();
                 }
             } else if (yearVal) {
                 currentYear = parseInt(yearVal);
                 currentMonth = 1;
+                currentPage = 0;
                 loadMonth();
             } else {
                 currentYear = today.getFullYear();
                 currentMonth = today.getMonth() + 1;
+                currentPage = 0;
                 loadMonth();
             }
         };
@@ -810,10 +1110,8 @@
                     url += `&month=${idx + 1}`;
                 }
             }
-            // Передаємо параметри сортування (вони вже є у вашому скрипті)
             url += `&sortCol=${encodeURIComponent(sortCol)}&sortDir=${sortDir}`;
             url += `&statsSortCol=${encodeURIComponent(statsSortCol)}&statsSortDir=${statsSortDir}`;
-
             window.location.href = url;
         };
 
