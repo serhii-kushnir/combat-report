@@ -420,6 +420,41 @@
         .s-Ш { background: #bbdefb; color: #0d47a1; }
         .s-Т { background: #fff9c4; color: #f57f17; }
 
+        /* ===== ЛЕГЕНДА ===== */
+        .legend {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-top: 12px;
+            box-shadow: 0 2px 6px var(--shadow-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .legend-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-right: 4px;
+            transition: color 0.3s;
+        }
+        .legend-item {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            transition: transform 0.2s ease;
+        }
+        .legend-item:hover {
+            transform: scale(1.05);
+        }
+        .legend-item.К { background: #ffcdd2; color: #b71c1c; }
+        .legend-item.П { background: #c8e6c9; color: #1b5e20; }
+        .legend-item.Ш { background: #bbdefb; color: #0d47a1; }
+        .legend-item.Т { background: #fff9c4; color: #f57f17; }
+
+
         /* ===== СТАТИСТИКА ===== */
         .stats-container {
             margin-top: 20px;
@@ -642,7 +677,18 @@
                 </table>
             </div>
 
-            <!-- ЛЕГЕНДА ВИДАЛЕНА -->
+            <!-- ЛЕГЕНДА -->
+            <div class="legend" id="legend">
+                <span class="legend-title">Позначення:</span>
+                <span class="legend-item К">К</span>
+                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Командир</span>
+                <span class="legend-item П">П</span>
+                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Пілот</span>
+                <span class="legend-item Ш">Ш</span>
+                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Штурман</span>
+                <span class="legend-item Т">Т</span>
+                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Технік</span>
+            </div>
 
             <!-- СТАТИСТИКА -->
             <div class="stats-container">

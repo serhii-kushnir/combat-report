@@ -19,7 +19,8 @@ public class ReportRequestValidator {
 
     private static final Set<String> ALLOWED_PILOTS = Set.of(
             "Костянтин БИТКА",
-            "Олександр ШЕПРУК"
+            "Олександр ШЕПРУК",
+            "Ярослав НАГОРНИЙ"
     );
 
     public List<String> validate(String json, int format, String pilot, int distance, int speed) {
