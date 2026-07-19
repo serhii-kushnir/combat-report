@@ -129,7 +129,7 @@ public class ReportService {
 
         sb.append("Примітка: Екіпажем ").append("\"").append(unitName).append("\"")
                 .append(" в/ч ").append(militaryUnit)
-                .append(", який виконує завдання ведення повітряної розвідки та ураження противника в смузі відповідальності ОТУ м. Одеса")
+                .append(", який виконує завдання ведення повітряної розвідки та ураження противника в смузі відповідальності c-ще. Балабанка та околиці")
                 .append(" здійснено виліт дроном-камікадзе ").append("\"").append(weapon).append(" (нічний)\"")
                 .append(" з метою ураження ворожого ударного дрона №").append(targetNumber)
                 .append(". ").append(effectorStatus)
@@ -215,7 +215,7 @@ public class ReportService {
         sb.append("Рапорт\n\n");
         sb.append("\tДійсним доповідаю, що ").append(reportDate)
                 .append(" о ").append(takeoffTime)
-                .append(" в районі м. Одеса, Одеської області, екіпажем «").append(unitName.toUpperCase())
+                .append(" в районі c-ще. Балабанка, Одеської області, екіпажем «").append(unitName.toUpperCase())
                 .append("» військової частини ").append(militaryUnit)
                 .append(" здійснено пуск БпЛА \"").append(weapon).append(" (нічний)\" серійний номер ").append("\"").append(weaponNumber.toUpperCase()).append("\"")
                 .append(" спорядженого тротиловою шашкою «3-1.2 КУФ» 1,2 кг та вбудованою розумною платою ініціації для виконання бойового завдання з перехоплення повітряної цілі №").append(targetNumber)
