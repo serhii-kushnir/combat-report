@@ -27,11 +27,6 @@ public class CombatScheduleService {
         this.personnelRepo = personnelRepo;
     }
 
-    /**
-     * Отримує дані для місячного графіка чергувань.
-     * Повертає список рядків, де кожен рядок – одна особа,
-     * а в полі "days" – мапа день → роль ("К", "П", "Ш", "Т" або порожньо).
-     */
     public List<Map<String, Object>> getMonthData(int year, int month) {
         log.info("getMonthData: year={}, month={}", year, month);
 
@@ -39,18 +34,12 @@ public class CombatScheduleService {
         LocalDate from = ym.atDay(1);
         LocalDate to = ym.atEndOfMonth();
 
-        // Перетворюємо на LocalDateTime для коректного порівняння
         LocalDateTime fromDateTime = from.atStartOfDay();
         LocalDateTime toDateTime = to.atTime(23, 59, 59);
 
-        // ===== ОПТИМІЗОВАНИЙ ЗАПИТ =====
-        // Замість dutyRepo.findAll() використовуємо новий метод
         List<CombatDuty> duties = dutyRepo.findOverlapping(fromDateTime, toDateTime);
-
-        // Всі активні особи
         List<Personnel> personnel = personnelRepo.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("В особовому складі");
 
-        // Мапа: день -> (ПІБ -> роль)
         Map<Integer, Map<String, String>> dayRoles = new HashMap<>();
         for (int d = 1; d <= ym.lengthOfMonth(); d++) {
             dayRoles.put(d, new HashMap<>());
@@ -58,12 +47,9 @@ public class CombatScheduleService {
 
         for (CombatDuty duty : duties) {
             LocalDate startDate = duty.getStartTime().toLocalDate();
-
-            // Якщо дата початку не належить до вибраного місяця – пропускаємо
             if (startDate.isBefore(from) || startDate.isAfter(to)) {
                 continue;
             }
-
             int day = startDate.getDayOfMonth();
 
             Map<String, String> roleMap = new HashMap<>();
@@ -71,6 +57,8 @@ public class CombatScheduleService {
             addRole(roleMap, duty.getPilot(), "П");
             addRole(roleMap, duty.getNavigator(), "Ш");
             addRole(roleMap, duty.getTechnician(), "Т");
+            // NEW: Водій-електрик
+            addRole(roleMap, duty.getDriverElectrician(), "ВЕ");
 
             Map<String, String> currentDayRoles = dayRoles.get(day);
             for (Map.Entry<String, String> entry : roleMap.entrySet()) {
@@ -84,7 +72,6 @@ public class CombatScheduleService {
             }
         }
 
-        // Формуємо вихідні рядки
         List<Map<String, Object>> rows = new ArrayList<>();
         for (Personnel p : personnel) {
             Map<String, Object> row = new LinkedHashMap<>();
@@ -95,23 +82,17 @@ public class CombatScheduleService {
 
             Map<Integer, String> days = new LinkedHashMap<>();
             String normalizedFullName = normalizeName(p.getFullName());
-            int count = 0;
             for (int d = 1; d <= ym.lengthOfMonth(); d++) {
                 Map<String, String> dayMap = dayRoles.get(d);
                 String role = dayMap != null ? dayMap.getOrDefault(normalizedFullName, "") : "";
                 days.put(d, role);
-                if (!role.isEmpty()) count++;
             }
             row.put("days", days);
-            row.put("count", count);
             rows.add(row);
         }
         return rows;
     }
 
-    /**
-     * Отримує статистику: кількість днів за кожною роллю для кожної особи.
-     */
     public List<Map<String, Object>> getStats(int year, int month) {
         List<Map<String, Object>> monthData = getMonthData(year, month);
         List<Map<String, Object>> stats = new ArrayList<>();
@@ -123,24 +104,24 @@ public class CombatScheduleService {
             statRow.put("personnelNumber", row.get("personnelNumber"));
 
             Map<Integer, String> days = (Map<Integer, String>) row.get("days");
-            int countK = 0, countP = 0, countSh = 0, countT = 0;
+            int countK = 0, countP = 0, countSh = 0, countT = 0, countVE = 0; // NEW: countVE
             for (String role : days.values()) {
                 if (role.contains("К")) countK++;
                 if (role.contains("П")) countP++;
                 if (role.contains("Ш")) countSh++;
                 if (role.contains("Т")) countT++;
+                if (role.contains("ВЕ")) countVE++; // NEW
             }
             statRow.put("countK", countK);
             statRow.put("countP", countP);
             statRow.put("countSh", countSh);
             statRow.put("countT", countT);
-            statRow.put("total", countK + countP + countSh + countT);
+            statRow.put("countVE", countVE); // NEW
+            statRow.put("total", countK + countP + countSh + countT + countVE);
             stats.add(statRow);
         }
         return stats;
     }
-
-    // ===== ДОПОМІЖНІ МЕТОДИ =====
 
     private void addRole(Map<String, String> roleMap, String fullNameWithRank, String role) {
         if (fullNameWithRank == null || fullNameWithRank.trim().isEmpty()) return;
@@ -150,9 +131,6 @@ public class CombatScheduleService {
         }
     }
 
-    /**
-     * Видаляє з рядка поширені військові звання.
-     */
     private String extractNameWithoutRank(String fullNameWithRank) {
         String[] ranks = {
                 "солдат", "старший солдат", "молодший сержант", "сержант", "старший сержант",
@@ -172,17 +150,12 @@ public class CombatScheduleService {
         return trimmed;
     }
 
-    /**
-     * Нормалізує ПІБ: видаляє звання, зайві пробіли, приводить до нижнього регістру.
-     */
     private String normalizeName(String name) {
         if (name == null) return null;
         String withoutRank = extractNameWithoutRank(name);
         if (withoutRank == null) return null;
         return withoutRank.trim().toLowerCase().replaceAll("\\s+", " ");
     }
-
-    // ===== МЕТОДИ ДЛЯ ФІЛЬТРІВ =====
 
     public List<Integer> getYears() {
         return dutyRepo.findDistinctYears();

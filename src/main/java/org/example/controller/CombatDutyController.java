@@ -39,7 +39,6 @@ public class CombatDutyController {
         return "combat-duty";
     }
 
-    // ===== API З ПАГІНАЦІЄЮ =====
     @GetMapping("/api")
     @ResponseBody
     public Page<CombatDuty> getAllApi(@RequestParam(required = false) Integer year,
@@ -55,14 +54,12 @@ public class CombatDutyController {
         }
     }
 
-    // ===== ЗАГАЛЬНА СТАТИСТИКА =====
     @GetMapping("/api/general-stats")
     @ResponseBody
     public Map<String, Long> getGeneralStats() {
         return service.getGeneralStats();
     }
 
-    // ===== ДЛЯ ФІЛЬТРІВ (роки, місяці) =====
     @GetMapping("/api/years")
     @ResponseBody
     public List<Integer> getYears() {
@@ -98,7 +95,6 @@ public class CombatDutyController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ===== CRUD =====
     @PostMapping("/api")
     @ResponseBody
     public ResponseEntity<?> create(@RequestBody CombatDuty duty) {
@@ -151,7 +147,6 @@ public class CombatDutyController {
         }
     }
 
-    // ===== ЕКСПОРТ XLSX (оновлений – розбивка по місяцях) =====
     @GetMapping("/api/export")
     public ResponseEntity<byte[]> exportXlsx(
             @RequestParam(required = false) Integer year,
@@ -160,7 +155,6 @@ public class CombatDutyController {
         try {
             List<CombatDuty> allDuties = service.getAll();
 
-            // Фільтр за роком/місяцем
             if (year != null || month != null) {
                 allDuties = allDuties.stream()
                         .filter(d -> {
@@ -173,7 +167,6 @@ public class CombatDutyController {
                         .collect(Collectors.toList());
             }
 
-            // Фільтр за пошуком (як у фронтенді)
             if (search != null && !search.isBlank()) {
                 String lowerSearch = search.toLowerCase().trim();
                 DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -187,7 +180,8 @@ public class CombatDutyController {
                             String endTime = d.getEndTime() != null ? d.getEndTime().format(timeFmt) : "";
                             boolean textMatch = Stream.of(
                                     d.getUnitName(), d.getCommander(), d.getPilot(), d.getNavigator(),
-                                    d.getTechnician(), d.getWeapons(), d.getDutyOfficer(), d.getReportSummary(),
+                                    d.getTechnician(), d.getDriverElectrician(),
+                                    d.getWeapons(), d.getDutyOfficer(), d.getReportSummary(),
                                     startDate, endDate, startTime, endTime
                             ).anyMatch(f -> f != null && f.toLowerCase().contains(lowerSearch));
                             return idStr.contains(lowerSearch) || textMatch;
@@ -195,7 +189,6 @@ public class CombatDutyController {
                         .collect(Collectors.toList());
             }
 
-            // Групування по місяцях (рік-місяць)
             Map<String, List<CombatDuty>> dutiesByMonth = allDuties.stream()
                     .collect(Collectors.groupingBy(d -> {
                         LocalDate date = d.getStartTime().toLocalDate();
@@ -227,7 +220,6 @@ public class CombatDutyController {
         }
     }
 
-    // ===== ПОБУДОВА XLSX (окремі аркуші по місяцях) =====
     private byte[] exportToXlsx(Map<String, List<CombatDuty>> dutiesByMonth) throws Exception {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         String[] monthNames = {"Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
@@ -255,14 +247,14 @@ public class CombatDutyController {
         }
     }
 
-    // ===== ПОБУДОВА ОДНОГО АРКУША =====
     private void buildSheet(Sheet sheet, List<CombatDuty> list, DateTimeFormatter fmt) {
         CellStyle headerStyle = createHeaderStyle(sheet.getWorkbook());
         CellStyle centerStyle = createCenterStyle(sheet.getWorkbook());
-        CellStyle leftStyle = createLeftStyle(sheet.getWorkbook()); // з перенесенням
+        CellStyle leftStyle = createLeftStyle(sheet.getWorkbook());
 
         String[] headers = {
                 "ID", "Початок", "Кінець", "Екіпаж", "Командир", "Пілот", "Штурман", "Технік",
+                "Водій-електрик",
                 "Озброєння", "Черговий ПУ", "Доповідь", "Вильотів", "Бойових", "Втрат", "Знищень", "НТП"
         };
         Row headerRow = sheet.createRow(0);
@@ -277,8 +269,7 @@ public class CombatDutyController {
         int rowNum = 1;
         for (CombatDuty d : list) {
             Row row = sheet.createRow(rowNum++);
-            row.setHeight((short)-1);  // автоматична висота
-
+            row.setHeight((short)-1);
             int col = 0;
             createCell(row, col++, d.getId(), centerStyle);
             createCell(row, col++, d.getStartTime() != null ? d.getStartTime().format(fmt) : "", centerStyle);
@@ -288,9 +279,12 @@ public class CombatDutyController {
             createCell(row, col++, d.getPilot(), leftStyle);
             createCell(row, col++, d.getNavigator(), leftStyle);
             createCell(row, col++, d.getTechnician(), leftStyle);
+            // ===== ВОДІЙ-ЕЛЕКТРИК =====
+            createCell(row, col++, d.getDriverElectrician(), leftStyle);
+            // ==========================
             createCell(row, col++, d.getWeapons(), centerStyle);
             createCell(row, col++, d.getDutyOfficer(), centerStyle);
-            createCell(row, col++, d.getReportSummary(), leftStyle);  // текст з перенесенням
+            createCell(row, col++, d.getReportSummary(), leftStyle);
             createCell(row, col++, d.getTotalSorties() != null ? d.getTotalSorties() : 0, centerStyle);
             createCell(row, col++, d.getCombatSorties() != null ? d.getCombatSorties() : 0, centerStyle);
             createCell(row, col++, d.getLosses() != null ? d.getLosses() : 0, centerStyle);
@@ -298,9 +292,8 @@ public class CombatDutyController {
             createCell(row, col++, d.getNtp() != null ? d.getNtp() : 0, centerStyle);
         }
 
-        // Автоширина – для колонки "Доповідь" (індекс 10) вже встановлено 80*256
         for (int i = 0; i < headers.length; i++) {
-            if (i == 10) {
+            if (i == 11) {
                 sheet.setColumnWidth(i, 80 * 256);
             } else {
                 sheet.autoSizeColumn(i);
@@ -310,7 +303,6 @@ public class CombatDutyController {
         }
     }
 
-    // ===== ДОПОМІЖНІ МЕТОДИ ДЛЯ КОМІРОК =====
     private void createCell(Row row, int col, Object value, CellStyle style) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(style);
@@ -348,7 +340,7 @@ public class CombatDutyController {
         CellStyle s = wb.createCellStyle();
         s.setAlignment(HorizontalAlignment.LEFT);
         s.setVerticalAlignment(VerticalAlignment.CENTER);
-        s.setWrapText(true);  // ← ДОДАНО: перенесення тексту
+        s.setWrapText(true);
         setBorders(s);
         return s;
     }

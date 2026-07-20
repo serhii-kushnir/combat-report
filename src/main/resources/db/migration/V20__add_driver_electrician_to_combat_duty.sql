@@ -1,0 +1,1 @@
+ALTER TABLE combat_duty ADD COLUMN driver_electrician VARCHAR(255);

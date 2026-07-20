@@ -18,7 +18,6 @@ import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,6 @@ import java.util.Map;
 public class CombatScheduleController {
 
     private static final Logger log = LoggerFactory.getLogger(CombatScheduleController.class);
-
     private final CombatScheduleService service;
 
     public CombatScheduleController(CombatScheduleService service) {
@@ -76,7 +74,6 @@ public class CombatScheduleController {
         return service.getMonths();
     }
 
-    // ===== ЕКСПОРТ XLSX (з підтримкою фільтрів) =====
     @GetMapping("/api/export")
     public ResponseEntity<byte[]> exportXlsx(
             @RequestParam int year,
@@ -116,7 +113,6 @@ public class CombatScheduleController {
         }
     }
 
-    // ===== КОМПАРАТОРИ =====
     private Comparator<Map<String, Object>> getComparator(String col, int dir) {
         return (a, b) -> {
             if ("num".equals(col)) {
@@ -161,13 +157,17 @@ public class CombatScheduleController {
                 String vb = b.get(col) != null ? b.get(col).toString().toLowerCase() : "";
                 return va.compareTo(vb) * dir;
             }
+            if ("countVE".equals(col)) {
+                Integer va = a.get("countVE") != null ? ((Number) a.get("countVE")).intValue() : 0;
+                Integer vb = b.get("countVE") != null ? ((Number) b.get("countVE")).intValue() : 0;
+                return va.compareTo(vb) * dir;
+            }
             Integer va = a.get(col) != null ? ((Number) a.get(col)).intValue() : 0;
             Integer vb = b.get(col) != null ? ((Number) b.get(col)).intValue() : 0;
             return va.compareTo(vb) * dir;
         };
     }
 
-    // ===== ПОБУДОВА XLSX =====
     private byte[] exportSingleMonth(int year, int month, List<Map<String, Object>> rows, List<Map<String, Object>> stats) throws Exception {
         String[] monthNames = {"Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
                 "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"};
@@ -205,7 +205,6 @@ public class CombatScheduleController {
         CellStyle centerStyle = createCenterStyle(sheet.getWorkbook());
         CellStyle leftStyle = createLeftStyle(sheet.getWorkbook());
 
-        // ===== ГРАФІК =====
         int rowNum = 0;
 
         Row headerRow1 = sheet.createRow(rowNum++);
@@ -253,15 +252,15 @@ public class CombatScheduleController {
             sheet.setColumnWidth(2 + d, 8 * 256);
         }
 
-        // ===== ПРОМІЖОК =====
+        // проміжок
         rowNum++;
 
-        // ===== СТАТИСТИКА =====
+        // статистика
         Row statTitleRow = sheet.createRow(rowNum++);
         statTitleRow.setHeightInPoints(22);
         createCell(statTitleRow, 0, "📊 Статистика чергувань", createHeaderStyle(sheet.getWorkbook()));
 
-        String[] statHeaders = {"№", "Звання", "ПІБ", "К", "П", "Ш", "Т", "Днів БЧ"};
+        String[] statHeaders = {"№", "Звання", "ПІБ", "К", "П", "Ш", "Т", "ВЕ", "Днів БЧ"};
         Row statHeaderRow = sheet.createRow(rowNum++);
         statHeaderRow.setHeightInPoints(25);
         for (int i = 0; i < statHeaders.length; i++) {
@@ -278,10 +277,10 @@ public class CombatScheduleController {
             createCell(row, 4, statRow.get("countP") != null ? statRow.get("countP") : 0, centerStyle);
             createCell(row, 5, statRow.get("countSh") != null ? statRow.get("countSh") : 0, centerStyle);
             createCell(row, 6, statRow.get("countT") != null ? statRow.get("countT") : 0, centerStyle);
-            createCell(row, 7, statRow.get("total") != null ? statRow.get("total") : 0, centerStyle);
+            createCell(row, 7, statRow.get("countVE") != null ? statRow.get("countVE") : 0, centerStyle);
+            createCell(row, 8, statRow.get("total") != null ? statRow.get("total") : 0, centerStyle);
         }
 
-        // Автоширина для статистики
         for (int i = 0; i < statHeaders.length; i++) {
             sheet.autoSizeColumn(i);
             int currentWidth = sheet.getColumnWidth(i);
@@ -289,7 +288,8 @@ public class CombatScheduleController {
         }
     }
 
-    // ===== СТИЛІ =====
+    // ========== ДОПОМІЖНІ МЕТОДИ (повністю реалізовані) ==========
+
     private CellStyle createHeaderStyle(Workbook wb) {
         CellStyle s = wb.createCellStyle();
         Font f = wb.createFont();
@@ -340,6 +340,8 @@ public class CombatScheduleController {
             s.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
         } else if (role.contains("Т")) {
             s.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+        } else if (role.contains("ВЕ")) {
+            s.setFillForegroundColor(IndexedColors.LIGHT_ORANGE.getIndex());
         } else {
             s.setFillForegroundColor(IndexedColors.WHITE.getIndex());
         }

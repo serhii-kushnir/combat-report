@@ -6,7 +6,6 @@
     <link rel="icon" type="image/png" href="/favicon.png">
     <link th:replace="~{fragments :: sidebar-css}">
     <style>
-        /* ===== CSS ЗМІННІ ===== */
         :root {
             --bg-body: #f0f2f5;
             --bg-card: #ffffff;
@@ -40,7 +39,6 @@
             --toast-error: #c62828;
             --stat-num-color: #1976d2;
         }
-
         body.dark-theme {
             --bg-body: #1e1e24;
             --bg-card: #2d2d35;
@@ -72,8 +70,6 @@
             --btn-print-hover: #5a6a7a;
             --stat-num-color: #5a8ac5;
         }
-
-        /* ===== ОСНОВНІ СТИЛІ ===== */
         body {
             font-family: 'Segoe UI', sans-serif;
             background: var(--bg-body);
@@ -82,8 +78,6 @@
             transition: background 0.3s, color 0.3s;
         }
         .container { padding: 16px 20px; max-width: 100%; overflow-x: auto; }
-
-        /* ===== АНІМАЦІЯ ПОЯВИ ===== */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
@@ -92,14 +86,12 @@
             from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .toolbar { animation: fadeIn 0.4s ease forwards; opacity: 0; }
         .table-wrap { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.05s; }
+        .legend { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.10s; }
         .stats-container { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.15s; }
         .load-more-container { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.20s; }
         .pagination { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.25s; }
-
-        /* Анімація рядків основної таблиці */
         #tableBody tr {
             animation: fadeInRow 0.3s ease forwards;
             opacity: 0;
@@ -124,8 +116,6 @@
         #tableBody tr:nth-child(18) { animation-delay: 0.36s; }
         #tableBody tr:nth-child(19) { animation-delay: 0.38s; }
         #tableBody tr:nth-child(20) { animation-delay: 0.40s; }
-
-        /* ===== АНІМАЦІЯ ДЛЯ РЯДКІВ СТАТИСТИКИ ===== */
         #statsBody tr {
             animation: fadeInRow 0.3s ease forwards;
             opacity: 0;
@@ -150,8 +140,6 @@
         #statsBody tr:nth-child(18) { animation-delay: 0.36s; }
         #statsBody tr:nth-child(19) { animation-delay: 0.38s; }
         #statsBody tr:nth-child(20) { animation-delay: 0.40s; }
-
-        /* ===== ТУЛБАР ===== */
         .toolbar {
             background: var(--bg-toolbar);
             padding: 12px 16px;
@@ -167,8 +155,6 @@
         .toolbar:hover {
             box-shadow: 0 4px 12px var(--shadow-color);
         }
-
-        /* ===== КНОПКИ З АНІМАЦІЄЮ ===== */
         .btn {
             padding: 6px 14px;
             border: none;
@@ -191,7 +177,6 @@
             transform: translateY(1px);
         }
         .btn i { line-height: 1; }
-
         .btn-nav {
             background: var(--btn-nav-bg);
             color: var(--btn-nav-color);
@@ -199,7 +184,6 @@
         .btn-nav:hover {
             background: var(--btn-nav-hover);
         }
-
         .btn-today {
             background: var(--btn-today-bg);
             color: white;
@@ -207,7 +191,6 @@
         .btn-today:hover {
             background: var(--btn-today-hover);
         }
-
         .btn-primary {
             background: var(--btn-primary-bg);
             color: white;
@@ -215,7 +198,6 @@
         .btn-primary:hover {
             background: var(--btn-primary-hover);
         }
-
         .btn-success {
             background: var(--btn-success-bg);
             color: white;
@@ -223,7 +205,6 @@
         .btn-success:hover {
             background: var(--btn-success-hover);
         }
-
         .btn-warning {
             background: var(--btn-warning-bg);
             color: white;
@@ -231,7 +212,6 @@
         .btn-warning:hover {
             background: var(--btn-warning-hover);
         }
-
         .btn-danger {
             background: var(--btn-danger-bg);
             color: white;
@@ -239,7 +219,6 @@
         .btn-danger:hover {
             background: var(--btn-danger-hover);
         }
-
         .btn-print {
             background: var(--btn-print-bg);
             color: white;
@@ -247,10 +226,7 @@
         .btn-print:hover {
             background: var(--btn-print-hover);
         }
-
         .btn-sm { padding: 4px 9px; font-size: 11px; }
-
-        /* ===== ПОЛЯ ВВОДУ ===== */
         select, input[type="text"] {
             padding: 6px 10px;
             border: 1px solid var(--border-color);
@@ -269,7 +245,6 @@
             border-color: var(--btn-primary-bg);
             box-shadow: 0 0 0 2px rgba(25,118,210,0.2);
         }
-
         .current-date {
             font-size: 13px;
             color: var(--text-secondary);
@@ -279,13 +254,10 @@
             border: 1px solid var(--border-color);
             transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
-
         #monthTitle {
             color: var(--text-primary);
             transition: color 0.3s;
         }
-
-        /* ===== ТАБЛИЦЯ ===== */
         .table-wrap {
             overflow-x: auto;
             border-radius: 12px;
@@ -298,20 +270,12 @@
             min-width: 100%;
             transition: background 0.3s;
         }
-
-        /* Заголовки – виправлено курсор і hover */
         thead tr:first-child th {
             background: var(--bg-header);
             color: var(--text-white);
             font-size: 12px;
             padding: 10px 4px;
-            transition: background 0.3s, color 0.3s;
-            cursor: pointer;
-            user-select: none;
-        }
-        thead tr:first-child th:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
+            transition: background 0.3s;
         }
         thead tr:last-child th {
             background: var(--bg-header);
@@ -320,14 +284,10 @@
             padding: 6px 2px;
             transition: background 0.3s;
         }
-
-        /* ===== ШИРИНИ КОЛОНОК ===== */
         .col-num  { width: 32px; min-width: 32px; }
         .col-rank { width: 125px; min-width: 125px; text-align: left !important; padding-left: 6px !important; }
         .col-name { width: 130px; min-width: 130px; text-align: left !important; padding-left: 8px !important; }
         .col-day  { width: 36px; min-width: 32px; }
-
-        /* ===== ФІКСАЦІЯ ПЕРШИХ ТРЬОХ КОЛОНОК ===== */
         .col-num,
         .col-rank,
         .col-name,
@@ -349,13 +309,11 @@
         .rank-cell { left: 32px; }
         .col-name,
         .name-cell { left: calc(32px + 125px); }
-
         tr:hover td.num-cell,
         tr:hover td.rank-cell,
         tr:hover td.name-cell {
             background: var(--bg-hover);
         }
-
         td {
             padding: 2px;
             text-align: center;
@@ -387,7 +345,6 @@
         tr:hover td {
             background: var(--bg-hover);
         }
-
         .day-cell {
             cursor: default;
             position: relative;
@@ -397,7 +354,6 @@
         }
         .day-cell.weekend { background: var(--bg-weekend); }
         .day-cell.today-col { background: var(--bg-today) !important; }
-
         .cell-badge {
             display: inline-block;
             padding: 1px 6px;
@@ -406,56 +362,17 @@
             font-weight: 700;
             line-height: 1.4;
             white-space: nowrap;
-            transition: none; /* прибрано анімацію */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        /* СКАСОВАНО HOVER У КОМІРКАХ */
         .day-cell:hover .cell-badge {
-            transform: none !important;
-            box-shadow: none !important;
+            transform: scale(1.05);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
-
-        /* Кольори статусів */
         .s-К { background: #ffcdd2; color: #b71c1c; }
         .s-П { background: #c8e6c9; color: #1b5e20; }
         .s-Ш { background: #bbdefb; color: #0d47a1; }
         .s-Т { background: #fff9c4; color: #f57f17; }
-
-        /* ===== ЛЕГЕНДА ===== */
-        .legend {
-            background: var(--bg-card);
-            border-radius: 12px;
-            padding: 10px 14px;
-            margin-top: 12px;
-            box-shadow: 0 2px 6px var(--shadow-color);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            align-items: center;
-            transition: background 0.3s, box-shadow 0.3s;
-        }
-        .legend-title {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-right: 4px;
-            transition: color 0.3s;
-        }
-        .legend-item {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 2px 7px;
-            border-radius: 6px;
-            transition: transform 0.2s ease;
-        }
-        .legend-item:hover {
-            transform: scale(1.05);
-        }
-        .legend-item.К { background: #ffcdd2; color: #b71c1c; }
-        .legend-item.П { background: #c8e6c9; color: #1b5e20; }
-        .legend-item.Ш { background: #bbdefb; color: #0d47a1; }
-        .legend-item.Т { background: #fff9c4; color: #f57f17; }
-
-
-        /* ===== СТАТИСТИКА ===== */
+        .s-ВЕ { background: #ffab91; color: #bf360c; }
         .stats-container {
             margin-top: 20px;
         }
@@ -466,7 +383,6 @@
             font-weight: 600;
             transition: color 0.3s;
         }
-
         .stats-table {
             width: 100%;
             border-collapse: collapse;
@@ -504,10 +420,42 @@
         .stats-table td:nth-child(5) { text-align: center; min-width: 50px; }
         .stats-table td:nth-child(6) { text-align: center; min-width: 50px; }
         .stats-table td:nth-child(7) { text-align: center; min-width: 50px; }
-        .stats-table td:nth-child(8) { text-align: center; min-width: 60px; font-weight: 600; }
+        .stats-table td:nth-child(8) { text-align: center; min-width: 50px; }
+        .stats-table td:nth-child(9) { text-align: center; min-width: 60px; font-weight: 600; }
         .stats-table tr:hover td { background: var(--bg-hover); }
-
-        /* ===== TOAST ===== */
+        .legend {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-top: 12px;
+            box-shadow: 0 2px 6px var(--shadow-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .legend-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-right: 4px;
+            transition: color 0.3s;
+        }
+        .legend-item {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            transition: transform 0.2s ease;
+        }
+        .legend-item:hover {
+            transform: scale(1.05);
+        }
+        .legend-item.К { background: #ffcdd2; color: #b71c1c; }
+        .legend-item.П { background: #c8e6c9; color: #1b5e20; }
+        .legend-item.Ш { background: #bbdefb; color: #0d47a1; }
+        .legend-item.Т { background: #fff9c4; color: #f57f17; }
+        .legend-item.ВЕ { background: #ffab91; color: #bf360c; }
         .toast {
             position: fixed; bottom: 20px; right: 20px;
             padding: 10px 18px; border-radius: 8px;
@@ -518,15 +466,12 @@
         .toast.show { opacity: 1; }
         .toast.ok  { background: var(--toast-success); }
         .toast.err { background: var(--toast-error); }
-
         .empty-state {
             text-align: center;
             padding: 40px;
             color: var(--text-light);
             transition: color 0.3s;
         }
-
-        /* ===== ПАГІНАЦІЯ ===== */
         .pagination {
             display: flex;
             gap: 8px;
@@ -560,8 +505,6 @@
             color: var(--text-secondary);
             padding: 4px 8px;
         }
-
-        /* ===== КНОПКА "ЗАВАНТАЖИТИ ЩЕ" ===== */
         .load-more-container {
             display: flex;
             justify-content: center;
@@ -570,8 +513,6 @@
         .load-more-container .btn {
             padding: 6px 18px;
         }
-
-        /* ===== АДАПТИВ ===== */
         @media (max-width: 768px) {
             .toolbar {
                 flex-direction: column;
@@ -586,10 +527,8 @@
             .stats-table td:nth-child(2) { min-width: 80px; }
             .stats-table td:nth-child(3) { min-width: 90px; }
         }
-
-        /* ===== ДРУК ===== */
         @media print {
-            .sidebar, .toolbar, .no-print, .btn, .btn-print,
+            .sidebar, .toolbar, .legend, .no-print, .btn, .btn-print,
             .pagination, .load-more-container {
                 display: none !important;
             }
@@ -648,26 +587,18 @@
     <div th:replace="~{fragments :: sidebar('combat-schedule')}"></div>
     <div class="main-content">
         <div class="container">
-            <!-- ТУЛБАР -->
             <div class="toolbar">
                 <div class="current-date" id="currentDate"></div>
                 <button class="btn btn-nav" id="prevBtn">◀</button>
                 <button class="btn btn-today" id="todayBtn">Сьогодні</button>
                 <button class="btn btn-nav" id="nextBtn">▶</button>
                 <h2 id="monthTitle" style="margin:0 10px;">—</h2>
-
-                <select id="yearFilter">
-                    <option value="">— Всі роки —</option>
-                </select>
-                <select id="monthFilter">
-                    <option value="">— Всі місяці —</option>
-                </select>
+                <select id="yearFilter"><option value="">— Всі роки —</option></select>
+                <select id="monthFilter"><option value="">— Всі місяці —</option></select>
                 <button class="btn btn-primary" id="applyFilterBtn">Показати</button>
                 <button class="btn btn-success" id="exportXlsxBtn">📊 Експорт XLSX</button>
                 <button class="btn btn-print" onclick="window.print()">🖨️ Друк</button>
             </div>
-
-            <!-- ГРАФІК -->
             <div class="table-wrap" id="scheduleTableWrap">
                 <table id="scheduleTable">
                     <thead id="tableHead"></thead>
@@ -676,8 +607,6 @@
                     </tbody>
                 </table>
             </div>
-
-            <!-- ЛЕГЕНДА -->
             <div class="legend" id="legend">
                 <span class="legend-title">Позначення:</span>
                 <span class="legend-item К">К</span>
@@ -688,9 +617,9 @@
                 <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Штурман</span>
                 <span class="legend-item Т">Т</span>
                 <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Технік</span>
+                <span class="legend-item ВЕ">ВЕ</span>
+                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Водій-електрик</span>
             </div>
-
-            <!-- СТАТИСТИКА -->
             <div class="stats-container">
                 <h3>📊 Статистика чергувань за місяць</h3>
                 <div class="table-wrap">
@@ -704,36 +633,29 @@
                             <th data-col="countP" style="width:50px;">П</th>
                             <th data-col="countSh" style="width:50px;">Ш</th>
                             <th data-col="countT" style="width:50px;">Т</th>
+                            <th data-col="countVE" style="width:50px;">ВЕ</th>
                             <th data-col="total" style="width:60px;">Днів БЧ</th>
                         </tr>
                         </thead>
                         <tbody id="statsBody">
-                        <tr><td colspan="8" style="text-align:center;color:var(--text-light);">Завантаження...</td></tr>
+                        <tr><td colspan="9" style="text-align:center;color:var(--text-light);">Завантаження...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-
-            <!-- КНОПКА "ЗАВАНТАЖИТИ ЩЕ" -->
             <div class="load-more-container no-print">
                 <button class="btn btn-primary" id="loadMoreBtn" onclick="loadMore()">Завантажити ще</button>
             </div>
-
-            <!-- ПАГІНАЦІЯ -->
             <div class="pagination" id="pagination"></div>
         </div>
     </div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script th:replace="~{fragments :: sidebar-js}"></script>
 <script>
     (function() {
-        const UA_MONTHS = ['Січень','Лютий','Березень','Квітень','Травень','Червень',
-            'Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+        const UA_MONTHS = ['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
         const UA_DAYS = ['Нд','Пн','Вт','Ср','Чт','Пт','Сб'];
-
         let currentYear, currentMonth;
         let tableData = [];
         let statsData = [];
@@ -741,16 +663,12 @@
         let sortDir = 1;
         let statsSortCol = 'num';
         let statsSortDir = 1;
-
-        // Пагінація
         let currentPage = 0;
         let pageSize = 20;
         let totalElements = 0;
-
         const today = new Date();
         currentYear = today.getFullYear();
         currentMonth = today.getMonth() + 1;
-
         updateCurrentDate();
         loadFilters();
         loadMonth();
@@ -764,46 +682,23 @@
         }
 
         function loadFilters() {
-            fetch('/combat-schedule/api/years')
-                .then(res => res.json())
-                .then(years => {
-                    const sel = document.getElementById('yearFilter');
-                    years.forEach(y => {
-                        const opt = document.createElement('option');
-                        opt.value = y;
-                        opt.textContent = y;
-                        sel.appendChild(opt);
-                    });
-                })
-                .catch(() => {});
-
-            fetch('/combat-schedule/api/months')
-                .then(res => res.json())
-                .then(months => {
-                    const sel = document.getElementById('monthFilter');
-                    months.forEach(m => {
-                        const opt = document.createElement('option');
-                        opt.value = m;
-                        opt.textContent = m;
-                        sel.appendChild(opt);
-                    });
-                })
-                .catch(() => {});
+            fetch('/combat-schedule/api/years').then(res => res.json()).then(years => {
+                const sel = document.getElementById('yearFilter');
+                years.forEach(y => { const opt = document.createElement('option'); opt.value = y; opt.textContent = y; sel.appendChild(opt); });
+            }).catch(() => {});
+            fetch('/combat-schedule/api/months').then(res => res.json()).then(months => {
+                const sel = document.getElementById('monthFilter');
+                months.forEach(m => { const opt = document.createElement('option'); opt.value = m; opt.textContent = m; sel.appendChild(opt); });
+            }).catch(() => {});
         }
 
         function loadMonth() {
-            document.getElementById('monthTitle').textContent =
-                UA_MONTHS[currentMonth - 1] + ' ' + currentYear;
-
+            document.getElementById('monthTitle').textContent = UA_MONTHS[currentMonth - 1] + ' ' + currentYear;
             const url = `/combat-schedule/api?year=${currentYear}&month=${currentMonth}`;
             Promise.all([
                 fetch(url),
                 fetch(`/combat-schedule/api/stats?year=${currentYear}&month=${currentMonth}`)
-            ])
-                .then(responses => Promise.all(responses.map(r => {
-                    if (!r.ok) throw new Error('Network error');
-                    return r.json();
-                })))
+            ]).then(responses => Promise.all(responses.map(r => { if (!r.ok) throw new Error('Network error'); return r.json(); })))
                 .then(([data, stats]) => {
                     tableData = data;
                     statsData = stats;
@@ -814,18 +709,14 @@
                     renderPagination();
                     updateLoadMoreButton();
                     bindSortEvents();
-                })
-                .catch(err => {
-                    console.error(err);
-                    showToast('Помилка завантаження даних', 'err');
-                    document.getElementById('tableBody').innerHTML =
-                        '<tr><td colspan="40" style="text-align:center;padding:32px;color:var(--text-light)">Помилка завантаження</td></tr>';
-                    document.getElementById('statsBody').innerHTML =
-                        '<tr><td colspan="8" style="text-align:center;color:var(--text-light);">Помилка завантаження статистики</td></tr>';
-                });
+                }).catch(err => {
+                console.error(err);
+                showToast('Помилка завантаження даних', 'err');
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="40" style="text-align:center;padding:32px;color:var(--text-light)">Помилка завантаження</td></tr>';
+                document.getElementById('statsBody').innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-light);">Помилка завантаження статистики</td></tr>';
+            });
         }
 
-        // ===== ПАГІНАЦІЯ =====
         function goToPage(page) {
             const totalPages = Math.ceil(totalElements / pageSize);
             if (page < 0 || page >= totalPages) return;
@@ -879,25 +770,14 @@
         }
         window.loadMore = loadMore;
 
-        // ===== СОРТУВАННЯ =====
         function sortBy(col) {
-            if (sortCol === col) {
-                sortDir *= -1;
-            } else {
-                sortCol = col;
-                sortDir = 1;
-            }
+            if (sortCol === col) { sortDir *= -1; } else { sortCol = col; sortDir = 1; }
             applySortAndRender();
             updateSortArrow('scheduleTable', sortCol, sortDir);
         }
 
         function sortStatsBy(col) {
-            if (statsSortCol === col) {
-                statsSortDir *= -1;
-            } else {
-                statsSortCol = col;
-                statsSortDir = 1;
-            }
+            if (statsSortCol === col) { statsSortDir *= -1; } else { statsSortCol = col; statsSortDir = 1; }
             renderStats();
             updateSortArrow('statsTable', statsSortCol, statsSortDir);
         }
@@ -921,6 +801,7 @@
             if (col === 'countP') return row.countP || 0;
             if (col === 'countSh') return row.countSh || 0;
             if (col === 'countT') return row.countT || 0;
+            if (col === 'countVE') return row.countVE || 0;
             if (col === 'total') return row.total || 0;
             return '';
         }
@@ -943,7 +824,6 @@
                 if (va > vb) return 1 * sortDir;
                 return 0;
             });
-            // Пагінація
             const start = currentPage * pageSize;
             const end = Math.min(start + pageSize, totalElements);
             const pagedData = sorted.slice(start, end);
@@ -953,22 +833,14 @@
 
         function renderTable(pagedData) {
             const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
-
-            let headRow1 = `<tr>
-                <th data-col="num" class="col-num">№</th>
-                <th data-col="rank" class="col-rank" style="text-align:left">Звання</th>
-                <th data-col="name" class="col-name" style="text-align:left">ПІБ</th>`;
+            let headRow1 = `<tr><th data-col="num" class="col-num">№</th><th data-col="rank" class="col-rank" style="text-align:left">Звання</th><th data-col="name" class="col-name" style="text-align:left">ПІБ</th>`;
             for (let d = 1; d <= daysInMonth; d++) {
                 const dow = new Date(currentYear, currentMonth - 1, d).getDay();
                 const isWE = (dow === 0 || dow === 6);
-                const isTod = (currentYear === today.getFullYear() &&
-                    currentMonth === today.getMonth() + 1 &&
-                    d === today.getDate());
-                headRow1 += `<th data-col="day${d}" class="col-day${isWE ? ' weekend' : ''}${isTod ? ' today-col' : ''}"
-                         style="font-size:11px;padding:4px 2px;">${d}</th>`;
+                const isTod = (currentYear === today.getFullYear() && currentMonth === today.getMonth() + 1 && d === today.getDate());
+                headRow1 += `<th data-col="day${d}" class="col-day${isWE ? ' weekend' : ''}${isTod ? ' today-col' : ''}" style="font-size:11px;padding:4px 2px;">${d}</th>`;
             }
             headRow1 += `</tr>`;
-
             let headRow2 = `<tr><th></th><th></th><th></th>`;
             for (let d = 1; d <= daysInMonth; d++) {
                 const dow = new Date(currentYear, currentMonth - 1, d).getDay();
@@ -976,27 +848,19 @@
             }
             headRow2 += `</tr>`;
             document.getElementById('tableHead').innerHTML = headRow1 + headRow2;
-
             if (!pagedData || !pagedData.length) {
-                document.getElementById('tableBody').innerHTML =
-                    `<tr><td colspan="${daysInMonth + 3}" style="text-align:center;padding:32px;color:var(--text-light)">Немає даних про чергування</td></tr>`;
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="${daysInMonth + 3}" style="text-align:center;padding:32px;color:var(--text-light)">Немає даних про чергування</td></tr>`;
                 return;
             }
-
             let html = '';
             pagedData.forEach((row, idx) => {
                 const rowNum = row.personnelNumber ?? (idx + 1);
-                let rowHtml = `<tr>
-                    <td class="num-cell">${rowNum}</td>
-                    <td class="rank-cell">${escapeHtml(row.rank)}</td>
-                    <td class="name-cell">${escapeHtml(row.shortName)}</td>`;
+                let rowHtml = `<tr><td class="num-cell">${rowNum}</td><td class="rank-cell">${escapeHtml(row.rank)}</td><td class="name-cell">${escapeHtml(row.shortName)}</td>`;
                 for (let d = 1; d <= daysInMonth; d++) {
                     const status = row.days[d] || '';
                     const dow = new Date(currentYear, currentMonth - 1, d).getDay();
                     const isWE = (dow === 0 || dow === 6);
-                    const isTod = (currentYear === today.getFullYear() &&
-                        currentMonth === today.getMonth() + 1 &&
-                        d === today.getDate());
+                    const isTod = (currentYear === today.getFullYear() && currentMonth === today.getMonth() + 1 && d === today.getDate());
                     let cls = `day-cell${isWE ? ' weekend' : ''}${isTod ? ' today-col' : ''}`;
                     let badge = '';
                     if (status) {
@@ -1005,6 +869,7 @@
                         else if (status.includes('П')) badgeClass = 's-П';
                         else if (status.includes('Ш')) badgeClass = 's-Ш';
                         else if (status.includes('Т')) badgeClass = 's-Т';
+                        else if (status.includes('ВЕ')) badgeClass = 's-ВЕ';
                         if (badgeClass) {
                             badge = `<span class="cell-badge ${badgeClass}">${status}</span>`;
                         } else {
@@ -1022,10 +887,9 @@
         function renderStats() {
             const tbody = document.getElementById('statsBody');
             if (!statsData || !statsData.length) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-light);">Немає даних для статистики</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-light);">Немає даних для статистики</td></tr>';
                 return;
             }
-
             const sorted = [...statsData].sort((a, b) => {
                 let va = getStatsSortValue(a, statsSortCol);
                 let vb = getStatsSortValue(b, statsSortCol);
@@ -1038,7 +902,6 @@
                 if (va > vb) return 1 * statsSortDir;
                 return 0;
             });
-
             tbody.innerHTML = sorted.map((row, idx) => {
                 const rowNum = row.personnelNumber ?? (idx + 1);
                 return `<tr>
@@ -1049,6 +912,7 @@
                     <td>${row.countP ?? 0}</td>
                     <td>${row.countSh ?? 0}</td>
                     <td>${row.countT ?? 0}</td>
+                    <td>${row.countVE ?? 0}</td>
                     <td><strong>${row.total ?? 0}</strong></td>
                 </tr>`;
             }).join('');
@@ -1070,36 +934,24 @@
             const mainTable = document.getElementById('scheduleTable');
             if (mainTable) {
                 const headers = mainTable.querySelectorAll('thead tr:first-child th');
-                headers.forEach(th => {
-                    th.replaceWith(th.cloneNode(true));
-                });
+                headers.forEach(th => { th.replaceWith(th.cloneNode(true)); });
                 const newHeaders = mainTable.querySelectorAll('thead tr:first-child th');
                 newHeaders.forEach(th => {
                     const col = th.dataset.col;
                     if (col) {
-                        th.addEventListener('click', function() {
-                            sortBy(col);
-                        });
+                        th.addEventListener('click', function() { sortBy(col); });
                     }
                 });
             }
-
             const statsTable = document.getElementById('statsTable');
             if (statsTable) {
                 const headers = statsTable.querySelectorAll('thead th');
-                headers.forEach(th => {
-                    const col = th.dataset.col;
-                    if (col) {
-                        th.replaceWith(th.cloneNode(true));
-                    }
-                });
+                headers.forEach(th => { th.replaceWith(th.cloneNode(true)); });
                 const newStatsHeaders = statsTable.querySelectorAll('thead th');
                 newStatsHeaders.forEach(th => {
                     const col = th.dataset.col;
                     if (col) {
-                        th.addEventListener('click', function() {
-                            sortStatsBy(col);
-                        });
+                        th.addEventListener('click', function() { sortStatsBy(col); });
                     }
                 });
             }
@@ -1150,13 +1002,10 @@
             const yearVal = document.getElementById('yearFilter').value;
             const monthVal = document.getElementById('monthFilter').value;
             let year = parseInt(yearVal) || currentYear;
-
             let url = `/combat-schedule/api/export?year=${year}`;
             if (monthVal) {
                 const idx = UA_MONTHS.indexOf(monthVal);
-                if (idx !== -1) {
-                    url += `&month=${idx + 1}`;
-                }
+                if (idx !== -1) { url += `&month=${idx + 1}`; }
             }
             url += `&sortCol=${encodeURIComponent(sortCol)}&sortDir=${sortDir}`;
             url += `&statsSortCol=${encodeURIComponent(statsSortCol)}&statsSortDir=${statsSortDir}`;

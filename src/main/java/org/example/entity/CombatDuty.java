@@ -46,6 +46,9 @@ public class CombatDuty {
     @Column(length = 2000)
     private String reportSummary;
 
+    @Column(name = "driver_electrician", length = 255)
+    private String driverElectrician;
+
     // === НОВІ ПОЛЯ ДЛЯ ПІДСУМКІВ ===
     private Integer totalSorties = 0;
     private Integer combatSorties = 0;

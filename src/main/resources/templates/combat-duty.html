@@ -581,7 +581,6 @@
                 white-space: nowrap !important;
                 font-weight: bold !important;
             }
-            /* Скидаємо sticky для друку */
             .table-wrap table td,
             .table-wrap table th,
             .table-wrap table td:first-child,
@@ -598,7 +597,6 @@
                 background: #1a237e !important;
                 color: white !important;
             }
-            /* Ширини колонок для друку */
             td:first-child,
             th:first-child {
                 width: 25px !important;
@@ -620,15 +618,14 @@
                 max-width: 80px !important;
                 text-align: center !important;
             }
-            /* Текстові колонки – більша ширина */
-            td:nth-child(4), /* Екіпаж */
-            td:nth-child(5), /* Командир */
-            td:nth-child(6), /* Пілот */
-            td:nth-child(7), /* Штурман */
-            td:nth-child(8), /* Технік */
-            td:nth-child(9), /* Озброєння */
-            td:nth-child(10), /* Черговий ПУ */
-            td:nth-child(11) { /* Доповідь */
+            td:nth-child(4),
+            td:nth-child(5),
+            td:nth-child(6),
+            td:nth-child(7),
+            td:nth-child(8),
+            td:nth-child(9),
+            td:nth-child(10),
+            td:nth-child(11) {
                 text-align: left !important;
                 padding-left: 4px !important;
                 padding-right: 4px !important;
@@ -636,7 +633,6 @@
                 min-width: 60px !important;
                 max-width: 120px !important;
             }
-            /* Числові колонки – центровані, вузькі */
             td:nth-child(12),
             td:nth-child(13),
             td:nth-child(14),
@@ -647,7 +643,6 @@
                 max-width: 40px !important;
                 text-align: center !important;
             }
-            /* Остання колонка (Дії) – ховаємо */
             td:last-child,
             th:last-child {
                 display: none !important;
@@ -761,6 +756,8 @@
                         <th data-col="pilot" onclick="sortBy('pilot')" style="min-width:140px;">Пілот</th>
                         <th data-col="navigator" onclick="sortBy('navigator')" style="min-width:140px;">Штурман</th>
                         <th data-col="technician" onclick="sortBy('technician')" style="min-width:140px;">Технік</th>
+                        <!-- NEW: Водій-електрик -->
+                        <th data-col="driverElectrician" onclick="sortBy('driverElectrician')" style="min-width:140px;">Водій-електрик</th>
                         <th data-col="weapons" onclick="sortBy('weapons')" style="min-width:120px;">Озброєння</th>
                         <th data-col="dutyOfficer" onclick="sortBy('dutyOfficer')" style="min-width:140px;">Черговий ПУ</th>
                         <th data-col="reportSummary" onclick="sortBy('reportSummary')" style="min-width:200px;">Доповідь</th>
@@ -773,7 +770,7 @@
                     </tr>
                     </thead>
                     <tbody id="dutyTableBody">
-                    <tr><td colspan="17" class="empty-state">Завантаження...</td></tr>
+                    <tr><td colspan="18" class="empty-state">Завантаження...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -832,6 +829,13 @@
             <label>Технік</label>
             <select id="fTechnician">
                 <option value="">— Оберіть техніка —</option>
+            </select>
+        </div>
+        <!-- NEW: Водій-електрик -->
+        <div class="form-group">
+            <label>Водій-електрик</label>
+            <select id="fDriverElectrician">
+                <option value="">— Оберіть водія-електрика —</option>
             </select>
         </div>
         <div class="form-group">
@@ -898,6 +902,7 @@
                 populateSelect('fPilot', 'Пілот', personnelList);
                 populateSelect('fNavigator', 'Штурман', personnelList);
                 populateSelect('fTechnician', 'Технік', personnelList);
+                populateSelect('fDriverElectrician', 'Водій-електрик', personnelList); // NEW
             } catch (err) {
                 console.warn('Помилка завантаження персоналу:', err);
             }
@@ -1090,6 +1095,7 @@
                     const endTime = d.endTime ? new Date(d.endTime).toLocaleTimeString('uk-UA', {hour:'2-digit', minute:'2-digit'}) : '';
                     const fields = [
                         d.unitName, d.commander, d.pilot, d.navigator, d.technician,
+                        d.driverElectrician, // NEW
                         d.weapons, d.dutyOfficer, d.reportSummary,
                         startDate, endDate, startTime, endTime
                     ];
@@ -1147,7 +1153,7 @@
         function renderTable(data) {
             const tbody = document.getElementById('dutyTableBody');
             if (!data || !data.length) {
-                tbody.innerHTML = '<tr><td colspan="17" class="empty-state">Чергувань немає</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="18" class="empty-state">Чергувань немає</td></tr>';
                 return;
             }
             tbody.innerHTML = data.map(d => {
@@ -1163,6 +1169,7 @@
                     <td class="text-left personnel-cell">${escapeHtml(d.pilot || '—')}</td>
                     <td class="text-left personnel-cell">${escapeHtml(d.navigator || '—')}</td>
                     <td class="text-left personnel-cell">${escapeHtml(d.technician || '—')}</td>
+                    <td class="text-left personnel-cell">${escapeHtml(d.driverElectrician || '—')}</td> <!-- NEW -->
                     <td>${escapeHtml(d.weapons || '—')}</td>
                     <td>${escapeHtml(d.dutyOfficer || '—')}</td>
                     <td class="text-left note-cell" onclick="this.classList.toggle('expanded')" title="Натисни щоб розгорнути">${escapeHtml(summary)}</td>
@@ -1239,7 +1246,7 @@
                 else if (el) el.value = '';
             });
             document.getElementById('fUnitName').value = 'СКОПА';
-            ['fCommander','fPilot','fNavigator','fTechnician'].forEach(id => {
+            ['fCommander','fPilot','fNavigator','fTechnician','fDriverElectrician'].forEach(id => { // NEW
                 const sel = document.getElementById(id);
                 if (sel) sel.value = '';
             });
@@ -1266,6 +1273,7 @@
             setSelectValue('fPilot', duty.pilot);
             setSelectValue('fNavigator', duty.navigator);
             setSelectValue('fTechnician', duty.technician);
+            setSelectValue('fDriverElectrician', duty.driverElectrician); // NEW
             openModal('formModal');
         };
 
@@ -1289,6 +1297,7 @@
             setSelectValue('fPilot', duty.pilot);
             setSelectValue('fNavigator', duty.navigator);
             setSelectValue('fTechnician', duty.technician);
+            setSelectValue('fDriverElectrician', duty.driverElectrician); // NEW
             openModal('formModal');
         };
 
@@ -1316,13 +1325,19 @@
             const pilot = document.getElementById('fPilot').value;
             const navigator = document.getElementById('fNavigator').value;
             const technician = document.getElementById('fTechnician').value;
+            const driverElectrician = document.getElementById('fDriverElectrician').value;
 
-            const roles = [commander, pilot, navigator, technician].filter(Boolean);
+            // ===== ВИДАЛЕНО ПЕРЕВІРКУ НА УНІКАЛЬНІСТЬ =====
+            // Тепер одна особа може займати кілька посад одночасно.
+            // Якщо потрібно повернути перевірку – розкоментуйте блок нижче.
+            /*
+            const roles = [commander, pilot, navigator, technician, driverElectrician].filter(Boolean);
             const uniqueRoles = new Set(roles);
             if (uniqueRoles.size < roles.length) {
                 showToast('Одна особа не може займати кілька посад у чергуванні', 'err');
                 return;
             }
+            */
 
             const body = {
                 startTime: document.getElementById('fStartTime').value,
@@ -1332,6 +1347,7 @@
                 pilot: pilot,
                 navigator: navigator,
                 technician: technician,
+                driverElectrician: driverElectrician,
                 weapons: document.getElementById('fWeapons').value.trim(),
                 dutyOfficer: document.getElementById('fDutyOfficer').value.trim(),
                 reportSummary: document.getElementById('fReportSummary').value.trim(),
