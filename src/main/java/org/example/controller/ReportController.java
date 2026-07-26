@@ -167,7 +167,11 @@ public class ReportController {
         r.setEvent(report.getEffectorStatus());
         r.setCoordinates(report.getCoordinates());
         r.setDistance(request.getDistance());
+
+        // ===== АЗИМУТ ТА КУРС =====
         r.setAzimuth(request.getCourse());
+        r.setCourseDirection(request.getCourseDirection()); // НОВЕ
+
         r.setTargetType(report.getTargetSubType() != null ? report.getTargetSubType() : report.getTargetType());
         r.setIdentification("Дружній");
 

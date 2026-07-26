@@ -138,22 +138,24 @@ public class FlightRecordService {
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
             XSSFCellStyle headerStyle = createHeaderStyle(wb);
-            XSSFCellStyle dataStyle   = createDataStyle(wb);
-            XSSFCellStyle greenStyle  = createGreenStyle(wb);
-            XSSFCellStyle leftStyle   = createLeftStyle(wb);
+            XSSFCellStyle dataStyle = createDataStyle(wb);
+            XSSFCellStyle greenStyle = createGreenStyle(wb);
+            XSSFCellStyle leftStyle = createLeftStyle(wb);
             XSSFCellStyle greenLeftStyle = createGreenStyle(wb);
             greenLeftStyle.setAlignment(HorizontalAlignment.LEFT);
 
+            // Оновлені заголовки – додано "Курс (°)"
             String[] HEADERS = {
                     "№", "Дата", "Екіпаж", "Подія", "Час взльоту", "Час втрати",
-                    "Координати", "Азимут (°)", "Відстань (м)", "Вис. польоту (м)",
+                    "Координати", "Азимут (°)", "Курс (°)", "Відстань (м)", "Вис. польоту (м)",
                     "Засіб ураження", "Вибухівка", "Детонатор",
                     "Висота цілі (м)", "Ціль", "Швидкість цілі (км/год)",
                     "Причина втрати", "Примітка"
             };
+            // Оновлені ширини – додано місце для "Курс (°)"
             int[] COL_WIDTHS = {
                     8, 14, 12, 24, 12, 12,
-                    22, 10, 14, 14,
+                    22, 10, 10, 14, 14,   // індекси 7-10: Азимут, Курс, Відстань, Вис.польоту
                     22, 26, 28,
                     14, 20, 20,
                     22, 50
@@ -195,6 +197,7 @@ public class FlightRecordService {
                     setCell(row, col++, r.getLossTime() != null ? r.getLossTime().format(timeFmt) : "", ctr);
                     setCell(row, col++, r.getCoordinates(), ctr);
                     setCell(row, col++, r.getAzimuth() != null ? r.getAzimuth() + "°" : "", ctr);
+                    setCell(row, col++, r.getCourseDirection() != null ? r.getCourseDirection() + "°" : "", ctr); // НОВЕ
                     setCell(row, col++, r.getDistance(), ctr);
                     setCell(row, col++, r.getAltitude(), ctr);
                     setCell(row, col++, r.getWeapon(), lft);
@@ -211,7 +214,6 @@ public class FlightRecordService {
             return out.toByteArray();
         }
     }
-
     // ===== НОВИЙ МЕТОД ДЛЯ СТАТИСТИКИ =====
     public Map<String, Long> getStats() {
         List<FlightRecord> all = repository.findAll();

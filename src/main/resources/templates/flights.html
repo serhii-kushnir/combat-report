@@ -751,6 +751,7 @@
                         <th style="width:62px" data-col="loss" onclick="sortBy('loss')">Час втрати</th>
                         <th style="width:120px" data-col="coords" onclick="sortBy('coords')">Координати</th>
                         <th style="width:55px">Азимут (°)</th>
+                        <th style="width:55px">Курс (°)</th>
                         <th style="width:75px" data-col="dist" onclick="sortBy('dist')">Відстань (м)</th>
                         <th style="width:70px">Вис. польоту (м)</th>
                         <th style="width:120px" data-col="weapon" onclick="sortBy('weapon')">Засіб ураження</th>
@@ -1100,6 +1101,7 @@
             case 'loss':   return r.lossTime || '';
             case 'coords': return r.coordinates || '';
             case 'azimuth': return r.azimuth || 0;
+            case 'course': return r.courseDirection || 0; // НОВЕ
             case 'dist':   return r.distance || 0;
             case 'alt':    return r.altitude || '';
             case 'weapon': return r.weapon || '';
@@ -1131,6 +1133,7 @@
                 <td style="text-align:center">${fmtTime(r.lossTime)}</td>
                 <td style="text-align:center;font-size:11px">${r.coordinates ?? ''}</td>
                 <td style="text-align:center">${r.azimuth != null ? r.azimuth + '°' : ''}</td>
+                <td style="text-align:center">${r.courseDirection != null ? r.courseDirection + '°' : ''}</td> <!-- НОВЕ -->
                 <td style="text-align:center">${r.distance ?? ''}</td>
                 <td style="text-align:center">${r.altitude ?? ''}</td>
                 <td style="text-align:left;font-size:11px">${r.weapon ?? ''}</td>
