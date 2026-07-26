@@ -69,7 +69,8 @@ public class ReportController {
                 request.getSpeed(),
                 request.getCourse(),
                 request.getManualAltitude(),
-                request.getTargetAltitude()
+                request.getTargetAltitude(),
+                request.getCourseDirection()
         );
         if (!errors.isEmpty()) {
             String message = String.join("\n", errors);
@@ -94,13 +95,15 @@ public class ReportController {
                         request.getSpeed(),
                         request.getCourse(),
                         request.getManualAltitude(),
-                        request.getTargetAltitude());
+                        request.getTargetAltitude(),
+                        request.getCourseDirection());   // НОВИЙ ПАРАМЕТР
                 case 2 -> reportService.formatShortReport(report,
                         request.getDistance(),
                         request.getCourse(),
                         request.getManualAltitude(),
                         request.getTargetAltitude(),
-                        explosionArea);   // ПЕРЕДАЄМО explosionArea
+                        explosionArea,
+                        request.getCourseDirection());   // НОВИЙ ПАРАМЕТР
                 case 3 -> reportService.formatDetailedReport(report, request.getPilot());
                 default -> throw new IllegalArgumentException("Невідомий формат: " + request.getFormat());
             };

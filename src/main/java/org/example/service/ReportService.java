@@ -86,7 +86,8 @@ public class ReportService {
 
     // ========== ФОРМАТ 1 ==========
     public String formatStandardReport(CombatReport report, int manualDistance, int manualSpeed,
-                                       int course, int manualAltitude, int targetAltitude) {
+                                       int course, int manualAltitude, int targetAltitude,
+                                       int courseDirection) {
         StringBuilder sb = new StringBuilder();
         String takeoffTime = "";
         String lossTime;
@@ -113,7 +114,9 @@ public class ReportService {
 
         sb.append("Час: ").append(takeoffTime).append(" - ").append(lossTime).append("\n");
         sb.append("Координати: ").append(report.getCoordinates() != null ? report.getCoordinates() : "").append("\n");
-        sb.append("Азимут-").append(course).append("°, Дальність-").append(manualDistance).append(" м., Висота-").append(manualAltitude).append(" м.\n");
+        sb.append("Азимут-").append(course).append("°")
+                .append(" Курсом-").append(courseDirection).append("°")
+                .append(", Дальність-").append(manualDistance).append(" м., Висота-").append(manualAltitude).append(" м.\n");
         sb.append("Тип: ").append(getTargetTypeDisplay(report)).append("\n");
 
         String weapon = extractWeaponName(report.getWeaponId());
@@ -146,7 +149,8 @@ public class ReportService {
 
     // ========== ФОРМАТ 2 – ДОДАНО ПАРАМЕТР explosionArea ==========
     public String formatShortReport(CombatReport report, int manualDistance, int course,
-                                    int manualAltitude, int targetAltitude, String explosionArea) {
+                                    int manualAltitude, int targetAltitude, String explosionArea,
+                                    int courseDirection) {
         StringBuilder sb = new StringBuilder();
         String weaponNumber = report.getWeaponNumber() != null ? report.getWeaponNumber() : "";
 
@@ -166,7 +170,9 @@ public class ReportService {
         sb.append("Район підриву: ").append(explosionArea).append("\n");
 
         sb.append("Приблизні координати підриву: ").append(report.getCoordinates() != null ? report.getCoordinates() : "").append("\n");
-        sb.append("Азимут-").append(course).append("°, Дальність-").append(manualDistance).append(" м., Висота-").append(manualAltitude).append(" м.\n");
+        sb.append("Азимут-").append(course).append("°")
+                .append(" Курсом-").append(courseDirection).append("°")
+                .append(", Дальність-").append(manualDistance).append(" м., Висота-").append(manualAltitude).append(" м.\n");
         sb.append("Тип цілі: ").append(getTargetTypeDisplay(report)).append("\n");
         sb.append("Висота цілі: ").append(targetAltitude).append(" метрів\n");
 

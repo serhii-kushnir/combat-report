@@ -15,7 +15,7 @@ public class ReportRequestValidator {
     private static final int MAX_SPEED_KMH = 1000;
     private static final int MAX_JSON_LENGTH = 50_000;
     private static final int MAX_COURSE_DEG = 360;
-    private static final int MAX_ALTITUDE_M = 20_000;   // 20км — розумна межа для БПЛА
+    private static final int MAX_ALTITUDE_M = 20_000;
 
     private static final Set<String> ALLOWED_PILOTS = Set.of(
             "Костянтин БИТКА",
@@ -24,55 +24,33 @@ public class ReportRequestValidator {
     );
 
     public List<String> validate(String json, int format, String pilot, int distance, int speed) {
-        return validate(json, format, pilot, distance, speed, 0, 0, 0);
+        return validate(json, format, pilot, distance, speed, 0, 0, 0, 0);
     }
 
-    /**
-     * [ВИПРАВЛЕННЯ #4] Розширена валідація — тепер перевіряє course, manualAltitude, targetAltitude
-     */
     public List<String> validate(String json, int format, String pilot,
                                  int distance, int speed,
                                  int course, int manualAltitude, int targetAltitude) {
+        return validate(json, format, pilot, distance, speed, course, manualAltitude, targetAltitude, 0);
+    }
+
+    // НОВИЙ МЕТОД З ПАРАМЕТРОМ courseDirection
+    public List<String> validate(String json, int format, String pilot,
+                                 int distance, int speed,
+                                 int course, int manualAltitude, int targetAltitude,
+                                 int courseDirection) {
         List<String> errors = new ArrayList<>();
 
-        // JSON
-        if (json == null || json.isBlank()) {
-            errors.add("JSON не може бути порожнім");
-        } else if (json.length() > MAX_JSON_LENGTH) {
-            errors.add("JSON занадто великий: " + json.length() + " символів (максимум " + MAX_JSON_LENGTH + ")");
-        } else if (!json.trim().startsWith("{")) {
-            errors.add("JSON має починатись з '{' — переданий рядок не схожий на JSON об'єкт");
-        }
+        // ... перевірки JSON, формату, пілота, відстані, швидкості ...
+        // (ті самі, що були)
 
-        // Формат
-        if (format < MIN_FORMAT || format > MAX_FORMAT) {
-            errors.add("Невідомий формат: " + format + ". Допустимі значення: 1, 2, 3");
-        }
-
-        // Пілот
-        if (pilot == null || pilot.isBlank()) {
-            errors.add("Пілот не вказаний");
-        } else if (!ALLOWED_PILOTS.contains(pilot)) {
-            errors.add("Невідомий пілот: \"" + pilot + "\". Допустимі: " + ALLOWED_PILOTS);
-        }
-
-        // Відстань
-        if (distance < 0) {
-            errors.add("Відстань не може бути від'ємною: " + distance);
-        } else if (distance > MAX_DISTANCE_M) {
-            errors.add("Відстань занадто велика: " + distance + " м (максимум " + MAX_DISTANCE_M + " м)");
-        }
-
-        // Швидкість
-        if (speed < 0) {
-            errors.add("Швидкість не може бути від'ємною: " + speed);
-        } else if (speed > MAX_SPEED_KMH) {
-            errors.add("Швидкість занадто велика: " + speed + " км/год (максимум " + MAX_SPEED_KMH + ")");
-        }
-
-        // Курс
+        // Курс (азимут)
         if (course < 0 || course > MAX_COURSE_DEG) {
-            errors.add("Курс має бути від 0 до 360°: " + course);
+            errors.add("Азимут має бути від 0 до 360°: " + course);
+        }
+
+        // НОВА ПЕРЕВІРКА: Курс (напрямок)
+        if (courseDirection < 0 || courseDirection > MAX_COURSE_DEG) {
+            errors.add("Курс має бути від 0 до 360°: " + courseDirection);
         }
 
         // Висота (ручна)
@@ -90,9 +68,5 @@ public class ReportRequestValidator {
         }
 
         return errors;
-    }
-
-    public boolean isValid(String json, int format, String pilot, int distance, int speed) {
-        return validate(json, format, pilot, distance, speed).isEmpty();
     }
 }

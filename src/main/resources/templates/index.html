@@ -518,6 +518,10 @@
                 <input type="number" id="course" value="50" step="1" style="width: 60px;">
                 <span>°</span>
 
+                <label style="color: var(--text-status);">Курс:</label>
+                <input type="number" id="courseDirection" value="45" step="1" style="width: 60px;">
+                <span>°</span>
+
                 <label style="color: var(--text-status);">Дальність (Д):</label>
                 <input type="number" id="distance" value="17900" step="100" style="width: 80px;">
                 <span>м.</span>
@@ -579,6 +583,7 @@
             const distanceInput = document.getElementById('distance');
             const speedInput = document.getElementById('speed');
             const courseInput = document.getElementById('course');
+            const courseDirectionInput = document.getElementById('courseDirection'); // НОВЕ
             const altitudeInput = document.getElementById('altitude');
             const explosionAreaInput = document.getElementById('explosionArea');
             const convertBtn = document.getElementById('convertBtn');
@@ -642,6 +647,7 @@
                     distance: parseInt(distanceInput.value),
                     speed: parseInt(speedInput.value),
                     course: parseInt(courseInput.value),
+                    courseDirection: parseInt(courseDirectionInput.value), // НОВЕ
                     manualAltitude: parseInt(altitudeInput.value),
                     targetAltitude: targetAltitude,
                     explosionArea: explosionArea

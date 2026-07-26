@@ -12,8 +12,9 @@ public class ConvertRequest {
     private String pilot;
     private int distance;
     private int speed;
-    private int course;
+    private int course;           // Азимут
+    private int courseDirection;  // НОВЕ ПОЛЕ – Курс
     private int manualAltitude;
     private int targetAltitude;
-    private String explosionArea;   // НОВЕ ПОЛЕ – Район підриву
+    private String explosionArea;
 }
