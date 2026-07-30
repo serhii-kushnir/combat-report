@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <title>Конвертер бойових звітів</title>
     <link rel="icon" type="image/png" href="/favicon.png">
+    <link th:replace="~{fragments :: sidebar-css}">
     <style>
-        /* ===== CSS ЗМІННІ ===== */
+        /* ===== CSS ЗМІННІ (без змін) ===== */
         :root {
             --bg-body: #f5f5f5;
             --bg-card: #ffffff;
@@ -42,6 +43,8 @@
             --btn-save-docx-hover: #bf360c;
             --btn-flight-bg: #6a1b9a;
             --btn-flight-hover: #4a148c;
+            --btn-auto-fill-bg: #00695c;
+            --btn-auto-fill-hover: #004d40;
             --border-header: #1565c0;
             --topbar-bg: #ffffff;
             --topbar-color: #1a237e;
@@ -50,7 +53,6 @@
             --toast-error: #c62828;
         }
 
-        /* Темна тема */
         body.dark-theme {
             --bg-body: #1e1e24;
             --bg-card: #2d2d35;
@@ -87,13 +89,15 @@
             --btn-save-docx-hover: #8a6a3a;
             --btn-flight-bg: #4a1a6a;
             --btn-flight-hover: #5a2a7a;
+            --btn-auto-fill-bg: #1a5a4a;
+            --btn-auto-fill-hover: #2a6a5a;
             --border-header: #4a7ab5;
             --topbar-bg: #2d2d35;
             --topbar-color: #90caf9;
             --separator-color: #3d3d48;
         }
 
-        /* ===== ОСНОВНІ СТИЛІ ===== */
+        /* ===== ОСНОВНІ СТИЛІ (без змін) ===== */
         .topbar {
             background: var(--topbar-bg);
             padding: 12px 20px;
@@ -134,41 +138,13 @@
             from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .params-bar {
-            animation: fadeIn 0.4s ease forwards;
-            opacity: 0;
-            animation-delay: 0.05s;
-        }
-        .additional-bar {
-            animation: fadeIn 0.4s ease forwards;
-            opacity: 0;
-            animation-delay: 0.10s;
-        }
-        .actions-bar {
-            animation: fadeIn 0.4s ease forwards;
-            opacity: 0;
-            animation-delay: 0.15s;
-        }
-        .status {
-            animation: fadeIn 0.4s ease forwards;
-            opacity: 0;
-            animation-delay: 0.20s;
-        }
-        .json-panel {
-            animation: fadeIn 0.5s ease forwards;
-            opacity: 0;
-            animation-delay: 0.25s;
-        }
-        .report-panel {
-            animation: fadeIn 0.5s ease forwards;
-            opacity: 0;
-            animation-delay: 0.30s;
-        }
-        .footer {
-            animation: fadeIn 0.4s ease forwards;
-            opacity: 0;
-            animation-delay: 0.35s;
-        }
+        .params-bar { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.05s; }
+        .additional-bar { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.10s; }
+        .actions-bar { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.15s; }
+        .status { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.20s; }
+        .json-panel { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.25s; }
+        .report-panel { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.30s; }
+        .footer { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.35s; }
 
         /* ===== ПАНЕЛІ ПАРАМЕТРІВ ===== */
         .params-bar {
@@ -195,18 +171,15 @@
             gap: 15px;
             transition: background 0.3s;
         }
-        .params-bar label,
-        .additional-bar label {
+        .params-bar label, .additional-bar label {
             font-weight: bold;
             font-size: 13px;
             margin: 0;
             color: var(--text-secondary);
             transition: color 0.3s;
         }
-        .params-bar select,
-        .params-bar input,
-        .additional-bar select,
-        .additional-bar input {
+        .params-bar select, .params-bar input,
+        .additional-bar select, .additional-bar input {
             padding: 6px 10px;
             border-radius: 4px;
             border: 1px solid var(--border-light);
@@ -218,8 +191,9 @@
         .params-bar select { min-width: 220px; }
         .params-bar input { width: 80px; }
         .additional-bar input { width: 80px; }
+        .additional-bar input#explosionArea { width: 150px; }
 
-        /* ===== КНОПКИ З АНІМАЦІЄЮ ===== */
+        /* ===== КНОПКИ ===== */
         .file-button {
             background: var(--btn-file-bg);
             color: var(--text-white);
@@ -285,47 +259,33 @@
             box-shadow: none;
         }
 
-        .actions-bar .convert-btn {
-            background: var(--btn-convert-bg);
+        .actions-bar .convert-btn { background: var(--btn-convert-bg); }
+        .actions-bar .convert-btn:hover:not(:disabled) { background: var(--btn-convert-hover); }
+        .actions-bar .save-txt { background: var(--btn-save-txt-bg); }
+        .actions-bar .save-txt:hover:not(:disabled) { background: var(--btn-save-txt-hover); }
+        .actions-bar .save-docx { background: var(--btn-save-docx-bg); }
+        .actions-bar .save-docx:hover:not(:disabled) { background: var(--btn-save-docx-hover); }
+        .actions-bar .copy-btn { background: var(--btn-copy-bg); }
+        .actions-bar .copy-btn:hover:not(:disabled) { background: var(--btn-copy-hover); }
+        .actions-bar .clear-btn { background: var(--btn-clear-bg); }
+        .actions-bar .clear-btn:hover:not(:disabled) { background: var(--btn-clear-hover); }
+        .actions-bar .save-flight-btn { background: var(--btn-flight-bg); }
+        .actions-bar .save-flight-btn:hover:not(:disabled) { background: var(--btn-flight-hover); }
+
+        /* НОВА КНОПКА: Заповнити з JSON */
+        .actions-bar .auto-fill-btn {
+            background: var(--btn-auto-fill-bg);
         }
-        .actions-bar .convert-btn:hover:not(:disabled) {
-            background: var(--btn-convert-hover);
+        .actions-bar .auto-fill-btn:hover:not(:disabled) {
+            background: var(--btn-auto-fill-hover);
         }
 
-        .actions-bar .save-txt {
-            background: var(--btn-save-txt-bg);
-        }
-        .actions-bar .save-txt:hover:not(:disabled) {
-            background: var(--btn-save-txt-hover);
-        }
-
-        .actions-bar .save-docx {
-            background: var(--btn-save-docx-bg);
-        }
-        .actions-bar .save-docx:hover:not(:disabled) {
-            background: var(--btn-save-docx-hover);
-        }
-
-        .actions-bar .copy-btn {
-            background: var(--btn-copy-bg);
-        }
-        .actions-bar .copy-btn:hover:not(:disabled) {
-            background: var(--btn-copy-hover);
-        }
-
-        .actions-bar .clear-btn {
-            background: var(--btn-clear-bg);
-        }
-        .actions-bar .clear-btn:hover:not(:disabled) {
-            background: var(--btn-clear-hover);
-        }
-
-        .actions-bar .save-flight-btn {
-            background: var(--btn-flight-bg);
-            color: var(--text-white);
-        }
-        .actions-bar .save-flight-btn:hover:not(:disabled) {
-            background: var(--btn-flight-hover);
+        .separator {
+            width: 1px;
+            height: 30px;
+            background: var(--separator-color);
+            margin: 0 5px;
+            transition: background 0.3s;
         }
 
         /* ===== СТАТУС ===== */
@@ -350,8 +310,7 @@
             margin-top: 5px;
             flex-wrap: wrap;
         }
-        .json-panel,
-        .report-panel {
+        .json-panel, .report-panel {
             flex: 1;
             min-width: 280px;
             border: 1px solid var(--border-color);
@@ -363,8 +322,7 @@
         .report-panel {
             background: var(--bg-report-panel);
         }
-        .json-panel h3,
-        .report-panel h3 {
+        .json-panel h3, .report-panel h3 {
             margin-top: 0;
             color: var(--text-secondary);
             transition: color 0.3s;
@@ -383,15 +341,9 @@
             color: var(--text-primary);
             transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
-        /* Анімація появи тексту в textarea */
-        #reportOutput {
-            transition: background 0.3s, color 0.3s, border-color 0.3s;
-        }
-        #reportOutput:not(:empty) {
-            animation: fadeIn 0.3s ease forwards;
-        }
+        #reportOutput { transition: background 0.3s, color 0.3s, border-color 0.3s; }
+        #reportOutput:not(:empty) { animation: fadeIn 0.3s ease forwards; }
 
-        /* ===== РІЗНЕ ===== */
         .footer {
             text-align: right;
             color: var(--text-light);
@@ -413,77 +365,33 @@
             left: 0;
             top: 0;
         }
-        .separator {
-            width: 1px;
-            height: 30px;
-            background: var(--separator-color);
-            margin: 0 5px;
-            transition: background 0.3s;
-        }
-        .additional-bar input#explosionArea { width: 150px; }
 
-        /* ===== АДАПТИВ ===== */
         @media (max-width: 768px) {
-            .container {
-                padding: 12px;
-                margin: 10px;
-            }
-            .params-bar,
-            .additional-bar,
-            .actions-bar {
+            .container { padding: 12px; margin: 10px; }
+            .params-bar, .additional-bar, .actions-bar {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 8px;
             }
-            .actions-bar .separator {
-                display: none;
-            }
-            .split-pane {
-                flex-direction: column;
-            }
-            textarea {
-                height: 300px;
-            }
+            .actions-bar .separator { display: none; }
+            .split-pane { flex-direction: column; }
+            textarea { height: 300px; }
         }
 
-        /* ===== ДРУК ===== */
         @media print {
             .sidebar, .toolbar, .params-bar, .additional-bar, .actions-bar,
             .status, .no-print, .file-button, .btn, .btn-print {
                 display: none !important;
             }
-            body {
-                background: white !important;
-                color: black !important;
-            }
-            .container {
-                box-shadow: none !important;
-                border: 1px solid #ccc !important;
-            }
-            .main-content {
-                margin-left: 0 !important;
-                padding: 0 !important;
-            }
-            .split-pane {
-                flex-direction: column !important;
-            }
-            textarea {
-                border: 1px solid #ddd !important;
-                background: white !important;
-                color: black !important;
-                height: auto !important;
-                min-height: 400px !important;
-            }
-            .json-panel, .report-panel {
-                border: 1px solid #ddd !important;
-                background: white !important;
-            }
-            .report-panel textarea {
-                min-height: 600px !important;
-            }
+            body { background: white !important; color: black !important; }
+            .container { box-shadow: none !important; border: 1px solid #ccc !important; }
+            .main-content { margin-left: 0 !important; padding: 0 !important; }
+            .split-pane { flex-direction: column !important; }
+            textarea { border: 1px solid #ddd !important; background: white !important; color: black !important; height: auto !important; min-height: 400px !important; }
+            .json-panel, .report-panel { border: 1px solid #ddd !important; background: white !important; }
+            .report-panel textarea { min-height: 600px !important; }
         }
     </style>
-    <link th:replace="~{fragments :: sidebar-css}">
 </head>
 <body>
 <div class="layout">
@@ -508,6 +416,7 @@
                 <label>Пілот:</label>
                 <select id="pilot">
                     <option value="Костянтин БИТКА">Костянтин БИТКА</option>
+                    <option value="Олександр ШЕПРУК">Олександр ШЕПРУК</option>
                     <option value="Ярослав НАГОРНИЙ">Ярослав НАГОРНИЙ</option>
                 </select>
             </div>
@@ -518,6 +427,7 @@
                 <input type="number" id="course" value="50" step="1" style="width: 60px;">
                 <span>°</span>
 
+                <!-- НОВЕ ПОЛЕ: Курс -->
                 <label style="color: var(--text-status);">Курс:</label>
                 <input type="number" id="courseDirection" value="45" step="1" style="width: 60px;">
                 <span>°</span>
@@ -545,6 +455,8 @@
             <!-- ТРЕТІЙ РЯДОК: кнопки дій -->
             <div class="actions-bar">
                 <button id="convertBtn" class="convert-btn">🔄 Конвертувати</button>
+                <!-- НОВА КНОПКА: Заповнити з JSON -->
+                <button id="autoFillBtn" class="auto-fill-btn">📥 Заповнити з JSON</button>
                 <button id="copyBtn" class="copy-btn">📋 Копіювати</button>
                 <button id="saveFlightBtn" class="save-flight-btn" disabled>💾 В журнал БпАК</button>
                 <button id="clearBtn" class="clear-btn">🗑 Очистити</button>
@@ -575,217 +487,319 @@
         </div>
 
         <script>
-            const jsonInput = document.getElementById('jsonInput');
-            const reportOutput = document.getElementById('reportOutput');
-            const statusDiv = document.getElementById('status');
-            const formatSelect = document.getElementById('format');
-            const pilotSelect = document.getElementById('pilot');
-            const distanceInput = document.getElementById('distance');
-            const speedInput = document.getElementById('speed');
-            const courseInput = document.getElementById('course');
-            const courseDirectionInput = document.getElementById('courseDirection'); // НОВЕ
-            const altitudeInput = document.getElementById('altitude');
-            const explosionAreaInput = document.getElementById('explosionArea');
-            const convertBtn = document.getElementById('convertBtn');
-            const copyBtn = document.getElementById('copyBtn');
-            const clearBtn = document.getElementById('clearBtn');
-            const saveTxtBtn = document.getElementById('saveTxtBtn');
-            const saveDocxBtn = document.getElementById('saveDocxBtn');
-            const fileInput = document.getElementById('fileInput');
+            (function() {
+                const jsonInput = document.getElementById('jsonInput');
+                const reportOutput = document.getElementById('reportOutput');
+                const statusDiv = document.getElementById('status');
+                const formatSelect = document.getElementById('format');
+                const pilotSelect = document.getElementById('pilot');
+                const distanceInput = document.getElementById('distance');
+                const speedInput = document.getElementById('speed');
+                const courseInput = document.getElementById('course');
+                const courseDirectionInput = document.getElementById('courseDirection');
+                const altitudeInput = document.getElementById('altitude');
+                const explosionAreaInput = document.getElementById('explosionArea');
+                const convertBtn = document.getElementById('convertBtn');
+                const copyBtn = document.getElementById('copyBtn');
+                const clearBtn = document.getElementById('clearBtn');
+                const saveTxtBtn = document.getElementById('saveTxtBtn');
+                const saveDocxBtn = document.getElementById('saveDocxBtn');
+                const saveFlightBtn = document.getElementById('saveFlightBtn');
+                const autoFillBtn = document.getElementById('autoFillBtn');
+                const fileInput = document.getElementById('fileInput');
 
-            let currentReportText = '';
-            let lastReportObj = null;
-            let lastRequest = null;
-            let currentFilename = 'combat_report';
+                let currentReportText = '';
+                let lastReportObj = null;
+                let lastRequest = null;
+                let currentFilename = 'combat_report';
 
-            function setStatus(message, isError = false) {
-                statusDiv.innerHTML = message;
-                statusDiv.className = 'status' + (isError ? ' error' : '');
-            }
-
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    currentFilename = file.name.replace(/\.json$/i, '');
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        jsonInput.value = event.target.result;
-                        setStatus('✅ JSON завантажено з файлу: ' + file.name);
-                    };
-                    reader.readAsText(file, 'UTF-8');
-                    fileInput.value = '';
-                }
-            });
-
-            convertBtn.addEventListener('click', async () => {
-                const json = jsonInput.value.trim();
-                if (!json) {
-                    setStatus('❌ Будь ласка, введіть JSON або виберіть файл.', true);
-                    return;
+                function setStatus(message, isError = false) {
+                    statusDiv.innerHTML = message;
+                    statusDiv.className = 'status' + (isError ? ' error' : '');
                 }
 
-                convertBtn.disabled = true;
-                convertBtn.textContent = '⏳ Конвертація...';
+                // ===== НОВА ФУНКЦІЯ: парсинг description та заповнення полів =====
+                function parseDescriptionAndFillFields(description) {
+                    if (!description || typeof description !== 'string') {
+                        setStatus('⚠️ Поле "description" відсутнє або пусте', true);
+                        return false;
+                    }
 
-                let reportObj;
-                try {
-                    reportObj = JSON.parse(json);
-                } catch (parseError) {
-                    setStatus('❌ Невірний JSON: ' + parseError.message, true);
-                    convertBtn.disabled = false;
-                    convertBtn.textContent = '🔄 Конвертувати';
-                    return;
+                    // Регулярний вираз для пошуку значень
+                    // Азимут-105°, Курс-101, Дальність-40000 м., Висота-1500 м.
+                    const regex = /Азимут[-:]\s*(\d+)°?\s*[,.]?\s*Курс[-:]\s*(\d+)°?\s*[,.]?\s*Дальність[-:]\s*(\d+)\s*м\.?\s*[,.]?\s*Висота[-:]\s*(\d+)\s*м\.?/i;
+                    const match = description.match(regex);
+
+                    if (!match) {
+                        setStatus('⚠️ Не вдалося розпізнати формат description. Очікується: "Азимут-105°, Курс-101, Дальність-40000 м., Висота-1500 м."', true);
+                        return false;
+                    }
+
+                    // Групи: 1 - Азимут, 2 - Курс, 3 - Дальність, 4 - Висота
+                    const azimuth = parseInt(match[1]);
+                    const course = parseInt(match[2]);
+                    const distance = parseInt(match[3]);
+                    const altitude = parseInt(match[4]);
+
+                    if (isNaN(azimuth) || isNaN(course) || isNaN(distance) || isNaN(altitude)) {
+                        setStatus('⚠️ Помилка парсингу чисел з description', true);
+                        return false;
+                    }
+
+                    // Заповнюємо поля
+                    courseInput.value = azimuth;
+                    courseDirectionInput.value = course;
+                    distanceInput.value = distance;
+                    altitudeInput.value = altitude;
+
+                    setStatus(`✅ Автоматично заповнено: Азимут=${azimuth}°, Курс=${course}°, Дальність=${distance} м, Висота=${altitude} м`);
+                    return true;
                 }
 
-                const targetAltitude = reportObj.altitude || 0;
-                const explosionArea = explosionAreaInput.value.trim() || "Море";
+                // ===== АВТОМАТИЧНЕ ЗАПОВНЕННЯ З JSON =====
+                function autoFillFromJson(jsonText) {
+                    if (!jsonText || !jsonText.trim()) {
+                        setStatus('⚠️ JSON порожній', true);
+                        return false;
+                    }
+                    try {
+                        const obj = JSON.parse(jsonText);
+                        const description = obj.description || obj.Report?.description || obj.report?.description;
+                        if (!description) {
+                            setStatus('⚠️ Поле "description" не знайдено в JSON', true);
+                            return false;
+                        }
+                        return parseDescriptionAndFillFields(description);
+                    } catch (e) {
+                        setStatus('⚠️ Помилка парсингу JSON: ' + e.message, true);
+                        return false;
+                    }
+                }
 
-                const requestBody = {
-                    report: reportObj,
-                    format: parseInt(formatSelect.value),
-                    pilot: pilotSelect.value,
-                    distance: parseInt(distanceInput.value),
-                    speed: parseInt(speedInput.value),
-                    course: parseInt(courseInput.value),
-                    courseDirection: parseInt(courseDirectionInput.value), // НОВЕ
-                    manualAltitude: parseInt(altitudeInput.value),
-                    targetAltitude: targetAltitude,
-                    explosionArea: explosionArea
-                };
+                // ===== ОБРОБКА ФАЙЛУ =====
+                fileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        currentFilename = file.name.replace(/\.json$/i, '');
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            const content = event.target.result;
+                            jsonInput.value = content;
+                            setStatus('✅ JSON завантажено з файлу: ' + file.name);
+                            // Автоматично заповнюємо поля з description
+                            autoFillFromJson(content);
+                        };
+                        reader.readAsText(file, 'UTF-8');
+                        fileInput.value = '';
+                    }
+                });
 
-                try {
-                    const response = await fetch('/convert', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(requestBody)
-                    });
+                // ===== ОБРОБКА ВСТАВКИ JSON У ТЕКСТОВЕ ПОЛЕ =====
+                // Спрацьовує при вставці або зміні тексту (з затримкою)
+                let autoFillTimeout = null;
+                jsonInput.addEventListener('input', function() {
+                    clearTimeout(autoFillTimeout);
+                    autoFillTimeout = setTimeout(() => {
+                        const content = this.value;
+                        if (content.trim()) {
+                            // Спроба автоматичного заповнення при вставці
+                            // Але не заважаємо, якщо користувач вручну редагує
+                            autoFillFromJson(content);
+                        }
+                    }, 500); // затримка 500 мс
+                });
 
-                    const text = await response.text();
+                // ===== КНОПКА "ЗАПОВНИТИ З JSON" (ручний запуск) =====
+                autoFillBtn.addEventListener('click', function() {
+                    const content = jsonInput.value;
+                    if (!content.trim()) {
+                        setStatus('⚠️ JSON порожній. Вставте JSON спочатку.', true);
+                        return;
+                    }
+                    autoFillFromJson(content);
+                });
 
-                    if (!response.ok) {
-                        setStatus('❌ ' + text, true);
+                // ===== КОНВЕРТАЦІЯ =====
+                convertBtn.addEventListener('click', async () => {
+                    const json = jsonInput.value.trim();
+                    if (!json) {
+                        setStatus('❌ Будь ласка, введіть JSON або виберіть файл.', true);
                         return;
                     }
 
-                    currentReportText = text;
-                    reportOutput.value = currentReportText;
-                    lastReportObj = reportObj;
-                    lastRequest = requestBody;
-                    document.getElementById('saveFlightBtn').disabled = false;
-                    setStatus('✅ Конвертація виконана успішно! (' + currentReportText.split('\n').length + ' рядків)');
-                } catch (error) {
-                    setStatus('❌ Помилка мережі: ' + error.message, true);
-                } finally {
-                    convertBtn.disabled = false;
-                    convertBtn.textContent = '🔄 Конвертувати';
-                }
-            });
+                    convertBtn.disabled = true;
+                    convertBtn.textContent = '⏳ Конвертація...';
 
-            copyBtn.addEventListener('click', async () => {
-                if (!reportOutput.value.trim()) {
-                    setStatus('❌ Немає даних для копіювання.', true);
-                    return;
-                }
-                try {
-                    await navigator.clipboard.writeText(reportOutput.value);
-                    setStatus('✅ Скопійовано в буфер обміну!');
-                } catch (err) {
-                    reportOutput.select();
-                    document.execCommand('copy');
-                    setStatus('✅ Скопійовано в буфер обміну!');
-                }
-            });
-
-            clearBtn.addEventListener('click', () => {
-                if (confirm('Очистити всі поля?')) {
-                    jsonInput.value = '';
-                    reportOutput.value = '';
-                    currentReportText = '';
-                    currentFilename = 'combat_report';
-                    distanceInput.value = '17900';
-                    speedInput.value = '160';
-                    courseInput.value = '50';
-                    altitudeInput.value = '2042';
-                    explosionAreaInput.value = 'Море';
-                    setStatus('✅ Всі поля очищено.');
-                }
-            });
-
-            async function downloadFile(url, filename, report) {
-                const formData = new URLSearchParams();
-                formData.append('report', report);
-                formData.append('filename', filename);
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: formData
-                    });
-                    if (response.ok) {
-                        const blob = await response.blob();
-                        const downloadUrl = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = downloadUrl;
-                        a.download = filename;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        window.URL.revokeObjectURL(downloadUrl);
-                        return true;
+                    let reportObj;
+                    try {
+                        reportObj = JSON.parse(json);
+                    } catch (parseError) {
+                        setStatus('❌ Невірний JSON: ' + parseError.message, true);
+                        convertBtn.disabled = false;
+                        convertBtn.textContent = '🔄 Конвертувати';
+                        return;
                     }
-                    return false;
-                } catch (error) {
-                    console.error('Download error:', error);
-                    return false;
-                }
-            }
 
-            saveTxtBtn.addEventListener('click', async () => {
-                if (!currentReportText) {
-                    setStatus('❌ Немає даних для збереження. Спочатку виконайте конвертацію.', true);
-                    return;
-                }
-                const success = await downloadFile('/save/txt', currentFilename + '.txt', currentReportText);
-                setStatus(success ? '✅ TXT звіт збережено!' : '❌ Помилка збереження TXT', !success);
-            });
+                    // Якщо поля ще не заповнені – спробуємо заповнити автоматично
+                    // (на випадок, якщо користувач не натискав "Заповнити з JSON")
+                    if (!courseInput.value || courseInput.value === '0') {
+                        autoFillFromJson(json);
+                    }
 
-            saveDocxBtn.addEventListener('click', async () => {
-                if (!currentReportText) {
-                    setStatus('❌ Немає даних для збереження. Спочатку виконайте конвертацію.', true);
-                    return;
-                }
-                const success = await downloadFile('/save/docx', currentFilename + '.docx', currentReportText);
-                setStatus(success ? '✅ DOCX звіт збережено!' : '❌ Помилка збереження DOCX', !success);
-            });
+                    const targetAltitude = reportObj.altitude || 0;
+                    const explosionArea = explosionAreaInput.value.trim() || "Море";
 
-            document.getElementById('saveFlightBtn').addEventListener('click', async () => {
-                if (!lastRequest) { setStatus('❌ Спочатку виконайте конвертацію.', true); return; }
-                const btn = document.getElementById('saveFlightBtn');
-                btn.disabled = true;
-                btn.textContent = '⏳ Збереження...';
-                try {
-                    const res = await fetch('/save/flight', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(lastRequest)
-                    });
-                    const text = await res.text();
-                    let data = {};
-                    try { data = JSON.parse(text); } catch(e) { data = { error: text }; }
-                    if (res.ok) {
-                        setStatus('✅ ' + data.message + ' (id=' + data.id + '). <a href="/flights" style="color:var(--text-status)">Відкрити журнал →</a>');
-                        btn.textContent = '✅ Збережено';
-                    } else {
-                        setStatus('❌ Помилка збереження: ' + (data.error || data.message || text), true);
+                    const requestBody = {
+                        report: reportObj,
+                        format: parseInt(formatSelect.value),
+                        pilot: pilotSelect.value,
+                        distance: parseInt(distanceInput.value),
+                        speed: parseInt(speedInput.value),
+                        course: parseInt(courseInput.value),
+                        courseDirection: parseInt(courseDirectionInput.value) || 0,
+                        manualAltitude: parseInt(altitudeInput.value),
+                        targetAltitude: targetAltitude,
+                        explosionArea: explosionArea
+                    };
+
+                    try {
+                        const response = await fetch('/convert', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(requestBody)
+                        });
+
+                        const text = await response.text();
+
+                        if (!response.ok) {
+                            setStatus('❌ ' + text, true);
+                            return;
+                        }
+
+                        currentReportText = text;
+                        reportOutput.value = currentReportText;
+                        lastReportObj = reportObj;
+                        lastRequest = requestBody;
+                        saveFlightBtn.disabled = false;
+                        setStatus('✅ Конвертація виконана успішно! (' + currentReportText.split('\n').length + ' рядків)');
+                    } catch (error) {
+                        setStatus('❌ Помилка мережі: ' + error.message, true);
+                    } finally {
+                        convertBtn.disabled = false;
+                        convertBtn.textContent = '🔄 Конвертувати';
+                    }
+                });
+
+                // ===== ІНШІ КНОПКИ (без змін) =====
+                copyBtn.addEventListener('click', async () => {
+                    if (!reportOutput.value.trim()) {
+                        setStatus('❌ Немає даних для копіювання.', true);
+                        return;
+                    }
+                    try {
+                        await navigator.clipboard.writeText(reportOutput.value);
+                        setStatus('✅ Скопійовано в буфер обміну!');
+                    } catch (err) {
+                        reportOutput.select();
+                        document.execCommand('copy');
+                        setStatus('✅ Скопійовано в буфер обміну!');
+                    }
+                });
+
+                clearBtn.addEventListener('click', () => {
+                    if (confirm('Очистити всі поля?')) {
+                        jsonInput.value = '';
+                        reportOutput.value = '';
+                        currentReportText = '';
+                        currentFilename = 'combat_report';
+                        distanceInput.value = '17900';
+                        speedInput.value = '160';
+                        courseInput.value = '50';
+                        courseDirectionInput.value = '45';
+                        altitudeInput.value = '2042';
+                        explosionAreaInput.value = 'Море';
+                        saveFlightBtn.disabled = true;
+                        setStatus('✅ Всі поля очищено.');
+                    }
+                });
+
+                async function downloadFile(url, filename, report) {
+                    const formData = new URLSearchParams();
+                    formData.append('report', report);
+                    formData.append('filename', filename);
+                    try {
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: formData
+                        });
+                        if (response.ok) {
+                            const blob = await response.blob();
+                            const downloadUrl = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = downloadUrl;
+                            a.download = filename;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            window.URL.revokeObjectURL(downloadUrl);
+                            return true;
+                        }
+                        return false;
+                    } catch (error) {
+                        console.error('Download error:', error);
+                        return false;
+                    }
+                }
+
+                saveTxtBtn.addEventListener('click', async () => {
+                    if (!currentReportText) {
+                        setStatus('❌ Немає даних для збереження. Спочатку виконайте конвертацію.', true);
+                        return;
+                    }
+                    const success = await downloadFile('/save/txt', currentFilename + '.txt', currentReportText);
+                    setStatus(success ? '✅ TXT звіт збережено!' : '❌ Помилка збереження TXT', !success);
+                });
+
+                saveDocxBtn.addEventListener('click', async () => {
+                    if (!currentReportText) {
+                        setStatus('❌ Немає даних для збереження. Спочатку виконайте конвертацію.', true);
+                        return;
+                    }
+                    const success = await downloadFile('/save/docx', currentFilename + '.docx', currentReportText);
+                    setStatus(success ? '✅ DOCX звіт збережено!' : '❌ Помилка збереження DOCX', !success);
+                });
+
+                saveFlightBtn.addEventListener('click', async () => {
+                    if (!lastRequest) { setStatus('❌ Спочатку виконайте конвертацію.', true); return; }
+                    const btn = saveFlightBtn;
+                    btn.disabled = true;
+                    btn.textContent = '⏳ Збереження...';
+                    try {
+                        const res = await fetch('/save/flight', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(lastRequest)
+                        });
+                        const text = await res.text();
+                        let data = {};
+                        try { data = JSON.parse(text); } catch(e) { data = { error: text }; }
+                        if (res.ok) {
+                            setStatus('✅ ' + data.message + ' (id=' + data.id + '). <a href="/flights" style="color:var(--text-status)">Відкрити журнал →</a>');
+                            btn.textContent = '✅ Збережено';
+                        } else {
+                            setStatus('❌ Помилка збереження: ' + (data.error || data.message || text), true);
+                            btn.disabled = false;
+                            btn.textContent = '💾 В журнал БпАК';
+                        }
+                    } catch (err) {
+                        setStatus('❌ Помилка мережі: ' + err.message, true);
                         btn.disabled = false;
                         btn.textContent = '💾 В журнал БпАК';
                     }
-                } catch (err) {
-                    setStatus('❌ Помилка мережі: ' + err.message, true);
-                    btn.disabled = false;
-                    btn.textContent = '💾 В журнал БпАК';
-                }
-            });
+                });
+
+            })();
         </script>
     </div>
 </div>
