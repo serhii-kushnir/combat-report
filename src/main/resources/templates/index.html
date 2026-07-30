@@ -416,7 +416,6 @@
                 <label>Пілот:</label>
                 <select id="pilot">
                     <option value="Костянтин БИТКА">Костянтин БИТКА</option>
-                    <option value="Олександр ШЕПРУК">Олександр ШЕПРУК</option>
                     <option value="Ярослав НАГОРНИЙ">Ярослав НАГОРНИЙ</option>
                 </select>
             </div>
@@ -627,6 +626,10 @@
                         return;
                     }
 
+                    // ===== Скидаємо стан кнопки "В журнал БпАК" =====
+                    saveFlightBtn.disabled = true;
+                    saveFlightBtn.textContent = '💾 В журнал БпАК';
+
                     convertBtn.disabled = true;
                     convertBtn.textContent = '⏳ Конвертація...';
 
@@ -641,7 +644,6 @@
                     }
 
                     // Якщо поля ще не заповнені – спробуємо заповнити автоматично
-                    // (на випадок, якщо користувач не натискав "Заповнити з JSON")
                     if (!courseInput.value || courseInput.value === '0') {
                         autoFillFromJson(json);
                     }
@@ -680,7 +682,11 @@
                         reportOutput.value = currentReportText;
                         lastReportObj = reportObj;
                         lastRequest = requestBody;
+
+                        // ===== Активуємо кнопку з початковим текстом =====
                         saveFlightBtn.disabled = false;
+                        saveFlightBtn.textContent = '💾 В журнал БпАК';
+
                         setStatus('✅ Конвертація виконана успішно! (' + currentReportText.split('\n').length + ' рядків)');
                     } catch (error) {
                         setStatus('❌ Помилка мережі: ' + error.message, true);
@@ -718,7 +724,9 @@
                         courseDirectionInput.value = '45';
                         altitudeInput.value = '2042';
                         explosionAreaInput.value = 'Море';
+                        // ===== Скидаємо кнопку =====
                         saveFlightBtn.disabled = true;
+                        saveFlightBtn.textContent = '💾 В журнал БпАК';
                         setStatus('✅ Всі поля очищено.');
                     }
                 });

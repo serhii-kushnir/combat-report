@@ -19,7 +19,6 @@ public class ReportRequestValidator {
 
     private static final Set<String> ALLOWED_PILOTS = Set.of(
             "Костянтин БИТКА",
-            "Олександр ШЕПРУК",
             "Ярослав НАГОРНИЙ"
     );
 
