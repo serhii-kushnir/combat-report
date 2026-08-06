@@ -749,7 +749,7 @@
                         <th style="width:62px" data-col="loss" onclick="sortBy('loss')">Час втрати</th>
                         <th style="width:120px" data-col="coords" onclick="sortBy('coords')">Координати</th>
                         <th style="width:55px">Азимут (°)</th>
-                        <th style="width:55px">Курс (°)</th> <!-- НОВА КОЛОНКА -->
+                        <th style="width:55px">Курс (°)</th>
                         <th style="width:75px" data-col="dist" onclick="sortBy('dist')">Відстань (м)</th>
                         <th style="width:70px">Вис. польоту (м)</th>
                         <th style="width:120px" data-col="weapon" onclick="sortBy('weapon')">Засіб ураження</th>
@@ -822,7 +822,6 @@
                 <label>Азимут (°)</label>
                 <input type="number" id="fAzimuth" placeholder="50" min="0" max="360">
             </div>
-            <!-- НОВЕ ПОЛЕ: КУРС -->
             <div class="form-group">
                 <label>Курс (°)</label>
                 <input type="number" id="fCourse" placeholder="45" min="0" max="360">
@@ -1100,7 +1099,7 @@
             case 'loss':   return r.lossTime || '';
             case 'coords': return r.coordinates || '';
             case 'azimuth': return r.azimuth || 0;
-            case 'course': return r.courseDirection || 0; // НОВЕ
+            case 'course': return r.courseDirection || 0;
             case 'dist':   return r.distance || 0;
             case 'alt':    return r.altitude || '';
             case 'weapon': return r.weapon || '';
@@ -1132,7 +1131,7 @@
                 <td style="text-align:center">${fmtTime(r.lossTime)}</td>
                 <td style="text-align:center;font-size:11px">${r.coordinates ?? ''}</td>
                 <td style="text-align:center">${r.azimuth != null ? r.azimuth + '°' : ''}</td>
-                <td style="text-align:center">${r.courseDirection != null ? r.courseDirection + '°' : ''}</td> <!-- НОВЕ -->
+                <td style="text-align:center">${r.courseDirection != null ? r.courseDirection + '°' : ''}</td>
                 <td style="text-align:center">${r.distance ?? ''}</td>
                 <td style="text-align:center">${r.altitude ?? ''}</td>
                 <td style="text-align:left;font-size:11px">${r.weapon ?? ''}</td>
@@ -1189,7 +1188,7 @@
         document.getElementById('editId').value = '';
         const fields = ['fNum','fDate','fCrew','fMonth','fEvent','fTakeoff','fLoss',
             'fCoords','fAzimuth','fCourse','fDist','fFlightAlt','fType','fIdent',
-            'fWeapon','fExplosive','fDetonator','fAltitude','fTarget','fSpeed','fNote'];
+            'fWeapon','fExplosive','fDetonator','fAltitude','fTargetAlt','fTarget','fSpeed','fNote'];
         document.getElementById('fLossReason').value = '';
         fields.forEach(id => document.getElementById(id).value = '');
         openModal('formModal');
@@ -1209,15 +1208,23 @@
         document.getElementById('fLoss').value     = r.lossTime ? r.lossTime.substring(0,5) : '';
         document.getElementById('fCoords').value      = r.coordinates ?? '';
         document.getElementById('fAzimuth').value   = r.azimuth ?? '';
-        document.getElementById('fCourse').value    = r.courseDirection ?? ''; // НОВЕ
+        document.getElementById('fCourse').value    = r.courseDirection ?? '';
         document.getElementById('fDist').value      = r.distance ?? '';
         document.getElementById('fFlightAlt').value = r.flightAltitude ?? '';
+        // Висота польоту (текст) – заповнюємо з altitude
+        document.getElementById('fAltitude').value = r.altitude ?? '';
+        // Якщо flightAltitude пустий, а altitude є – скопіюємо в flightAlt для зручності
+        if (!r.flightAltitude && r.altitude) {
+            const parsed = parseInt(r.altitude);
+            if (!isNaN(parsed)) {
+                document.getElementById('fFlightAlt').value = parsed;
+            }
+        }
         document.getElementById('fType').value     = r.targetType ?? '';
         document.getElementById('fIdent').value    = r.identification ?? '';
         document.getElementById('fWeapon').value   = r.weapon ?? '';
         document.getElementById('fExplosive').value = r.explosive ?? '';
         document.getElementById('fDetonator').value = r.detonator ?? '';
-        document.getElementById('fAltitude').value     = r.altitude ?? '';
         document.getElementById('fTargetAlt').value  = r.targetAltitude ?? '';
         document.getElementById('fTarget').value   = r.target ?? '';
         document.getElementById('fSpeed').value      = r.targetSpeed ?? '';
@@ -1238,7 +1245,7 @@
             lossTime:       document.getElementById('fLoss').value || null,
             coordinates:    document.getElementById('fCoords').value.trim(),
             azimuth:        parseInt(document.getElementById('fAzimuth').value) || null,
-            courseDirection: parseInt(document.getElementById('fCourse').value) || null, // НОВЕ
+            courseDirection: parseInt(document.getElementById('fCourse').value) || null,
             distance:       parseInt(document.getElementById('fDist').value) || null,
             flightAltitude: parseInt(document.getElementById('fFlightAlt').value) || null,
             targetType:     document.getElementById('fType').value.trim(),
