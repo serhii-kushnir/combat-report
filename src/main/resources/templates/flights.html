@@ -298,7 +298,7 @@
             width: 100%;
             border-collapse: collapse;
             background: var(--bg-table);
-            min-width: 1200px;
+            min-width: 1300px;
             transition: background 0.3s;
         }
         thead {
@@ -380,7 +380,7 @@
             background: var(--bg-card);
             border-radius: 10px;
             padding: 24px;
-            width: 700px;
+            width: 750px;
             max-width: 96vw;
             max-height: 90vh;
             overflow-y: auto;
@@ -724,14 +724,12 @@
 
             <!-- СТАТИСТИКА – один рядок, дві групи -->
             <div class="stats-row">
-                <!-- ЛІВА група: статистика поточної сторінки -->
                 <div class="stats-group" id="statsBar">
                     <div class="stat-card"><div class="num" id="pageTotal">—</div><div class="lbl">На сторінці</div></div>
                     <div class="stat-card"><div class="num hits" id="pageHits">—</div><div class="lbl">Знищень на стор.</div></div>
                     <div class="stat-card"><div class="num loss" id="pageLoss">—</div><div class="lbl">Втрат на стор.</div></div>
                 </div>
 
-                <!-- ПРАВА група: загальна статистика з БД -->
                 <div class="stats-group" id="generalStatsBar">
                     <div class="stat-card"><div class="num" id="genTotal">—</div><div class="lbl">Всього в БД</div></div>
                     <div class="stat-card"><div class="num hits" id="genHits">—</div><div class="lbl">Знищень в БД</div></div>
@@ -751,7 +749,7 @@
                         <th style="width:62px" data-col="loss" onclick="sortBy('loss')">Час втрати</th>
                         <th style="width:120px" data-col="coords" onclick="sortBy('coords')">Координати</th>
                         <th style="width:55px">Азимут (°)</th>
-                        <th style="width:55px">Курс (°)</th>
+                        <th style="width:55px">Курс (°)</th> <!-- НОВА КОЛОНКА -->
                         <th style="width:75px" data-col="dist" onclick="sortBy('dist')">Відстань (м)</th>
                         <th style="width:70px">Вис. польоту (м)</th>
                         <th style="width:120px" data-col="weapon" onclick="sortBy('weapon')">Засіб ураження</th>
@@ -766,7 +764,7 @@
                     </tr>
                     </thead>
                     <tbody id="tableBody">
-                    <tr><td colspan="19" class="empty-state">Завантаження...</td></tr>
+                    <tr><td colspan="20" class="empty-state">Завантаження...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -823,6 +821,11 @@
             <div class="form-group">
                 <label>Азимут (°)</label>
                 <input type="number" id="fAzimuth" placeholder="50" min="0" max="360">
+            </div>
+            <!-- НОВЕ ПОЛЕ: КУРС -->
+            <div class="form-group">
+                <label>Курс (°)</label>
+                <input type="number" id="fCourse" placeholder="45" min="0" max="360">
             </div>
             <div class="form-group">
                 <label>Відстань (м)</label>
@@ -909,8 +912,8 @@
 <script>
     // ===== ГЛОБАЛЬНІ ЗМІННІ =====
     let allRecords = [];
-    let sortCol   = 'date';    // змінили з 'num' на 'date'
-    let sortDir   = -1;        // залишаємо -1 (спадання)
+    let sortCol   = 'date';
+    let sortDir   = -1;
     let deleteTargetId = null;
 
     // ПАГІНАЦІЯ
@@ -1010,7 +1013,6 @@
     function renderPagination() {
         const totalPages = Math.ceil(totalElements / pageSize);
         const pag = document.getElementById('pagination');
-        // Завжди показуємо пагінацію
         let html = '';
         html += `<button onclick="goToPage(0)" ${currentPage === 0 ? 'disabled' : ''}>⏮</button>`;
         html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>`;
@@ -1058,13 +1060,10 @@
         let filtered = allRecords;
         if (q) {
             filtered = allRecords.filter(r => {
-                // Перевіряємо номер (recordNumber)
                 const numMatch = r.recordNumber !== null && r.recordNumber !== undefined &&
                     String(r.recordNumber).includes(q);
-                // Перевіряємо дату (у форматі дд.мм.рррр)
                 const dateStr = r.flightDate ? fmtDate(r.flightDate) : '';
                 const dateMatch = dateStr.includes(q);
-                // Перевіряємо текстові поля
                 const textFields = [r.crew, r.event, r.target, r.weapon, r.note, r.coordinates,
                     r.lossReason, r.detonator, r.explosive];
                 const textMatch = textFields.some(f => f && f.toLowerCase().includes(q));
@@ -1117,7 +1116,7 @@
     function renderTable(records) {
         const body = document.getElementById('tableBody');
         if (!records || !records.length) {
-            body.innerHTML = '<tr><td colspan="19" class="empty-state">Записів немає</td></tr>';
+            body.innerHTML = '<tr><td colspan="20" class="empty-state">Записів немає</td></tr>';
             return;
         }
         body.innerHTML = records.map(r => {
@@ -1189,8 +1188,8 @@
         document.getElementById('modalTitle').textContent = 'Додати запис';
         document.getElementById('editId').value = '';
         const fields = ['fNum','fDate','fCrew','fMonth','fEvent','fTakeoff','fLoss',
-            'fCoords','fAzimuth','fDist','fFlightAlt','fType','fIdent','fWeapon','fExplosive',
-            'fDetonator','fAltitude','fTarget','fSpeed','fNote'];
+            'fCoords','fAzimuth','fCourse','fDist','fFlightAlt','fType','fIdent',
+            'fWeapon','fExplosive','fDetonator','fAltitude','fTarget','fSpeed','fNote'];
         document.getElementById('fLossReason').value = '';
         fields.forEach(id => document.getElementById(id).value = '');
         openModal('formModal');
@@ -1210,6 +1209,7 @@
         document.getElementById('fLoss').value     = r.lossTime ? r.lossTime.substring(0,5) : '';
         document.getElementById('fCoords').value      = r.coordinates ?? '';
         document.getElementById('fAzimuth').value   = r.azimuth ?? '';
+        document.getElementById('fCourse').value    = r.courseDirection ?? ''; // НОВЕ
         document.getElementById('fDist').value      = r.distance ?? '';
         document.getElementById('fFlightAlt').value = r.flightAltitude ?? '';
         document.getElementById('fType').value     = r.targetType ?? '';
@@ -1238,6 +1238,7 @@
             lossTime:       document.getElementById('fLoss').value || null,
             coordinates:    document.getElementById('fCoords').value.trim(),
             azimuth:        parseInt(document.getElementById('fAzimuth').value) || null,
+            courseDirection: parseInt(document.getElementById('fCourse').value) || null, // НОВЕ
             distance:       parseInt(document.getElementById('fDist').value) || null,
             flightAltitude: parseInt(document.getElementById('fFlightAlt').value) || null,
             targetType:     document.getElementById('fType').value.trim(),
@@ -1261,7 +1262,6 @@
             });
             if (res.ok) {
                 closeModal('formModal');
-                // Скидаємо на першу сторінку після зміни
                 currentPage = 0;
                 await loadRecords();
                 await loadGeneralStats();
