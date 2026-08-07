@@ -29,6 +29,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 public class ReportController {
@@ -82,11 +84,11 @@ public class ReportController {
             CombatReport report = reportService.parseJson(reportJson);
             int targetAltitude = report.getAltitude() != null ? report.getAltitude() : 0;
 
-            log.info("Конвертація: формат={}, пілот={}, відстань={}м, швидкість={}км/год, курс={}°, висота(ручна)={}м, висота(з JSON)={}м",
+            log.info("Конвертація: формат={}, пілот={}, відстань={}м, швидкість={}км/год, азимут={}°, курс={}°, висота(ручна)={}м, висота(з JSON)={}м",
                     request.getFormat(), request.getPilot(), request.getDistance(),
-                    request.getSpeed(), request.getCourse(), request.getManualAltitude(), targetAltitude);
+                    request.getSpeed(), request.getCourse(), request.getCourseDirection(),
+                    request.getManualAltitude(), targetAltitude);
 
-            // Отримуємо район підриву, якщо null – "Море"
             String explosionArea = request.getExplosionArea() != null ? request.getExplosionArea() : "Море";
 
             String result = switch (request.getFormat()) {
@@ -96,14 +98,14 @@ public class ReportController {
                         request.getCourse(),
                         request.getManualAltitude(),
                         request.getTargetAltitude(),
-                        request.getCourseDirection());   // НОВИЙ ПАРАМЕТР
+                        request.getCourseDirection());
                 case 2 -> reportService.formatShortReport(report,
                         request.getDistance(),
                         request.getCourse(),
                         request.getManualAltitude(),
                         request.getTargetAltitude(),
                         explosionArea,
-                        request.getCourseDirection());   // НОВИЙ ПАРАМЕТР
+                        request.getCourseDirection());
                 case 3 -> reportService.formatDetailedReport(report, request.getPilot());
                 default -> throw new IllegalArgumentException("Невідомий формат: " + request.getFormat());
             };
@@ -147,6 +149,7 @@ public class ReportController {
     private FlightRecord mapToFlightRecord(CombatReport report, ConvertRequest request) {
         FlightRecord r = new FlightRecord();
 
+        // ===== ДАТА ТА ЧАС =====
         if (report.getContactTime() != null) {
             r.setFlightDate(report.getContactTime().toLocalDate());
             r.setLossTime(report.getContactTime().toLocalTime());
@@ -157,6 +160,7 @@ public class ReportController {
             r.setTakeoffTime(report.getTakeoffTime().toLocalTime());
         }
 
+        // ===== МІСЯЦЬ =====
         if (r.getFlightDate() != null) {
             String[] UA_MONTHS = {"Січень","Лютий","Березень","Квітень","Травень","Червень",
                     "Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"};
@@ -164,21 +168,30 @@ public class ReportController {
         }
 
         r.setCrew(report.getUnitName());
-        r.setEvent(report.getEffectorStatus());
+
+        // ===== ПОДІЯ (виправлено) =====
+        String effectorStatus = report.getEffectorStatus();
+        if ("Ураження".equals(effectorStatus)) {
+            r.setEvent("Знищення цілі");
+        } else {
+            r.setEvent(effectorStatus);
+        }
+
         r.setCoordinates(report.getCoordinates());
         r.setDistance(request.getDistance());
 
         // ===== АЗИМУТ ТА КУРС =====
         r.setAzimuth(request.getCourse());
-        r.setCourseDirection(request.getCourseDirection()); // НОВЕ
+        r.setCourseDirection(request.getCourseDirection());
 
+        // ===== ТИП ЦІЛІ =====
         r.setTargetType(report.getTargetSubType() != null ? report.getTargetSubType() : report.getTargetType());
         r.setIdentification("Дружній");
 
+        // ===== ЗАСІБ УРАЖЕННЯ =====
         String weaponId = report.getWeaponId();
         if (weaponId != null) {
-            java.util.regex.Matcher m = java.util.regex.Pattern
-                    .compile("\\(([^)]+)\\)").matcher(weaponId);
+            Matcher m = Pattern.compile("\\(([^)]+)\\)").matcher(weaponId);
             r.setWeapon(m.find() ? m.group(1) : weaponId);
         }
         if (report.getWeaponNumber() != null) {
@@ -186,27 +199,36 @@ public class ReportController {
                     " (нічний) \"" + report.getWeaponNumber().toUpperCase() + "\"");
         }
 
+        // ===== ВИБУХІВКА ТА ДЕТОНАТОР =====
         r.setExplosive("ШИФР «3-1.2 КУФ» 1,2 кг");
         r.setDetonator("Вбудована розумна плата ініціації");
 
+        // ===== ВИСОТА ПОЛЬОТУ =====
         if (request.getManualAltitude() > 0) {
             r.setAltitude(String.valueOf(request.getManualAltitude()));
         } else if (report.getAltitude() != null) {
             r.setAltitude(String.valueOf(report.getAltitude()));
         }
 
+        // ===== ВИСОТА ЦІЛІ =====
         if (report.getAltitude() != null) {
             r.setTargetAltitude(report.getAltitude());
         }
 
+        // ===== ЦІЛЬ =====
         String targetNum = report.getTargetNumberVirazh() != null
                 ? String.valueOf(report.getTargetNumberVirazh()) : "";
         String targetType = report.getTargetSubType() != null
                 ? report.getTargetSubType() : "";
         r.setTarget(targetType + (targetNum.isEmpty() ? "" : " №" + targetNum));
+
+        // ===== ШВИДКІСТЬ ЦІЛІ =====
         r.setTargetSpeed(request.getSpeed());
+
+        // ===== ПРИЧИНА ВТРАТИ =====
         r.setLossReason(report.getEffectorLossReason());
 
+        // ===== ПРИМІТКА =====
         String weaponName = r.getWeapon() != null ? r.getWeapon() : "";
         String targetTypeFull = report.getTargetSubType() != null
                 ? report.getTargetSubType() : (report.getTargetType() != null ? report.getTargetType() : "");
@@ -291,22 +313,15 @@ public class ReportController {
 
     private byte[] createDocxContent(String text) throws Exception {
         try (XWPFDocument document = new XWPFDocument()) {
-            // ===== НАЛАШТУВАННЯ ПОЛІВ СТОРІНКИ =====
+            // Налаштування полів сторінки
             CTDocument1 ctDocument = document.getDocument();
             CTBody body = ctDocument.getBody();
             if (body.getSectPr() == null) body.addNewSectPr();
             CTSectPr sectPr = body.getSectPr();
             if (sectPr.getPgMar() == null) sectPr.addNewPgMar();
             CTPageMar pageMar = sectPr.getPgMar();
-
-            // Верхнє поле (twips): 567 = 1 см (менше число – підняти верхнє поле)
             pageMar.setTop(567);
-            // Нижнє поле (twips): 567 = 1 см (більше число – опустити нижнє поле)
             pageMar.setBottom(567);
-            // Ліве і праве – за бажанням (2 см)
-//            pageMar.setLeft(1134);
-//            pageMar.setRight(1134);
-            // =====================================
 
             String[] lines = text.split("\n");
             for (String line : lines) {
@@ -314,7 +329,6 @@ public class ReportController {
                 paragraph.setSpacingBefore(0);
                 paragraph.setSpacingAfter(0);
 
-                // Ваші умови форматування (залишаються без змін)
                 if (line.contains("Командиру екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини А0826")) {
                     paragraph.setIndentationLeft(5100);
                     paragraph.setAlignment(ParagraphAlignment.LEFT);

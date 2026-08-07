@@ -108,8 +108,12 @@ public class ReportService {
         sb.append("Екіпаж: ").append(report.getUnitName()).append("\n");
 
         String effectorStatus = report.getEffectorStatus() != null ? report.getEffectorStatus() : "";
-        sb.append(effectorStatus);
-        if ("Ураження".equals(effectorStatus)) sb.append(" цілі");
+        if ("Ураження".equals(effectorStatus)) {
+            String targetNumber = safeTargetNumber(report);
+            sb.append("Знищення цілі").append(targetNumber.isEmpty() ? "" : " №" + targetNumber);
+        } else {
+            sb.append(effectorStatus);
+        }
         sb.append("\n\n");
 
         sb.append("Час: ").append(takeoffTime).append(" - ").append(lossTime).append("\n");
@@ -157,7 +161,13 @@ public class ReportService {
         sb.append("Екіпаж: ").append(report.getUnitName()).append("\n");
 
         String effectorStatus = report.getEffectorStatus() != null ? report.getEffectorStatus() : "";
-        sb.append(effectorStatus).append("\n");
+        if ("Ураження".equals(effectorStatus)) {
+            String targetNumber = safeTargetNumber(report);
+            sb.append("Знищення цілі").append(targetNumber.isEmpty() ? "" : " №" + targetNumber);
+        } else {
+            sb.append(effectorStatus);
+        }
+        sb.append("\n");
 
         if (report.getTakeoffTime() != null) {
             sb.append("Час вильоту: ").append(report.getTakeoffTime().format(TIME_FORMATTER)).append("\n");
