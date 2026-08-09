@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Бойове чергування</title>
     <link rel="icon" type="image/png" href="/favicon.png">
+    <link th:replace="~{fragments :: sidebar-css}">
     <style>
         /* ===== CSS ЗМІННІ ===== */
         :root {
@@ -48,6 +49,8 @@
             --btn-nav-color: #1a237e;
             --btn-today-bg: #1976d2;
             --btn-today-hover: #1565c0;
+            --char-counter-color: #999;
+            --char-counter-warning: #c62828;
         }
 
         body.dark-theme {
@@ -90,6 +93,8 @@
             --btn-nav-color: #90caf9;
             --btn-today-bg: #4a7ab5;
             --btn-today-hover: #5a8ac5;
+            --char-counter-color: #88888f;
+            --char-counter-warning: #ef9a9a;
         }
 
         /* ===== ОСНОВНІ СТИЛІ ===== */
@@ -177,30 +182,23 @@
 
         .btn-primary { background: var(--btn-primary-bg); color: var(--text-white); }
         .btn-primary:hover { background: var(--btn-primary-hover); }
-
         .btn-success { background: var(--btn-success-bg); color: var(--text-white); }
         .btn-success:hover { background: var(--btn-success-hover); }
-
         .btn-warning { background: var(--btn-warning-bg); color: var(--text-white); }
         .btn-warning:hover { background: var(--btn-warning-hover); }
-
         .btn-danger { background: var(--btn-danger-bg); color: var(--text-white); }
         .btn-danger:hover { background: var(--btn-danger-hover); }
-
         .btn-duplicate { background: var(--btn-duplicate-bg); color: var(--text-white); }
         .btn-duplicate:hover { background: var(--btn-duplicate-hover); }
-
         .btn-print { background: var(--btn-print); color: white; }
         .btn-print:hover { background: var(--btn-print-hover); }
-
         .btn-nav { background: var(--btn-nav-bg); color: var(--btn-nav-color); }
         .btn-nav:hover { background: var(--btn-nav-hover); }
-
         .btn-today { background: var(--btn-today-bg); color: white; }
         .btn-today:hover { background: var(--btn-today-hover); }
-
         .btn-sm { padding: 4px 9px; font-size: 11px; }
 
+        /* ===== ПОЛЯ ВВОДУ ===== */
         select, input[type="text"], input[type="datetime-local"] {
             padding: 6px 10px;
             border: 1px solid var(--border-color);
@@ -420,10 +418,28 @@
             transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
         .form-group input[type="number"] { width: 100px; }
-        .form-group textarea { resize: vertical; min-height: 60px; }
+
+        /* ===== ЗБІЛЬШЕНА ВИСОТА ДЛЯ TEXTAREA ===== */
+        .form-group textarea {
+            resize: vertical;
+            min-height: 200px;
+        }
+
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+
+        /* ===== ЛІЧИЛЬНИК СИМВОЛІВ ===== */
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            color: var(--char-counter-color);
+            margin-top: 4px;
+            transition: color 0.3s;
+        }
+        .char-counter.warning {
+            color: var(--char-counter-warning);
+        }
 
         /* ===== ТОАСТ ===== */
         .toast {
@@ -756,7 +772,6 @@
                         <th data-col="pilot" onclick="sortBy('pilot')" style="min-width:140px;">Пілот</th>
                         <th data-col="navigator" onclick="sortBy('navigator')" style="min-width:140px;">Штурман</th>
                         <th data-col="technician" onclick="sortBy('technician')" style="min-width:140px;">Технік</th>
-                        <!-- NEW: Водій-електрик -->
                         <th data-col="driverElectrician" onclick="sortBy('driverElectrician')" style="min-width:140px;">Водій-електрик</th>
                         <th data-col="weapons" onclick="sortBy('weapons')" style="min-width:120px;">Озброєння</th>
                         <th data-col="dutyOfficer" onclick="sortBy('dutyOfficer')" style="min-width:140px;">Черговий ПУ</th>
@@ -831,7 +846,6 @@
                 <option value="">— Оберіть техніка —</option>
             </select>
         </div>
-        <!-- NEW: Водій-електрик -->
         <div class="form-group">
             <label>Водій-електрик</label>
             <select id="fDriverElectrician">
@@ -846,9 +860,14 @@
             <label>Черговий вищестоящого ПУ</label>
             <input type="text" id="fDutyOfficer" placeholder="полковник Петро Крикун">
         </div>
+
+        <!-- ===== ДОПОВІДЬ ІЗ ЛІЧИЛЬНИКОМ ===== -->
         <div class="form-group">
             <label>Доповідь про чергування</label>
-            <textarea id="fReportSummary" rows="3" placeholder="Доповідаю, що під час мого чергування..."></textarea>
+            <textarea id="fReportSummary" rows="3" placeholder="Доповідаю, що під час мого чергування..." maxlength="2000"></textarea>
+            <div class="char-counter" id="charCounterWrapper">
+                <span id="charCounter">2000</span> символів залишилось
+            </div>
         </div>
 
         <div class="form-row-3">
@@ -891,6 +910,29 @@
         let pageSize = 20;
         let totalElements = 0;
 
+        // ===== ЛІЧИЛЬНИК СИМВОЛІВ =====
+        const MAX_CHARS = 2000;
+        const reportTextarea = document.getElementById('fReportSummary');
+        const charCounter = document.getElementById('charCounter');
+        const charCounterWrapper = document.getElementById('charCounterWrapper');
+
+        function updateCharCounter() {
+            if (!reportTextarea || !charCounter) return;
+            const remaining = MAX_CHARS - reportTextarea.value.length;
+            charCounter.textContent = remaining;
+            if (charCounterWrapper) {
+                if (remaining < 100) {
+                    charCounterWrapper.classList.add('warning');
+                } else {
+                    charCounterWrapper.classList.remove('warning');
+                }
+            }
+        }
+
+        if (reportTextarea) {
+            reportTextarea.addEventListener('input', updateCharCounter);
+        }
+
         // ===== ЗАВАНТАЖЕННЯ ПЕРСОНАЛУ ДЛЯ СЕЛЕКТІВ =====
         async function loadPersonnelForSelects() {
             try {
@@ -902,7 +944,7 @@
                 populateSelect('fPilot', 'Пілот', personnelList);
                 populateSelect('fNavigator', 'Штурман', personnelList);
                 populateSelect('fTechnician', 'Технік', personnelList);
-                populateSelect('fDriverElectrician', 'Водій-електрик', personnelList); // NEW
+                populateSelect('fDriverElectrician', 'Водій-електрик', personnelList);
             } catch (err) {
                 console.warn('Помилка завантаження персоналу:', err);
             }
@@ -1095,7 +1137,7 @@
                     const endTime = d.endTime ? new Date(d.endTime).toLocaleTimeString('uk-UA', {hour:'2-digit', minute:'2-digit'}) : '';
                     const fields = [
                         d.unitName, d.commander, d.pilot, d.navigator, d.technician,
-                        d.driverElectrician, // NEW
+                        d.driverElectrician,
                         d.weapons, d.dutyOfficer, d.reportSummary,
                         startDate, endDate, startTime, endTime
                     ];
@@ -1169,7 +1211,7 @@
                     <td class="text-left personnel-cell">${escapeHtml(d.pilot || '—')}</td>
                     <td class="text-left personnel-cell">${escapeHtml(d.navigator || '—')}</td>
                     <td class="text-left personnel-cell">${escapeHtml(d.technician || '—')}</td>
-                    <td class="text-left personnel-cell">${escapeHtml(d.driverElectrician || '—')}</td> <!-- NEW -->
+                    <td class="text-left personnel-cell">${escapeHtml(d.driverElectrician || '—')}</td>
                     <td>${escapeHtml(d.weapons || '—')}</td>
                     <td>${escapeHtml(d.dutyOfficer || '—')}</td>
                     <td class="text-left note-cell" onclick="this.classList.toggle('expanded')" title="Натисни щоб розгорнути">${escapeHtml(summary)}</td>
@@ -1246,10 +1288,15 @@
                 else if (el) el.value = '';
             });
             document.getElementById('fUnitName').value = 'СКОПА';
-            ['fCommander','fPilot','fNavigator','fTechnician','fDriverElectrician'].forEach(id => { // NEW
+            ['fCommander','fPilot','fNavigator','fTechnician','fDriverElectrician'].forEach(id => {
                 const sel = document.getElementById(id);
                 if (sel) sel.value = '';
             });
+            // Оновлюємо лічильник
+            if (reportTextarea) {
+                reportTextarea.value = '';
+                updateCharCounter();
+            }
             openModal('formModal');
         };
 
@@ -1273,7 +1320,9 @@
             setSelectValue('fPilot', duty.pilot);
             setSelectValue('fNavigator', duty.navigator);
             setSelectValue('fTechnician', duty.technician);
-            setSelectValue('fDriverElectrician', duty.driverElectrician); // NEW
+            setSelectValue('fDriverElectrician', duty.driverElectrician);
+            // Оновлюємо лічильник
+            updateCharCounter();
             openModal('formModal');
         };
 
@@ -1297,7 +1346,9 @@
             setSelectValue('fPilot', duty.pilot);
             setSelectValue('fNavigator', duty.navigator);
             setSelectValue('fTechnician', duty.technician);
-            setSelectValue('fDriverElectrician', duty.driverElectrician); // NEW
+            setSelectValue('fDriverElectrician', duty.driverElectrician);
+            // Оновлюємо лічильник
+            updateCharCounter();
             openModal('formModal');
         };
 
@@ -1327,17 +1378,12 @@
             const technician = document.getElementById('fTechnician').value;
             const driverElectrician = document.getElementById('fDriverElectrician').value;
 
-            // ===== ВИДАЛЕНО ПЕРЕВІРКУ НА УНІКАЛЬНІСТЬ =====
-            // Тепер одна особа може займати кілька посад одночасно.
-            // Якщо потрібно повернути перевірку – розкоментуйте блок нижче.
-            /*
             const roles = [commander, pilot, navigator, technician, driverElectrician].filter(Boolean);
             const uniqueRoles = new Set(roles);
             if (uniqueRoles.size < roles.length) {
                 showToast('Одна особа не може займати кілька посад у чергуванні', 'err');
                 return;
             }
-            */
 
             const body = {
                 startTime: document.getElementById('fStartTime').value,
