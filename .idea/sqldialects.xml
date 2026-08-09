@@ -4,5 +4,6 @@
     <file url="file://$PROJECT_DIR$/src/main/resources/db/migration/V19__add_totals_to_combat_duty.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/resources/db/migration/V20__add_driver_electrician_to_combat_duty.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/resources/db/migration/V22__add_equipment_stock_fields_and_history.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/db/migration/V24__increase_report_summary_length.sql" dialect="GenericSQL" />
   </component>
 </project>

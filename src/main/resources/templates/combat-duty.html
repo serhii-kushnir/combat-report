@@ -864,9 +864,9 @@
         <!-- ===== ДОПОВІДЬ ІЗ ЛІЧИЛЬНИКОМ ===== -->
         <div class="form-group">
             <label>Доповідь про чергування</label>
-            <textarea id="fReportSummary" rows="3" placeholder="Доповідаю, що під час мого чергування..." maxlength="2000"></textarea>
+            <textarea id="fReportSummary" rows="3" placeholder="Доповідаю, що під час мого чергування..." maxlength="5000"></textarea>
             <div class="char-counter" id="charCounterWrapper">
-                <span id="charCounter">2000</span> символів залишилось
+                <span id="charCounter">5000</span> символів залишилось
             </div>
         </div>
 
@@ -911,7 +911,7 @@
         let totalElements = 0;
 
         // ===== ЛІЧИЛЬНИК СИМВОЛІВ =====
-        const MAX_CHARS = 2000;
+        const MAX_CHARS = 5000;
         const reportTextarea = document.getElementById('fReportSummary');
         const charCounter = document.getElementById('charCounter');
         const charCounterWrapper = document.getElementById('charCounterWrapper');
