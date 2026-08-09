@@ -1423,13 +1423,6 @@
             t.className = `toast ${type} show`;
             setTimeout(() => t.classList.remove('show'), 3000);
         };
-
-        document.querySelectorAll('.modal-overlay').forEach(el => {
-            el.addEventListener('click', function(e) {
-                if (e.target === this) this.classList.remove('open');
-            });
-        });
-
     })();
 </script>
 </body>
