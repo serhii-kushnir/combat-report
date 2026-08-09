@@ -144,7 +144,6 @@ public class FlightRecordService {
             XSSFCellStyle greenLeftStyle = createGreenStyle(wb);
             greenLeftStyle.setAlignment(HorizontalAlignment.LEFT);
 
-            // Оновлені заголовки – додано "Курс (°)"
             String[] HEADERS = {
                     "№", "Дата", "Екіпаж", "Подія", "Час взльоту", "Час втрати",
                     "Координати", "Азимут (°)", "Курс (°)", "Відстань (м)", "Вис. польоту (м)",
@@ -152,13 +151,14 @@ public class FlightRecordService {
                     "Висота цілі (м)", "Ціль", "Швидкість цілі (км/год)",
                     "Причина втрати", "Примітка"
             };
-            // Оновлені ширини – додано місце для "Курс (°)"
+
+            // ===== ЗБІЛЬШЕНО ШИРИНУ ДЛЯ "ПРИМІТКИ" (останній елемент) =====
             int[] COL_WIDTHS = {
                     8, 14, 12, 24, 12, 12,
-                    22, 10, 10, 14, 14,   // індекси 7-10: Азимут, Курс, Відстань, Вис.польоту
+                    22, 10, 10, 14, 14,
                     22, 26, 28,
                     14, 20, 20,
-                    22, 50
+                    22, 70  // ← було 50, стало 70 для колонки "Примітка"
             };
 
             for (Map.Entry<String, List<FlightRecord>> entry : byMonth.entrySet()) {
@@ -180,11 +180,14 @@ public class FlightRecordService {
 
                 for (FlightRecord r : entry.getValue()) {
                     XSSFRow row = sheet.createRow(rowIdx++);
-                    row.setHeightInPoints(40);
 
+                    // ===== ЗБІЛЬШЕНО ВИСОТУ РЯДКА =====
+                    row.setHeightInPoints(70); // ← було 40, стало 60
+
+                    // Перевірка на "Знищення цілі" (та "Ураження" для сумісності)
                     boolean isDestroyed = r.getEvent() != null &&
-                            (r.getEvent().toLowerCase().contains("знищен") ||
-                                    r.getEvent().toLowerCase().contains("підрив"));
+                            (r.getEvent().toLowerCase().contains("знищен"));
+
                     XSSFCellStyle ctr = isDestroyed ? greenStyle : dataStyle;
                     XSSFCellStyle lft = isDestroyed ? greenLeftStyle : leftStyle;
 
@@ -197,7 +200,7 @@ public class FlightRecordService {
                     setCell(row, col++, r.getLossTime() != null ? r.getLossTime().format(timeFmt) : "", ctr);
                     setCell(row, col++, r.getCoordinates(), ctr);
                     setCell(row, col++, r.getAzimuth() != null ? r.getAzimuth() + "°" : "", ctr);
-                    setCell(row, col++, r.getCourseDirection() != null ? r.getCourseDirection() + "°" : "", ctr); // НОВЕ
+                    setCell(row, col++, r.getCourseDirection() != null ? r.getCourseDirection() + "°" : "", ctr);
                     setCell(row, col++, r.getDistance(), ctr);
                     setCell(row, col++, r.getAltitude(), ctr);
                     setCell(row, col++, r.getWeapon(), lft);
@@ -214,6 +217,7 @@ public class FlightRecordService {
             return out.toByteArray();
         }
     }
+
     // ===== НОВИЙ МЕТОД ДЛЯ СТАТИСТИКИ =====
     public Map<String, Long> getStats() {
         List<FlightRecord> all = repository.findAll();

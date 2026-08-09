@@ -1206,14 +1206,13 @@
         document.getElementById('fEvent').value    = r.event ?? '';
         document.getElementById('fTakeoff').value  = r.takeoffTime ? r.takeoffTime.substring(0,5) : '';
         document.getElementById('fLoss').value     = r.lossTime ? r.lossTime.substring(0,5) : '';
-        document.getElementById('fCoords').value      = r.coordinates ?? '';
-        document.getElementById('fAzimuth').value   = r.azimuth ?? '';
-        document.getElementById('fCourse').value    = r.courseDirection ?? '';
-        document.getElementById('fDist').value      = r.distance ?? '';
+        document.getElementById('fCoords').value   = r.coordinates ?? '';
+        document.getElementById('fAzimuth').value  = r.azimuth ?? '';
+        document.getElementById('fCourse').value   = r.courseDirection ?? '';
+        document.getElementById('fDist').value     = r.distance ?? '';
         document.getElementById('fFlightAlt').value = r.flightAltitude ?? '';
-        // Висота польоту (текст) – заповнюємо з altitude
         document.getElementById('fAltitude').value = r.altitude ?? '';
-        // Якщо flightAltitude пустий, а altitude є – скопіюємо в flightAlt для зручності
+        // якщо flightAltitude пустий, а altitude є – скопіюємо в flightAlt для зручності
         if (!r.flightAltitude && r.altitude) {
             const parsed = parseInt(r.altitude);
             if (!isNaN(parsed)) {
@@ -1225,11 +1224,25 @@
         document.getElementById('fWeapon').value   = r.weapon ?? '';
         document.getElementById('fExplosive').value = r.explosive ?? '';
         document.getElementById('fDetonator').value = r.detonator ?? '';
-        document.getElementById('fTargetAlt').value  = r.targetAltitude ?? '';
+        document.getElementById('fTargetAlt').value = r.targetAltitude ?? '';
         document.getElementById('fTarget').value   = r.target ?? '';
-        document.getElementById('fSpeed').value      = r.targetSpeed ?? '';
-        document.getElementById('fLossReason').value = r.lossReason ?? '';
-        document.getElementById('fNote').value       = r.note ?? '';
+        document.getElementById('fSpeed').value    = r.targetSpeed ?? '';
+
+        // ===== ВИПРАВЛЕННЯ: ПРИЧИНА ВТРАТИ =====
+        const lossReasonSelect = document.getElementById('fLossReason');
+        const lossReasonVal = r.lossReason ?? '';
+        // спочатку встановлюємо значення
+        lossReasonSelect.value = lossReasonVal;
+        // якщо не встановилось (тобто такого значення немає в списку), додаємо нову опцію
+        if (lossReasonSelect.value !== lossReasonVal && lossReasonVal) {
+            const opt = document.createElement('option');
+            opt.value = lossReasonVal;
+            opt.textContent = lossReasonVal;
+            lossReasonSelect.appendChild(opt);
+            lossReasonSelect.value = lossReasonVal;
+        }
+
+        document.getElementById('fNote').value = r.note ?? '';
         openModal('formModal');
     }
 
