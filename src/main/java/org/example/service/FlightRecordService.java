@@ -306,9 +306,17 @@ public class FlightRecordService {
     }
 
     private XSSFCellStyle createGreenStyle(XSSFWorkbook wb) {
-        XSSFCellStyle style = createDataStyle(wb);
-        style.setFillForegroundColor(new XSSFColor(new byte[]{(byte)232, (byte)245, (byte)233}, null));
+        XSSFCellStyle style = wb.createCellStyle();
+        XSSFFont font = wb.createFont();
+        font.setFontHeightInPoints((short) 10);
+        font.setFontName("Arial");
+        style.setFont(font);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setWrapText(true);
+        style.setFillForegroundColor(new XSSFColor(new byte[]{(byte) 200, (byte) 240, (byte) 200}, null));
         style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        setBorders(style);
         return style;
     }
 
