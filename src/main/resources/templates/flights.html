@@ -1352,11 +1352,6 @@
         applyFilter();
     };
 
-    // ===== ЗАКРИТТЯ МОДАЛЬНИХ ВІКОН ПРИ КЛІКУ ПО ОВЕРЛЕЮ =====
-    document.querySelectorAll('.modal-overlay').forEach(el =>
-        el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
-    );
-
     // ===== ІНІЦІАЛІЗАЦІЯ =====
     loadYears();
     loadMonths();

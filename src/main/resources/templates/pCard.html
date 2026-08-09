@@ -1669,20 +1669,6 @@
     hideActionButtons();
   });
 
-  document.querySelectorAll('.modal-overlay').forEach(el => {
-    el.addEventListener('click', function(e) {
-      if (e.target === this) {
-        this.classList.remove('open');
-        if (this.id === 'confirmModal') confirmCallback = null;
-        if (this.id === 'educationModal') document.querySelector('#educationModal h3').textContent = '➕ Додати освіту';
-        if (this.id === 'childModal') document.querySelector('#childModal h3').textContent = '➕ Додати дитину';
-        if (this.id === 'weaponModal') document.querySelector('#weaponModal h3').textContent = '➕ Додати зброю';
-        if (this.id === 'vosTrainingModal') document.querySelector('#vosTrainingModal h3').textContent = '➕ Додати ВОС навчання';
-        if (this.id === 'prevServiceModal') document.querySelector('#prevServiceModal h3').textContent = '➕ Додати запис служби';
-      }
-    });
-  });
-
   loadEducation();
   loadChildren();
   loadWeapons();

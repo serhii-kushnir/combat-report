@@ -1221,11 +1221,6 @@
         window.location.href = '/equipment/api/export';
     }
 
-    // Закриття модальних вікон
-    document.querySelectorAll('.modal-overlay, .confirm-overlay').forEach(el =>
-        el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
-    );
-
     // Кнопка збереження (використовується і для додавання, і для редагування)
     document.getElementById('saveBtn').addEventListener('click', function() {
         const id = document.getElementById('editId').value;

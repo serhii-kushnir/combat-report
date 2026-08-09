@@ -1295,20 +1295,6 @@
         window.location.href = '/notes/api/export';
     }
 
-    // ===== ЗАКРИТТЯ МОДАЛЬНИХ ВІКОН =====
-    document.querySelectorAll('.modal-overlay').forEach(el => {
-        el.addEventListener('click', function(e) {
-            if (e.target === this) this.classList.remove('open');
-            if (this.id === 'noteModal') {
-                // при закритті зупиняємо обсервер, щоб не витрачати ресурси
-                if (themeObserver) {
-                    themeObserver.disconnect();
-                    themeObserver = null;
-                }
-            }
-        });
-    });
-
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             document.querySelectorAll('.modal-overlay.open').forEach(el => {
