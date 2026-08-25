@@ -156,6 +156,21 @@ public class ReportService {
                                     int manualAltitude, int targetAltitude, String explosionArea,
                                     int courseDirection) {
         StringBuilder sb = new StringBuilder();
+        String takeoffTime = "";
+        String lossTime;
+        String reportDate;
+
+        if (report.getTakeoffTime() != null) takeoffTime = report.getTakeoffTime().format(TIME_FORMATTER);
+        if (report.getContactTime() != null) {
+            reportDate = report.getContactTime().format(DATE_FORMATTER);
+            lossTime = report.getContactTime().format(TIME_FORMATTER);
+        } else {
+            reportDate = LocalDate.now().format(DATE_FORMATTER);
+            lossTime = LocalTime.now().format(TIME_FORMATTER);
+        }
+        if (takeoffTime.isEmpty()) takeoffTime = lossTime;
+
+        sb.append(reportDate).append("\n");
         String weaponNumber = report.getWeaponNumber() != null ? report.getWeaponNumber() : "";
 
         sb.append("Екіпаж: ").append(report.getUnitName()).append("\n");

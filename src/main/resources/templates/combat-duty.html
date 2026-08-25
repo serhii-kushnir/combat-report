@@ -1377,13 +1377,13 @@
             const navigator = document.getElementById('fNavigator').value;
             const technician = document.getElementById('fTechnician').value;
             const driverElectrician = document.getElementById('fDriverElectrician').value;
-
-            const roles = [commander, pilot, navigator, technician, driverElectrician].filter(Boolean);
-            const uniqueRoles = new Set(roles);
-            if (uniqueRoles.size < roles.length) {
-                showToast('Одна особа не може займати кілька посад у чергуванні', 'err');
-                return;
-            }
+            //
+            // const roles = [commander, pilot, navigator, technician, driverElectrician].filter(Boolean);
+            // const uniqueRoles = new Set(roles);
+            // if (uniqueRoles.size < roles.length) {
+            //     showToast('Одна особа не може займати кілька посад у чергуванні', 'err');
+            //     return;
+            // }
 
             const body = {
                 startTime: document.getElementById('fStartTime').value,

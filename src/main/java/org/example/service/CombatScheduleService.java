@@ -22,6 +22,9 @@ public class CombatScheduleService {
     private final CombatDutyRepository dutyRepo;
     private final PersonnelRepository personnelRepo;
 
+    // ===== ПОРЯДОК РОЛЕЙ =====
+    private static final List<String> ROLE_ORDER = Arrays.asList("К", "П", "Ш", "Т", "ВЕ");
+
     public CombatScheduleService(CombatDutyRepository dutyRepo, PersonnelRepository personnelRepo) {
         this.dutyRepo = dutyRepo;
         this.personnelRepo = personnelRepo;
@@ -40,6 +43,7 @@ public class CombatScheduleService {
         List<CombatDuty> duties = dutyRepo.findOverlapping(fromDateTime, toDateTime);
         List<Personnel> personnel = personnelRepo.findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("В особовому складі");
 
+        // Мапа: день -> (нормалізоване ПІБ -> рядок з ролями через "/")
         Map<Integer, Map<String, String>> dayRoles = new HashMap<>();
         for (int d = 1; d <= ym.lengthOfMonth(); d++) {
             dayRoles.put(d, new HashMap<>());
@@ -52,26 +56,40 @@ public class CombatScheduleService {
             }
             int day = startDate.getDayOfMonth();
 
-            Map<String, String> roleMap = new HashMap<>();
-            addRole(roleMap, duty.getCommander(), "К");
-            addRole(roleMap, duty.getPilot(), "П");
-            addRole(roleMap, duty.getNavigator(), "Ш");
-            addRole(roleMap, duty.getTechnician(), "Т");
-            // NEW: Водій-електрик
-            addRole(roleMap, duty.getDriverElectrician(), "ВЕ");
+            // Збираємо всі ролі для однієї особи в Set (щоб уникнути дублікатів)
+            Map<String, Set<String>> personRolesMap = new HashMap<>();
+            addRoleToSet(personRolesMap, duty.getCommander(), "К");
+            addRoleToSet(personRolesMap, duty.getPilot(), "П");
+            addRoleToSet(personRolesMap, duty.getNavigator(), "Ш");
+            addRoleToSet(personRolesMap, duty.getTechnician(), "Т");
+            addRoleToSet(personRolesMap, duty.getDriverElectrician(), "ВЕ");
 
+            // Об'єднуємо ролі для кожної особи в один рядок через "/" ЗА ПОРЯДКОМ
             Map<String, String> currentDayRoles = dayRoles.get(day);
-            for (Map.Entry<String, String> entry : roleMap.entrySet()) {
-                String key = entry.getKey();
-                String existing = currentDayRoles.get(key);
+            for (Map.Entry<String, Set<String>> entry : personRolesMap.entrySet()) {
+                String personKey = entry.getKey();
+
+                // ===== СОРТУВАННЯ РОЛЕЙ ЗА ПОРЯДКОМ =====
+                List<String> sortedRoles = new ArrayList<>(entry.getValue());
+                sortedRoles.sort(Comparator.comparingInt(this::getRolePriority));
+
+                String rolesStr = String.join("/", sortedRoles);
+
+                String existing = currentDayRoles.get(personKey);
                 if (existing == null) {
-                    currentDayRoles.put(key, entry.getValue());
-                } else if (!existing.equals(entry.getValue())) {
-                    currentDayRoles.put(key, existing + "/" + entry.getValue());
+                    currentDayRoles.put(personKey, rolesStr);
+                } else {
+                    // Якщо вже є роль, об'єднуємо (на всяк випадок)
+                    Set<String> combined = new HashSet<>(Arrays.asList(existing.split("/")));
+                    combined.addAll(entry.getValue());
+                    List<String> combinedSorted = new ArrayList<>(combined);
+                    combinedSorted.sort(Comparator.comparingInt(this::getRolePriority));
+                    currentDayRoles.put(personKey, String.join("/", combinedSorted));
                 }
             }
         }
 
+        // Формуємо вихідні рядки
         List<Map<String, Object>> rows = new ArrayList<>();
         for (Personnel p : personnel) {
             Map<String, Object> row = new LinkedHashMap<>();
@@ -104,31 +122,37 @@ public class CombatScheduleService {
             statRow.put("personnelNumber", row.get("personnelNumber"));
 
             Map<Integer, String> days = (Map<Integer, String>) row.get("days");
-            int countK = 0, countP = 0, countSh = 0, countT = 0, countVE = 0; // NEW: countVE
+            int countK = 0, countP = 0, countSh = 0, countT = 0, countVE = 0;
             for (String role : days.values()) {
                 if (role.contains("К")) countK++;
                 if (role.contains("П")) countP++;
                 if (role.contains("Ш")) countSh++;
                 if (role.contains("Т")) countT++;
-                if (role.contains("ВЕ")) countVE++; // NEW
+                if (role.contains("ВЕ")) countVE++;
             }
             statRow.put("countK", countK);
             statRow.put("countP", countP);
             statRow.put("countSh", countSh);
             statRow.put("countT", countT);
-            statRow.put("countVE", countVE); // NEW
+            statRow.put("countVE", countVE);
             statRow.put("total", countK + countP + countSh + countT + countVE);
             stats.add(statRow);
         }
         return stats;
     }
 
-    private void addRole(Map<String, String> roleMap, String fullNameWithRank, String role) {
+    // ===== ВИЗНАЧЕННЯ ПРІОРИТЕТУ РОЛІ =====
+    private int getRolePriority(String role) {
+        int index = ROLE_ORDER.indexOf(role);
+        return index == -1 ? 99 : index;
+    }
+
+    // ===== МЕТОД ДОДАВАННЯ РОЛІ (з LinkedHashSet для збереження порядку) =====
+    private void addRoleToSet(Map<String, Set<String>> map, String fullNameWithRank, String role) {
         if (fullNameWithRank == null || fullNameWithRank.trim().isEmpty()) return;
         String normalized = normalizeName(fullNameWithRank);
-        if (normalized != null && !normalized.isEmpty()) {
-            roleMap.put(normalized, role);
-        }
+        if (normalized == null || normalized.isEmpty()) return;
+        map.computeIfAbsent(normalized, k -> new LinkedHashSet<>()).add(role);
     }
 
     private String extractNameWithoutRank(String fullNameWithRank) {
