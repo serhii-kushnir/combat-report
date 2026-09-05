@@ -45,11 +45,15 @@ public class CombatDutyController {
                                       @RequestParam(required = false) Integer month,
                                       @RequestParam(defaultValue = "0") int page,
                                       @RequestParam(defaultValue = "20") int size) {
+        log.info("🔍 Отримано запит: year={}, month={}, page={}, size={}", year, month, page, size);
         if (year != null && month != null) {
+            log.info("📅 Викликаємо getByYearAndMonth з year={}, month={}", year, month);
             return service.getByYearAndMonth(year, month, page, size);
         } else if (year != null) {
+            log.info("📅 Викликаємо getByYear з year={}", year);
             return service.getByYear(year, page, size);
         } else {
+            log.info("📅 Викликаємо getPage без фільтрів");
             return service.getPage(page, size);
         }
     }
@@ -279,9 +283,7 @@ public class CombatDutyController {
             createCell(row, col++, d.getPilot(), leftStyle);
             createCell(row, col++, d.getNavigator(), leftStyle);
             createCell(row, col++, d.getTechnician(), leftStyle);
-            // ===== ВОДІЙ-ЕЛЕКТРИК =====
             createCell(row, col++, d.getDriverElectrician(), leftStyle);
-            // ==========================
             createCell(row, col++, d.getWeapons(), centerStyle);
             createCell(row, col++, d.getDutyOfficer(), centerStyle);
             createCell(row, col++, d.getReportSummary(), leftStyle);
