@@ -36,11 +36,15 @@
             --btn-warning-hover: #bf360c;
             --btn-danger-bg: #c62828;
             --btn-danger-hover: #b71c1c;
+            --btn-info-bg: #17a2b8;
+            --btn-info-hover: #138496;
             --stat-num-color: #1976d2;
             --btn-print: #607d8b;
             --btn-print-hover: #546e7a;
-            --btn-history-bg: #6a1b9a;
-            --btn-history-hover: #4a148c;
+            --btn-archive-bg: #6c757d;
+            --btn-archive-hover: #5a6268;
+            --btn-unarchive-bg: #28a745;
+            --btn-unarchive-hover: #218838;
         }
 
         body.dark-theme {
@@ -70,14 +74,27 @@
             --btn-warning-hover: #8a6a3a;
             --btn-danger-bg: #6a2a3a;
             --btn-danger-hover: #7a3a4a;
+            --btn-info-bg: #1a7a8a;
+            --btn-info-hover: #2a8a9a;
             --stat-num-color: #5a8ac5;
             --btn-print: #4a5a6a;
             --btn-print-hover: #5a6a7a;
-            --btn-history-bg: #4a1a6a;
-            --btn-history-hover: #5a2a7a;
+            --btn-archive-bg: #4a4a55;
+            --btn-archive-hover: #5a5a65;
+            --btn-unarchive-bg: #2a6a2a;
+            --btn-unarchive-hover: #3a7a3a;
         }
 
         /* ===== ОСНОВНІ СТИЛІ ===== */
+        .topbar {
+            background: var(--bg-card);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--bg-table-header);
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
         body {
             font-family: 'Segoe UI', sans-serif;
             background: var(--bg-body);
@@ -87,6 +104,7 @@
         }
         .container { padding: 16px 20px; }
 
+        /* ===== АНІМАЦІЯ ===== */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
@@ -97,35 +115,58 @@
         }
 
         .toolbar { animation: fadeIn 0.4s ease forwards; opacity: 0; }
-        .stats-row { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.05s; }
-        .table-wrap { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.10s; }
+        .table-tabs { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.05s; }
+        .stats-row { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.08s; }
+        .table-section.visible .table-wrap { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.10s; }
         .load-more-container { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.15s; }
         .pagination { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.20s; }
 
-        #tableBody tr {
+        /* Анімація рядків */
+        #activeBody tr, #archivedBody tr {
             animation: fadeInRow 0.3s ease forwards;
             opacity: 0;
         }
-        #tableBody tr:nth-child(1) { animation-delay: 0.02s; }
-        #tableBody tr:nth-child(2) { animation-delay: 0.04s; }
-        #tableBody tr:nth-child(3) { animation-delay: 0.06s; }
-        #tableBody tr:nth-child(4) { animation-delay: 0.08s; }
-        #tableBody tr:nth-child(5) { animation-delay: 0.10s; }
-        #tableBody tr:nth-child(6) { animation-delay: 0.12s; }
-        #tableBody tr:nth-child(7) { animation-delay: 0.14s; }
-        #tableBody tr:nth-child(8) { animation-delay: 0.16s; }
-        #tableBody tr:nth-child(9) { animation-delay: 0.18s; }
-        #tableBody tr:nth-child(10) { animation-delay: 0.20s; }
-        #tableBody tr:nth-child(11) { animation-delay: 0.22s; }
-        #tableBody tr:nth-child(12) { animation-delay: 0.24s; }
-        #tableBody tr:nth-child(13) { animation-delay: 0.26s; }
-        #tableBody tr:nth-child(14) { animation-delay: 0.28s; }
-        #tableBody tr:nth-child(15) { animation-delay: 0.30s; }
-        #tableBody tr:nth-child(16) { animation-delay: 0.32s; }
-        #tableBody tr:nth-child(17) { animation-delay: 0.34s; }
-        #tableBody tr:nth-child(18) { animation-delay: 0.36s; }
-        #tableBody tr:nth-child(19) { animation-delay: 0.38s; }
-        #tableBody tr:nth-child(20) { animation-delay: 0.40s; }
+        #activeBody tr:nth-child(1) { animation-delay: 0.02s; }
+        #activeBody tr:nth-child(2) { animation-delay: 0.04s; }
+        #activeBody tr:nth-child(3) { animation-delay: 0.06s; }
+        #activeBody tr:nth-child(4) { animation-delay: 0.08s; }
+        #activeBody tr:nth-child(5) { animation-delay: 0.10s; }
+        #activeBody tr:nth-child(6) { animation-delay: 0.12s; }
+        #activeBody tr:nth-child(7) { animation-delay: 0.14s; }
+        #activeBody tr:nth-child(8) { animation-delay: 0.16s; }
+        #activeBody tr:nth-child(9) { animation-delay: 0.18s; }
+        #activeBody tr:nth-child(10) { animation-delay: 0.20s; }
+        #activeBody tr:nth-child(11) { animation-delay: 0.22s; }
+        #activeBody tr:nth-child(12) { animation-delay: 0.24s; }
+        #activeBody tr:nth-child(13) { animation-delay: 0.26s; }
+        #activeBody tr:nth-child(14) { animation-delay: 0.28s; }
+        #activeBody tr:nth-child(15) { animation-delay: 0.30s; }
+        #activeBody tr:nth-child(16) { animation-delay: 0.32s; }
+        #activeBody tr:nth-child(17) { animation-delay: 0.34s; }
+        #activeBody tr:nth-child(18) { animation-delay: 0.36s; }
+        #activeBody tr:nth-child(19) { animation-delay: 0.38s; }
+        #activeBody tr:nth-child(20) { animation-delay: 0.40s; }
+
+        #archivedBody tr:nth-child(1) { animation-delay: 0.02s; }
+        #archivedBody tr:nth-child(2) { animation-delay: 0.04s; }
+        #archivedBody tr:nth-child(3) { animation-delay: 0.06s; }
+        #archivedBody tr:nth-child(4) { animation-delay: 0.08s; }
+        #archivedBody tr:nth-child(5) { animation-delay: 0.10s; }
+        #archivedBody tr:nth-child(6) { animation-delay: 0.12s; }
+        #archivedBody tr:nth-child(7) { animation-delay: 0.14s; }
+        #archivedBody tr:nth-child(8) { animation-delay: 0.16s; }
+        #archivedBody tr:nth-child(9) { animation-delay: 0.18s; }
+        #archivedBody tr:nth-child(10) { animation-delay: 0.20s; }
+        #archivedBody tr:nth-child(11) { animation-delay: 0.22s; }
+        #archivedBody tr:nth-child(12) { animation-delay: 0.24s; }
+        #archivedBody tr:nth-child(13) { animation-delay: 0.26s; }
+        #archivedBody tr:nth-child(14) { animation-delay: 0.28s; }
+        #archivedBody tr:nth-child(15) { animation-delay: 0.30s; }
+        #archivedBody tr:nth-child(16) { animation-delay: 0.32s; }
+        #archivedBody tr:nth-child(17) { animation-delay: 0.34s; }
+        #archivedBody tr:nth-child(18) { animation-delay: 0.36s; }
+        #archivedBody tr:nth-child(19) { animation-delay: 0.38s; }
+        #archivedBody tr:nth-child(20) { animation-delay: 0.40s; }
 
         /* ===== ТУЛБАР ===== */
         .toolbar {
@@ -145,6 +186,36 @@
             font-size: 18px;
             color: var(--text-primary);
             flex: 1;
+        }
+
+        .btn-duplicate {
+            background: #6a1b9a;
+            color: white;
+            display: inline-block !important;
+            margin: 0 2px !important;
+            padding: 4px 9px !important;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px var(--shadow-light);
+            line-height: 1.4;
+        }
+
+        #confirmModal .modal {
+            width: 400px !important;
+        }
+        #duplicateModal .modal {
+            width: 500px !important;
+        }
+        .btn-duplicate:hover {
+            background: #4a148c;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+        .btn-duplicate:active {
+            transform: translateY(1px);
         }
 
         .btn {
@@ -168,7 +239,6 @@
         .btn:active {
             transform: translateY(1px);
         }
-        .btn i { line-height: 1; }
 
         .btn-primary { background: var(--btn-primary-bg); color: var(--text-white); }
         .btn-primary:hover { background: var(--btn-primary-hover); }
@@ -178,13 +248,17 @@
         .btn-warning:hover { background: var(--btn-warning-hover); }
         .btn-danger { background: var(--btn-danger-bg); color: var(--text-white); }
         .btn-danger:hover { background: var(--btn-danger-hover); }
-        .btn-history { background: var(--btn-history-bg); color: white; }
-        .btn-history:hover { background: var(--btn-history-hover); }
-        .btn-sm { padding: 4px 9px; font-size: 11px; }
+        .btn-info-custom { background: var(--btn-info-bg); color: white; }
+        .btn-info-custom:hover { background: var(--btn-info-hover); }
+        .btn-archive { background: var(--btn-archive-bg); color: white; }
+        .btn-archive:hover { background: var(--btn-archive-hover); }
+        .btn-unarchive { background: var(--btn-unarchive-bg); color: white; }
+        .btn-unarchive:hover { background: var(--btn-unarchive-hover); }
         .btn-print { background: var(--btn-print); color: white; }
         .btn-print:hover { background: var(--btn-print-hover); }
+        .btn-sm { padding: 4px 9px; font-size: 11px; }
 
-        select, input[type="text"], input[type="number"] {
+        select, input[type=text], input[type=number] {
             padding: 7px 10px;
             border: 1px solid var(--border-color);
             border-radius: 5px;
@@ -196,6 +270,36 @@
         }
         .search-input { width: 220px; }
 
+        /* ===== ВКЛАДКИ ===== */
+        .table-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 7px 18px;
+            border: 2px solid var(--bg-table-header);
+            border-radius: 6px;
+            background: var(--bg-card);
+            color: #919191;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .tab-btn.active {
+            background: var(--bg-table-header);
+            color: var(--text-white);
+        }
+        .tab-btn:hover:not(.active) {
+            background: var(--bg-hover);
+        }
+
+        .table-section { display: none; }
+        .table-section.visible { display: block; }
+
+        /* ===== СТАТИСТИКА ===== */
         .stats-row {
             display: flex;
             justify-content: space-between;
@@ -226,6 +330,7 @@
             transition: color 0.3s;
         }
 
+        /* ===== ТАБЛИЦЯ ===== */
         .table-wrap {
             overflow: auto;
             max-height: 75vh;
@@ -238,7 +343,7 @@
             width: 100%;
             border-collapse: collapse;
             background: var(--bg-table);
-            min-width: 1100px;
+            min-width: 1200px;
             transition: background 0.3s;
         }
         thead {
@@ -274,9 +379,10 @@
             vertical-align: middle;
             transition: border-color 0.3s, color 0.3s;
         }
-        tr:hover td { background: var(--bg-hover); }
+        tr:hover td {
+            background: var(--bg-hover);
+        }
 
-        /* Ширини колонок */
         .col-num { width: 40px; text-align: center; }
         .col-name { width: auto; min-width: 180px; text-align: left; }
         .col-quantity { width: 100px; text-align: center; }
@@ -286,11 +392,9 @@
         .col-crew { width: 100px; text-align: center; }
         .col-location { width: 100px; text-align: center; }
         .col-category { width: 100px; text-align: center; }
-        .col-actions { width: 140px; text-align: center !important; white-space: nowrap; }
+        .col-status { width: 80px; text-align: center; }
+        .col-actions { width: 180px; text-align: center !important; white-space: nowrap; }
 
-        .actions-col { text-align: center; white-space: nowrap; }
-
-        /* ===== БЕЙДЖИКИ ===== */
         .badge-quantity {
             background: #17a2b8;
             color: white;
@@ -355,6 +459,24 @@
             font-size: 11px;
             font-weight: 600;
         }
+        .badge-status-active {
+            background: #28a745;
+            color: white;
+            display: inline-block;
+            padding: 4px 9px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-status-archived {
+            background: #6c757d;
+            color: white;
+            display: inline-block;
+            padding: 4px 9px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 600;
+        }
         .badge-empty {
             background: #6c757d;
             color: white;
@@ -365,7 +487,7 @@
             font-weight: 600;
         }
 
-        .btn-edit, .btn-delete, .btn-history-small {
+        .btn-edit, .btn-delete, .btn-history, .btn-archive, .btn-unarchive {
             display: inline-block !important;
             margin: 0 2px !important;
             padding: 4px 9px !important;
@@ -377,19 +499,46 @@
             box-shadow: 0 1px 2px var(--shadow-light);
             line-height: 1.4;
         }
-        .btn-edit:hover, .btn-delete:hover, .btn-history-small:hover {
+        .btn-edit:hover, .btn-delete:hover, .btn-history:hover,
+        .btn-archive:hover, .btn-unarchive:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 8px var(--shadow-color);
         }
-        .btn-edit:active, .btn-delete:active, .btn-history-small:active {
+        .btn-edit:active, .btn-delete:active, .btn-history:active,
+        .btn-archive:active, .btn-unarchive:active {
             transform: translateY(1px);
         }
         .btn-edit { background: #fd7e14; color: white; }
         .btn-edit:hover { background: #e66a0b; }
         .btn-delete { background: #dc3545; color: white; }
         .btn-delete:hover { background: #c82333; }
-        .btn-history-small { background: #6a1b9a; color: white; }
-        .btn-history-small:hover { background: #4a148c; }
+        .btn-history { background: #17a2b8; color: white; }
+        .btn-history:hover { background: #138496; }
+        .btn-archive { background: #6c757d; color: white; }
+        .btn-archive:hover { background: #5a6268; }
+        .btn-unarchive { background: #28a745; color: white; }
+        .btn-unarchive:hover { background: #218838; }
+
+        .export-options {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .export-options label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        .export-options input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
 
         /* ===== МОДАЛЬНІ ВІКНА ===== */
         .modal-overlay {
@@ -413,7 +562,6 @@
             overflow-y: auto;
             box-shadow: 0 8px 32px var(--shadow-strong);
             transition: background 0.3s, box-shadow 0.3s;
-            animation: fadeIn 0.3s ease;
         }
         .modal h2 {
             margin: 0 0 18px;
@@ -432,7 +580,6 @@
             gap: 4px;
         }
         .form-group.full { grid-column: 1 / -1; }
-        .form-group.wide { grid-column: 1 / -1; }
         label {
             font-size: 12px;
             font-weight: 600;
@@ -454,54 +601,6 @@
             gap: 10px;
             justify-content: flex-end;
             margin-top: 18px;
-        }
-
-        /* ===== МОДАЛЬНЕ ВІКНО ДЛЯ ІСТОРІЇ ===== */
-        .history-modal .modal {
-            width: 80vw !important;
-            max-width: 1400px !important;
-            min-width: 300px !important;
-        }
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-        .history-table th {
-            background: var(--bg-table-header);
-            color: white;
-            padding: 8px 10px;
-            text-align: left;
-            position: sticky;
-            top: 0;
-        }
-        .history-table td {
-            padding: 7px 10px;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-primary);
-        }
-        .history-table tr:hover td {
-            background: var(--bg-hover);
-        }
-        .history-table .field-name {
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-        .history-table .old-value {
-            color: #c62828;
-        }
-        .history-table .new-value {
-            color: #2e7d32;
-        }
-        .history-empty {
-            text-align: center;
-            padding: 30px;
-            color: var(--text-light);
-        }
-        .history-timestamp {
-            font-size: 12px;
-            color: var(--text-light);
-            white-space: nowrap;
         }
 
         .confirm-overlay {
@@ -596,9 +695,6 @@
             justify-content: center;
             margin-top: 14px;
         }
-        .load-more-container .btn {
-            padding: 6px 18px;
-        }
 
         @media (max-width: 768px) {
             .toolbar {
@@ -629,14 +725,19 @@
             .table-wrap {
                 max-height: 50vh;
             }
-            .history-modal .modal {
-                width: 95vw !important;
+            .col-actions {
+                width: 140px;
+            }
+            .export-options {
+                flex-direction: column;
+                align-items: stretch;
             }
         }
 
         @media print {
             .sidebar, .toolbar, .stats-row, .no-print, .btn, .btn-print, .btn-success, .btn-primary,
-            .pagination, .load-more-container, .modal-overlay, .confirm-overlay {
+            .pagination, .load-more-container, .modal-overlay, .confirm-overlay, .table-tabs,
+            .export-options {
                 display: none !important;
             }
             body {
@@ -705,14 +806,18 @@
     <div th:replace="~{fragments :: sidebar('equipment')}"></div>
     <div class="main-content">
         <div class="container">
+            <!-- ТУЛБАР -->
             <div class="toolbar">
                 <h2>📦 Облік майна / складу</h2>
                 <input type="text" id="searchInput" class="search-input" placeholder="🔍 Пошук...">
                 <button class="btn btn-success" onclick="openAddModal()">+ Додати позицію</button>
                 <button class="btn btn-primary" onclick="exportToXlsx()">📊 Експорт XLSX</button>
-                <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> Друк</button>
+                <button class="btn btn-print" onclick="window.print()">
+                    <i class="fas fa-print"></i> Друк
+                </button>
             </div>
 
+            <!-- СТАТИСТИКА -->
             <div class="stats-row">
                 <div class="stat-card">
                     <div class="num" id="pageTotal">—</div>
@@ -720,46 +825,88 @@
                 </div>
                 <div class="stat-card">
                     <div class="num" id="genTotal">—</div>
-                    <div class="lbl">Всього в БД</div>
+                    <div class="lbl">Всього активних</div>
+                </div>
+                <div class="stat-card">
+                    <div class="num" id="archivedTotal">—</div>
+                    <div class="lbl">В архіві</div>
                 </div>
             </div>
 
-            <div class="table-wrap">
-                <table id="equipmentTable">
-                    <thead>
-                    <tr>
-                        <th class="col-num" data-col="num" onclick="sortBy('num')">№</th>
-                        <th class="col-name" data-col="name" onclick="sortBy('name')">Назва</th>
-                        <th class="col-quantity" data-col="quantity" onclick="sortBy('quantity')">На позиції</th>
-                        <th class="col-stock" data-col="stockQuantity" onclick="sortBy('stockQuantity')">На складі</th>
-                        <th class="col-written" data-col="writtenOffQuantity" onclick="sortBy('writtenOffQuantity')">Списано</th>
-                        <th class="col-unit" data-col="unit" onclick="sortBy('unit')">Одиниць</th>
-                        <th class="col-crew" data-col="crew" onclick="sortBy('crew')">Екіпаж</th>
-                        <th class="col-location" data-col="location" onclick="sortBy('location')">Локація</th>
-                        <th class="col-category" data-col="category" onclick="sortBy('category')">Категорія</th>
-                        <th class="col-actions no-print">Дії</th>
-                    </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                    <tr><td colspan="10" class="empty-state">Завантаження...</td></tr>
-                    </tbody>
-                </table>
+            <!-- ВКЛАДКИ -->
+            <div class="table-tabs">
+                <button class="tab-btn active" onclick="switchTab('active')">📋 Активне</button>
+                <button class="tab-btn" onclick="switchTab('archived')">📁 Архів</button>
             </div>
 
+            <!-- ТАБЛИЦЯ АКТИВНИХ -->
+            <div class="table-section visible" id="activeTable">
+                <div class="table-wrap">
+                    <table id="equipmentTable">
+                        <thead>
+                        <tr>
+                            <th class="col-num" data-col="num" onclick="sortBy('num')">№</th>
+                            <th class="col-name" data-col="name" onclick="sortBy('name')">Назва</th>
+                            <th class="col-quantity" data-col="quantity" onclick="sortBy('quantity')">На позиції</th>
+                            <th class="col-stock" data-col="stockQuantity" onclick="sortBy('stockQuantity')">На складі</th>
+                            <th class="col-written" data-col="writtenOffQuantity" onclick="sortBy('writtenOffQuantity')">Списано</th>
+                            <th class="col-unit" data-col="unit" onclick="sortBy('unit')">Одиниць</th>
+                            <th class="col-crew" data-col="crew" onclick="sortBy('crew')">Екіпаж</th>
+                            <th class="col-location" data-col="location" onclick="sortBy('location')">Локація</th>
+                            <th class="col-category" data-col="category" onclick="sortBy('category')">Категорія</th>
+                            <th class="col-status" data-col="status" onclick="sortBy('status')">Статус</th>
+                            <th class="col-actions no-print">Дії</th>
+                        </tr>
+                        </thead>
+                        <tbody id="activeBody">
+                        <tr><td colspan="11" class="empty-state">Завантаження...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ТАБЛИЦЯ АРХІВНИХ -->
+            <div class="table-section" id="archivedTable">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th class="col-num" data-col="num" onclick="sortBy('num')">№</th>
+                            <th class="col-name" data-col="name" onclick="sortBy('name')">Назва</th>
+                            <th class="col-quantity" data-col="quantity" onclick="sortBy('quantity')">На позиції</th>
+                            <th class="col-stock" data-col="stockQuantity" onclick="sortBy('stockQuantity')">На складі</th>
+                            <th class="col-written" data-col="writtenOffQuantity" onclick="sortBy('writtenOffQuantity')">Списано</th>
+                            <th class="col-unit" data-col="unit" onclick="sortBy('unit')">Одиниць</th>
+                            <th class="col-crew" data-col="crew" onclick="sortBy('crew')">Екіпаж</th>
+                            <th class="col-location" data-col="location" onclick="sortBy('location')">Локація</th>
+                            <th class="col-category" data-col="category" onclick="sortBy('category')">Категорія</th>
+                            <th class="col-status" data-col="status" onclick="sortBy('status')">Статус</th>
+                            <th class="col-actions no-print">Дії</th>
+                        </tr>
+                        </thead>
+                        <tbody id="archivedBody">
+                        <tr><td colspan="11" class="empty-state">Архів порожній</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- КНОПКА "ЗАВАНТАЖИТИ ЩЕ" -->
             <div class="load-more-container no-print">
                 <button class="btn btn-primary" id="loadMoreBtn" onclick="loadMore()">Завантажити ще</button>
             </div>
 
+            <!-- ПАГІНАЦІЯ -->
             <div class="pagination" id="pagination"></div>
         </div>
     </div>
 </div>
 
 <!-- ===== МОДАЛЬНЕ ВІКНО ДОДАВАННЯ/РЕДАГУВАННЯ ===== -->
-<div class="modal-overlay" id="addModal">
+<div class="modal-overlay" id="editItemModal">
     <div class="modal">
         <h2 id="modalTitle">➕ Нова позиція</h2>
-        <input type="hidden" id="editId">
+        <input type="hidden" id="editItemId">
         <div class="form-grid">
             <div class="form-group full">
                 <label>Назва *</label>
@@ -799,13 +946,13 @@
             </div>
         </div>
         <div class="modal-actions">
-            <button class="btn" onclick="closeModal('addModal')" style="background:#eee">Скасувати</button>
+            <button class="btn" onclick="closeModal('editItemModal')" style="background:#eee">Скасувати</button>
             <button class="btn btn-primary" id="saveBtn">Зберегти</button>
         </div>
     </div>
 </div>
 
-<!-- ===== МОДАЛЬНЕ ВІКНО ДЛЯ ІСТОРІЇ (80% ширини) ===== -->
+<!-- ===== МОДАЛЬНЕ ВІКНО ІСТОРІЇ ===== -->
 <div class="modal-overlay history-modal" id="historyModal">
     <div class="modal">
         <h2><i class="fas fa-history"></i> Історія змін</h2>
@@ -814,6 +961,34 @@
         </div>
         <div class="modal-actions">
             <button class="btn" onclick="closeModal('historyModal')" style="background:#eee">Закрити</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальне вікно для дублювання -->
+<div class="modal-overlay" id="duplicateModal">
+    <div class="modal">
+        <h2>📋 Дублювати позицію</h2>
+        <p style="color:var(--text-secondary); margin-bottom:12px;">Введіть назву для копії:</p>
+        <div class="form-group">
+            <label>Назва копії</label>
+            <input type="text" id="duplicateName" placeholder="Оригінал (копія)">
+        </div>
+        <div class="modal-actions">
+            <button class="btn" onclick="closeModal('duplicateModal')" style="background:#eee">Скасувати</button>
+            <button class="btn btn-primary" id="confirmDuplicateBtn">Створити копію</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== МОДАЛЬНЕ ВІКНО ПІДТВЕРДЖЕННЯ ===== -->
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal" style="width:400px;">
+        <h2 id="confirmTitle">⚠️ Підтвердження</h2>
+        <p id="confirmMessage" style="margin:12px 0; color:var(--text-secondary);">Ви впевнені?</p>
+        <div class="modal-actions" style="justify-content:center;">
+            <button class="btn" onclick="closeModal('confirmModal')" style="background:#eee;">Скасувати</button>
+            <button class="btn btn-danger" id="confirmActionBtn">Підтвердити</button>
         </div>
     </div>
 </div>
@@ -834,8 +1009,9 @@
 <script th:replace="~{fragments :: sidebar-js}"></script>
 <script>
     // ===== ГЛОБАЛЬНІ ЗМІННІ =====
-    let allItems = [];
-    let filteredItems = [];
+    let currentTab = 'active';
+    let activeItems = [];
+    let archivedItems = [];
     let sortCol = 'num';
     let sortDir = 1;
     let searchTerm = '';
@@ -843,6 +1019,7 @@
     let currentPage = 0;
     let pageSize = 20;
     let totalElements = 0;
+    let archivedTotalElements = 0;
 
     function escapeHtml(str) {
         if (!str) return '';
@@ -859,110 +1036,148 @@
     function openModal(id) { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-    async function loadData() {
+    // ===== ЗАВАНТАЖЕННЯ ДАНИХ =====
+
+    async function loadActive() {
         try {
-            const res = await fetch(`/equipment/api?page=${currentPage}&size=${pageSize}`);
-            if (!res.ok) {
-                console.error('Помилка завантаження:', res.status);
-                showToast('Помилка завантаження: ' + res.status, 'err');
-                return;
-            }
+            const search = document.getElementById('searchInput').value.trim();
+            const url = `/equipment/api?page=${currentPage}&size=${pageSize}${search ? '&search=' + encodeURIComponent(search) : ''}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Network error');
             const pageData = await res.json();
-            allItems = pageData.content || [];
+            activeItems = pageData.content || [];
             totalElements = pageData.totalElements || 0;
-
-            document.getElementById('pageTotal').textContent = allItems.length;
-            document.getElementById('genTotal').textContent = totalElements;
-
-            filterAndSort();
+            renderActive();
             renderPagination();
             updateLoadMoreButton();
+            loadStats();
         } catch (err) {
-            console.error('Network error:', err);
-            showToast('Помилка мережі', 'err');
+            console.error(err);
+            showToast('Помилка завантаження активних', 'err');
         }
     }
 
-    function filterAndSort() {
-        let filtered = allItems;
-        if (searchTerm.trim() !== '') {
-            const term = searchTerm.trim().toLowerCase();
-            filtered = allItems.filter(item =>
-                (item.name || '').toLowerCase().includes(term) ||
-                (item.crew || '').toLowerCase().includes(term) ||
-                (item.location || '').toLowerCase().includes(term) ||
-                (item.category || '').toLowerCase().includes(term)
-            );
+    async function loadArchived() {
+        try {
+            const search = document.getElementById('searchInput').value.trim();
+            const url = `/equipment/api/archived?page=${currentPage}&size=${pageSize}${search ? '&search=' + encodeURIComponent(search) : ''}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Network error');
+            const pageData = await res.json();
+            archivedItems = pageData.content || [];
+            archivedTotalElements = pageData.totalElements || 0;
+            renderArchived();
+            renderPagination();
+            updateLoadMoreButton();
+            loadStats();
+        } catch (err) {
+            console.error(err);
+            showToast('Помилка завантаження архіву', 'err');
         }
-        if (sortCol) {
-            filtered = [...filtered].sort((a, b) => {
-                let valA, valB;
-                if (sortCol === 'num') {
-                    valA = a.id;
-                    valB = b.id;
-                } else if (sortCol === 'name') {
-                    valA = (a.name || '').toLowerCase();
-                    valB = (b.name || '').toLowerCase();
-                } else if (sortCol === 'quantity') {
-                    valA = a.quantity || 0;
-                    valB = b.quantity || 0;
-                } else if (sortCol === 'stockQuantity') {
-                    valA = a.stockQuantity || 0;
-                    valB = b.stockQuantity || 0;
-                } else if (sortCol === 'writtenOffQuantity') {
-                    valA = a.writtenOffQuantity || 0;
-                    valB = b.writtenOffQuantity || 0;
-                } else if (sortCol === 'unit') {
-                    valA = (a.unit || '').toLowerCase();
-                    valB = (b.unit || '').toLowerCase();
-                } else if (sortCol === 'crew') {
-                    valA = (a.crew || '').toLowerCase();
-                    valB = (b.crew || '').toLowerCase();
-                } else if (sortCol === 'location') {
-                    valA = (a.location || '').toLowerCase();
-                    valB = (b.location || '').toLowerCase();
-                } else {
-                    valA = (a.category || '').toLowerCase();
-                    valB = (b.category || '').toLowerCase();
-                }
-                if (valA < valB) return -1 * sortDir;
-                if (valA > valB) return 1 * sortDir;
-                return 0;
-            });
-        }
-        filteredItems = filtered;
-        renderTable();
     }
 
-    function renderTable() {
-        const tbody = document.getElementById('tableBody');
-        if (!filteredItems.length) {
-            tbody.innerHTML = '<tr><td colspan="10" class="empty-state">Список порожній. Додайте перше майно.</td></tr>';
+    async function loadStats() {
+        try {
+            const search = document.getElementById('searchInput').value.trim();
+            const activeUrl = `/equipment/api?page=0&size=1${search ? '&search=' + encodeURIComponent(search) : ''}`;
+            const archivedUrl = `/equipment/api/archived?page=0&size=1${search ? '&search=' + encodeURIComponent(search) : ''}`;
+
+            const [activeRes, archivedRes] = await Promise.all([fetch(activeUrl), fetch(archivedUrl)]);
+            if (activeRes.ok) {
+                const data = await activeRes.json();
+                document.getElementById('genTotal').textContent = data.totalElements || 0;
+            }
+            if (archivedRes.ok) {
+                const data = await archivedRes.json();
+                document.getElementById('archivedTotal').textContent = data.totalElements || 0;
+            }
+        } catch (e) {
+            console.warn('Помилка завантаження статистики', e);
+        }
+    }
+
+    // ===== ПЕРЕМИКАННЯ ВКЛАДОК =====
+    function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            if (b.textContent.trim().includes(tab === 'active' ? 'Активне' : 'Архів')) {
+                b.classList.add('active');
+            }
+        });
+        document.getElementById('activeTable').classList.toggle('visible', tab === 'active');
+        document.getElementById('archivedTable').classList.toggle('visible', tab === 'archived');
+        currentPage = 0;
+        if (tab === 'active') loadActive();
+        else loadArchived();
+    }
+
+    // ===== РЕНДЕРИНГ =====
+    function renderActive() {
+        const tbody = document.getElementById('activeBody');
+        if (!activeItems || !activeItems.length) {
+            tbody.innerHTML = '<tr><td colspan="11" class="empty-state">Список активних позицій порожній</td></tr>';
+            document.getElementById('pageTotal').textContent = 0;
             return;
         }
-        tbody.innerHTML = filteredItems.map((item, idx) => {
+        tbody.innerHTML = activeItems.map((item, idx) => {
             const unitVal = item.unit || 'шт.';
-            const unitClass = unitVal ? 'badge-unit' : 'badge-empty';
             const crewVal = item.crew || '';
-            const crewClass = crewVal ? 'badge-crew' : 'badge-empty';
             const locVal = item.location || '';
-            const locClass = locVal ? 'badge-location' : 'badge-empty';
             const catVal = item.category || '';
-            const catClass = catVal ? 'badge-category' : 'badge-empty';
+            return `
+            <tr>
+                <td class="col-num">${idx + 1}</td>
+                <td class="col-name">${escapeHtml(item.name)}</td>
+                <td class="col-quantity"><span class="badge-quantity">${item.quantity}</span></td>
+                <td class="col-stock"><span class="badge-stock">${item.stockQuantity ?? 0}</span></td>
+                <td class="col-written"><span class="badge-written">${item.writtenOffQuantity ?? 0}</span></td>
+                <td class="col-unit"><span class="badge-unit">${escapeHtml(unitVal)}</span></td>
+                <td class="col-crew"><span class="${crewVal ? 'badge-crew' : 'badge-empty'}">${escapeHtml(crewVal) || '—'}</span></td>
+                <td class="col-location"><span class="${locVal ? 'badge-location' : 'badge-empty'}">${escapeHtml(locVal) || '—'}</span></td>
+                <td class="col-category"><span class="${catVal ? 'badge-category' : 'badge-empty'}">${escapeHtml(catVal) || '—'}</span></td>
+                <td class="col-status"><span class="badge-status-active">Активне</span></td>
+                <td class="col-actions">
+                    <button class="btn-history no-print" onclick="showHistory(${item.id})" title="Історія змін">📜</button>
+                    <button class="btn-edit no-print" onclick="openEditItemModal(${item.id})" title="Редагувати">✏️</button>
+                    <button class="btn-duplicate no-print" onclick="duplicateItem(${item.id})" title="Дублювати">📋</button>
+                    <button class="btn-archive no-print" onclick="archiveItem(${item.id})" title="Архівувати">📦</button>
+                    <button class="btn-delete no-print" onclick="deleteItem(${item.id})" title="Видалити">🗑</button>
+                </td>
+            </tr>
+        `;
+        }).join('');
+        document.getElementById('pageTotal').textContent = activeItems.length;
+    }
+
+    function renderArchived() {
+        const tbody = document.getElementById('archivedBody');
+        if (!archivedItems || !archivedItems.length) {
+            tbody.innerHTML = '<tr><td colspan="11" class="empty-state">Архів порожній</td></tr>';
+            return;
+        }
+        tbody.innerHTML = archivedItems.map((item, idx) => {
+            const unitVal = item.unit || 'шт.';
+            const crewVal = item.crew || '';
+            const locVal = item.location || '';
+            const catVal = item.category || '';
             return `
                 <tr>
                     <td class="col-num">${idx + 1}</td>
                     <td class="col-name">${escapeHtml(item.name)}</td>
-                    <td class="col-quantity"><span class="badge-quantity" style="cursor:default;">${item.quantity}</span></td>
-                    <td class="col-stock"><span class="badge-stock" style="cursor:default;">${item.stockQuantity ?? 0}</span></td>
-                    <td class="col-written"><span class="badge-written" style="cursor:default;">${item.writtenOffQuantity ?? 0}</span></td>
-                    <td class="col-unit"><span class="${unitClass}" style="cursor:default;">${escapeHtml(unitVal)}</span></td>
-                    <td class="col-crew"><span class="${crewClass}" style="cursor:default;">${escapeHtml(crewVal) || '—'}</span></td>
-                    <td class="col-location"><span class="${locClass}" style="cursor:default;">${escapeHtml(locVal) || '—'}</span></td>
-                    <td class="col-category"><span class="${catClass}" style="cursor:default;">${escapeHtml(catVal) || '—'}</span></td>
+                    <td class="col-quantity"><span class="badge-quantity">${item.quantity}</span></td>
+                    <td class="col-stock"><span class="badge-stock">${item.stockQuantity ?? 0}</span></td>
+                    <td class="col-written"><span class="badge-written">${item.writtenOffQuantity ?? 0}</span></td>
+                    <td class="col-unit"><span class="badge-unit">${escapeHtml(unitVal)}</span></td>
+                    <td class="col-crew"><span class="${crewVal ? 'badge-crew' : 'badge-empty'}">${escapeHtml(crewVal) || '—'}</span></td>
+                    <td class="col-location"><span class="${locVal ? 'badge-location' : 'badge-empty'}">${escapeHtml(locVal) || '—'}</span></td>
+                    <td class="col-category"><span class="${catVal ? 'badge-category' : 'badge-empty'}">${escapeHtml(catVal) || '—'}</span></td>
+                    <td class="col-status"><span class="badge-status-archived">Архів</span></td>
                     <td class="col-actions">
-                        <button class="btn-history-small no-print" onclick="showHistory(${item.id})" title="Історія змін">📜</button>
+                        <button class="btn-history no-print" onclick="showHistory(${item.id})" title="Історія змін">📜</button>
                         <button class="btn-edit no-print" onclick="openEditItemModal(${item.id})" title="Редагувати">✏️</button>
+                        <button class="btn-duplicate no-print" onclick="duplicateItem(${item.id})" title="Дублювати">📋</button>
+                        <button class="btn-unarchive no-print" onclick="unarchiveItem(${item.id})" title="Відновити">📤</button>
                         <button class="btn-delete no-print" onclick="deleteItem(${item.id})" title="Видалити">🗑</button>
                     </td>
                 </tr>
@@ -972,29 +1187,82 @@
 
     // ===== ПАГІНАЦІЯ =====
     function goToPage(page) {
-        const totalPages = Math.ceil(totalElements / pageSize);
+        const totalPages = Math.ceil((currentTab === 'active' ? totalElements : archivedTotalElements) / pageSize);
         if (page < 0 || page >= totalPages) return;
         currentPage = page;
-        loadData();
+        if (currentTab === 'active') loadActive();
+        else loadArchived();
     }
-    window.goToPage = goToPage;
 
     function renderPagination() {
-        const totalPages = Math.ceil(totalElements / pageSize);
+        const total = currentTab === 'active' ? totalElements : archivedTotalElements;
+        const totalPages = Math.ceil(total / pageSize);
         const pag = document.getElementById('pagination');
+        if (totalPages <= 1) { pag.innerHTML = ''; return; }
         let html = '';
         html += `<button onclick="goToPage(0)" ${currentPage === 0 ? 'disabled' : ''}>⏮</button>`;
         html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>`;
-        html += `<span class="page-info">Сторінка ${currentPage + 1} з ${totalPages} (всього ${totalElements} записів)</span>`;
+        html += `<span class="page-info">Сторінка ${currentPage + 1} з ${totalPages} (всього ${total} записів)</span>`;
         html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>▶</button>`;
         html += `<button onclick="goToPage(${totalPages - 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>⏭</button>`;
         pag.innerHTML = html;
     }
 
+    let confirmCallback = null;
+    let duplicateTargetId = null;
+
+    async function duplicateItem(id) {
+        const item = currentTab === 'active' ? activeItems.find(i => i.id === id) : archivedItems.find(i => i.id === id);
+        if (!item) return;
+        document.getElementById('duplicateName').value = item.name + ' (копія)';
+        duplicateTargetId = id;
+        openModal('duplicateModal');
+    }
+
+    document.getElementById('confirmDuplicateBtn').addEventListener('click', async function() {
+        const name = document.getElementById('duplicateName').value.trim();
+        if (!name) {
+            showToast('Введіть назву копії', 'err');
+            return;
+        }
+        const res = await fetch(`/equipment/api/${duplicateTargetId}/duplicate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name })
+        });
+        closeModal('duplicateModal');
+        if (res.ok) {
+            currentPage = 0;
+            if (currentTab === 'active') await loadActive();
+            else await loadArchived();
+            await loadStats();
+            showToast('✅ Копію створено', 'ok');
+        } else {
+            const err = await res.text();
+            showToast('❌ Помилка: ' + err, 'err');
+        }
+    });
+
+    // ===== УНІВЕРСАЛЬНА ФУНКЦІЯ ПІДТВЕРДЖЕННЯ =====
+    function showConfirm(title, message, callback) {
+        document.getElementById('confirmTitle').textContent = title || '⚠️ Підтвердження';
+        document.getElementById('confirmMessage').textContent = message || 'Ви впевнені?';
+        confirmCallback = callback;
+        openModal('confirmModal');
+    }
+
+    document.getElementById('confirmActionBtn').addEventListener('click', function() {
+        if (typeof confirmCallback === 'function') {
+            confirmCallback();
+        }
+        closeModal('confirmModal');
+    });
+
     function updateLoadMoreButton() {
-        const totalPages = Math.ceil(totalElements / pageSize);
+        const total = currentTab === 'active' ? totalElements : archivedTotalElements;
+        const totalPages = Math.ceil(total / pageSize);
         const btn = document.getElementById('loadMoreBtn');
-        const remaining = totalElements - (currentPage + 1) * pageSize;
+        const remaining = total - (currentPage + 1) * pageSize;
         if (remaining <= 0 || totalPages <= 1) {
             btn.disabled = true;
             btn.textContent = 'Всі завантажено';
@@ -1006,13 +1274,15 @@
     }
 
     function loadMore() {
-        const totalPages = Math.ceil(totalElements / pageSize);
+        const total = currentTab === 'active' ? totalElements : archivedTotalElements;
+        const totalPages = Math.ceil(total / pageSize);
         if (currentPage < totalPages - 1) {
-            const newSize = Math.min(pageSize + 20, totalElements);
+            const newSize = Math.min(pageSize + 20, total);
             if (newSize > pageSize) {
                 pageSize = newSize;
                 currentPage = 0;
-                loadData();
+                if (currentTab === 'active') loadActive();
+                else loadArchived();
             } else {
                 showToast('Всі записи вже завантажені', 'ok');
             }
@@ -1022,32 +1292,56 @@
     }
     window.loadMore = loadMore;
 
+    // ===== СОРТУВАННЯ =====
     function sortBy(col) {
-        if (sortCol === col) {
-            sortDir *= -1;
-        } else {
-            sortCol = col;
-            sortDir = 1;
-        }
+        if (sortCol === col) sortDir *= -1;
+        else { sortCol = col; sortDir = 1; }
         document.querySelectorAll('thead th[data-col]').forEach(th => {
             th.classList.remove('sort-asc', 'sort-desc');
             if (th.getAttribute('data-col') === col) {
                 th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
             }
         });
-        filterAndSort();
+        // Сортуємо на фронтенді
+        const items = currentTab === 'active' ? activeItems : archivedItems;
+        const sorted = [...items].sort((a, b) => {
+            let va, vb;
+            if (col === 'num') { va = a.id; vb = b.id; }
+            else if (col === 'name') { va = (a.name || '').toLowerCase(); vb = (b.name || '').toLowerCase(); }
+            else if (col === 'quantity') { va = a.quantity || 0; vb = b.quantity || 0; }
+            else if (col === 'stockQuantity') { va = a.stockQuantity || 0; vb = b.stockQuantity || 0; }
+            else if (col === 'writtenOffQuantity') { va = a.writtenOffQuantity || 0; vb = b.writtenOffQuantity || 0; }
+            else if (col === 'unit') { va = (a.unit || '').toLowerCase(); vb = (b.unit || '').toLowerCase(); }
+            else if (col === 'crew') { va = (a.crew || '').toLowerCase(); vb = (b.crew || '').toLowerCase(); }
+            else if (col === 'location') { va = (a.location || '').toLowerCase(); vb = (b.location || '').toLowerCase(); }
+            else if (col === 'category') { va = (a.category || '').toLowerCase(); vb = (b.category || '').toLowerCase(); }
+            else if (col === 'status') { va = a.archived ? 'архів' : 'активне'; vb = b.archived ? 'архів' : 'активне'; }
+            else { va = a.id; vb = b.id; }
+            if (va < vb) return -1 * sortDir;
+            if (va > vb) return 1 * sortDir;
+            return 0;
+        });
+        if (currentTab === 'active') { activeItems = sorted; renderActive(); }
+        else { archivedItems = sorted; renderArchived(); }
     }
 
+    // ===== ПОШУК =====
     document.getElementById('searchInput').addEventListener('input', function() {
-        searchTerm = this.value;
         currentPage = 0;
-        loadData();
+        if (currentTab === 'active') loadActive();
+        else loadArchived();
     });
+
+    // ===== ФІЛЬТР + ПОШУК =====
+    // Оскільки пошук на бекенді не реалізований, робимо на фронтенді
+    // Перевизначаємо loadActive та loadArchived для фільтрації
+    // Але ми вже використовуємо бекенд, тому поки що залишаємо як є.
+    // Для пошуку потрібно додати ендпоінт або фільтрувати на фронтенді.
 
     // ===== МОДАЛЬНІ ВІКНА (CRUD) =====
     function openAddModal() {
+        document.getElementById('editItemId').value = '';
         document.getElementById('modalTitle').textContent = '➕ Нова позиція';
-        document.getElementById('editId').value = '';
         document.getElementById('eqName').value = '';
         document.getElementById('eqQuantity').value = '0';
         document.getElementById('eqStockQuantity').value = '0';
@@ -1056,7 +1350,30 @@
         document.getElementById('eqCrew').value = '';
         document.getElementById('eqLocation').value = '';
         document.getElementById('eqCategory').value = '';
-        openModal('addModal');
+        openModal('editItemModal');
+    }
+
+    function openEditItemModal(id) {
+        const items = currentTab === 'active' ? activeItems : archivedItems;
+        const item = items.find(i => i.id === id);
+        if (!item) { showToast('Запис не знайдено', 'err'); return; }
+        document.getElementById('editItemId').value = item.id;
+        document.getElementById('modalTitle').textContent = '✏️ Редагувати позицію';
+        document.getElementById('eqName').value = item.name || '';
+        document.getElementById('eqQuantity').value = item.quantity ?? 0;
+        document.getElementById('eqStockQuantity').value = item.stockQuantity ?? 0;
+        document.getElementById('eqWrittenOffQuantity').value = item.writtenOffQuantity ?? 0;
+        document.getElementById('eqUnit').value = item.unit || 'шт.';
+        document.getElementById('eqCrew').value = item.crew || '';
+        document.getElementById('eqLocation').value = item.location || '';
+        document.getElementById('eqCategory').value = item.category || '';
+        openModal('editItemModal');
+    }
+
+    function saveItem() {
+        const id = document.getElementById('editItemId').value;
+        if (id) updateFullItem();
+        else addItem();
     }
 
     async function addItem() {
@@ -1068,41 +1385,26 @@
         const crew = document.getElementById('eqCrew').value;
         const location = document.getElementById('eqLocation').value.trim();
         const category = document.getElementById('eqCategory').value.trim();
-        if (!name) { showToast("Введіть назву", "err"); return; }
+        if (!name) { showToast('Введіть назву', 'err'); return; }
         const res = await fetch('/equipment/api', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, quantity, stockQuantity, writtenOffQuantity, unit, crew, location, category })
         });
         if (res.ok) {
-            closeModal('addModal');
+            closeModal('editItemModal');
             currentPage = 0;
-            await loadData();
-            showToast("Додано", "ok");
+            if (currentTab === 'active') loadActive();
+            else loadArchived();
+            showToast('Додано', 'ok');
         } else {
             const err = await res.text();
-            showToast("Помилка: " + err, "err");
+            showToast('Помилка: ' + err, 'err');
         }
     }
 
-    function openEditItemModal(id) {
-        const item = allItems.find(i => i.id === id);
-        if (!item) return;
-        document.getElementById('modalTitle').textContent = '✏️ Редагувати позицію';
-        document.getElementById('editId').value = item.id;
-        document.getElementById('eqName').value = item.name;
-        document.getElementById('eqQuantity').value = item.quantity;
-        document.getElementById('eqStockQuantity').value = item.stockQuantity ?? 0;
-        document.getElementById('eqWrittenOffQuantity').value = item.writtenOffQuantity ?? 0;
-        document.getElementById('eqUnit').value = item.unit || 'шт.';
-        document.getElementById('eqCrew').value = item.crew || '';
-        document.getElementById('eqLocation').value = item.location || '';
-        document.getElementById('eqCategory').value = item.category || '';
-        openModal('addModal');
-    }
-
     async function updateFullItem() {
-        const id = document.getElementById('editId').value;
+        const id = document.getElementById('editItemId').value;
         const name = document.getElementById('eqName').value.trim();
         const quantity = parseInt(document.getElementById('eqQuantity').value) || 0;
         const stockQuantity = parseInt(document.getElementById('eqStockQuantity').value) || 0;
@@ -1111,26 +1413,89 @@
         const crew = document.getElementById('eqCrew').value;
         const location = document.getElementById('eqLocation').value.trim();
         const category = document.getElementById('eqCategory').value.trim();
-        if (!name) { showToast("Назва не може бути порожньою", "err"); return; }
+        if (!name) { showToast('Назва не може бути порожньою', 'err'); return; }
         const res = await fetch(`/equipment/api/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, quantity, stockQuantity, writtenOffQuantity, unit, crew, location, category })
         });
         if (res.ok) {
-            closeModal('addModal');
+            closeModal('editItemModal');
             currentPage = 0;
-            await loadData();
-            showToast("Оновлено", "ok");
+            if (currentTab === 'active') loadActive();
+            else loadArchived();
+            showToast('Оновлено', 'ok');
         } else {
             const err = await res.text();
-            showToast("Помилка: " + err, "err");
+            showToast('Помилка: ' + err, 'err');
         }
     }
 
-    // ===== НОВА ФУНКЦІЯ: ПОКАЗ ІСТОРІЇ =====
+    // ===== АРХІВАЦІЯ =====
+    async function archiveItem(id) {
+        showConfirm('📦 Архівувати', 'Перемістити цю позицію до архіву?', async function() {
+            const res = await fetch(`/equipment/api/${id}/archive`, { method: 'PATCH' });
+            if (res.ok) {
+                currentPage = 0;
+                loadActive();
+                loadStats();
+                showToast('Архівовано', 'ok');
+            } else {
+                const err = await res.text();
+                showToast('Помилка: ' + err, 'err');
+            }
+        });
+    }
+
+    async function unarchiveItem(id) {
+        showConfirm('📤 Відновити', 'Відновити цю позицію з архіву?', async function() {
+            const res = await fetch(`/equipment/api/${id}/unarchive`, { method: 'PATCH' });
+            if (res.ok) {
+                currentPage = 0;
+                loadArchived();
+                loadStats();
+                showToast('Відновлено', 'ok');
+            } else {
+                const err = await res.text();
+                showToast('Помилка: ' + err, 'err');
+            }
+        });
+    }
+
+    // ===== ВИДАЛЕННЯ =====
+    function deleteItem(id) {
+        showConfirm('🗑 Видалити', 'Видалити цю позицію безповоротно?', async function() {
+            const res = await fetch(`/equipment/api/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                currentPage = 0;
+                if (currentTab === 'active') loadActive();
+                else loadArchived();
+                showToast('Видалено', 'ok');
+            } else {
+                const err = await res.text();
+                showToast('Помилка: ' + err, 'err');
+            }
+        });
+    }
+
+    document.getElementById('confirmDeleteBtn').onclick = async function() {
+        if (!deleteTargetId) return;
+        const res = await fetch(`/equipment/api/${deleteTargetId}`, { method: 'DELETE' });
+        if (res.ok) {
+            closeModal('confirmDeleteModal');
+            currentPage = 0;
+            if (currentTab === 'active') loadActive();
+            else loadArchived();
+            showToast('Видалено', 'ok');
+        } else {
+            const err = await res.text();
+            showToast('Помилка: ' + err, 'err');
+        }
+        deleteTargetId = null;
+    };
+
+    // ===== ІСТОРІЯ =====
     async function showHistory(id) {
-        const modal = document.getElementById('historyModal');
         const content = document.getElementById('historyContent');
         content.innerHTML = '<div class="history-empty">Завантаження...</div>';
         openModal('historyModal');
@@ -1159,34 +1524,41 @@
                 'unit': 'Одиниця виміру',
                 'crew': 'Екіпаж',
                 'location': 'Локація',
-                'category': 'Категорія'
+                'category': 'Категорія',
+                'archived': 'Статус'
             };
 
             let html = `
-            <div style="overflow-x:auto;">
-            <table class="history-table">
-                <thead>
-                    <tr>
-                        <th style="width:90px;">Час</th>
-                        <th style="width:120px;">Поле</th>
-                        <th style="min-width:150px;">Нове значення</th>
-                        <th style="min-width:150px;">Старе значення</th>
-                        <th style="width:100px;">Ким змінено</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
+                <div style="overflow-x:auto;">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th style="width:90px;">Час</th>
+                            <th style="width:120px;">Поле</th>
+                            <th style="min-width:150px;">Нове значення</th>
+                            <th style="min-width:150px;">Старе значення</th>
+                            <th style="width:100px;">Ким змінено</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
             data.forEach(h => {
                 const fieldLabel = fieldMap[h.fieldName] || h.fieldName;
+                let newVal = h.newValue;
+                let oldVal = h.oldValue;
+                if (h.fieldName === 'archived') {
+                    newVal = newVal === 'true' ? 'Архів' : 'Активне';
+                    oldVal = oldVal === 'true' ? 'Архів' : 'Активне';
+                }
                 html += `
-                <tr>
-                    <td class="history-timestamp">${formatDate(h.changedAt)}</td>
-                    <td class="field-name">${escapeHtml(fieldLabel)}</td>
-                    <td class="new-value">${escapeHtml(h.newValue) || '—'}</td>
-                    <td class="old-value">${escapeHtml(h.oldValue) || '—'}</td>
-                    <td>${escapeHtml(h.changedBy || 'system')}</td>
-                </tr>
-            `;
+                    <tr>
+                        <td class="history-timestamp">${formatDate(h.changedAt)}</td>
+                        <td class="field-name">${escapeHtml(fieldLabel)}</td>
+                        <td class="new-value">${escapeHtml(newVal) || '—'}</td>
+                        <td class="old-value">${escapeHtml(oldVal) || '—'}</td>
+                        <td>${escapeHtml(h.changedBy || 'system')}</td>
+                    </tr>
+                `;
             });
             html += `</tbody></table></div>`;
             content.innerHTML = html;
@@ -1197,41 +1569,22 @@
         }
     }
 
-    function deleteItem(id) {
-        deleteTargetId = id;
-        openModal('confirmDeleteModal');
-    }
-
-    document.getElementById('confirmDeleteBtn').onclick = async function() {
-        if (!deleteTargetId) return;
-        const res = await fetch(`/equipment/api/${deleteTargetId}`, { method: 'DELETE' });
-        if (res.ok) {
-            closeModal('confirmDeleteModal');
-            currentPage = 0;
-            await loadData();
-            showToast("Видалено", "ok");
-        } else {
-            const err = await res.text();
-            showToast("Помилка: " + err, "err");
-        }
-        deleteTargetId = null;
-    };
-
+    // ===== ЕКСПОРТ =====
     function exportToXlsx() {
-        window.location.href = '/equipment/api/export';
+        // Завжди експортуємо всі записи (включно з архівними)
+        window.location.href = '/equipment/api/export?includeArchived=true';
     }
 
-    // Кнопка збереження (використовується і для додавання, і для редагування)
-    document.getElementById('saveBtn').addEventListener('click', function() {
-        const id = document.getElementById('editId').value;
-        if (id) {
-            updateFullItem();
-        } else {
-            addItem();
-        }
-    });
+    // ===== ЗАКРИТТЯ МОДАЛЬНИХ ВІКОН =====
+    document.querySelectorAll('.modal-overlay, .confirm-overlay').forEach(el =>
+        el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
+    );
 
-    loadData();
+    document.getElementById('saveBtn').addEventListener('click', saveItem);
+
+    // ===== ІНІЦІАЛІЗАЦІЯ =====
+    loadActive();
+    loadStats();
 </script>
 </body>
 </html>

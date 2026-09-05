@@ -32,15 +32,26 @@ public class EquipmentController {
 
     @GetMapping
     public String list(Model model) {
-        model.addAttribute("items", service.getAll());
         return "equipment";
     }
 
+    // ===== АКТИВНІ (з пагінацією) =====
+// ===== АКТИВНІ (з пошуком) =====
     @GetMapping("/api")
     @ResponseBody
-    public Page<Equipment> getApi(@RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(defaultValue = "20") int size) {
-        return service.getPage(page, size);
+    public Page<Equipment> getActive(@RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "20") int size,
+                                     @RequestParam(required = false) String search) {
+        return service.searchActive(search, page, size);
+    }
+
+    // ===== АРХІВНІ (з пошуком) =====
+    @GetMapping("/api/archived")
+    @ResponseBody
+    public Page<Equipment> getArchived(@RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "20") int size,
+                                       @RequestParam(required = false) String search) {
+        return service.searchArchived(search, page, size);
     }
 
     // ===== ІСТОРІЯ =====
@@ -86,6 +97,30 @@ public class EquipmentController {
         }
     }
 
+    @PatchMapping("/api/{id}/archive")
+    @ResponseBody
+    public ResponseEntity<?> archive(@PathVariable Long id, Principal principal) {
+        try {
+            String changedBy = principal != null ? principal.getName() : "system";
+            service.archive(id, changedBy);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
+        }
+    }
+
+    @PatchMapping("/api/{id}/unarchive")
+    @ResponseBody
+    public ResponseEntity<?> unarchive(@PathVariable Long id, Principal principal) {
+        try {
+            String changedBy = principal != null ? principal.getName() : "system";
+            service.unarchive(id, changedBy);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
+        }
+    }
+
     @DeleteMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> deleteItem(@PathVariable Long id) {
@@ -98,11 +133,10 @@ public class EquipmentController {
     }
 
     @GetMapping("/api/export")
-    @ResponseBody
     public ResponseEntity<byte[]> exportToXlsx() {
         try {
-            byte[] data = service.exportToXlsx();
-            String filename = URLEncoder.encode("Майно.xlsx", StandardCharsets.UTF_8)
+            byte[] data = service.exportToXlsx(true); // завжди true
+            String filename = URLEncoder.encode("Майно_всі.xlsx", StandardCharsets.UTF_8)
                     .replace("+", "%20");
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -112,6 +146,23 @@ public class EquipmentController {
         } catch (Exception e) {
             log.error("Помилка експорту майна", e);
             return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    // Додаємо метод дублювання
+    @PostMapping("/api/{id}/duplicate")
+    @ResponseBody
+    public ResponseEntity<?> duplicate(@PathVariable Long id,
+                                       @RequestBody(required = false) Map<String, String> payload,
+                                       Principal principal) {
+        try {
+            String changedBy = principal != null ? principal.getName() : "system";
+            String newName = payload != null ? payload.get("name") : null;
+            Equipment duplicated = service.duplicate(id, changedBy, newName);
+            return ResponseEntity.ok(duplicated);
+        } catch (Exception e) {
+            log.error("Помилка дублювання equipment id={}", id, e);
+            return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
         }
     }
 }

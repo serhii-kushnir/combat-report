@@ -34,35 +34,53 @@ public class EquipmentService {
         this.historyRepository = historyRepository;
     }
 
+    // ===== ОТРИМАННЯ СПИСКІВ =====
     public List<Equipment> getAll() {
         return repository.findAll();
     }
 
-    public Equipment save(Equipment equipment, String changedBy) {
-        if (changedBy != null) {
-            equipment.setModifiedBy(changedBy);
-        }
-        equipment.setLastModified(LocalDateTime.now());
-        return repository.save(equipment);
+    public List<Equipment> getActive() {
+        return repository.findByArchivedFalse(PageRequest.of(0, Integer.MAX_VALUE)).getContent();
     }
 
-    public void delete(Long id) {
-        historyRepository.deleteAll(historyRepository.findByEquipmentIdOrderByChangedAtDesc(id));
-        repository.deleteById(id);
+    public List<Equipment> getArchived() {
+        return repository.findByArchivedTrue(PageRequest.of(0, Integer.MAX_VALUE)).getContent();
+    }
+
+    // ===== ПАГІНАЦІЯ =====
+    public Page<Equipment> getActivePage(int page, int size) {
+        return repository.findByArchivedFalse(PageRequest.of(page, size, Sort.by("name").ascending()));
+    }
+
+    public Page<Equipment> getArchivedPage(int page, int size) {
+        return repository.findByArchivedTrue(PageRequest.of(page, size, Sort.by("name").ascending()));
+    }
+
+    // Додайте методи для пошуку
+    public Page<Equipment> searchActive(String search, int page, int size) {
+        if (search == null || search.trim().isEmpty()) {
+            return getActivePage(page, size);
+        }
+        return repository.searchActive(search.trim(), PageRequest.of(page, size, Sort.by("name").ascending()));
+    }
+
+    public Page<Equipment> searchArchived(String search, int page, int size) {
+        if (search == null || search.trim().isEmpty()) {
+            return getArchivedPage(page, size);
+        }
+        return repository.searchArchived(search.trim(), PageRequest.of(page, size, Sort.by("name").ascending()));
+    }
+
+    // ===== CRUD =====
+    public Equipment save(Equipment equipment, String changedBy) {
+        if (changedBy != null) equipment.setModifiedBy(changedBy);
+        equipment.setLastModified(LocalDateTime.now());
+        return repository.save(equipment);
     }
 
     public Equipment getById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Не знайдено запис з id=" + id));
-    }
-
-    public Page<Equipment> getPage(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
-        return repository.findAll(pageable);
-    }
-
-    public List<EquipmentHistory> getHistory(Long equipmentId) {
-        return historyRepository.findByEquipmentIdOrderByChangedAtDesc(equipmentId);
     }
 
     @Transactional
@@ -139,6 +157,38 @@ public class EquipmentService {
         return repository.save(eq);
     }
 
+    // ===== АРХІВАЦІЯ =====
+    @Transactional
+    public void archive(Long id, String changedBy) {
+        Equipment eq = getById(id);
+        eq.setArchived(true);
+        eq.setModifiedBy(changedBy);
+        eq.setLastModified(LocalDateTime.now());
+        repository.save(eq);
+        saveHistory(id, "archived", "false", "true", changedBy);
+    }
+
+    @Transactional
+    public void unarchive(Long id, String changedBy) {
+        Equipment eq = getById(id);
+        eq.setArchived(false);
+        eq.setModifiedBy(changedBy);
+        eq.setLastModified(LocalDateTime.now());
+        repository.save(eq);
+        saveHistory(id, "archived", "true", "false", changedBy);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        historyRepository.deleteAll(historyRepository.findByEquipmentIdOrderByChangedAtDesc(id));
+        repository.deleteById(id);
+    }
+
+    // ===== ІСТОРІЯ =====
+    public List<EquipmentHistory> getHistory(Long equipmentId) {
+        return historyRepository.findByEquipmentIdOrderByChangedAtDesc(equipmentId);
+    }
+
     private void saveHistory(Long equipmentId, String fieldName, String oldValue, String newValue, String changedBy) {
         EquipmentHistory history = new EquipmentHistory();
         history.setEquipmentId(equipmentId);
@@ -151,8 +201,66 @@ public class EquipmentService {
     }
 
     // ===== ЕКСПОРТ XLSX =====
-    public byte[] exportToXlsx() throws Exception {
-        List<Equipment> items = getAll();
+    public byte[] exportToXlsx(boolean includeArchived) throws Exception {
+        try (Workbook wb = new XSSFWorkbook();
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+            // Аркуш "Активне"
+            List<Equipment> activeItems = getActive();
+            Sheet activeSheet = wb.createSheet("Активне");
+            buildSheet(activeSheet, activeItems, "Активне");
+
+            if (includeArchived) {
+                List<Equipment> archivedItems = getArchived();
+                Sheet archivedSheet = wb.createSheet("Архів");
+                buildSheet(archivedSheet, archivedItems, "Архів");
+            }
+
+            wb.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    private void buildSheet(Sheet sheet, List<Equipment> items, String sheetType) {
+        CellStyle headerStyle = createHeaderStyle(sheet.getWorkbook());
+        CellStyle dataStyle = createDataStyle(sheet.getWorkbook());
+
+        // Заголовки (без "Остання зміна" та "Ким змінено")
+        String[] headers = {
+                "№", "Назва",
+                "Кількість на позиції",
+                "Кількість на складі",
+                "Кількість списано",
+                "Одиниць.", "Екіпаж", "Локація", "Категорія",
+                "Статус"
+        };
+        Row headerRow = sheet.createRow(0);
+        headerRow.setHeightInPoints(25);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+            sheet.setColumnWidth(i, (headers[i].length() + 6) * 256);
+        }
+
+        int rowNum = 1;
+        for (Equipment eq : items) {
+            Row row = sheet.createRow(rowNum++);
+            row.setHeightInPoints(18);
+            setCell(row, 0, rowNum - 1, dataStyle);
+            setCell(row, 1, eq.getName(), dataStyle);
+            setCell(row, 2, eq.getQuantity() != null ? eq.getQuantity() : 0, dataStyle);
+            setCell(row, 3, eq.getStockQuantity() != null ? eq.getStockQuantity() : 0, dataStyle);
+            setCell(row, 4, eq.getWrittenOffQuantity() != null ? eq.getWrittenOffQuantity() : 0, dataStyle);
+            setCell(row, 5, eq.getUnit(), dataStyle);
+            setCell(row, 6, eq.getCrew(), dataStyle);
+            setCell(row, 7, eq.getLocation(), dataStyle);
+            setCell(row, 8, eq.getCategory(), dataStyle);
+            setCell(row, 9, eq.isArchived() ? "Архів" : "Активне", dataStyle);
+        }
+    }
+
+    private byte[] exportItems(List<Equipment> items) throws Exception {
         try (Workbook wb = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
@@ -166,7 +274,7 @@ public class EquipmentService {
                     "Кількість на складі",
                     "Кількість списано",
                     "Одиниць.", "Екіпаж", "Локація", "Категорія",
-                    "Остання зміна", "Ким змінено"
+                    "Статус", "Остання зміна", "Ким змінено"
             };
             Row headerRow = sheet.createRow(0);
             headerRow.setHeightInPoints(25);
@@ -190,8 +298,9 @@ public class EquipmentService {
                 setCell(row, 6, eq.getCrew(), dataStyle);
                 setCell(row, 7, eq.getLocation(), dataStyle);
                 setCell(row, 8, eq.getCategory(), dataStyle);
-                setCell(row, 9, eq.getLastModified() != null ? eq.getLastModified().toString().replace('T', ' ') : "", dataStyle);
-                setCell(row, 10, eq.getModifiedBy(), dataStyle);
+                setCell(row, 9, eq.isArchived() ? "Архів" : "Активне", dataStyle);
+                setCell(row, 10, eq.getLastModified() != null ? eq.getLastModified().toString().replace('T', ' ') : "", dataStyle);
+                setCell(row, 11, eq.getModifiedBy(), dataStyle);
             }
 
             wb.write(out);
@@ -199,6 +308,7 @@ public class EquipmentService {
         }
     }
 
+    // ===== ДОПОМІЖНІ МЕТОДИ ДЛЯ СТИЛІВ =====
     private void setCell(Row row, int col, Object value, CellStyle style) {
         Cell cell = row.createCell(col);
         cell.setCellStyle(style);
@@ -241,5 +351,28 @@ public class EquipmentService {
         style.setBorderTop(BorderStyle.THIN);
         style.setBorderLeft(BorderStyle.THIN);
         style.setBorderRight(BorderStyle.THIN);
+    }
+
+    // Додаємо метод дублювання
+    @Transactional
+    public Equipment duplicate(Long id, String changedBy, String newName) {
+        Equipment original = getById(id);
+
+        Equipment copy = new Equipment();
+        copy.setName(newName != null && !newName.trim().isEmpty() ? newName : original.getName() + " (копія)");
+        copy.setQuantity(original.getQuantity());
+        copy.setStockQuantity(original.getStockQuantity());
+        copy.setWrittenOffQuantity(original.getWrittenOffQuantity());
+        copy.setUnit(original.getUnit());
+        copy.setCrew(original.getCrew());
+        copy.setLocation(original.getLocation());
+        copy.setCategory(original.getCategory());
+        copy.setArchived(false);
+        copy.setModifiedBy(changedBy);
+        copy.setLastModified(LocalDateTime.now());
+
+        Equipment saved = repository.save(copy);
+        saveHistory(saved.getId(), "duplicated", "from_id_" + id, String.valueOf(saved.getId()), changedBy);
+        return saved;
     }
 }

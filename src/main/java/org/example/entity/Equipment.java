@@ -19,23 +19,17 @@ public class Equipment {
     @Column(nullable = false)
     private String name;
 
-    // Кількість на позиції (старе поле quantity)
     private Integer quantity = 0;
 
-    // Кількість на складі
     @Column(name = "stock_quantity")
     private Integer stockQuantity = 0;
 
-    // Кількість списано
     @Column(name = "written_off_quantity")
     private Integer writtenOffQuantity = 0;
 
     private String unit;
-
     private String crew;
-
     private String location;
-
     private String category;
 
     @Column(name = "last_modified")
@@ -43,6 +37,9 @@ public class Equipment {
 
     @Column(name = "modified_by")
     private String modifiedBy;
+
+    @Column(name = "archived")
+    private boolean archived = false;
 
     @PreUpdate
     protected void onUpdate() {
@@ -55,7 +52,6 @@ public class Equipment {
         if (modifiedBy == null) modifiedBy = "system";
     }
 
-    // Конструктор
     public Equipment(String name, Integer quantity, Integer stockQuantity,
                      Integer writtenOffQuantity, String unit, String crew,
                      String location, String category) {
@@ -67,5 +63,6 @@ public class Equipment {
         this.crew = crew;
         this.location = location;
         this.category = category;
+        this.archived = false;
     }
 }
