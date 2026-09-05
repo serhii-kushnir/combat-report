@@ -116,7 +116,6 @@
         .load-more-container { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.15s; }
         .pagination { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.20s; }
 
-        /* Анімація рядків таблиці */
         #dutyTableBody tr {
             animation: fadeInRow 0.3s ease forwards;
             opacity: 0;
@@ -156,7 +155,6 @@
             transition: background 0.3s, box-shadow 0.3s;
         }
 
-        /* ===== СТИЛІ КНОПОК З АНІМАЦІЄЮ ===== */
         .btn {
             padding: 6px 14px;
             border: none;
@@ -198,7 +196,6 @@
         .btn-today:hover { background: var(--btn-today-hover); }
         .btn-sm { padding: 4px 9px; font-size: 11px; }
 
-        /* ===== ПОЛЯ ВВОДУ ===== */
         select, input[type="text"], input[type="datetime-local"] {
             padding: 6px 10px;
             border: 1px solid var(--border-color);
@@ -268,7 +265,7 @@
         .stat-card .num.hits { color: var(--stat-num-hits); }
         .stat-card .num.loss { color: var(--stat-num-loss); }
 
-        /* ===== ФІКСАЦІЯ ЗАГОЛОВКА ТА ПЕРШИХ ДВОХ КОЛОНОК ===== */
+        /* ===== ФІКСАЦІЯ ЗАГОЛОВКА ===== */
         .table-wrap {
             overflow: auto;
             max-height: 75vh;
@@ -419,7 +416,6 @@
         }
         .form-group input[type="number"] { width: 100px; }
 
-        /* ===== ЗБІЛЬШЕНА ВИСОТА ДЛЯ TEXTAREA ===== */
         .form-group textarea {
             resize: vertical;
             min-height: 200px;
@@ -429,7 +425,6 @@
         .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
 
-        /* ===== ЛІЧИЛЬНИК СИМВОЛІВ ===== */
         .char-counter {
             text-align: right;
             font-size: 12px;
@@ -441,7 +436,6 @@
             color: var(--char-counter-warning);
         }
 
-        /* ===== ТОАСТ ===== */
         .toast {
             position: fixed; bottom: 20px; right: 20px;
             padding: 10px 18px; border-radius: 6px;
@@ -454,7 +448,6 @@
         .toast.err { background: var(--toast-error); }
         .empty-state { text-align: center; padding: 40px; color: var(--text-light); transition: color 0.3s; }
 
-        /* ===== ПАГІНАЦІЯ ===== */
         .pagination {
             display: flex;
             gap: 8px;
@@ -489,7 +482,6 @@
             padding: 4px 8px;
         }
 
-        /* ===== КНОПКА "ЗАВАНТАЖИТИ ЩЕ" (тільки знизу) ===== */
         .load-more-container {
             display: flex;
             justify-content: center;
@@ -499,7 +491,6 @@
             padding: 6px 18px;
         }
 
-        /* ===== АДАПТИВ ===== */
         @media (max-width: 768px) {
             .toolbar {
                 flex-direction: column;
@@ -531,7 +522,6 @@
             }
         }
 
-        /* ===== ДРУК ===== */
         @media print {
             .sidebar, .toolbar, .stats-row, .no-print, .btn, .btn-print, .btn-success,
             .btn-primary, .btn-warning, .btn-danger, .btn-duplicate, .modal-overlay,
@@ -790,7 +780,7 @@
                 </table>
             </div>
 
-            <!-- КНОПКА "ЗАВАНТАЖИТИ ЩЕ" (тільки знизу) -->
+            <!-- КНОПКА "ЗАВАНТАЖИТИ ЩЕ" -->
             <div class="load-more-container no-print">
                 <button class="btn btn-primary" id="loadMoreBtn" onclick="loadMore()">Завантажити ще</button>
             </div>
@@ -861,7 +851,7 @@
             <input type="text" id="fDutyOfficer" placeholder="полковник Петро Крикун">
         </div>
 
-        <!-- ===== ДОПОВІДЬ ІЗ ЛІЧИЛЬНИКОМ ===== -->
+        <!-- ДОПОВІДЬ З ЛІЧИЛЬНИКОМ -->
         <div class="form-group">
             <label>Доповідь про чергування</label>
             <textarea id="fReportSummary" rows="3" placeholder="Доповідаю, що під час мого чергування..." maxlength="5000"></textarea>
@@ -905,12 +895,11 @@
         let searchQuery = '';
         let personnelList = [];
 
-        // ПАГІНАЦІЯ
         let currentPage = 0;
         let pageSize = 20;
         let totalElements = 0;
 
-        // ===== ЛІЧИЛЬНИК СИМВОЛІВ =====
+        // ===== ЛІЧИЛЬНИК =====
         const MAX_CHARS = 5000;
         const reportTextarea = document.getElementById('fReportSummary');
         const charCounter = document.getElementById('charCounter');
@@ -933,7 +922,7 @@
             reportTextarea.addEventListener('input', updateCharCounter);
         }
 
-        // ===== ЗАВАНТАЖЕННЯ ПЕРСОНАЛУ ДЛЯ СЕЛЕКТІВ =====
+        // ===== ЗАВАНТАЖЕННЯ ПЕРСОНАЛУ =====
         async function loadPersonnelForSelects() {
             try {
                 const res = await fetch('/personnel/api?page=0&size=1000');
@@ -966,24 +955,23 @@
             });
         }
 
-        // ===== ІНІЦІАЛІЗАЦІЯ =====
+        // ===== ОНОВЛЕННЯ ДАТИ =====
         function updateCurrentDateDisplay() {
             const now = new Date();
             const day = String(now.getDate()).padStart(2,'0');
             const month = String(now.getMonth()+1).padStart(2,'0');
             const year = now.getFullYear();
-            document.getElementById('currentDate').textContent = `📅 ${day}.${month}.${year}`;
+            const el = document.getElementById('currentDate');
+            if (el) el.textContent = `📅 ${day}.${month}.${year}`;
         }
-        updateCurrentDateDisplay();
-        loadFilters();
-        loadDuties();
-        loadPersonnelForSelects();
 
+        // ===== ЗАВАНТАЖЕННЯ ФІЛЬТРІВ =====
         function loadFilters() {
             fetch('/combat-duty/api/years')
                 .then(res => res.json())
                 .then(years => {
                     const sel = document.getElementById('yearFilter');
+                    if (!sel) return;
                     years.forEach(y => {
                         const opt = document.createElement('option');
                         opt.value = y;
@@ -997,6 +985,7 @@
                 .then(res => res.json())
                 .then(months => {
                     const sel = document.getElementById('monthFilter');
+                    if (!sel) return;
                     months.forEach(m => {
                         const opt = document.createElement('option');
                         opt.value = m;
@@ -1007,9 +996,11 @@
                 .catch(() => {});
         }
 
+        // ===== ОСНОВНА ФУНКЦІЯ =====
         function loadDuties() {
             const yearVal = document.getElementById('yearFilter').value;
             const monthVal = document.getElementById('monthFilter').value;
+
             let url = '/combat-duty/api';
             const params = new URLSearchParams();
             if (yearVal) params.append('year', yearVal);
@@ -1045,10 +1036,12 @@
             fetch('/combat-duty/api/general-stats')
                 .then(res => res.json())
                 .then(stats => {
-                    document.getElementById('genTotal').textContent = stats.total || 0;
+                    const el = document.getElementById('genTotal');
+                    if (el) el.textContent = stats.total || 0;
                 })
                 .catch(() => {
-                    document.getElementById('genTotal').textContent = '—';
+                    const el = document.getElementById('genTotal');
+                    if (el) el.textContent = '—';
                 });
         }
 
@@ -1063,6 +1056,7 @@
         function renderPagination() {
             const totalPages = Math.ceil(totalElements / pageSize);
             const pag = document.getElementById('pagination');
+            if (!pag) return;
             let html = '';
             html += `<button onclick="goToPage(0)" ${currentPage === 0 ? 'disabled' : ''}>⏮</button>`;
             html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 0 ? 'disabled' : ''}>◀</button>`;
@@ -1075,6 +1069,7 @@
         function updateLoadMoreButton() {
             const totalPages = Math.ceil(totalElements / pageSize);
             const btn = document.getElementById('loadMoreBtn');
+            if (!btn) return;
             const remaining = totalElements - (currentPage + 1) * pageSize;
             if (remaining <= 0 || totalPages <= 1) {
                 btn.disabled = true;
@@ -1086,7 +1081,7 @@
             }
         }
 
-        function loadMore() {
+        window.loadMore = function() {
             const totalPages = Math.ceil(totalElements / pageSize);
             if (currentPage < totalPages - 1) {
                 const newSize = Math.min(pageSize + 20, totalElements);
@@ -1100,8 +1095,7 @@
             } else {
                 showToast('Всі записи вже завантажені', 'ok');
             }
-        }
-        window.loadMore = loadMore;
+        };
 
         function updateMonthTitle() {
             const yearVal = document.getElementById('yearFilter').value;
@@ -1115,16 +1109,20 @@
             } else {
                 title = 'Всі періоди';
             }
-            document.getElementById('monthTitle').textContent = title || 'Всі періоди';
+            const el = document.getElementById('monthTitle');
+            if (el) el.textContent = title || 'Всі періоди';
         }
 
-        // ПОШУК
-        document.getElementById('searchInput').addEventListener('input', function() {
-            searchQuery = this.value.toLowerCase().trim();
-            applyFiltersAndRender();
-        });
+        // ===== ПОШУК =====
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                searchQuery = this.value.toLowerCase().trim();
+                applyFiltersAndRender();
+            });
+        }
 
-        // ФІЛЬТРИ + СОРТУВАННЯ
+        // ===== ФІЛЬТРИ + СОРТУВАННЯ =====
         function applyFiltersAndRender() {
             let filtered = allDuties;
 
@@ -1162,7 +1160,8 @@
             }
 
             renderTable(filtered);
-            document.getElementById('pageTotal').textContent = filtered.length;
+            const pageTotalEl = document.getElementById('pageTotal');
+            if (pageTotalEl) pageTotalEl.textContent = filtered.length;
 
             document.querySelectorAll('#dutyTable thead th').forEach(th => {
                 th.classList.remove('sort-asc', 'sort-desc');
@@ -1192,8 +1191,10 @@
             applyFiltersAndRender();
         };
 
+        // ===== РЕНДЕРИНГ ТАБЛИЦІ =====
         function renderTable(data) {
             const tbody = document.getElementById('dutyTableBody');
+            if (!tbody) return;
             if (!data || !data.length) {
                 tbody.innerHTML = '<tr><td colspan="18" class="empty-state">Чергувань немає</td></tr>';
                 return;
@@ -1229,7 +1230,7 @@
             }).join('');
         }
 
-        // НАВІГАЦІЯ
+        // ===== НАВІГАЦІЯ ПО МІСЯЦЯХ =====
         function shiftMonth(delta) {
             const yearVal = document.getElementById('yearFilter').value;
             const monthVal = document.getElementById('monthFilter').value;
@@ -1245,38 +1246,50 @@
             loadDuties();
         }
 
-        document.getElementById('prevBtn').onclick = () => shiftMonth(-1);
-        document.getElementById('nextBtn').onclick = () => shiftMonth(1);
-        document.getElementById('todayBtn').onclick = () => {
-            const now = new Date();
-            document.getElementById('yearFilter').value = now.getFullYear();
-            document.getElementById('monthFilter').value = UA_MONTHS[now.getMonth()];
-            currentPage = 0;
-            loadDuties();
-        };
-        document.getElementById('applyFilterBtn').onclick = () => {
-            currentPage = 0;
-            loadDuties();
-        };
+        const prevBtn = document.getElementById('prevBtn');
+        if (prevBtn) prevBtn.onclick = () => shiftMonth(-1);
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.onclick = () => shiftMonth(1);
 
-        // ЕКСПОРТ
-        document.getElementById('exportXlsxBtn').onclick = () => {
-            const yearVal = document.getElementById('yearFilter').value;
-            const monthVal = document.getElementById('monthFilter').value;
-            const searchVal = document.getElementById('searchInput').value.trim();
-            let url = '/combat-duty/api/export?';
-            const params = new URLSearchParams();
-            if (yearVal) params.append('year', yearVal);
-            if (monthVal) {
-                const idx = UA_MONTHS.indexOf(monthVal);
-                if (idx !== -1) params.append('month', idx + 1);
-            }
-            if (searchVal) params.append('search', searchVal);
-            url += params.toString();
-            window.location.href = url;
-        };
+        const todayBtn = document.getElementById('todayBtn');
+        if (todayBtn) {
+            todayBtn.onclick = () => {
+                const now = new Date();
+                document.getElementById('yearFilter').value = now.getFullYear();
+                document.getElementById('monthFilter').value = UA_MONTHS[now.getMonth()];
+                currentPage = 0;
+                loadDuties();
+            };
+        }
 
-        // ===== ГЛОБАЛЬНІ ФУНКЦІЇ (викликаються з HTML) =====
+        const applyBtn = document.getElementById('applyFilterBtn');
+        if (applyBtn) {
+            applyBtn.onclick = () => {
+                currentPage = 0;
+                loadDuties();
+            };
+        }
+
+        const exportBtn = document.getElementById('exportXlsxBtn');
+        if (exportBtn) {
+            exportBtn.onclick = () => {
+                const yearVal = document.getElementById('yearFilter').value;
+                const monthVal = document.getElementById('monthFilter').value;
+                const searchVal = document.getElementById('searchInput').value.trim();
+                let url = '/combat-duty/api/export?';
+                const params = new URLSearchParams();
+                if (yearVal) params.append('year', yearVal);
+                if (monthVal) {
+                    const idx = UA_MONTHS.indexOf(monthVal);
+                    if (idx !== -1) params.append('month', idx + 1);
+                }
+                if (searchVal) params.append('search', searchVal);
+                url += params.toString();
+                window.location.href = url;
+            };
+        }
+
+        // ===== ГЛОБАЛЬНІ ФУНКЦІЇ =====
         window.openAddModal = function() {
             document.getElementById('formModalTitle').textContent = '➕ Додати чергування';
             document.getElementById('editId').value = '';
@@ -1292,7 +1305,6 @@
                 const sel = document.getElementById(id);
                 if (sel) sel.value = '';
             });
-            // Оновлюємо лічильник
             if (reportTextarea) {
                 reportTextarea.value = '';
                 updateCharCounter();
@@ -1321,7 +1333,6 @@
             setSelectValue('fNavigator', duty.navigator);
             setSelectValue('fTechnician', duty.technician);
             setSelectValue('fDriverElectrician', duty.driverElectrician);
-            // Оновлюємо лічильник
             updateCharCounter();
             openModal('formModal');
         };
@@ -1347,7 +1358,6 @@
             setSelectValue('fNavigator', duty.navigator);
             setSelectValue('fTechnician', duty.technician);
             setSelectValue('fDriverElectrician', duty.driverElectrician);
-            // Оновлюємо лічильник
             updateCharCounter();
             openModal('formModal');
         };
@@ -1377,13 +1387,6 @@
             const navigator = document.getElementById('fNavigator').value;
             const technician = document.getElementById('fTechnician').value;
             const driverElectrician = document.getElementById('fDriverElectrician').value;
-            //
-            // const roles = [commander, pilot, navigator, technician, driverElectrician].filter(Boolean);
-            // const uniqueRoles = new Set(roles);
-            // if (uniqueRoles.size < roles.length) {
-            //     showToast('Одна особа не може займати кілька посад у чергуванні', 'err');
-            //     return;
-            // }
 
             const body = {
                 startTime: document.getElementById('fStartTime').value,
@@ -1469,6 +1472,18 @@
             t.className = `toast ${type} show`;
             setTimeout(() => t.classList.remove('show'), 3000);
         };
+
+        document.querySelectorAll('.modal-overlay').forEach(el => {
+            el.addEventListener('click', function(e) {
+                if (e.target === this) this.classList.remove('open');
+            });
+        });
+
+        // ===== ІНІЦІАЛІЗАЦІЯ =====
+        updateCurrentDateDisplay();
+        loadFilters();
+        loadDuties();
+        loadPersonnelForSelects();
     })();
 </script>
 </body>
