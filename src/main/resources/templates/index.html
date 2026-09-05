@@ -97,7 +97,7 @@
             --separator-color: #3d3d48;
         }
 
-        /* ===== ОСНОВНІ СТИЛІ (без змін) ===== */
+        /* ===== ОСНОВНІ СТИЛІ ===== */
         .topbar {
             background: var(--topbar-bg);
             padding: 12px 20px;
@@ -115,8 +115,8 @@
             margin: 0;
         }
         .container {
-            max-width: 1400px;
-            margin: 20px auto;
+            max-width: 100%;
+            margin: 20px 20px;
             background: var(--bg-card);
             padding: 5px;
             border-radius: 8px;
@@ -423,20 +423,19 @@
             <!-- ДРУГИЙ РЯДОК: додаткові параметри -->
             <div class="additional-bar">
                 <label style="color: var(--text-status);">Азимут (А):</label>
-                <input type="number" id="course" value="50" step="1" style="width: 60px;">
+                <input type="number" id="course" value="" step="1" style="width: 60px;">
                 <span>°</span>
 
-                <!-- НОВЕ ПОЛЕ: Курс -->
                 <label style="color: var(--text-status);">Курс:</label>
-                <input type="number" id="courseDirection" value="45" step="1" style="width: 60px;">
+                <input type="number" id="courseDirection" value="" step="1" style="width: 60px;">
                 <span>°</span>
 
                 <label style="color: var(--text-status);">Дальність (Д):</label>
-                <input type="number" id="distance" value="17900" step="100" style="width: 80px;">
+                <input type="number" id="distance" value="" step="100" style="width: 80px;">
                 <span>м.</span>
 
-                <label style="color: var(--text-status);">Висота (В):</label>
-                <input type="number" id="altitude" value="2042" step="10" style="width: 80px;">
+                <label style="color: var(--text-status);">Висота підриву (В):</label>
+                <input type="number" id="altitude" value="" step="10" style="width: 80px;">
                 <span>м.</span>
 
                 <div class="separator"></div>
@@ -448,13 +447,12 @@
                 <div class="separator"></div>
 
                 <label>Район підриву:</label>
-                <input type="text" id="explosionArea" value="Море" style="width: 150px;">
+                <input type="text" id="explosionArea" value="" style="width: 150px;">
             </div>
 
             <!-- ТРЕТІЙ РЯДОК: кнопки дій -->
             <div class="actions-bar">
                 <button id="convertBtn" class="convert-btn">🔄 Конвертувати</button>
-                <!-- НОВА КНОПКА: Заповнити з JSON -->
                 <button id="autoFillBtn" class="auto-fill-btn">📥 Заповнити з JSON</button>
                 <button id="copyBtn" class="copy-btn">📋 Копіювати</button>
                 <button id="saveFlightBtn" class="save-flight-btn" disabled>💾 В журнал БпАК</button>
@@ -511,6 +509,7 @@
                 let lastReportObj = null;
                 let lastRequest = null;
                 let currentFilename = 'combat_report';
+                let lastRecordNumber = null; // НОВА ЗМІННА ДЛЯ ЗБЕРІГАННЯ НОМЕРА ЗАПИСУ
 
                 function setStatus(message, isError = false) {
                     statusDiv.innerHTML = message;
@@ -525,7 +524,6 @@
                     }
 
                     // Регулярний вираз для пошуку значень
-                    // Азимут-105°, Курс-101, Дальність-40000 м., Висота-1500 м.
                     const regex = /Азимут[-:]\s*(\d+)°?\s*[,.]?\s*Курс[-:]\s*(\d+)°?\s*[,.]?\s*Дальність[-:]\s*(\d+)\s*м\.?\s*[,.]?\s*Висота[-:]\s*(\d+)\s*м\.?/i;
                     const match = description.match(regex);
 
@@ -534,7 +532,6 @@
                         return false;
                     }
 
-                    // Групи: 1 - Азимут, 2 - Курс, 3 - Дальність, 4 - Висота
                     const azimuth = parseInt(match[1]);
                     const course = parseInt(match[2]);
                     const distance = parseInt(match[3]);
@@ -545,7 +542,6 @@
                         return false;
                     }
 
-                    // Заповнюємо поля
                     courseInput.value = azimuth;
                     courseDirectionInput.value = course;
                     distanceInput.value = distance;
@@ -579,13 +575,12 @@
                 fileInput.addEventListener('change', (e) => {
                     const file = e.target.files[0];
                     if (file) {
-                        currentFilename = file.name.replace(/\.json$/i, '');
+                        // Не зберігаємо ім'я файлу, щоб уникнути додавання номера
                         const reader = new FileReader();
                         reader.onload = (event) => {
                             const content = event.target.result;
                             jsonInput.value = content;
                             setStatus('✅ JSON завантажено з файлу: ' + file.name);
-                            // Автоматично заповнюємо поля з description
                             autoFillFromJson(content);
                         };
                         reader.readAsText(file, 'UTF-8');
@@ -593,22 +588,19 @@
                     }
                 });
 
-                // ===== ОБРОБКА ВСТАВКИ JSON У ТЕКСТОВЕ ПОЛЕ =====
-                // Спрацьовує при вставці або зміні тексту (з затримкою)
+                // ===== ОБРОБКА ВСТАВКИ JSON =====
                 let autoFillTimeout = null;
                 jsonInput.addEventListener('input', function() {
                     clearTimeout(autoFillTimeout);
                     autoFillTimeout = setTimeout(() => {
                         const content = this.value;
                         if (content.trim()) {
-                            // Спроба автоматичного заповнення при вставці
-                            // Але не заважаємо, якщо користувач вручну редагує
                             autoFillFromJson(content);
                         }
-                    }, 500); // затримка 500 мс
+                    }, 500);
                 });
 
-                // ===== КНОПКА "ЗАПОВНИТИ З JSON" (ручний запуск) =====
+                // ===== КНОПКА "ЗАПОВНИТИ З JSON" =====
                 autoFillBtn.addEventListener('click', function() {
                     const content = jsonInput.value;
                     if (!content.trim()) {
@@ -618,6 +610,39 @@
                     autoFillFromJson(content);
                 });
 
+                // ===== ФУНКЦІЯ ВАЛІДАЦІЇ ПОЛІВ =====
+                function validateFields() {
+                    const explosionArea = explosionAreaInput.value.trim();
+                    if (!explosionArea) {
+                        setStatus('❌ Заповніть поле "Район підриву"', true);
+                        return false;
+                    }
+
+                    const course = parseInt(courseInput.value);
+                    const courseDir = parseInt(courseDirectionInput.value);
+                    const distance = parseInt(distanceInput.value);
+                    const altitude = parseInt(altitudeInput.value);
+
+                    if (isNaN(course) || course <= 0) {
+                        setStatus('❌ Введіть коректне значення Азимуту (має бути > 0)', true);
+                        return false;
+                    }
+                    if (isNaN(courseDir) || courseDir <= 0) {
+                        setStatus('❌ Введіть коректне значення Курсу (має бути > 0)', true);
+                        return false;
+                    }
+                    if (isNaN(distance) || distance <= 0) {
+                        setStatus('❌ Введіть коректне значення Дальності (має бути > 0)', true);
+                        return false;
+                    }
+                    if (isNaN(altitude) || altitude <= 0) {
+                        setStatus('❌ Введіть коректне значення Висоти (має бути > 0)', true);
+                        return false;
+                    }
+
+                    return true;
+                }
+
                 // ===== КОНВЕРТАЦІЯ =====
                 convertBtn.addEventListener('click', async () => {
                     const json = jsonInput.value.trim();
@@ -626,7 +651,10 @@
                         return;
                     }
 
-                    // ===== Скидаємо стан кнопки "В журнал БпАК" =====
+                    if (!validateFields()) {
+                        return;
+                    }
+
                     saveFlightBtn.disabled = true;
                     saveFlightBtn.textContent = '💾 В журнал БпАК';
 
@@ -643,13 +671,12 @@
                         return;
                     }
 
-                    // Якщо поля ще не заповнені – спробуємо заповнити автоматично
                     if (!courseInput.value || courseInput.value === '0') {
                         autoFillFromJson(json);
                     }
 
                     const targetAltitude = reportObj.altitude || 0;
-                    const explosionArea = explosionAreaInput.value.trim() || "Море";
+                    const explosionArea = explosionAreaInput.value.trim() || "";
 
                     const requestBody = {
                         report: reportObj,
@@ -683,7 +710,31 @@
                         lastReportObj = reportObj;
                         lastRequest = requestBody;
 
-                        // ===== Активуємо кнопку з початковим текстом =====
+                        // ===== ФОРМУЄМО ІМ'Я ФАЙЛУ НА ОСНОВІ ДАТИ ЗВІТУ =====
+                        let filename = 'combat_report';
+                        if (reportObj && reportObj.contactTime) {
+                            try {
+                                const d = new Date(reportObj.contactTime);
+                                if (!isNaN(d.getTime())) {
+                                    const day = String(d.getDate()).padStart(2, '0');
+                                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                                    const year = d.getFullYear();
+                                    filename = `Рапорт_витрати_БпЛА_0826_${day}.${month}.${year}`;
+                                }
+                            } catch (e) {}
+                        } else if (reportObj && reportObj.reportDate) {
+                            try {
+                                const d = new Date(reportObj.reportDate);
+                                if (!isNaN(d.getTime())) {
+                                    const day = String(d.getDate()).padStart(2, '0');
+                                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                                    const year = d.getFullYear();
+                                    filename = `Рапорт_витрати_БпЛА_0826_${day}.${month}.${year}`;
+                                }
+                            } catch (e) {}
+                        }
+                        currentFilename = filename;
+
                         saveFlightBtn.disabled = false;
                         saveFlightBtn.textContent = '💾 В журнал БпАК';
 
@@ -696,7 +747,7 @@
                     }
                 });
 
-                // ===== ІНШІ КНОПКИ (без змін) =====
+                // ===== КОПІЮВАТИ =====
                 copyBtn.addEventListener('click', async () => {
                     if (!reportOutput.value.trim()) {
                         setStatus('❌ Немає даних для копіювання.', true);
@@ -712,25 +763,27 @@
                     }
                 });
 
+                // ===== ОЧИСТИТИ =====
                 clearBtn.addEventListener('click', () => {
                     if (confirm('Очистити всі поля?')) {
                         jsonInput.value = '';
                         reportOutput.value = '';
                         currentReportText = '';
                         currentFilename = 'combat_report';
-                        distanceInput.value = '17900';
+                        lastRecordNumber = null;
+                        distanceInput.value = '';
                         speedInput.value = '160';
-                        courseInput.value = '50';
-                        courseDirectionInput.value = '45';
-                        altitudeInput.value = '2042';
-                        explosionAreaInput.value = 'Море';
-                        // ===== Скидаємо кнопку =====
+                        courseInput.value = '';
+                        courseDirectionInput.value = '';
+                        altitudeInput.value = '';
+                        explosionAreaInput.value = '';
                         saveFlightBtn.disabled = true;
                         saveFlightBtn.textContent = '💾 В журнал БпАК';
                         setStatus('✅ Всі поля очищено.');
                     }
                 });
 
+                // ===== ЗАВАНТАЖЕННЯ ФАЙЛУ (TXT/DOCX) =====
                 async function downloadFile(url, filename, report) {
                     const formData = new URLSearchParams();
                     formData.append('report', report);
@@ -760,26 +813,40 @@
                     }
                 }
 
+                // ===== ЗБЕРЕГТИ TXT =====
                 saveTxtBtn.addEventListener('click', async () => {
                     if (!currentReportText) {
                         setStatus('❌ Немає даних для збереження. Спочатку виконайте конвертацію.', true);
                         return;
                     }
-                    const success = await downloadFile('/save/txt', currentFilename + '.txt', currentReportText);
+                    let baseFilename = currentFilename;
+                    if (lastRecordNumber) {
+                        baseFilename = `(${lastRecordNumber}) ${baseFilename}`;
+                    }
+                    const success = await downloadFile('/save/txt', baseFilename + '.txt', currentReportText);
                     setStatus(success ? '✅ TXT звіт збережено!' : '❌ Помилка збереження TXT', !success);
                 });
 
+                // ===== ЗБЕРЕГТИ DOCX =====
                 saveDocxBtn.addEventListener('click', async () => {
                     if (!currentReportText) {
                         setStatus('❌ Немає даних для збереження. Спочатку виконайте конвертацію.', true);
                         return;
                     }
-                    const success = await downloadFile('/save/docx', currentFilename + '.docx', currentReportText);
+                    let baseFilename = currentFilename;
+                    if (lastRecordNumber) {
+                        baseFilename = `(${lastRecordNumber}) ${baseFilename}`;
+                    }
+                    const success = await downloadFile('/save/docx', baseFilename + '.docx', currentReportText);
                     setStatus(success ? '✅ DOCX звіт збережено!' : '❌ Помилка збереження DOCX', !success);
                 });
 
+                // ===== ЗБЕРЕГТИ В ЖУРНАЛ БпАК =====
                 saveFlightBtn.addEventListener('click', async () => {
-                    if (!lastRequest) { setStatus('❌ Спочатку виконайте конвертацію.', true); return; }
+                    if (!lastRequest) {
+                        setStatus('❌ Спочатку виконайте конвертацію.', true);
+                        return;
+                    }
                     const btn = saveFlightBtn;
                     btn.disabled = true;
                     btn.textContent = '⏳ Збереження...';
@@ -793,6 +860,10 @@
                         let data = {};
                         try { data = JSON.parse(text); } catch(e) { data = { error: text }; }
                         if (res.ok) {
+                            // Зберігаємо номер запису
+                            if (data.recordNumber) {
+                                lastRecordNumber = data.recordNumber;
+                            }
                             setStatus('✅ ' + data.message + ' (id=' + data.id + '). <a href="/flights" style="color:var(--text-status)">Відкрити журнал →</a>');
                             btn.textContent = '✅ Збережено';
                         } else {

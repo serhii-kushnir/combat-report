@@ -240,9 +240,9 @@ public class ReportService {
         }
         takeoffTime = (report.getTakeoffTime() != null) ? report.getTakeoffTime().format(TIME_FORMATTER) : contactTime;
 
-        String targetResult = targetDestroyed ? "вражена" : "не вражена";
+        String targetResult = targetDestroyed ? "знищена" : "не вражена";
 
-        sb.append("Командиру екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n\n");
+        sb.append("Командиру військової частини ").append(militaryUnit).append("\n\n\n\n\n\n\n\n\n");
         sb.append("Рапорт\n\n");
         sb.append("\tДійсним доповідаю, що ").append(reportDate)
                 .append(" о ").append(takeoffTime)
@@ -250,40 +250,103 @@ public class ReportService {
                 .append("» військової частини ").append(militaryUnit)
                 .append(" здійснено пуск БпЛА \"").append(weapon).append(" (нічний)\" серійний номер ").append("\"").append(weaponNumber.toUpperCase()).append("\"")
                 .append(" спорядженого тротиловою шашкою «3-1.2 КУФ» 1,2 кг та вбудованою розумною платою ініціації для виконання бойового завдання з перехоплення повітряної цілі №").append(targetNumber)
-                .append(" (БпЛА противника типу ").append(targetTypeDisplay).append("). ")
-                .append(reportDate).append(" о ").append(contactTime)
+                .append(" (БпЛА противника типу ").append(targetTypeDisplay).append("). \n")
+
+                .append("\t").append(reportDate).append(" о ").append(contactTime)
                 .append(" БпЛА \"").append(weapon).append(" (нічний)\" серійний номер ").append("\"").append(weaponNumber.toUpperCase()).append("\"")
                 .append(" споряджений тротиловою шашкою «3-1.2 КУФ» 1,2 кг та вбудованою розумною платою ініціації був витрачений у результаті контрольованого підриву для знищення повітряної цілі №").append(targetNumber)
-                .append(" (БпЛА противника типу ").append(targetTypeDisplay).append("). Ціль ").append(targetResult).append(".\n\n");
+                .append(" (БпЛА противника типу ").append(targetTypeDisplay).append("). Ціль ").append(targetResult).append(".\n\n\n");
 
-        if (pilot.equals("Костянтин БИТКА")) {
-            sb.append("Оператор безпілотних літальних апаратів екіпажу безпілотного авіаційного комплексу взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
-            sb.append("солдат                                                                                                                Костянтин БИТКА\n");
-            sb.append(reportDate).append(" р.\n\n");
-        } else {
-            sb.append("Оператор безпілотних літальних апаратів екіпажу безпілотного авіаційного комплексу взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
-            sb.append("старший солдат                                                                                            Ярослав НАГОРНИЙ\n");
-            sb.append(reportDate).append(" р.\n\n");
-        }
 
-        sb.append("Командиру взводу перехоплювачів безпілотних літальних апаратів військової частини А0826\n\n");
+            sb.append("ТВО командира взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
+            sb.append("старший сержант                                                                                          Олександр ШЕПРУК");
+            sb.append("\n").append(reportDate).append(" р.\n\n\n\n");
+
+        sb.append("Командиру військової частини А1620").append("\n\n");
+
+        sb.append("\n");
         sb.append("Рапорт\n\n");
-        sb.append("Клопочу по суті рапорту  ")
-                .append(pilot.equals("Костянтин БИТКА") ? "солдата Костянтина БИТКА" : "старшого солдата Ярослава НАГОРНОГО")
-                .append("\n\n");
-        sb.append("Командир екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
-        sb.append("старший сержант                                                                                    Олександр ШЕПРУК\n");
-        sb.append(reportDate).append(" р.\n\n");
-
-        sb.append("Командиру військової частини А0826\n\n");
-        sb.append("Рапорт\n\n");
-        sb.append("Клопочу по суті рапорту ")
-                .append("старшого сержанта Олександра ШЕПРУКА")
-                .append("\n\n");
-        sb.append("Командир взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
-        sb.append("старший лейтенант                                                                                          Микола САВЕНКО\n");
-        sb.append(reportDate).append(" р.\n");
+        sb.append("Клопочу по суті рапорту старшого сержанта Олександра ШЕПРУКА").append("\n\n");
+        sb.append("Командир військової частини ").append(militaryUnit).append("\n");
+        sb.append("підполковник                                                                                                       Андрій ШИШАЛ");
+        sb.append("\n").append(reportDate).append(" р.\n\n");
 
         return sb.toString();
     }
+
+//    // ========== ФОРМАТ 3 ==========
+//    public String formatDetailedReport(CombatReport report, String pilot) {
+//        StringBuilder sb = new StringBuilder();
+//        String weapon = extractWeaponName(report.getWeaponId());
+//        String unitName = report.getUnitName() != null ? report.getUnitName() : "СКОПА";
+//        String militaryUnit = report.getMilitaryUnit() != null ? report.getMilitaryUnit() : "А0826";
+//        String weaponNumber = report.getWeaponNumber() != null ? report.getWeaponNumber() : "";
+//        String targetNumber = safeTargetNumber(report);
+//        String effectorLossReason = report.getEffectorLossReason() != null ? report.getEffectorLossReason() : "";
+//        String targetTypeDisplay = getTargetTypeForReport(report);
+//
+//        boolean targetDestroyed = effectorLossReason.toLowerCase().contains("успішне") ||
+//                effectorLossReason.toLowerCase().contains("вражена") ||
+//                effectorLossReason.toLowerCase().contains("знищ") ||
+//                effectorLossReason.toLowerCase().contains("камікадзе");
+//
+//        String reportDate;
+//        String takeoffTime;
+//        String contactTime;
+//
+//        if (report.getContactTime() != null) {
+//            reportDate = report.getContactTime().format(DATE_FORMATTER);
+//            contactTime = report.getContactTime().format(TIME_FORMATTER);
+//        } else {
+//            reportDate = LocalDate.now().format(DATE_FORMATTER);
+//            contactTime = LocalTime.now().format(TIME_FORMATTER);
+//        }
+//        takeoffTime = (report.getTakeoffTime() != null) ? report.getTakeoffTime().format(TIME_FORMATTER) : contactTime;
+//
+//        String targetResult = targetDestroyed ? "вражена" : "не вражена";
+//
+//        sb.append("Командиру екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n\n");
+//        sb.append("Рапорт\n\n");
+//        sb.append("\tДійсним доповідаю, що ").append(reportDate)
+//                .append(" о ").append(takeoffTime)
+//                .append(" в районі c-ще. Балабанка, Одеської області, екіпажем «").append(unitName.toUpperCase())
+//                .append("» військової частини ").append(militaryUnit)
+//                .append(" здійснено пуск БпЛА \"").append(weapon).append(" (нічний)\" серійний номер ").append("\"").append(weaponNumber.toUpperCase()).append("\"")
+//                .append(" спорядженого тротиловою шашкою «3-1.2 КУФ» 1,2 кг та вбудованою розумною платою ініціації для виконання бойового завдання з перехоплення повітряної цілі №").append(targetNumber)
+//                .append(" (БпЛА противника типу ").append(targetTypeDisplay).append("). ")
+//                .append(reportDate).append(" о ").append(contactTime)
+//                .append(" БпЛА \"").append(weapon).append(" (нічний)\" серійний номер ").append("\"").append(weaponNumber.toUpperCase()).append("\"")
+//                .append(" споряджений тротиловою шашкою «3-1.2 КУФ» 1,2 кг та вбудованою розумною платою ініціації був витрачений у результаті контрольованого підриву для знищення повітряної цілі №").append(targetNumber)
+//                .append(" (БпЛА противника типу ").append(targetTypeDisplay).append("). Ціль ").append(targetResult).append(".\n\n");
+//
+//        if (pilot.equals("Костянтин БИТКА")) {
+//            sb.append("Оператор безпілотних літальних апаратів екіпажу безпілотного авіаційного комплексу взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
+//            sb.append("солдат                                                                                                                Костянтин БИТКА\n");
+//            sb.append(reportDate).append(" р.\n\n");
+//        } else {
+//            sb.append("Оператор безпілотних літальних апаратів екіпажу безпілотного авіаційного комплексу взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
+//            sb.append("старший солдат                                                                                            Ярослав НАГОРНИЙ\n");
+//            sb.append(reportDate).append(" р.\n\n");
+//        }
+//
+//        sb.append("Командиру взводу перехоплювачів безпілотних літальних апаратів військової частини А0826\n\n");
+//        sb.append("Рапорт\n\n");
+//        sb.append("Клопочу по суті рапорту  ")
+//                .append(pilot.equals("Костянтин БИТКА") ? "солдата Костянтина БИТКА" : "старшого солдата Ярослава НАГОРНОГО")
+//                .append("\n\n");
+//        sb.append("Командир екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
+//        sb.append("старший сержант                                                                                    Олександр ШЕПРУК\n");
+//        sb.append(reportDate).append(" р.\n\n");
+//
+//        sb.append("Командиру військової частини А0826\n\n");
+//        sb.append("Рапорт\n\n");
+//        sb.append("Клопочу по суті рапорту ")
+//                .append("старшого сержанта Олександра ШЕПРУКА")
+//                .append("\n\n");
+//        sb.append("Командир взводу перехоплювачів безпілотних літальних апаратів військової частини ").append(militaryUnit).append("\n");
+//        sb.append("старший лейтенант                                                                                          Микола САВЕНКО\n");
+//        sb.append(reportDate).append(" р.\n");
+//
+//        return sb.toString();
+//    }
 }

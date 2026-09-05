@@ -134,9 +134,11 @@ public class ReportController {
             CombatReport report = reportService.parseJson(request.getReport().toString());
             FlightRecord record = mapToFlightRecord(report, request);
             FlightRecord saved = flightRecordService.save(record);
-            log.info("Виліт збережено в журнал БпАК: id={}, дата={}", saved.getId(), saved.getFlightDate());
+            log.info("Виліт збережено в журнал БпАК: id={}, recordNumber={}, дата={}",
+                    saved.getId(), saved.getRecordNumber(), saved.getFlightDate());
             return ResponseEntity.ok(Map.of(
                     "id", saved.getId(),
+                    "recordNumber", saved.getRecordNumber(), // <-- ДОДАНО
                     "message", "Виліт збережено в журнал БпАК"
             ));
         } catch (Exception e) {
@@ -313,55 +315,74 @@ public class ReportController {
 
     private byte[] createDocxContent(String text) throws Exception {
         try (XWPFDocument document = new XWPFDocument()) {
-            // Налаштування полів сторінки
+            // ===== НАЛАШТУВАННЯ ПОЛІВ СТОРІНКИ =====
             CTDocument1 ctDocument = document.getDocument();
             CTBody body = ctDocument.getBody();
             if (body.getSectPr() == null) body.addNewSectPr();
             CTSectPr sectPr = body.getSectPr();
             if (sectPr.getPgMar() == null) sectPr.addNewPgMar();
             CTPageMar pageMar = sectPr.getPgMar();
-            pageMar.setTop(567);
-            pageMar.setBottom(567);
+
+            // Поля: зліва 3 см, справа 2 см, зверху 2 см, знизу 2 см
+            pageMar.setTop(1134);
+            pageMar.setLeft(1701);
+            pageMar.setRight(1134);
+            // ================================================
 
             String[] lines = text.split("\n");
             for (String line : lines) {
                 XWPFParagraph paragraph = document.createParagraph();
+
+                // ===== ВИДАЛЯЄМО МІЖРЯДКОВИЙ ІНТЕРВАЛ =====
                 paragraph.setSpacingBefore(0);
                 paragraph.setSpacingAfter(0);
+                paragraph.setSpacingBetween(1.0);
+                // ============================================
 
-                if (line.contains("Командиру екіпажу безпілотних літальних комплексів взводу перехоплювачів безпілотних літальних апаратів військової частини А0826")) {
+                // ===== ВИЗНАЧЕННЯ ВИРІВНЮВАННЯ =====
+                String trimmedLine = line.trim();
+
+                // 1. ПРАВОРУЧ – адресати
+                if (line.contains("Командиру військової частини А0826") ||
+                        line.contains("Командиру військової частини А1620")) {
                     paragraph.setIndentationLeft(5100);
-                    paragraph.setAlignment(ParagraphAlignment.LEFT);
+                    paragraph.setAlignment(ParagraphAlignment.RIGHT);
                 }
-                if (line.contains("Командиру взводу перехоплювачів безпілотних літальних апаратів військової частини А0826")) {
+                // 2. ОБІДВІ СТОРОНИ (justify) – спеціальний рядок з відступом
+                else if (line.contains("ТВО Командира взводу перехоплювачів безпілотних літальних апаратів військової частини А0826")) {
                     paragraph.setIndentationLeft(5100);
                     paragraph.setAlignment(ParagraphAlignment.BOTH);
                 }
-                if (line.contains("Командиру військової частини А0826")) {
-                    paragraph.setIndentationLeft(5100);
-                    paragraph.setAlignment(ParagraphAlignment.LEFT);
+                // 3. ЦЕНТР – "Рапорт" (окремий рядок)
+                else if (trimmedLine.equals("Рапорт") && !line.contains("Клопочу")) {
+                    paragraph.setAlignment(ParagraphAlignment.CENTER);
                 }
-                if (line.contains("Командир взводу перехоплювачів")
+                // 4. ЦЕНТР – "Клопочу по суті ..."
+                else if (line.contains("Клопочу по суті")) {
+                    paragraph.setAlignment(ParagraphAlignment.CENTER);
+                }
+                // 5. ПРАВОРУЧ – підписи
+                else if (line.contains("Командир взводу перехоплювачів")
                         && !line.contains("Клопочу")
                         && !line.contains("військової частини")
                         && !line.contains("Командиру")) {
                     paragraph.setAlignment(ParagraphAlignment.RIGHT);
                 }
-                if (line.trim().equals("Рапорт") && !line.contains("Клопочу")) {
-                    paragraph.setAlignment(ParagraphAlignment.CENTER);
-                }
-                if (line.contains("Клопочу по суті")) {
-                    paragraph.setAlignment(ParagraphAlignment.CENTER);
-                }
-                if (line.contains("Оператор безпілотних")
+                // 6. ОБІДВІ СТОРОНИ (justify) – основний текст
+                else if (line.contains("Оператор безпілотних")
                         || line.contains("взводу перехоплювачів безпілотних")
                         || line.contains("\tДійсним доповідаю")
-                        || line.contains("Командир екіпажу:") || line.contains("Командир екіпажу безпілотних")
+                        || line.contains("Командир екіпажу:")
+                        || line.contains("Командир екіпажу безпілотних")
                         || (line.contains("Командир взводу перехоплювачів")
                         && line.contains("військової частини")
-                        && !line.contains("Командиру"))) {
+                        && !line.contains("Командиру"))
+                        || (line.matches("^\\d{2}\\.\\d{2}\\.\\d{4}.*") && line.contains("БпЛА"))
+                        || (line.matches("^\t\\d{2}\\.\\d{2}\\.\\d{4}.*") && line.contains("БпЛА"))
+                ) {
                     paragraph.setAlignment(ParagraphAlignment.BOTH);
                 }
+                // 7. ЯКЩО НІЧОГО НЕ ПІДІЙШЛО – залишаємо ліворуч
 
                 XWPFRun run = paragraph.createRun();
                 run.setFontFamily("Times New Roman");
@@ -375,4 +396,5 @@ public class ReportController {
             return out.toByteArray();
         }
     }
+
 }
