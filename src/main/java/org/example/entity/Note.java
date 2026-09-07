@@ -22,10 +22,7 @@ public class Note {
     @Column(length = 50000)
     private String content;
 
-    private String color;              // колір фону
-
-    @Column(name = "text_color")
-    private String textColor;          // НОВЕ ПОЛЕ – колір тексту
+    private String color;  // колір фону нотатки
 
     private boolean archived = false;
     private boolean pinned = false;

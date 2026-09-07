@@ -389,18 +389,14 @@ public class CombatDutyController {
         DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
         try (XWPFDocument doc = new XWPFDocument()) {
-            // Налаштування полів сторінки (як у ReportController)
-            // Можна використати CTDocument1 тощо, але для простоти пропускаємо
-
             // Заголовок
             XWPFParagraph title = doc.createParagraph();
             title.setAlignment(ParagraphAlignment.CENTER);
             XWPFRun titleRun = title.createRun();
             titleRun.setBold(true);
             titleRun.setFontSize(16);
-            titleRun.setText("Бойове чергування екіпажу \"СКОПА\"");
+            titleRun.setText("Бойове чергування екіпажу \"" + nullSafe(duty.getUnitName()) + "\"");
 
-            // Порожній рядок
             doc.createParagraph();
 
             // Період
@@ -417,7 +413,7 @@ public class CombatDutyController {
             addParagraph(doc, "Озброєння: " + nullSafe(duty.getWeapons()));
             addParagraph(doc, "Черговий ПУ: " + nullSafe(duty.getDutyOfficer()));
 
-            doc.createParagraph(); // відступ
+            doc.createParagraph();
 
             // Підсумки
             addParagraph(doc, "Підсумки:");
@@ -427,11 +423,21 @@ public class CombatDutyController {
             addParagraph(doc, "  • Знищень: " + nullSafe(duty.getDestructions()));
             addParagraph(doc, "  • НТП: " + nullSafe(duty.getNtp()));
 
-            doc.createParagraph(); // відступ
+            doc.createParagraph();
 
-            // Доповідь
+            // ===== ДОПОВІДЬ – РОЗБИВАЄМО НА РЯДКИ =====
             addParagraph(doc, "Доповідь:");
-            addParagraph(doc, nullSafe(duty.getReportSummary()));
+            String report = duty.getReportSummary();
+            if (report != null && !report.isEmpty()) {
+                // Розбиваємо за символами нового рядка (Unix та Windows)
+                String[] lines = report.split("\\r?\\n");
+                for (String line : lines) {
+                    addParagraph(doc, line);
+                }
+            } else {
+                addParagraph(doc, "—");
+            }
+            // =========================================
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             doc.write(out);
