@@ -13,12 +13,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import java.time.format.DateTimeFormatter;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -352,5 +356,104 @@ public class CombatDutyController {
         s.setBorderTop(BorderStyle.THIN);
         s.setBorderLeft(BorderStyle.THIN);
         s.setBorderRight(BorderStyle.THIN);
+    }
+
+    // Додаємо імпорт .docx
+
+    @GetMapping("/api/{id}/export/docx")
+    public ResponseEntity<byte[]> exportDocx(@PathVariable Long id) {
+        try {
+            CombatDuty duty = service.getById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Чергування не знайдено"));
+            byte[] data = generateDocx(duty);
+
+            // Формуємо назву з датою початку (формат dd.MM.yyyy)
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            String dateStr = duty.getStartTime().format(dateFormatter);
+            String filename = URLEncoder.encode("Бойове_чергування_" + dateStr + ".docx", StandardCharsets.UTF_8)
+                    .replace("+", "%20");
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + filename + "\"; filename*=UTF-8''" + filename)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(data);
+        } catch (Exception e) {
+            log.error("Помилка експорту DOCX для id={}", id, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    private byte[] generateDocx(CombatDuty duty) throws Exception {
+        DateTimeFormatter dateTimeFmt = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+        try (XWPFDocument doc = new XWPFDocument()) {
+            // Налаштування полів сторінки (як у ReportController)
+            // Можна використати CTDocument1 тощо, але для простоти пропускаємо
+
+            // Заголовок
+            XWPFParagraph title = doc.createParagraph();
+            title.setAlignment(ParagraphAlignment.CENTER);
+            XWPFRun titleRun = title.createRun();
+            titleRun.setBold(true);
+            titleRun.setFontSize(16);
+            titleRun.setText("Бойове чергування екіпажу \"СКОПА\"");
+
+            // Порожній рядок
+            doc.createParagraph();
+
+            // Період
+            addParagraph(doc, "Період: з " + duty.getStartTime().format(dateTimeFmt) +
+                    " по " + duty.getEndTime().format(dateTimeFmt));
+
+            // Екіпаж
+            addParagraph(doc, "Екіпаж: " + nullSafe(duty.getUnitName()));
+            addParagraph(doc, "Командир: " + nullSafe(duty.getCommander()));
+            addParagraph(doc, "Пілот: " + nullSafe(duty.getPilot()));
+            addParagraph(doc, "Штурман: " + nullSafe(duty.getNavigator()));
+            addParagraph(doc, "Технік: " + nullSafe(duty.getTechnician()));
+            addParagraph(doc, "Водій-електрик: " + nullSafe(duty.getDriverElectrician()));
+            addParagraph(doc, "Озброєння: " + nullSafe(duty.getWeapons()));
+            addParagraph(doc, "Черговий ПУ: " + nullSafe(duty.getDutyOfficer()));
+
+            doc.createParagraph(); // відступ
+
+            // Підсумки
+            addParagraph(doc, "Підсумки:");
+            addParagraph(doc, "  • Вильотів: " + nullSafe(duty.getTotalSorties()));
+            addParagraph(doc, "  • Бойових: " + nullSafe(duty.getCombatSorties()));
+            addParagraph(doc, "  • Втрат: " + nullSafe(duty.getLosses()));
+            addParagraph(doc, "  • Знищень: " + nullSafe(duty.getDestructions()));
+            addParagraph(doc, "  • НТП: " + nullSafe(duty.getNtp()));
+
+            doc.createParagraph(); // відступ
+
+            // Доповідь
+            addParagraph(doc, "Доповідь:");
+            addParagraph(doc, nullSafe(duty.getReportSummary()));
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            doc.write(out);
+            return out.toByteArray();
+        }
+    }
+
+    // Допоміжний метод додавання параграфа
+    private void addParagraph(XWPFDocument doc, String text) {
+        if (text == null) text = "";
+        XWPFParagraph p = doc.createParagraph();
+        p.setSpacingBefore(0);
+        p.setSpacingAfter(0);
+        p.setSpacingBetween(1.0);      // одиничний інтервал
+        XWPFRun run = p.createRun();
+        run.setFontFamily("Times New Roman");
+        run.setFontSize(12);
+        run.setText(text);
+    }
+
+    // Допоміжний метод для null-safe перетворення
+    private String nullSafe(Object obj) {
+        return obj != null ? obj.toString() : "—";
     }
 }

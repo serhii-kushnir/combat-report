@@ -171,6 +171,23 @@
             transition: background 0.3s, box-shadow 0.3s;
         }
 
+        td:last-child {
+            white-space: nowrap;
+            min-width: 160px;
+        }
+
+        /* Для колонки дій – фіксована ширина та nowrap */
+        #dutyTable td:last-child {
+            white-space: nowrap;
+            min-width: 160px;
+            padding: 4px 4px;
+        }
+        #dutyTable td:last-child .btn {
+            margin: 0 1px;
+            padding: 4px 7px;
+            font-size: 11px;
+        }
+
         .btn {
             padding: 6px 14px;
             border: none;
@@ -1225,7 +1242,7 @@
             <td>
                 <button class="btn btn-warning btn-sm" onclick="openEditModal(${d.id})" title="Редагувати">✏️</button>
                 <button class="btn btn-duplicate btn-sm" onclick="duplicateDuty(${d.id})" title="Дублювати">📋</button>
-                <button class="btn btn-danger btn-sm" onclick="confirmDelete(${d.id})" title="Видалити">🗑</button>
+                <button class="btn btn-print btn-sm" onclick="exportDocx(${d.id})" title="Експорт у DOCX" style="padding:4px 9px; font-size:11px;">📄</button>                <button class="btn btn-danger btn-sm" onclick="confirmDelete(${d.id})" title="Видалити">🗑</button>
             </td>
         </tr>`;
             }).join('');
@@ -1402,6 +1419,7 @@
             }
         }
 
+
         window.saveDuty = async function() {
             const id = document.getElementById('editId').value;
             const commander = document.getElementById('fCommander').value;
@@ -1517,6 +1535,10 @@
                 if (e.target === this) this.classList.remove('open');
             });
         });
+
+        window.exportDocx = function(id) {
+            window.open('/combat-duty/api/' + id + '/export/docx', '_blank');
+        };
 
         // ===== ІНІЦІАЛІЗАЦІЯ =====
         updateCurrentDateDisplay();
