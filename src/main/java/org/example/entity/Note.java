@@ -19,13 +19,15 @@ public class Note {
     @Column(nullable = false)
     private String title;
 
-    @Column(length = 50000) // замість @Lob
+    @Column(length = 50000)
     private String content;
 
-    private String color;
+    private String color;              // колір фону
+
+    @Column(name = "text_color")
+    private String textColor;          // НОВЕ ПОЛЕ – колір тексту
 
     private boolean archived = false;
-
     private boolean pinned = false;
 
     @Column(name = "created_at", updatable = false)
