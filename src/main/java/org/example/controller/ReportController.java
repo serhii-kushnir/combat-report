@@ -198,7 +198,7 @@ public class ReportController {
         }
         if (report.getWeaponNumber() != null) {
             r.setWeapon((r.getWeapon() != null ? r.getWeapon() : "") +
-                    " (нічний) \"" + report.getWeaponNumber().toUpperCase() + "\"");
+                    "  \"" + report.getWeaponNumber().toUpperCase() + "\"");
         }
 
         // ===== ВИБУХІВКА ТА ДЕТОНАТОР =====

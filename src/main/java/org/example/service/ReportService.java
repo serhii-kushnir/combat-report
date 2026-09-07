@@ -125,7 +125,7 @@ public class ReportService {
 
         String weapon = extractWeaponName(report.getWeaponId());
         sb.append("Засіб ураження: ").append(weapon)
-                .append(" (нічний) \"").append(weaponNumber.toUpperCase()).append("\"").append("\n");
+                .append(" \"").append(weaponNumber.toUpperCase()).append("\"").append("\n");
         sb.append("Вибухівка: ШИФР «3-1.2 КУФ» 1,2 кг\n");
         sb.append("Детонатор: Вбудована розумна плата ініціації.\n");
 
@@ -137,7 +137,7 @@ public class ReportService {
         sb.append("Примітка: Екіпажем ").append("\"").append(unitName).append("\"")
                 .append(" в/ч ").append(militaryUnit)
                 .append(", який виконує завдання ведення повітряної розвідки та ураження противника в смузі відповідальності c-ще. Балабанка та околиці")
-                .append(" здійснено виліт дроном-камікадзе ").append("\"").append(weapon).append(" (нічний)\"")
+                .append(" здійснено виліт дроном-камікадзе ").append("\"").append(weapon).append("\"")
                 .append(" з метою ураження ворожого ударного дрона №").append(targetNumber)
                 .append(". ").append(effectorStatus)
                 .append(", ").append(effectorLossReason.toLowerCase()).append("\n");
@@ -203,7 +203,7 @@ public class ReportService {
 
         String weapon = extractWeaponName(report.getWeaponId());
         sb.append("Засіб ураження: ").append(weapon)
-                .append(" (нічний) \"").append(weaponNumber.toUpperCase()).append("\"").append("\n");
+                .append(" \"").append(weaponNumber.toUpperCase()).append("\"").append("\n");
 
         int virazhNum = safeInt(report.getTargetNumberVirazh(), 0);
         sb.append("Номер цілі по Віражу: ").append(virazhNum).append("\n");
@@ -248,12 +248,12 @@ public class ReportService {
                 .append(" о ").append(takeoffTime)
                 .append(" в районі c-ще. Балабанка, Одеської області, екіпажем «").append(unitName.toUpperCase())
                 .append("» військової частини ").append(militaryUnit)
-                .append(" здійснено пуск БпЛА \"").append(weapon).append(" (нічний)\" серійний номер ").append("\"").append(weaponNumber.toUpperCase()).append("\"")
+                .append(" здійснено пуск БпЛА \"").append(weapon).append("\" серійний номер ").append("\"").append(weaponNumber.toUpperCase()).append("\"")
                 .append(" спорядженого тротиловою шашкою «3-1.2 КУФ» 1,2 кг та вбудованою розумною платою ініціації для виконання бойового завдання з перехоплення повітряної цілі №").append(targetNumber)
                 .append(" (БпЛА противника типу ").append(targetTypeDisplay).append("). \n")
 
                 .append("\t").append(reportDate).append(" о ").append(contactTime)
-                .append(" БпЛА \"").append(weapon).append(" (нічний)\" серійний номер ").append("\"").append(weaponNumber.toUpperCase()).append("\"")
+                .append(" БпЛА \"").append(weapon).append("\" серійний номер ").append("\"").append(weaponNumber.toUpperCase()).append("\"")
                 .append(" споряджений тротиловою шашкою «3-1.2 КУФ» 1,2 кг та вбудованою розумною платою ініціації був витрачений у результаті контрольованого підриву для знищення повітряної цілі №").append(targetNumber)
                 .append(" (БпЛА противника типу ").append(targetTypeDisplay).append("). Ціль ").append(targetResult).append(".\n\n\n");
 
@@ -311,11 +311,11 @@ public class ReportService {
 //                .append(" о ").append(takeoffTime)
 //                .append(" в районі c-ще. Балабанка, Одеської області, екіпажем «").append(unitName.toUpperCase())
 //                .append("» військової частини ").append(militaryUnit)
-//                .append(" здійснено пуск БпЛА \"").append(weapon).append(" (нічний)\" серійний номер ").append("\"").append(weaponNumber.toUpperCase()).append("\"")
+//                .append(" здійснено пуск БпЛА \"").append(weapon).append(" \" серійний номер ").append("\"").append(weaponNumber.toUpperCase()).append("\"")
 //                .append(" спорядженого тротиловою шашкою «3-1.2 КУФ» 1,2 кг та вбудованою розумною платою ініціації для виконання бойового завдання з перехоплення повітряної цілі №").append(targetNumber)
 //                .append(" (БпЛА противника типу ").append(targetTypeDisplay).append("). ")
 //                .append(reportDate).append(" о ").append(contactTime)
-//                .append(" БпЛА \"").append(weapon).append(" (нічний)\" серійний номер ").append("\"").append(weaponNumber.toUpperCase()).append("\"")
+//                .append(" БпЛА \"").append(weapon).append(" \" серійний номер ").append("\"").append(weaponNumber.toUpperCase()).append("\"")
 //                .append(" споряджений тротиловою шашкою «3-1.2 КУФ» 1,2 кг та вбудованою розумною платою ініціації був витрачений у результаті контрольованого підриву для знищення повітряної цілі №").append(targetNumber)
 //                .append(" (БпЛА противника типу ").append(targetTypeDisplay).append("). Ціль ").append(targetResult).append(".\n\n");
 //
