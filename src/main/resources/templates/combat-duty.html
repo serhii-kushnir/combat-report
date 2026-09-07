@@ -837,6 +837,20 @@
     </div>
 </div>
 
+<!-- ===== МОДАЛЬНЕ ВІКНО ПІДТВЕРДЖЕННЯ ВИДАЛЕННЯ ===== -->
+<div class="modal-overlay" id="confirmDeleteModal">
+    <div class="modal" style="width:400px;">
+        <h2 style="color: var(--btn-danger-bg);">⚠️ Підтвердження</h2>
+        <p id="confirmDeleteMessage" style="margin:12px 0; color:var(--text-secondary);">
+            Ви впевнені, що хочете видалити це чергування?
+        </p>
+        <div class="modal-actions" style="justify-content:center;">
+            <button class="btn" onclick="closeModal('confirmDeleteModal')" style="background:#eee;">Скасувати</button>
+            <button class="btn btn-danger" id="confirmDeleteBtn">Видалити</button>
+        </div>
+    </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -1446,20 +1460,37 @@
             }
         };
 
+        let deleteTargetId = null;
+
         window.confirmDelete = function(id) {
-            if (!confirm('Видалити чергування?')) return;
-            fetch(`/combat-duty/api/${id}`, { method: 'DELETE' })
-                .then(res => {
-                    if (res.ok) {
-                        currentPage = 0;
-                        loadDuties();
-                        showToast('Видалено', 'ok');
-                    } else {
-                        showToast('Помилка видалення', 'err');
-                    }
-                })
-                .catch(() => showToast('Помилка мережі', 'err'));
+            // Знаходимо чергування для відображення в повідомленні
+            const duty = allDuties.find(d => d.id === id);
+            const name = duty ? `чергування №${id}` : 'цей запис';
+            document.getElementById('confirmDeleteMessage').textContent =
+                `Ви впевнені, що хочете видалити ${name}? Цю дію неможливо скасувати.`;
+            deleteTargetId = id;
+            openModal('confirmDeleteModal');
         };
+
+// Обробник кнопки "Видалити" в модальному вікні
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
+            if (!deleteTargetId) return;
+            closeModal('confirmDeleteModal');
+            try {
+                const res = await fetch(`/combat-duty/api/${deleteTargetId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    currentPage = 0;
+                    loadDuties();
+                    showToast('Видалено', 'ok');
+                } else {
+                    const err = await res.text();
+                    showToast('Помилка видалення: ' + err, 'err');
+                }
+            } catch (e) {
+                showToast('Помилка мережі', 'err');
+            }
+            deleteTargetId = null;
+        });
 
         // ===== ДОПОМІЖНІ =====
         window.escapeHtml = function(str) {
