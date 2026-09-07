@@ -41,6 +41,9 @@ public class Equipment {
     @Column(name = "archived")
     private boolean archived = false;
 
+    @Column(name = "pinned")
+    private boolean pinned = false;  // НОВЕ ПОЛЕ
+
     @PreUpdate
     protected void onUpdate() {
         lastModified = LocalDateTime.now();
@@ -52,6 +55,7 @@ public class Equipment {
         if (modifiedBy == null) modifiedBy = "system";
     }
 
+    // Конструктори
     public Equipment(String name, Integer quantity, Integer stockQuantity,
                      Integer writtenOffQuantity, String unit, String crew,
                      String location, String category) {
@@ -63,6 +67,17 @@ public class Equipment {
         this.crew = crew;
         this.location = location;
         this.category = category;
-        this.archived = false;
+    }
+
+    public Equipment(String name, int quantity, String unit, String crew,
+                     String location, String category) {
+        this.name = name;
+        this.quantity = quantity;
+        this.stockQuantity = 0;
+        this.writtenOffQuantity = 0;
+        this.unit = unit;
+        this.crew = crew;
+        this.location = location;
+        this.category = category;
     }
 }

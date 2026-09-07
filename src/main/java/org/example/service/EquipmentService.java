@@ -83,6 +83,17 @@ public class EquipmentService {
                 .orElseThrow(() -> new IllegalArgumentException("Не знайдено запис з id=" + id));
     }
 
+    // ===== ЗАКРІПЛЕННЯ =====
+    @Transactional
+    public void togglePinned(Long id, String changedBy) {
+        Equipment eq = getById(id);
+        eq.setPinned(!eq.isPinned());
+        eq.setModifiedBy(changedBy);
+        eq.setLastModified(LocalDateTime.now());
+        repository.save(eq);
+        saveHistory(id, "pinned", String.valueOf(!eq.isPinned()), String.valueOf(eq.isPinned()), changedBy);
+    }
+
     @Transactional
     public Equipment updateFields(Long id, Map<String, Object> updates, String changedBy) {
         Equipment eq = getById(id);

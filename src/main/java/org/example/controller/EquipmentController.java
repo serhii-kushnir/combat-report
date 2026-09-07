@@ -54,6 +54,19 @@ public class EquipmentController {
         return service.searchArchived(search, page, size);
     }
 
+    @PatchMapping("/api/{id}/toggle-pinned")
+    @ResponseBody
+    public ResponseEntity<?> togglePinned(@PathVariable Long id, Principal principal) {
+        try {
+            String changedBy = principal != null ? principal.getName() : "system";
+            service.togglePinned(id, changedBy);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("Помилка зміни закріплення equipment id={}", id, e);
+            return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
+        }
+    }
+
     // ===== ІСТОРІЯ =====
     @GetMapping("/api/{id}/history")
     @ResponseBody

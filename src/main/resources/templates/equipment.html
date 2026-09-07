@@ -45,6 +45,10 @@
             --btn-archive-hover: #5a6268;
             --btn-unarchive-bg: #28a745;
             --btn-unarchive-hover: #218838;
+            --btn-duplicate-bg: #6a1b9a;
+            --btn-duplicate-hover: #4a148c;
+            --row-pinned-bg: #e3f2fd;      /* Світло-синій */
+            --row-pinned-border: #1976d2;
         }
 
         body.dark-theme {
@@ -83,18 +87,13 @@
             --btn-archive-hover: #5a5a65;
             --btn-unarchive-bg: #2a6a2a;
             --btn-unarchive-hover: #3a7a3a;
+            --btn-duplicate-bg: #4a1a6a;
+            --btn-duplicate-hover: #5a2a7a;
+            --row-pinned-bg: #1e1e24;      /* Темно-синій */
+            --row-pinned-border: #4a7ab5;
         }
 
         /* ===== ОСНОВНІ СТИЛІ ===== */
-        .topbar {
-            background: var(--bg-card);
-            padding: 12px 20px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--bg-table-header);
-            transition: background 0.3s, color 0.3s, border-color 0.3s;
-        }
         body {
             font-family: 'Segoe UI', sans-serif;
             background: var(--bg-body);
@@ -188,36 +187,6 @@
             flex: 1;
         }
 
-        .btn-duplicate {
-            background: #6a1b9a;
-            color: white;
-            display: inline-block !important;
-            margin: 0 2px !important;
-            padding: 4px 9px !important;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s ease;
-            box-shadow: 0 1px 2px var(--shadow-light);
-            line-height: 1.4;
-        }
-
-        #confirmModal .modal {
-            width: 400px !important;
-        }
-        #duplicateModal .modal {
-            width: 500px !important;
-        }
-        .btn-duplicate:hover {
-            background: #4a148c;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px var(--shadow-color);
-        }
-        .btn-duplicate:active {
-            transform: translateY(1px);
-        }
-
         .btn {
             padding: 6px 14px;
             border: none;
@@ -254,6 +223,8 @@
         .btn-archive:hover { background: var(--btn-archive-hover); }
         .btn-unarchive { background: var(--btn-unarchive-bg); color: white; }
         .btn-unarchive:hover { background: var(--btn-unarchive-hover); }
+        .btn-duplicate { background: var(--btn-duplicate-bg); color: white; }
+        .btn-duplicate:hover { background: var(--btn-duplicate-hover); }
         .btn-print { background: var(--btn-print); color: white; }
         .btn-print:hover { background: var(--btn-print-hover); }
         .btn-sm { padding: 4px 9px; font-size: 11px; }
@@ -383,6 +354,18 @@
             background: var(--bg-hover);
         }
 
+        /* ===== ВИДІЛЕННЯ ЗАКРІПЛЕНИХ РЯДКІВ ===== */
+        tr.pinned-row {
+            background: var(--row-pinned-bg);
+            border-left: 3px solid var(--row-pinned-border);
+        }
+        tr.pinned-row td {
+            background: var(--row-pinned-bg);
+        }
+        tr.pinned-row:hover td {
+            background: var(--bg-hover);
+        }
+
         .col-num { width: 40px; text-align: center; }
         .col-name { width: auto; min-width: 180px; text-align: left; }
         .col-quantity { width: 100px; text-align: center; }
@@ -393,7 +376,7 @@
         .col-location { width: 100px; text-align: center; }
         .col-category { width: 100px; text-align: center; }
         .col-status { width: 80px; text-align: center; }
-        .col-actions { width: 180px; text-align: center !important; white-space: nowrap; }
+        .col-actions { width: 200px; text-align: center !important; white-space: nowrap; }
 
         .badge-quantity {
             background: #17a2b8;
@@ -487,7 +470,7 @@
             font-weight: 600;
         }
 
-        .btn-edit, .btn-delete, .btn-history, .btn-archive, .btn-unarchive {
+        .btn-edit, .btn-delete, .btn-history, .btn-archive, .btn-unarchive, .btn-duplicate, .btn-pin {
             display: inline-block !important;
             margin: 0 2px !important;
             padding: 4px 9px !important;
@@ -500,12 +483,14 @@
             line-height: 1.4;
         }
         .btn-edit:hover, .btn-delete:hover, .btn-history:hover,
-        .btn-archive:hover, .btn-unarchive:hover {
+        .btn-archive:hover, .btn-unarchive:hover, .btn-duplicate:hover,
+        .btn-pin:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 8px var(--shadow-color);
         }
         .btn-edit:active, .btn-delete:active, .btn-history:active,
-        .btn-archive:active, .btn-unarchive:active {
+        .btn-archive:active, .btn-unarchive:active, .btn-duplicate:active,
+        .btn-pin:active {
             transform: translateY(1px);
         }
         .btn-edit { background: #fd7e14; color: white; }
@@ -518,6 +503,20 @@
         .btn-archive:hover { background: #5a6268; }
         .btn-unarchive { background: #28a745; color: white; }
         .btn-unarchive:hover { background: #218838; }
+        .btn-duplicate { background: #6a1b9a; color: white; }
+        .btn-duplicate:hover { background: #4a148c; }
+        .btn-pin {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-pin.pinned {
+            background: #ffc107;
+            color: #212529;
+        }
+        .btn-pin:not(.pinned) {
+            background: #6c757d;
+            color: white;
+        }
 
         .export-options {
             display: flex;
@@ -726,7 +725,7 @@
                 max-height: 50vh;
             }
             .col-actions {
-                width: 140px;
+                width: 160px;
             }
             .export-options {
                 flex-direction: column;
@@ -891,6 +890,14 @@
                 </div>
             </div>
 
+            <!-- ЕКСПОРТ -->
+            <div class="export-options no-print">
+                <label>
+                    <input type="checkbox" id="includeArchived"> Включити архівні записи
+                </label>
+                <button class="btn btn-primary" onclick="exportToXlsx()">📊 Експорт XLSX</button>
+            </div>
+
             <!-- КНОПКА "ЗАВАНТАЖИТИ ЩЕ" -->
             <div class="load-more-container no-print">
                 <button class="btn btn-primary" id="loadMoreBtn" onclick="loadMore()">Завантажити ще</button>
@@ -952,6 +959,22 @@
     </div>
 </div>
 
+<!-- ===== МОДАЛЬНЕ ВІКНО ДУБЛЮВАННЯ ===== -->
+<div class="modal-overlay" id="duplicateModal">
+    <div class="modal" style="width:500px;">
+        <h2>📋 Дублювати позицію</h2>
+        <p style="color:var(--text-secondary); margin-bottom:12px;">Введіть назву для копії:</p>
+        <div class="form-group">
+            <label>Назва копії</label>
+            <input type="text" id="duplicateNameInput" placeholder="Оригінал (копія)">
+        </div>
+        <div class="modal-actions">
+            <button class="btn" onclick="closeModal('duplicateModal')" style="background:#eee;">Скасувати</button>
+            <button class="btn btn-primary" id="confirmDuplicateBtn">Створити копію</button>
+        </div>
+    </div>
+</div>
+
 <!-- ===== МОДАЛЬНЕ ВІКНО ІСТОРІЇ ===== -->
 <div class="modal-overlay history-modal" id="historyModal">
     <div class="modal">
@@ -961,34 +984,6 @@
         </div>
         <div class="modal-actions">
             <button class="btn" onclick="closeModal('historyModal')" style="background:#eee">Закрити</button>
-        </div>
-    </div>
-</div>
-
-<!-- Модальне вікно для дублювання -->
-<div class="modal-overlay" id="duplicateModal">
-    <div class="modal">
-        <h2>📋 Дублювати позицію</h2>
-        <p style="color:var(--text-secondary); margin-bottom:12px;">Введіть назву для копії:</p>
-        <div class="form-group">
-            <label>Назва копії</label>
-            <input type="text" id="duplicateName" placeholder="Оригінал (копія)">
-        </div>
-        <div class="modal-actions">
-            <button class="btn" onclick="closeModal('duplicateModal')" style="background:#eee">Скасувати</button>
-            <button class="btn btn-primary" id="confirmDuplicateBtn">Створити копію</button>
-        </div>
-    </div>
-</div>
-
-<!-- ===== МОДАЛЬНЕ ВІКНО ПІДТВЕРДЖЕННЯ ===== -->
-<div class="modal-overlay" id="confirmModal">
-    <div class="modal" style="width:400px;">
-        <h2 id="confirmTitle">⚠️ Підтвердження</h2>
-        <p id="confirmMessage" style="margin:12px 0; color:var(--text-secondary);">Ви впевнені?</p>
-        <div class="modal-actions" style="justify-content:center;">
-            <button class="btn" onclick="closeModal('confirmModal')" style="background:#eee;">Скасувати</button>
-            <button class="btn btn-danger" id="confirmActionBtn">Підтвердити</button>
         </div>
     </div>
 </div>
@@ -1016,6 +1011,7 @@
     let sortDir = 1;
     let searchTerm = '';
     let deleteTargetId = null;
+    let duplicateTargetId = null;
     let currentPage = 0;
     let pageSize = 20;
     let totalElements = 0;
@@ -1037,7 +1033,6 @@
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
     // ===== ЗАВАНТАЖЕННЯ ДАНИХ =====
-
     async function loadActive() {
         try {
             const search = document.getElementById('searchInput').value.trim();
@@ -1081,7 +1076,6 @@
             const search = document.getElementById('searchInput').value.trim();
             const activeUrl = `/equipment/api?page=0&size=1${search ? '&search=' + encodeURIComponent(search) : ''}`;
             const archivedUrl = `/equipment/api/archived?page=0&size=1${search ? '&search=' + encodeURIComponent(search) : ''}`;
-
             const [activeRes, archivedRes] = await Promise.all([fetch(activeUrl), fetch(archivedUrl)]);
             if (activeRes.ok) {
                 const data = await activeRes.json();
@@ -1112,7 +1106,7 @@
         else loadArchived();
     }
 
-    // ===== РЕНДЕРИНГ =====
+    // ===== РЕНДЕРИНГ АКТИВНИХ =====
     function renderActive() {
         const tbody = document.getElementById('activeBody');
         if (!activeItems || !activeItems.length) {
@@ -1120,49 +1114,72 @@
             document.getElementById('pageTotal').textContent = 0;
             return;
         }
-        tbody.innerHTML = activeItems.map((item, idx) => {
+
+        // Сортуємо: закріплені зверху
+        const sorted = [...activeItems].sort((a, b) => {
+            if (a.pinned && !b.pinned) return -1;
+            if (!a.pinned && b.pinned) return 1;
+            return 0;
+        });
+
+        tbody.innerHTML = sorted.map((item, idx) => {
             const unitVal = item.unit || 'шт.';
             const crewVal = item.crew || '';
             const locVal = item.location || '';
             const catVal = item.category || '';
+            const pinned = item.pinned || false;
+            const rowClass = pinned ? 'pinned-row' : '';
+
             return `
-            <tr>
-                <td class="col-num">${idx + 1}</td>
-                <td class="col-name">${escapeHtml(item.name)}</td>
-                <td class="col-quantity"><span class="badge-quantity">${item.quantity}</span></td>
-                <td class="col-stock"><span class="badge-stock">${item.stockQuantity ?? 0}</span></td>
-                <td class="col-written"><span class="badge-written">${item.writtenOffQuantity ?? 0}</span></td>
-                <td class="col-unit"><span class="badge-unit">${escapeHtml(unitVal)}</span></td>
-                <td class="col-crew"><span class="${crewVal ? 'badge-crew' : 'badge-empty'}">${escapeHtml(crewVal) || '—'}</span></td>
-                <td class="col-location"><span class="${locVal ? 'badge-location' : 'badge-empty'}">${escapeHtml(locVal) || '—'}</span></td>
-                <td class="col-category"><span class="${catVal ? 'badge-category' : 'badge-empty'}">${escapeHtml(catVal) || '—'}</span></td>
-                <td class="col-status"><span class="badge-status-active">Активне</span></td>
-                <td class="col-actions">
-                    <button class="btn-history no-print" onclick="showHistory(${item.id})" title="Історія змін">📜</button>
-                    <button class="btn-edit no-print" onclick="openEditItemModal(${item.id})" title="Редагувати">✏️</button>
-                    <button class="btn-duplicate no-print" onclick="duplicateItem(${item.id})" title="Дублювати">📋</button>
-                    <button class="btn-archive no-print" onclick="archiveItem(${item.id})" title="Архівувати">📦</button>
-                    <button class="btn-delete no-print" onclick="deleteItem(${item.id})" title="Видалити">🗑</button>
-                </td>
-            </tr>
-        `;
+                <tr class="${rowClass}">
+                    <td class="col-num">${idx + 1}</td>
+                    <td class="col-name">${escapeHtml(item.name)}</td>
+                    <td class="col-quantity"><span class="badge-quantity">${item.quantity}</span></td>
+                    <td class="col-stock"><span class="badge-stock">${item.stockQuantity ?? 0}</span></td>
+                    <td class="col-written"><span class="badge-written">${item.writtenOffQuantity ?? 0}</span></td>
+                    <td class="col-unit"><span class="badge-unit">${escapeHtml(unitVal)}</span></td>
+                    <td class="col-crew"><span class="${crewVal ? 'badge-crew' : 'badge-empty'}">${escapeHtml(crewVal) || '—'}</span></td>
+                    <td class="col-location"><span class="${locVal ? 'badge-location' : 'badge-empty'}">${escapeHtml(locVal) || '—'}</span></td>
+                    <td class="col-category"><span class="${catVal ? 'badge-category' : 'badge-empty'}">${escapeHtml(catVal) || '—'}</span></td>
+                    <td class="col-status"><span class="badge-status-active">Активне</span></td>
+                    <td class="col-actions">
+                        <button class="btn-pin no-print ${pinned ? 'pinned' : ''}" onclick="togglePin(${item.id})" title="${pinned ? 'Відкріпити' : 'Закріпити'}">📌</button>
+                        <button class="btn-history no-print" onclick="showHistory(${item.id})" title="Історія змін">📜</button>
+                        <button class="btn-edit no-print" onclick="openEditItemModal(${item.id})" title="Редагувати">✏️</button>
+                        <button class="btn-duplicate no-print" onclick="duplicateItem(${item.id})" title="Дублювати">📋</button>
+                        <button class="btn-archive no-print" onclick="archiveItem(${item.id})" title="Архівувати">📦</button>
+                        <button class="btn-delete no-print" onclick="deleteItem(${item.id})" title="Видалити">🗑</button>
+                    </td>
+                </tr>
+            `;
         }).join('');
         document.getElementById('pageTotal').textContent = activeItems.length;
     }
 
+    // ===== РЕНДЕРИНГ АРХІВНИХ =====
     function renderArchived() {
         const tbody = document.getElementById('archivedBody');
         if (!archivedItems || !archivedItems.length) {
             tbody.innerHTML = '<tr><td colspan="11" class="empty-state">Архів порожній</td></tr>';
             return;
         }
-        tbody.innerHTML = archivedItems.map((item, idx) => {
+
+        const sorted = [...archivedItems].sort((a, b) => {
+            if (a.pinned && !b.pinned) return -1;
+            if (!a.pinned && b.pinned) return 1;
+            return 0;
+        });
+
+        tbody.innerHTML = sorted.map((item, idx) => {
             const unitVal = item.unit || 'шт.';
             const crewVal = item.crew || '';
             const locVal = item.location || '';
             const catVal = item.category || '';
+            const pinned = item.pinned || false;
+            const rowClass = pinned ? 'pinned-row' : '';
+
             return `
-                <tr>
+                <tr class="${rowClass}">
                     <td class="col-num">${idx + 1}</td>
                     <td class="col-name">${escapeHtml(item.name)}</td>
                     <td class="col-quantity"><span class="badge-quantity">${item.quantity}</span></td>
@@ -1174,6 +1191,7 @@
                     <td class="col-category"><span class="${catVal ? 'badge-category' : 'badge-empty'}">${escapeHtml(catVal) || '—'}</span></td>
                     <td class="col-status"><span class="badge-status-archived">Архів</span></td>
                     <td class="col-actions">
+                        <button class="btn-pin no-print ${pinned ? 'pinned' : ''}" onclick="togglePin(${item.id})" title="${pinned ? 'Відкріпити' : 'Закріпити'}">📌</button>
                         <button class="btn-history no-print" onclick="showHistory(${item.id})" title="Історія змін">📜</button>
                         <button class="btn-edit no-print" onclick="openEditItemModal(${item.id})" title="Редагувати">✏️</button>
                         <button class="btn-duplicate no-print" onclick="duplicateItem(${item.id})" title="Дублювати">📋</button>
@@ -1207,56 +1225,6 @@
         html += `<button onclick="goToPage(${totalPages - 1})" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>⏭</button>`;
         pag.innerHTML = html;
     }
-
-    let confirmCallback = null;
-    let duplicateTargetId = null;
-
-    async function duplicateItem(id) {
-        const item = currentTab === 'active' ? activeItems.find(i => i.id === id) : archivedItems.find(i => i.id === id);
-        if (!item) return;
-        document.getElementById('duplicateName').value = item.name + ' (копія)';
-        duplicateTargetId = id;
-        openModal('duplicateModal');
-    }
-
-    document.getElementById('confirmDuplicateBtn').addEventListener('click', async function() {
-        const name = document.getElementById('duplicateName').value.trim();
-        if (!name) {
-            showToast('Введіть назву копії', 'err');
-            return;
-        }
-        const res = await fetch(`/equipment/api/${duplicateTargetId}/duplicate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name })
-        });
-        closeModal('duplicateModal');
-        if (res.ok) {
-            currentPage = 0;
-            if (currentTab === 'active') await loadActive();
-            else await loadArchived();
-            await loadStats();
-            showToast('✅ Копію створено', 'ok');
-        } else {
-            const err = await res.text();
-            showToast('❌ Помилка: ' + err, 'err');
-        }
-    });
-
-    // ===== УНІВЕРСАЛЬНА ФУНКЦІЯ ПІДТВЕРДЖЕННЯ =====
-    function showConfirm(title, message, callback) {
-        document.getElementById('confirmTitle').textContent = title || '⚠️ Підтвердження';
-        document.getElementById('confirmMessage').textContent = message || 'Ви впевнені?';
-        confirmCallback = callback;
-        openModal('confirmModal');
-    }
-
-    document.getElementById('confirmActionBtn').addEventListener('click', function() {
-        if (typeof confirmCallback === 'function') {
-            confirmCallback();
-        }
-        closeModal('confirmModal');
-    });
 
     function updateLoadMoreButton() {
         const total = currentTab === 'active' ? totalElements : archivedTotalElements;
@@ -1302,41 +1270,56 @@
                 th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
             }
         });
-        // Сортуємо на фронтенді
-        const items = currentTab === 'active' ? activeItems : archivedItems;
-        const sorted = [...items].sort((a, b) => {
-            let va, vb;
-            if (col === 'num') { va = a.id; vb = b.id; }
-            else if (col === 'name') { va = (a.name || '').toLowerCase(); vb = (b.name || '').toLowerCase(); }
-            else if (col === 'quantity') { va = a.quantity || 0; vb = b.quantity || 0; }
-            else if (col === 'stockQuantity') { va = a.stockQuantity || 0; vb = b.stockQuantity || 0; }
-            else if (col === 'writtenOffQuantity') { va = a.writtenOffQuantity || 0; vb = b.writtenOffQuantity || 0; }
-            else if (col === 'unit') { va = (a.unit || '').toLowerCase(); vb = (b.unit || '').toLowerCase(); }
-            else if (col === 'crew') { va = (a.crew || '').toLowerCase(); vb = (b.crew || '').toLowerCase(); }
-            else if (col === 'location') { va = (a.location || '').toLowerCase(); vb = (b.location || '').toLowerCase(); }
-            else if (col === 'category') { va = (a.category || '').toLowerCase(); vb = (b.category || '').toLowerCase(); }
-            else if (col === 'status') { va = a.archived ? 'архів' : 'активне'; vb = b.archived ? 'архів' : 'активне'; }
-            else { va = a.id; vb = b.id; }
-            if (va < vb) return -1 * sortDir;
-            if (va > vb) return 1 * sortDir;
-            return 0;
-        });
-        if (currentTab === 'active') { activeItems = sorted; renderActive(); }
-        else { archivedItems = sorted; renderArchived(); }
+        if (currentTab === 'active') {
+            const sorted = [...activeItems].sort((a, b) => {
+                let va, vb;
+                if (col === 'num') { va = a.id; vb = b.id; }
+                else if (col === 'name') { va = (a.name || '').toLowerCase(); vb = (b.name || '').toLowerCase(); }
+                else if (col === 'quantity') { va = a.quantity || 0; vb = b.quantity || 0; }
+                else if (col === 'stockQuantity') { va = a.stockQuantity || 0; vb = b.stockQuantity || 0; }
+                else if (col === 'writtenOffQuantity') { va = a.writtenOffQuantity || 0; vb = b.writtenOffQuantity || 0; }
+                else if (col === 'unit') { va = (a.unit || '').toLowerCase(); vb = (b.unit || '').toLowerCase(); }
+                else if (col === 'crew') { va = (a.crew || '').toLowerCase(); vb = (b.crew || '').toLowerCase(); }
+                else if (col === 'location') { va = (a.location || '').toLowerCase(); vb = (b.location || '').toLowerCase(); }
+                else if (col === 'category') { va = (a.category || '').toLowerCase(); vb = (b.category || '').toLowerCase(); }
+                else if (col === 'status') { va = a.archived ? 'архів' : 'активне'; vb = b.archived ? 'архів' : 'активне'; }
+                else { va = a.id; vb = b.id; }
+                if (va < vb) return -1 * sortDir;
+                if (va > vb) return 1 * sortDir;
+                return 0;
+            });
+            activeItems = sorted;
+            renderActive();
+        } else {
+            const sorted = [...archivedItems].sort((a, b) => {
+                let va, vb;
+                if (col === 'num') { va = a.id; vb = b.id; }
+                else if (col === 'name') { va = (a.name || '').toLowerCase(); vb = (b.name || '').toLowerCase(); }
+                else if (col === 'quantity') { va = a.quantity || 0; vb = b.quantity || 0; }
+                else if (col === 'stockQuantity') { va = a.stockQuantity || 0; vb = b.stockQuantity || 0; }
+                else if (col === 'writtenOffQuantity') { va = a.writtenOffQuantity || 0; vb = b.writtenOffQuantity || 0; }
+                else if (col === 'unit') { va = (a.unit || '').toLowerCase(); vb = (b.unit || '').toLowerCase(); }
+                else if (col === 'crew') { va = (a.crew || '').toLowerCase(); vb = (b.crew || '').toLowerCase(); }
+                else if (col === 'location') { va = (a.location || '').toLowerCase(); vb = (b.location || '').toLowerCase(); }
+                else if (col === 'category') { va = (a.category || '').toLowerCase(); vb = (b.category || '').toLowerCase(); }
+                else if (col === 'status') { va = a.archived ? 'архів' : 'активне'; vb = b.archived ? 'архів' : 'активне'; }
+                else { va = a.id; vb = b.id; }
+                if (va < vb) return -1 * sortDir;
+                if (va > vb) return 1 * sortDir;
+                return 0;
+            });
+            archivedItems = sorted;
+            renderArchived();
+        }
     }
 
     // ===== ПОШУК =====
     document.getElementById('searchInput').addEventListener('input', function() {
+        searchTerm = this.value.trim().toLowerCase();
         currentPage = 0;
         if (currentTab === 'active') loadActive();
         else loadArchived();
     });
-
-    // ===== ФІЛЬТР + ПОШУК =====
-    // Оскільки пошук на бекенді не реалізований, робимо на фронтенді
-    // Перевизначаємо loadActive та loadArchived для фільтрації
-    // Але ми вже використовуємо бекенд, тому поки що залишаємо як є.
-    // Для пошуку потрібно додати ендпоінт або фільтрувати на фронтенді.
 
     // ===== МОДАЛЬНІ ВІКНА (CRUD) =====
     function openAddModal() {
@@ -1431,51 +1414,99 @@
         }
     }
 
-    // ===== АРХІВАЦІЯ =====
-    async function archiveItem(id) {
-        showConfirm('📦 Архівувати', 'Перемістити цю позицію до архіву?', async function() {
-            const res = await fetch(`/equipment/api/${id}/archive`, { method: 'PATCH' });
+    // ===== ЗАКРІПЛЕННЯ =====
+    async function togglePin(id) {
+        try {
+            const res = await fetch(`/equipment/api/${id}/toggle-pinned`, { method: 'PATCH' });
             if (res.ok) {
                 currentPage = 0;
-                loadActive();
-                loadStats();
-                showToast('Архівовано', 'ok');
+                if (currentTab === 'active') await loadActive();
+                else await loadArchived();
+                await loadStats();
+                showToast('Статус закріплення змінено', 'ok');
             } else {
                 const err = await res.text();
                 showToast('Помилка: ' + err, 'err');
             }
-        });
+        } catch (e) {
+            showToast('Помилка мережі', 'err');
+        }
+    }
+
+    // ===== ДУБЛЮВАННЯ =====
+    async function duplicateItem(id) {
+        const items = currentTab === 'active' ? activeItems : archivedItems;
+        const item = items.find(i => i.id === id);
+        if (!item) {
+            showToast('Запис не знайдено', 'err');
+            return;
+        }
+        document.getElementById('duplicateNameInput').value = item.name + ' (копія)';
+        duplicateTargetId = id;
+        openModal('duplicateModal');
+    }
+
+    document.getElementById('confirmDuplicateBtn').addEventListener('click', async function() {
+        const name = document.getElementById('duplicateNameInput').value.trim();
+        if (!name) {
+            showToast('Введіть назву копії', 'err');
+            return;
+        }
+        try {
+            const res = await fetch(`/equipment/api/${duplicateTargetId}/duplicate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            closeModal('duplicateModal');
+            if (res.ok) {
+                currentPage = 0;
+                if (currentTab === 'active') await loadActive();
+                else await loadArchived();
+                await loadStats();
+                showToast('✅ Копію створено', 'ok');
+            } else {
+                const err = await res.text();
+                showToast('❌ Помилка: ' + err, 'err');
+            }
+        } catch (e) {
+            showToast('❌ Помилка мережі', 'err');
+        }
+    });
+
+    // ===== АРХІВАЦІЯ =====
+    async function archiveItem(id) {
+        if (!confirm('Архівувати цю позицію?')) return;
+        const res = await fetch(`/equipment/api/${id}/archive`, { method: 'PATCH' });
+        if (res.ok) {
+            currentPage = 0;
+            loadActive();
+            loadStats();
+            showToast('Архівовано', 'ok');
+        } else {
+            const err = await res.text();
+            showToast('Помилка: ' + err, 'err');
+        }
     }
 
     async function unarchiveItem(id) {
-        showConfirm('📤 Відновити', 'Відновити цю позицію з архіву?', async function() {
-            const res = await fetch(`/equipment/api/${id}/unarchive`, { method: 'PATCH' });
-            if (res.ok) {
-                currentPage = 0;
-                loadArchived();
-                loadStats();
-                showToast('Відновлено', 'ok');
-            } else {
-                const err = await res.text();
-                showToast('Помилка: ' + err, 'err');
-            }
-        });
+        if (!confirm('Відновити з архіву?')) return;
+        const res = await fetch(`/equipment/api/${id}/unarchive`, { method: 'PATCH' });
+        if (res.ok) {
+            currentPage = 0;
+            loadArchived();
+            loadStats();
+            showToast('Відновлено', 'ok');
+        } else {
+            const err = await res.text();
+            showToast('Помилка: ' + err, 'err');
+        }
     }
 
     // ===== ВИДАЛЕННЯ =====
     function deleteItem(id) {
-        showConfirm('🗑 Видалити', 'Видалити цю позицію безповоротно?', async function() {
-            const res = await fetch(`/equipment/api/${id}`, { method: 'DELETE' });
-            if (res.ok) {
-                currentPage = 0;
-                if (currentTab === 'active') loadActive();
-                else loadArchived();
-                showToast('Видалено', 'ok');
-            } else {
-                const err = await res.text();
-                showToast('Помилка: ' + err, 'err');
-            }
-        });
+        deleteTargetId = id;
+        openModal('confirmDeleteModal');
     }
 
     document.getElementById('confirmDeleteBtn').onclick = async function() {
@@ -1571,8 +1602,8 @@
 
     // ===== ЕКСПОРТ =====
     function exportToXlsx() {
-        // Завжди експортуємо всі записи (включно з архівними)
-        window.location.href = '/equipment/api/export?includeArchived=true';
+        const includeArchived = document.getElementById('includeArchived').checked;
+        window.location.href = `/equipment/api/export?includeArchived=${includeArchived}`;
     }
 
     // ===== ЗАКРИТТЯ МОДАЛЬНИХ ВІКОН =====
