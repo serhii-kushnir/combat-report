@@ -7,6 +7,7 @@
     <link th:replace="~{fragments :: sidebar-css}">
     <style>
         /* ===== CSS ЗМІННІ ===== */
+        /* ===== CSS ЗМІННІ ===== */
         :root {
             --bg-body: #f0f2f5;
             --bg-card: #ffffff;
@@ -51,6 +52,8 @@
             --btn-today-hover: #1565c0;
             --char-counter-color: #999;
             --char-counter-warning: #c62828;
+            --today-bg: #e3f2fd;           /* <--- ДОДАНО */
+            --today-border: #1976d2;       /* <--- ДОДАНО */
         }
 
         body.dark-theme {
@@ -95,7 +98,20 @@
             --btn-today-hover: #5a8ac5;
             --char-counter-color: #88888f;
             --char-counter-warning: #ef9a9a;
+            --today-bg: #1e1e24;           /* <--- ДОДАНО (або #1e1e24 за бажанням) */
+            --today-border: #4a7ab5;       /* <--- ДОДАНО */
         }
+
+        /* ===== ВИДІЛЕННЯ ПОТОЧНОГО ДНЯ ===== */
+        tr.today-duty td {
+            background: var(--today-bg) !important;
+            border-left: 3px solid var(--today-border);
+        }
+        tr.today-duty:hover td {
+            background: var(--bg-hover) !important;
+        }
+
+
 
         /* ===== ОСНОВНІ СТИЛІ ===== */
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); color: var(--text-primary); margin: 0; }
@@ -1152,34 +1168,52 @@
                 tbody.innerHTML = '<tr><td colspan="18" class="empty-state">Чергувань немає</td></tr>';
                 return;
             }
+
+            // Отримуємо сьогоднішню дату без часу
+            const todayStr = today.toDateString();
+
             tbody.innerHTML = data.map(d => {
                 const start = d.startTime ? new Date(d.startTime).toLocaleString('uk-UA', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : '';
                 const end = d.endTime ? new Date(d.endTime).toLocaleString('uk-UA', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : '';
                 const summary = d.reportSummary || '—';
-                return `<tr>
-                    <td>${d.id}</td>
-                    <td>${start}</td>
-                    <td>${end}</td>
-                    <td>${escapeHtml(d.unitName || 'СКОПА')}</td>
-                    <td class="text-left personnel-cell">${escapeHtml(d.commander || '—')}</td>
-                    <td class="text-left personnel-cell">${escapeHtml(d.pilot || '—')}</td>
-                    <td class="text-left personnel-cell">${escapeHtml(d.navigator || '—')}</td>
-                    <td class="text-left personnel-cell">${escapeHtml(d.technician || '—')}</td>
-                    <td class="text-left personnel-cell">${escapeHtml(d.driverElectrician || '—')}</td>
-                    <td>${escapeHtml(d.weapons || '—')}</td>
-                    <td>${escapeHtml(d.dutyOfficer || '—')}</td>
-                    <td class="text-left note-cell" onclick="this.classList.toggle('expanded')" title="Натисни щоб розгорнути">${escapeHtml(summary)}</td>
-                    <td class="num-col">${d.totalSorties ?? 0}</td>
-                    <td class="num-col">${d.combatSorties ?? 0}</td>
-                    <td class="num-col">${d.losses ?? 0}</td>
-                    <td class="num-col">${d.destructions ?? 0}</td>
-                    <td class="num-col">${d.ntp ?? 0}</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm" onclick="openEditModal(${d.id})" title="Редагувати">✏️</button>
-                        <button class="btn btn-duplicate btn-sm" onclick="duplicateDuty(${d.id})" title="Дублювати">📋</button>
-                        <button class="btn btn-danger btn-sm" onclick="confirmDelete(${d.id})" title="Видалити">🗑</button>
-                    </td>
-                </tr>`;
+
+                // Перевіряємо, чи чергування сьогодні
+                let isToday = false;
+                if (d.startTime) {
+                    const startDate = new Date(d.startTime);
+                    if (startDate.toDateString() === todayStr) isToday = true;
+                }
+                if (!isToday && d.endTime) {
+                    const endDate = new Date(d.endTime);
+                    if (endDate.toDateString() === todayStr) isToday = true;
+                }
+
+                const rowClass = isToday ? 'today-duty' : '';
+
+                return `<tr class="${rowClass}">
+            <td>${d.id}</td>
+            <td>${start}</td>
+            <td>${end}</td>
+            <td>${escapeHtml(d.unitName || 'СКОПА')}</td>
+            <td class="text-left personnel-cell">${escapeHtml(d.commander || '—')}</td>
+            <td class="text-left personnel-cell">${escapeHtml(d.pilot || '—')}</td>
+            <td class="text-left personnel-cell">${escapeHtml(d.navigator || '—')}</td>
+            <td class="text-left personnel-cell">${escapeHtml(d.technician || '—')}</td>
+            <td class="text-left personnel-cell">${escapeHtml(d.driverElectrician || '—')}</td>
+            <td>${escapeHtml(d.weapons || '—')}</td>
+            <td>${escapeHtml(d.dutyOfficer || '—')}</td>
+            <td class="text-left note-cell" onclick="this.classList.toggle('expanded')" title="Натисни щоб розгорнути">${escapeHtml(summary)}</td>
+            <td class="num-col">${d.totalSorties ?? 0}</td>
+            <td class="num-col">${d.combatSorties ?? 0}</td>
+            <td class="num-col">${d.losses ?? 0}</td>
+            <td class="num-col">${d.destructions ?? 0}</td>
+            <td class="num-col">${d.ntp ?? 0}</td>
+            <td>
+                <button class="btn btn-warning btn-sm" onclick="openEditModal(${d.id})" title="Редагувати">✏️</button>
+                <button class="btn btn-duplicate btn-sm" onclick="duplicateDuty(${d.id})" title="Дублювати">📋</button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete(${d.id})" title="Видалити">🗑</button>
+            </td>
+        </tr>`;
             }).join('');
         }
 
