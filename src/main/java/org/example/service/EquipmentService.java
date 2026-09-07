@@ -107,6 +107,10 @@ public class EquipmentService {
                 case "name":
                     String newName = (String) value;
                     if (newName != null && !newName.trim().isEmpty() && !newName.equals(eq.getName())) {
+                        // ===== ПЕРЕВІРКА УНІКАЛЬНОСТІ =====
+                        if (repository.existsByName(newName.trim())) {
+                            throw new IllegalArgumentException("Запис із назвою '" + newName.trim() + "' вже існує.");
+                        }
                         saveHistory(eq.getId(), "name", eq.getName(), newName, changedBy);
                         eq.setName(newName);
                     }
@@ -158,6 +162,13 @@ public class EquipmentService {
                     if (newCategory != null && !newCategory.equals(eq.getCategory())) {
                         saveHistory(eq.getId(), "category", eq.getCategory(), newCategory, changedBy);
                         eq.setCategory(newCategory);
+                    }
+                    break;
+                case "pinned":
+                    boolean newPinned = (boolean) value;
+                    if (newPinned != eq.isPinned()) {
+                        saveHistory(eq.getId(), "pinned", String.valueOf(eq.isPinned()), String.valueOf(newPinned), changedBy);
+                        eq.setPinned(newPinned);
                     }
                     break;
             }
@@ -369,8 +380,19 @@ public class EquipmentService {
     public Equipment duplicate(Long id, String changedBy, String newName) {
         Equipment original = getById(id);
 
+        // Якщо назва не вказана – використовуємо оригінальну + " (копія)"
+        String baseName = (newName != null && !newName.trim().isEmpty())
+                ? newName.trim()
+                : original.getName() + " (копія)";
+
+        // Перевіряємо, чи існує запис із такою назвою
+        if (repository.existsByName(baseName)) {
+            throw new IllegalArgumentException("Запис із назвою '" + baseName + "' вже існує.");
+        }
+
+        // Створюємо копію
         Equipment copy = new Equipment();
-        copy.setName(newName != null && !newName.trim().isEmpty() ? newName : original.getName() + " (копія)");
+        copy.setName(baseName);
         copy.setQuantity(original.getQuantity());
         copy.setStockQuantity(original.getStockQuantity());
         copy.setWrittenOffQuantity(original.getWrittenOffQuantity());
@@ -379,11 +401,16 @@ public class EquipmentService {
         copy.setLocation(original.getLocation());
         copy.setCategory(original.getCategory());
         copy.setArchived(false);
+        copy.setPinned(false);
         copy.setModifiedBy(changedBy);
         copy.setLastModified(LocalDateTime.now());
 
         Equipment saved = repository.save(copy);
         saveHistory(saved.getId(), "duplicated", "from_id_" + id, String.valueOf(saved.getId()), changedBy);
         return saved;
+    }
+
+    public boolean existsByName(String name) {
+        return repository.existsByName(name);
     }
 }

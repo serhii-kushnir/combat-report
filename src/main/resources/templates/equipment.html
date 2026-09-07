@@ -890,14 +890,6 @@
                 </div>
             </div>
 
-            <!-- ЕКСПОРТ -->
-            <div class="export-options no-print">
-                <label>
-                    <input type="checkbox" id="includeArchived"> Включити архівні записи
-                </label>
-                <button class="btn btn-primary" onclick="exportToXlsx()">📊 Експорт XLSX</button>
-            </div>
-
             <!-- КНОПКА "ЗАВАНТАЖИТИ ЩЕ" -->
             <div class="load-more-container no-print">
                 <button class="btn btn-primary" id="loadMoreBtn" onclick="loadMore()">Завантажити ще</button>
@@ -1016,6 +1008,7 @@
     let pageSize = 20;
     let totalElements = 0;
     let archivedTotalElements = 0;
+    let duplicateOriginalName = '';
 
     function escapeHtml(str) {
         if (!str) return '';
@@ -1368,7 +1361,20 @@
         const crew = document.getElementById('eqCrew').value;
         const location = document.getElementById('eqLocation').value.trim();
         const category = document.getElementById('eqCategory').value.trim();
-        if (!name) { showToast('Введіть назву', 'err'); return; }
+
+        if (!name) {
+            showToast('Введіть назву', 'err');
+            return;
+        }
+
+        // Перевірка на фронтенді – чи існує запис із такою назвою
+        const allItems = [...activeItems, ...archivedItems];
+        const exists = allItems.some(item => item.name && item.name.toLowerCase() === name.toLowerCase());
+        if (exists) {
+            showToast('⚠️ Запис із назвою "' + name + '" вже існує. Введіть іншу назву.', 'err');
+            return;
+        }
+
         const res = await fetch('/equipment/api', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1396,7 +1402,22 @@
         const crew = document.getElementById('eqCrew').value;
         const location = document.getElementById('eqLocation').value.trim();
         const category = document.getElementById('eqCategory').value.trim();
-        if (!name) { showToast('Назва не може бути порожньою', 'err'); return; }
+
+        if (!name) {
+            showToast('Назва не може бути порожньою', 'err');
+            return;
+        }
+
+        // Перевірка унікальності назви (крім поточного запису)
+        const allItems = [...activeItems, ...archivedItems];
+        const exists = allItems.some(item =>
+            item.id != id && item.name && item.name.toLowerCase() === name.toLowerCase()
+        );
+        if (exists) {
+            showToast('⚠️ Запис із назвою "' + name + '" вже існує. Введіть іншу назву.', 'err');
+            return;
+        }
+
         const res = await fetch(`/equipment/api/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -1413,6 +1434,7 @@
             showToast('Помилка: ' + err, 'err');
         }
     }
+
 
     // ===== ЗАКРІПЛЕННЯ =====
     async function togglePin(id) {
@@ -1452,6 +1474,17 @@
             showToast('Введіть назву копії', 'err');
             return;
         }
+
+        // Перевірка унікальності назви
+        const allItems = [...activeItems, ...archivedItems];
+        const exists = allItems.some(item =>
+            item.id != duplicateTargetId && item.name && item.name.toLowerCase() === name.toLowerCase()
+        );
+        if (exists) {
+            showToast('⚠️ Запис із назвою "' + name + '" вже існує. Введіть іншу назву.', 'err');
+            return;
+        }
+
         try {
             const res = await fetch(`/equipment/api/${duplicateTargetId}/duplicate`, {
                 method: 'POST',
@@ -1473,6 +1506,47 @@
             showToast('❌ Помилка мережі', 'err');
         }
     });
+
+    document.getElementById('confirmDuplicateBtn').addEventListener('click', async function() {
+        const name = document.getElementById('duplicateNameInput').value.trim();
+        if (!name) {
+            showToast('Введіть назву копії', 'err');
+            return;
+        }
+
+        // Перевіряємо, чи існує запис із такою назвою в поточному списку
+        const allItems = currentTab === 'active' ? activeItems : archivedItems;
+        const exists = allItems.some(item =>
+            item.name && item.name.toLowerCase() === name.toLowerCase() && item.id !== duplicateTargetId
+        );
+
+        if (exists) {
+            showToast('⚠️ Запис із назвою "' + name + '" вже існує. Введіть іншу назву.', 'err');
+            return;
+        }
+
+        try {
+            const res = await fetch(`/equipment/api/${duplicateTargetId}/duplicate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            closeModal('duplicateModal');
+            if (res.ok) {
+                currentPage = 0;
+                if (currentTab === 'active') await loadActive();
+                else await loadArchived();
+                await loadStats();
+                showToast('✅ Копію створено', 'ok');
+            } else {
+                const err = await res.text();
+                showToast('❌ Помилка: ' + err, 'err');
+            }
+        } catch (e) {
+            showToast('❌ Помилка мережі', 'err');
+        }
+    });
+
 
     // ===== АРХІВАЦІЯ =====
     async function archiveItem(id) {

@@ -22,4 +22,6 @@ public interface EquipmentRepository extends JpaRepository<Equipment, Long> {
     // ===== ПОШУК ПО НАЗВІ (АРХІВНІ) =====
     @Query("SELECT e FROM Equipment e WHERE e.archived = true AND LOWER(e.name) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<Equipment> searchArchived(@Param("search") String search, Pageable pageable);
+
+    boolean existsByName(String name);
 }

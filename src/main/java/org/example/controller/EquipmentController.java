@@ -88,6 +88,10 @@ public class EquipmentController {
             if (equipment.getName() == null || equipment.getName().trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("Назва не може бути порожньою");
             }
+            // Перевірка унікальності назви
+            if (service.existsByName(equipment.getName().trim())) {
+                return ResponseEntity.badRequest().body("Запис із назвою '" + equipment.getName().trim() + "' вже існує.");
+            }
             String changedBy = principal != null ? principal.getName() : "system";
             Equipment saved = service.save(equipment, changedBy);
             return ResponseEntity.ok(saved);
@@ -173,6 +177,9 @@ public class EquipmentController {
             String newName = payload != null ? payload.get("name") : null;
             Equipment duplicated = service.duplicate(id, changedBy, newName);
             return ResponseEntity.ok(duplicated);
+        } catch (IllegalArgumentException e) {
+            log.warn("Помилка дублювання: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             log.error("Помилка дублювання equipment id={}", id, e);
             return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
