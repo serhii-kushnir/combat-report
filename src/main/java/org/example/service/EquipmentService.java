@@ -179,6 +179,14 @@ public class EquipmentService {
         return repository.save(eq);
     }
 
+    public List<Equipment> getPinnedActive() {
+        return repository.findByPinnedTrueAndArchivedFalseOrderByNameAsc();
+    }
+
+    public List<Equipment> getPinnedArchived() {
+        return repository.findByPinnedTrueAndArchivedTrueOrderByNameAsc();
+    }
+
     // ===== АРХІВАЦІЯ =====
     @Transactional
     public void archive(Long id, String changedBy) {

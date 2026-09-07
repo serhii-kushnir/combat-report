@@ -100,6 +100,18 @@ public class EquipmentController {
         }
     }
 
+    @GetMapping("/api/pinned/active")
+    @ResponseBody
+    public List<Equipment> getPinnedActive() {
+        return service.getPinnedActive();
+    }
+
+    @GetMapping("/api/pinned/archived")
+    @ResponseBody
+    public List<Equipment> getPinnedArchived() {
+        return service.getPinnedArchived();
+    }
+
     @PutMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> updateEquipment(@PathVariable Long id,
