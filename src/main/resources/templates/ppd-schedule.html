@@ -6,7 +6,6 @@
     <link rel="icon" type="image/png" href="/favicon.png">
     <link th:replace="~{fragments :: sidebar-css}">
     <style>
-        /* ===== CSS ЗМІННІ (ті ж, що в combat-schedule) ===== */
         :root {
             --bg-body: #f0f2f5;
             --bg-card: #ffffff;
@@ -37,7 +36,6 @@
             --stat-num-color: #1976d2;
         }
         body.dark-theme {
-            /* Аналогічно до combat-schedule */
             --bg-body: #1e1e24;
             --bg-card: #2d2d35;
             --bg-toolbar: #2d2d35;
@@ -65,7 +63,6 @@
             --stat-num-color: #5a8ac5;
         }
 
-        /* ===== ОСНОВНІ СТИЛІ (аналогічно) ===== */
         body {
             font-family: 'Segoe UI', sans-serif;
             background: var(--bg-body);
@@ -75,7 +72,6 @@
         }
         .container { padding: 16px 20px; max-width: 100%; overflow-x: auto; }
 
-        /* Анімація */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
@@ -89,7 +85,6 @@
         .legend { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.10s; }
         .stats-container { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.15s; }
 
-        /* Тулбар */
         .toolbar {
             background: var(--bg-toolbar);
             padding: 12px 16px;
@@ -149,7 +144,6 @@
             border: 1px solid var(--border-color);
         }
 
-        /* Таблиця */
         .table-wrap {
             overflow-x: auto;
             border-radius: 12px;
@@ -174,12 +168,23 @@
             font-size: 11px;
             padding: 6px 2px;
         }
+
+        /* ===== СОРТУВАННЯ (стрілки) ===== */
+        thead th[data-col] {
+            cursor: pointer;
+            user-select: none;
+        }
+        thead th[data-col]:hover {
+            background: #283593;
+        }
+        thead th.sort-asc::after  { content: ' ▲'; font-size: 10px; }
+        thead th.sort-desc::after { content: ' ▼'; font-size: 10px; }
+
         .col-num  { width: 32px; min-width: 32px; }
         .col-rank { width: 125px; min-width: 125px; text-align: left !important; padding-left: 6px !important; }
         .col-name { width: 130px; min-width: 130px; text-align: left !important; padding-left: 8px !important; }
         .col-day  { width: 36px; min-width: 32px; }
 
-        /* Фіксація перших трьох колонок */
         .col-num, .col-rank, .col-name,
         .num-cell, .rank-cell, .name-cell {
             position: sticky;
@@ -243,7 +248,6 @@
             color: white;
         }
 
-        /* Легенда – тільки ППД */
         .legend {
             background: var(--bg-card);
             border-radius: 12px;
@@ -269,7 +273,6 @@
             color: white;
         }
 
-        /* Статистика */
         .stats-container {
             margin-top: 14px;
             background: var(--bg-card);
@@ -307,6 +310,15 @@
             font-size: 12px;
             border: 1px solid var(--bg-header);
         }
+        .stats-table thead th[data-col] {
+            cursor: pointer;
+            user-select: none;
+        }
+        .stats-table thead th[data-col]:hover {
+            background: #283593;
+        }
+        .stats-table thead th.sort-asc::after  { content: ' ▲'; font-size: 10px; }
+        .stats-table thead th.sort-desc::after { content: ' ▼'; font-size: 10px; }
 
         .toast {
             position: fixed; bottom: 20px; right: 20px;
@@ -335,7 +347,6 @@
             .name-cell { left: calc(28px + 80px); }
         }
 
-        /* Друк */
         @media print {
             .sidebar, .toolbar, .legend, .no-print, .btn, .btn-print,
             select, input, .status-menu { display: none !important; }
@@ -388,7 +399,7 @@
                 </table>
             </div>
 
-            <!-- ЛЕГЕНДА (тільки ППД) -->
+            <!-- ЛЕГЕНДА -->
             <div class="legend">
                 <span class="legend-title">Позначення:</span>
                 <span class="legend-item">ППД</span>
@@ -402,10 +413,10 @@
                     <table class="stats-table" id="statsTable">
                         <thead>
                         <tr>
-                            <th style="width:32px;">№</th>
-                            <th style="width:125px;">Звання</th>
-                            <th style="width:130px;">ПІБ</th>
-                            <th style="width:60px;">Днів ППД</th>
+                            <th data-col="num" onclick="sortStatsBy('num')" style="width:32px;">№</th>
+                            <th data-col="rank" onclick="sortStatsBy('rank')" style="width:125px;">Звання</th>
+                            <th data-col="name" onclick="sortStatsBy('name')" style="width:130px;">ПІБ</th>
+                            <th data-col="total" onclick="sortStatsBy('total')" style="width:60px;">Днів ППД</th>
                         </tr>
                         </thead>
                         <tbody id="statsBody">
@@ -414,9 +425,6 @@
                     </table>
                 </div>
             </div>
-
-            <!-- ПАГІНАЦІЯ (не використовується, але залишаємо для сумісності) -->
-            <div class="pagination" id="pagination"></div>
         </div>
     </div>
 </div>
@@ -433,6 +441,12 @@
         let currentYear, currentMonth;
         let tableData = [];
         let statsData = [];
+
+        // ===== СТАН СОРТУВАННЯ =====
+        let sortCol = 'num';
+        let sortDir = 1;
+        let statsSortCol = 'num';
+        let statsSortDir = 1;
 
         const today = new Date();
         currentYear = today.getFullYear();
@@ -491,7 +505,12 @@
                 .then(([data, stats]) => {
                     tableData = data;
                     statsData = stats;
-                    renderTable();
+                    // Скидаємо сортування при зміні місяця
+                    sortCol = 'num';
+                    sortDir = 1;
+                    statsSortCol = 'num';
+                    statsSortDir = 1;
+                    applySortAndRender();
                     renderStats();
                 })
                 .catch(err => {
@@ -504,14 +523,64 @@
                 });
         }
 
+        // ===== СОРТУВАННЯ =====
+        function getSortValue(row, col) {
+            switch (col) {
+                case 'num':  return row.personnelNumber ?? row.id ?? 0;
+                case 'rank': return row.rank || '';
+                case 'name': return row.shortName || '';
+                default:     return '';
+            }
+        }
+
+        function applySortAndRender() {
+            if (!tableData || !tableData.length) {
+                renderTable([]);
+                return;
+            }
+            const sorted = [...tableData].sort((a, b) => {
+                let va = getSortValue(a, sortCol);
+                let vb = getSortValue(b, sortCol);
+                if (typeof va === 'number' && typeof vb === 'number') {
+                    return (va - vb) * sortDir;
+                }
+                va = String(va).toLowerCase();
+                vb = String(vb).toLowerCase();
+                if (va < vb) return -1 * sortDir;
+                if (va > vb) return 1 * sortDir;
+                return 0;
+            });
+            renderTable(sorted);
+            updateSortArrows();
+        }
+
+        function updateSortArrows() {
+            document.querySelectorAll('#scheduleTable thead th[data-col]').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+                if (th.dataset.col === sortCol) {
+                    th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+                }
+            });
+        }
+
+        window.sortBy = function(col) {
+            if (sortCol === col) {
+                sortDir *= -1;
+            } else {
+                sortCol = col;
+                sortDir = 1;
+            }
+            applySortAndRender();
+        };
+
         // ===== РЕНДЕРИНГ ГРАФІКА =====
-        function renderTable() {
+        function renderTable(data) {
             const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
 
             let headRow1 = `<tr>
-                <th class="col-num">№</th>
-                <th class="col-rank" style="text-align:left">Звання</th>
-                <th class="col-name" style="text-align:left">ПІБ</th>`;
+                <th class="col-num" data-col="num" onclick="sortBy('num')">№</th>
+                <th class="col-rank" data-col="rank" onclick="sortBy('rank')" style="text-align:left">Звання</th>
+                <th class="col-name" data-col="name" onclick="sortBy('name')" style="text-align:left">ПІБ</th>`;
             for (let d = 1; d <= daysInMonth; d++) {
                 const dow = new Date(currentYear, currentMonth - 1, d).getDay();
                 const isWE = (dow === 0 || dow === 6);
@@ -531,14 +600,14 @@
             headRow2 += `</tr>`;
             document.getElementById('tableHead').innerHTML = headRow1 + headRow2;
 
-            if (!tableData || !tableData.length) {
+            if (!data || !data.length) {
                 document.getElementById('tableBody').innerHTML =
                     `<tr><td colspan="${daysInMonth + 3}" style="text-align:center;padding:32px;color:var(--text-light)">Немає даних про особовий склад</td></tr>`;
                 return;
             }
 
             let html = '';
-            tableData.forEach((row, idx) => {
+            data.forEach((row, idx) => {
                 const rowNum = row.personnelNumber ?? (idx + 1);
                 let rowHtml = `<tr>
                     <td class="num-cell">${rowNum}</td>
@@ -562,19 +631,50 @@
                 html += rowHtml;
             });
             document.getElementById('tableBody').innerHTML = html;
+            updateSortArrows();
         }
 
-        // ===== РЕНДЕРИНГ СТАТИСТИКИ =====
+        // ===== СТАТИСТИКА =====
+        function getStatsSortValue(row, col) {
+            switch (col) {
+                case 'num':   return row.personnelNumber ?? row.id ?? 0;
+                case 'rank':  return row.rank || '';
+                case 'name':  return row.shortName || '';
+                case 'total': return row.total || 0;
+                default:      return '';
+            }
+        }
+
+        window.sortStatsBy = function(col) {
+            if (statsSortCol === col) {
+                statsSortDir *= -1;
+            } else {
+                statsSortCol = col;
+                statsSortDir = 1;
+            }
+            renderStats();
+        };
+
         function renderStats() {
             const tbody = document.getElementById('statsBody');
             if (!statsData || !statsData.length) {
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-light);">Немає даних для статистики</td></tr>';
                 return;
             }
-            // Сортуємо за кількістю днів (за бажанням)
-            statsData.sort((a, b) => (b.total || 0) - (a.total || 0));
+            const sorted = [...statsData].sort((a, b) => {
+                let va = getStatsSortValue(a, statsSortCol);
+                let vb = getStatsSortValue(b, statsSortCol);
+                if (typeof va === 'number' && typeof vb === 'number') {
+                    return (va - vb) * statsSortDir;
+                }
+                va = String(va).toLowerCase();
+                vb = String(vb).toLowerCase();
+                if (va < vb) return -1 * statsSortDir;
+                if (va > vb) return 1 * statsSortDir;
+                return 0;
+            });
 
-            tbody.innerHTML = statsData.map((row, idx) => {
+            tbody.innerHTML = sorted.map((row, idx) => {
                 const rowNum = row.personnelNumber ?? (idx + 1);
                 return `<tr>
                     <td>${rowNum}</td>
@@ -583,9 +683,16 @@
                     <td><strong>${row.total ?? 0}</strong></td>
                 </tr>`;
             }).join('');
+
+            document.querySelectorAll('#statsTable thead th[data-col]').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+                if (th.dataset.col === statsSortCol) {
+                    th.classList.add(statsSortDir === 1 ? 'sort-asc' : 'sort-desc');
+                }
+            });
         }
 
-        // ===== КЛІК ПО КОМІРЦІ (вмикає/вимикає ППД) =====
+        // ===== КЛІК ПО КОМІРЦІ =====
         window.togglePpd = function(event, cell) {
             event.stopPropagation();
             const personnelId = parseInt(cell.dataset.pid);
@@ -601,24 +708,20 @@
             })
                 .then(res => {
                     if (!res.ok) throw new Error('Помилка збереження');
-                    // Оновлюємо візуально
                     cell.dataset.status = newStatus;
                     if (newStatus === 'ППД') {
                         cell.innerHTML = `<span class="cell-badge">ППД</span>`;
                     } else {
                         cell.innerHTML = '';
                     }
-                    // Оновлюємо статистику
-                    updateStatsAfterChange(personnelId, date, newStatus);
+                    updateStatsAfterChange();
                 })
                 .catch(err => {
                     showToast('Помилка: ' + err.message, 'err');
                 });
         };
 
-        // ===== ОНОВЛЕННЯ СТАТИСТИКИ ПІСЛЯ ЗМІНИ =====
-        function updateStatsAfterChange(personnelId, date, newStatus) {
-            // Просто перезавантажуємо статистику з сервера
+        function updateStatsAfterChange() {
             fetch(`/ppd-schedule/api/stats?year=${currentYear}&month=${currentMonth}`)
                 .then(res => res.json())
                 .then(stats => {
@@ -692,11 +795,6 @@
             t.className = `toast ${type} show`;
             setTimeout(() => t.classList.remove('show'), 2500);
         }
-
-        // Статистика вимагає окремого ендпоінта – додамо його в контролері нижче
-        // Для сумісності поки що використовуємо /api/stats (його потрібно додати)
-        // Якщо його немає, завантажуємо статистику з /api (рахуємо на фронті)
-        // Але краще додати в контролері метод getStats.
     })();
 </script>
 </body>
