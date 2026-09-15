@@ -175,6 +175,20 @@
             transition: background 0.3s, box-shadow 0.3s;
         }
 
+        .crew-cell {
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-width: 220px;
+            max-height: 80px;
+            overflow: hidden;
+            cursor: pointer;
+            font-size: 11px;
+            line-height: 1.3;
+        }
+        .crew-cell.expanded {
+            max-height: none;
+        }
+
         /* ===== СТИЛІ КНОПОК З АНІМАЦІЄЮ ===== */
         .btn {
             padding: 6px 14px;
@@ -761,6 +775,7 @@
                         <th style="width:120px" data-col="target" onclick="sortBy('target')">Ціль</th>
                         <th style="width:80px" data-col="speed" onclick="sortBy('speed')">Швидкість цілі (км/год)</th>
                         <th style="width:130px" data-col="loss_reason" onclick="sortBy('loss_reason')">Причина втрати</th>
+                        <th style="width:220px" data-col="crewPersonnel" onclick="sortBy('crewPersonnel')">Особовий склад</th>
                         <th style="width:280px" data-col="note" onclick="sortBy('note')">Примітка</th>
                         <th style="width:55px">Дії</th>
                     </tr>
@@ -893,6 +908,14 @@
                     <option>РЕБ противника</option>
                     <option>Інше</option>
                 </select>
+            </div>
+            <div class="form-group full">
+                <label>Особовий склад</label>
+                <textarea id="fCrewPersonnel" rows="5" placeholder="Командир екіпажу: головний сержант ПРАЧУК Сергій Леонідович
+Пілот оператор БПЛА: ст. солдат НАГОРНИЙ Ярослав Артемович
+Штурман: ст. солдат КУШНІР Сергій Олегович
+Технік: солдат ГАРІН Євген В'ячеславович
+Водій-електрик: солдат МУШИНСЬКИЙ Вадим Васильович"></textarea>
             </div>
             <div class="form-group full">
                 <label>Примітка</label>
@@ -1153,7 +1176,13 @@
                 <td style="text-align:center">${r.target ?? ''}</td>
                 <td style="text-align:center">${r.targetSpeed ?? ''}</td>
                 <td style="text-align:left;font-size:11px;color:var(--text-loss-reason, #c62828)">${r.lossReason ?? ''}</td>
-                <td style="text-align:left;font-size:11px;color:var(--text-note, #666);max-width:280px">
+                <td style="text-align:left;font-size:11px;color:var(--text-note, #666);max-width:300px">
+                    <div class="note-cell" onclick="this.classList.toggle('expanded')"
+                         title="Натисни щоб розгорнути">
+                    ${r.crewPersonnel ?? ''}
+                    </div>
+                </td>
+                <td style="text-align:left;font-size:11px;color:var(--text-note, #666);max-width:300px">
                     <div class="note-cell" onclick="this.classList.toggle('expanded')"
                          title="Натисни щоб розгорнути">
                         ${r.note ?? ''}
@@ -1200,7 +1229,8 @@
         document.getElementById('editId').value = '';
         const fields = ['fNum','fDate','fCrew','fPilot','fMonth','fEvent','fTakeoff','fLoss',
             'fCoords','fExplosionArea','fAzimuth','fCourse','fDist','fFlightAlt','fType','fIdent',
-            'fWeapon','fExplosive','fDetonator','fAltitude','fTargetAlt','fTarget','fSpeed','fNote'];
+            'fWeapon','fExplosive','fDetonator','fAltitude','fTargetAlt','fTarget','fSpeed',
+            'fCrewPersonnel','fNote'];
         document.getElementById('fLossReason').value = '';
         fields.forEach(id => document.getElementById(id).value = '');
         openModal('formModal');
@@ -1255,7 +1285,7 @@
             lossReasonSelect.appendChild(opt);
             lossReasonSelect.value = lossReasonVal;
         }
-
+        document.getElementById('fCrewPersonnel').value = r.crewPersonnel ?? '';
         document.getElementById('fNote').value = r.note ?? '';
         openModal('formModal');
     }
@@ -1287,6 +1317,7 @@
             target:         document.getElementById('fTarget').value.trim(),
             targetSpeed:    parseInt(document.getElementById('fSpeed').value) || null,
             lossReason:     document.getElementById('fLossReason').value.trim(),
+            crewPersonnel:  document.getElementById('fCrewPersonnel').value,   // <-- НОВЕ (без trim, щоб зберегти переноси)
             note:           document.getElementById('fNote').value.trim(),
         };
 

@@ -53,4 +53,7 @@ public class FlightRecord {
 
     @Column(name = "explosion_area", length = 255)
     private String explosionArea;
+
+    @Column(name = "crew_personnel", length = 2000)
+    private String crewPersonnel;   // Особовий склад екіпажу
 }

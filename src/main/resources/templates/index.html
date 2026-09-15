@@ -133,6 +133,44 @@
             transition: color 0.3s, border-color 0.3s;
         }
 
+        .crew-bar {
+            background: var(--bg-additional);
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            animation: fadeIn 0.4s ease forwards;
+            opacity: 0;
+            animation-delay: 0.12s;
+        }
+        .crew-bar label {
+            font-weight: bold;
+            font-size: 13px;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+        }
+        .crew-bar textarea {
+            width: 100%;
+            height: 110px;
+            padding: 8px 10px;
+            border: 1px solid var(--border-light);
+            border-radius: 5px;
+            font-size: 13px;
+            font-family: 'Consolas', monospace;
+            background: var(--bg-textarea);
+            color: var(--text-primary);
+            resize: vertical;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+            box-sizing: border-box;
+        }
+        .crew-bar textarea:focus {
+            outline: none;
+            border-color: var(--btn-convert-bg);
+            box-shadow: 0 0 0 2px rgba(21, 101, 192, 0.15);
+        }
+
         /* ===== АНІМАЦІЯ ПОЯВИ ===== */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(12px); }
@@ -450,6 +488,17 @@
                 <input type="text" id="explosionArea" value="" style="width: 150px;">
             </div>
 
+            <!-- НОВИЙ БЛОК: ОСОБОВИЙ СКЛАД -->
+            <div class="crew-bar">
+                <label>👥 Особовий склад екіпажу:</label>
+                <textarea id="crewPersonnel" rows="5"
+                          placeholder="Командир екіпажу: головний сержант ПРАЧУК Сергій Леонідович
+Пілот оператор БПЛА: ст. солдат НАГОРНИЙ Ярослав Артемович
+Штурман: ст. солдат КУШНІР Сергій Олегович
+Технік: солдат ГАРІН Євген В'ячеславович
+Водій-електрик: солдат МУШИНСЬКИЙ Вадим Васильович"></textarea>
+            </div>
+
             <!-- ТРЕТІЙ РЯДОК: кнопки дій -->
             <div class="actions-bar">
                 <button id="convertBtn" class="convert-btn">🔄 Конвертувати</button>
@@ -485,6 +534,7 @@
 
         <script>
             (function() {
+                const crewPersonnelInput = document.getElementById('crewPersonnel');
                 const jsonInput = document.getElementById('jsonInput');
                 const reportOutput = document.getElementById('reportOutput');
                 const statusDiv = document.getElementById('status');
@@ -688,7 +738,8 @@
                         courseDirection: parseInt(courseDirectionInput.value) || 0,
                         manualAltitude: parseInt(altitudeInput.value),
                         targetAltitude: targetAltitude,
-                        explosionArea: explosionArea
+                        explosionArea: explosionArea,
+                        crewPersonnel: crewPersonnelInput.value   // <-- НОВЕ
                     };
 
                     try {
@@ -777,6 +828,7 @@
                         courseDirectionInput.value = '';
                         altitudeInput.value = '';
                         explosionAreaInput.value = '';
+                        crewPersonnelInput.value = '';   // <-- НОВЕ
                         saveFlightBtn.disabled = true;
                         saveFlightBtn.textContent = '💾 В журнал БпАК';
                         setStatus('✅ Всі поля очищено.');
@@ -847,6 +899,9 @@
                         setStatus('❌ Спочатку виконайте конвертацію.', true);
                         return;
                     }
+
+                    lastRequest.crewPersonnel = crewPersonnelInput.value;
+
                     const btn = saveFlightBtn;
                     btn.disabled = true;
                     btn.textContent = '⏳ Збереження...';

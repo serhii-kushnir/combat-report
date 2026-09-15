@@ -187,6 +187,8 @@ public class ReportController {
         r.setExplosionArea(request.getExplosionArea());   // <-- НОВИЙ РЯДОК
         r.setDistance(request.getDistance());
 
+
+
         // ===== АЗИМУТ ТА КУРС =====
         r.setAzimuth(request.getCourse());
         r.setCourseDirection(request.getCourseDirection());
@@ -234,6 +236,9 @@ public class ReportController {
 
         // ===== ПРИЧИНА ВТРАТИ =====
         r.setLossReason(report.getEffectorLossReason());
+
+        // ===== ОСОБОВИЙ СКЛАД =====
+        r.setCrewPersonnel(request.getCrewPersonnel() != null ? request.getCrewPersonnel() : "");
 
         // ===== ПРИМІТКА =====
         String weaponName = r.getWeapon() != null ? r.getWeapon() : "";

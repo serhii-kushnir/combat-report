@@ -149,7 +149,9 @@ public class FlightRecordService {
                     "Координати", "Район підриву", "Азимут (°)", "Курс (°)", "Відстань (м)", "Вис. польоту (м)",
                     "Засіб ураження", "Вибухівка", "Детонатор",
                     "Висота цілі (м)", "Ціль", "Швидкість цілі (км/год)",
-                    "Причина втрати", "Примітка"
+                    "Причина втрати",
+                    "Особовий склад",       // <-- НОВЕ
+                    "Примітка"
             };
 
             int[] COL_WIDTHS = {
@@ -157,7 +159,9 @@ public class FlightRecordService {
                     22, 22, 10, 10, 14, 14,
                     22, 26, 28,
                     14, 20, 20,
-                    22, 70
+                    22,
+                    50,                     // <-- НОВЕ (широкий стовпець для тексту)
+                    70
             };
 
             for (Map.Entry<String, List<FlightRecord>> entry : byMonth.entrySet()) {
@@ -181,7 +185,7 @@ public class FlightRecordService {
                     XSSFRow row = sheet.createRow(rowIdx++);
 
                     // ===== ЗБІЛЬШЕНО ВИСОТУ РЯДКА =====
-                    row.setHeightInPoints(70); // ← було 40, стало 60
+                    row.setHeightInPoints(120); // ← було 40, стало 60
 
                     // Перевірка на "Знищення цілі" (та "Ураження" для сумісності)
                     boolean isDestroyed = r.getEvent() != null &&
@@ -211,6 +215,7 @@ public class FlightRecordService {
                     setCell(row, col++, r.getTarget(), ctr);
                     setCell(row, col++, r.getTargetSpeed(), ctr);
                     setCell(row, col++, r.getLossReason(), lft);
+                    setCell(row, col++, r.getCrewPersonnel(), lft);   // <-- НОВИЙ РЯДОК
                     setCell(row, col++, r.getNote(), lft);
                 }
             }
