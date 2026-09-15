@@ -749,6 +749,7 @@
                         <th style="width:62px" data-col="takeoff" onclick="sortBy('takeoff')">Час взльоту</th>
                         <th style="width:62px" data-col="loss" onclick="sortBy('loss')">Час втрати</th>
                         <th style="width:120px" data-col="coords" onclick="sortBy('coords')">Координати</th>
+                        <th style="width:120px" data-col="explosionArea" onclick="sortBy('explosionArea')">Район підриву</th>
                         <th style="width:55px">Азимут (°)</th>
                         <th style="width:55px">Курс (°)</th>
                         <th style="width:75px" data-col="dist" onclick="sortBy('dist')">Відстань (м)</th>
@@ -822,6 +823,10 @@
             <div class="form-group full">
                 <label>Координати</label>
                 <input type="text" id="fCoords" placeholder="46.482 N, 30.723 E">
+            </div>
+            <div class="form-group full">
+                <label>Район підриву</label>
+                <input type="text" id="fExplosionArea" placeholder="Море / Балабанка / тощо">
             </div>
             <div class="form-group">
                 <label>Азимут (°)</label>
@@ -1136,6 +1141,7 @@
                 <td style="text-align:center">${fmtTime(r.takeoffTime)}</td>
                 <td style="text-align:center">${fmtTime(r.lossTime)}</td>
                 <td style="text-align:center;font-size:11px">${r.coordinates ?? ''}</td>
+                <td style="text-align:center;font-size:11px">${r.explosionArea ?? ''}</td>
                 <td style="text-align:center">${r.azimuth != null ? r.azimuth + '°' : ''}</td>
                 <td style="text-align:center">${r.courseDirection != null ? r.courseDirection + '°' : ''}</td>
                 <td style="text-align:center">${r.distance ?? ''}</td>
@@ -1193,7 +1199,7 @@
         document.getElementById('modalTitle').textContent = 'Додати запис';
         document.getElementById('editId').value = '';
         const fields = ['fNum','fDate','fCrew','fPilot','fMonth','fEvent','fTakeoff','fLoss',
-            'fCoords','fAzimuth','fCourse','fDist','fFlightAlt','fType','fIdent',
+            'fCoords','fExplosionArea','fAzimuth','fCourse','fDist','fFlightAlt','fType','fIdent',
             'fWeapon','fExplosive','fDetonator','fAltitude','fTargetAlt','fTarget','fSpeed','fNote'];
         document.getElementById('fLossReason').value = '';
         fields.forEach(id => document.getElementById(id).value = '');
@@ -1214,6 +1220,7 @@
         document.getElementById('fTakeoff').value  = r.takeoffTime ? r.takeoffTime.substring(0,5) : '';
         document.getElementById('fLoss').value     = r.lossTime ? r.lossTime.substring(0,5) : '';
         document.getElementById('fCoords').value   = r.coordinates ?? '';
+        document.getElementById('fExplosionArea').value = r.explosionArea ?? '';
         document.getElementById('fAzimuth').value  = r.azimuth ?? '';
         document.getElementById('fCourse').value   = r.courseDirection ?? '';
         document.getElementById('fDist').value     = r.distance ?? '';
@@ -1265,6 +1272,7 @@
             takeoffTime:    document.getElementById('fTakeoff').value || null,
             lossTime:       document.getElementById('fLoss').value || null,
             coordinates:    document.getElementById('fCoords').value.trim(),
+            explosionArea:  document.getElementById('fExplosionArea').value.trim(),  // <-- НОВЕ
             azimuth:        parseInt(document.getElementById('fAzimuth').value) || null,
             courseDirection: parseInt(document.getElementById('fCourse').value) || null,
             distance:       parseInt(document.getElementById('fDist').value) || null,

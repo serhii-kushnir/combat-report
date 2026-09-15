@@ -184,6 +184,7 @@ public class ReportController {
         }
 
         r.setCoordinates(report.getCoordinates());
+        r.setExplosionArea(request.getExplosionArea());   // <-- НОВИЙ РЯДОК
         r.setDistance(request.getDistance());
 
         // ===== АЗИМУТ ТА КУРС =====

@@ -146,7 +146,7 @@ public class FlightRecordService {
 
             String[] HEADERS = {
                     "№", "Дата", "Екіпаж", "Пілот", "Подія", "Час взльоту", "Час втрати",
-                    "Координати", "Азимут (°)", "Курс (°)", "Відстань (м)", "Вис. польоту (м)",
+                    "Координати", "Район підриву", "Азимут (°)", "Курс (°)", "Відстань (м)", "Вис. польоту (м)",
                     "Засіб ураження", "Вибухівка", "Детонатор",
                     "Висота цілі (м)", "Ціль", "Швидкість цілі (км/год)",
                     "Причина втрати", "Примітка"
@@ -154,7 +154,7 @@ public class FlightRecordService {
 
             int[] COL_WIDTHS = {
                     8, 14, 12, 18, 24, 12, 12,
-                    22, 10, 10, 14, 14,
+                    22, 22, 10, 10, 14, 14,
                     22, 26, 28,
                     14, 20, 20,
                     22, 70
@@ -199,6 +199,7 @@ public class FlightRecordService {
                     setCell(row, col++, r.getTakeoffTime() != null ? r.getTakeoffTime().format(timeFmt) : "", ctr);
                     setCell(row, col++, r.getLossTime() != null ? r.getLossTime().format(timeFmt) : "", ctr);
                     setCell(row, col++, r.getCoordinates(), ctr);
+                    setCell(row, col++, r.getExplosionArea(), ctr);   // <-- НОВИЙ РЯДОК
                     setCell(row, col++, r.getAzimuth() != null ? r.getAzimuth() + "°" : "", ctr);
                     setCell(row, col++, r.getCourseDirection() != null ? r.getCourseDirection() + "°" : "", ctr);
                     setCell(row, col++, r.getDistance(), ctr);

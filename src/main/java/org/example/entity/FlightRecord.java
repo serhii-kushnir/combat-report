@@ -50,4 +50,7 @@ public class FlightRecord {
 
     @Column(name = "flight_month", length = 30)
     private String month;
+
+    @Column(name = "explosion_area", length = 255)
+    private String explosionArea;
 }
