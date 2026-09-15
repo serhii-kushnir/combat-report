@@ -87,7 +87,7 @@ public class ReportService {
     // ========== ФОРМАТ 1 ==========
     public String formatStandardReport(CombatReport report, int manualDistance, int manualSpeed,
                                        int course, int manualAltitude, int targetAltitude,
-                                       int courseDirection) {
+                                       int courseDirection, String explosionArea) {
         StringBuilder sb = new StringBuilder();
         String takeoffTime = "";
         String lossTime;
@@ -118,6 +118,12 @@ public class ReportService {
 
         sb.append("Час: ").append(takeoffTime).append(" - ").append(lossTime).append("\n");
         sb.append("Координати: ").append(report.getCoordinates() != null ? report.getCoordinates() : "").append("\n");
+
+        // ===== РАЙОН ПІДРИВУ =====
+        String area = (explosionArea != null && !explosionArea.isBlank()) ? explosionArea : "—";
+        sb.append("Район підриву: ").append(area).append("\n");
+        // =========================
+
         sb.append("Азимут-").append(course).append("°")
                 .append(" Курсом-").append(courseDirection).append("°")
                 .append(", Дальність-").append(manualDistance).append(" м., Висота-").append(manualAltitude).append(" м.\n");
@@ -150,6 +156,7 @@ public class ReportService {
 
         return sb.toString();
     }
+
 
     // ========== ФОРМАТ 2 – ДОДАНО ПАРАМЕТР explosionArea ==========
     public String formatShortReport(CombatReport report, int manualDistance, int course,

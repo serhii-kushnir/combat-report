@@ -98,7 +98,8 @@ public class ReportController {
                         request.getCourse(),
                         request.getManualAltitude(),
                         request.getTargetAltitude(),
-                        request.getCourseDirection());
+                        request.getCourseDirection(),
+                        request.getExplosionArea());   // <-- ДОДАНО
                 case 2 -> reportService.formatShortReport(report,
                         request.getDistance(),
                         request.getCourse(),

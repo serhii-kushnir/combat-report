@@ -18,8 +18,8 @@ public class ReportRequestValidator {
     private static final int MAX_ALTITUDE_M = 20_000;
 
     private static final Set<String> ALLOWED_PILOTS = Set.of(
-            "Костянтин БИТКА",
-            "Ярослав НАГОРНИЙ"
+            "БИТКА Костянтин Романович",
+            "НАГОРНИЙ Ярослав Артемович"
     );
 
     public List<String> validate(String json, int format, String pilot, int distance, int speed) {
