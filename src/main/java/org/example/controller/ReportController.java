@@ -171,6 +171,10 @@ public class ReportController {
 
         r.setCrew(report.getUnitName());
 
+        // ===== ПІЛОТ =====
+        // Варіант 1: з поля запиту (те, що обрано в селекті)
+        r.setPilot(request.getPilot());
+
         // ===== ПОДІЯ (виправлено) =====
         String effectorStatus = report.getEffectorStatus();
         if ("Ураження".equals(effectorStatus)) {

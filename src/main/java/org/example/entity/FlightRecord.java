@@ -20,14 +20,15 @@ public class FlightRecord {
     private Integer recordNumber;
     private LocalDate flightDate;
     private String crew;
+    private String pilot;           // НОВЕ ПОЛЕ
     private String event;
     private LocalTime takeoffTime;
     private LocalTime lossTime;
     private String coordinates;
 
-    private Integer azimuth;          // Азимут (°)
-    private Integer courseDirection;  // НОВЕ ПОЛЕ: Курс (°)
-    private Integer distance;         // Відстань (м)
+    private Integer azimuth;
+    private Integer courseDirection;
+    private Integer distance;
     private Integer flightAltitude;
 
     private String lossReason;

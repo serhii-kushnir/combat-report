@@ -145,20 +145,19 @@ public class FlightRecordService {
             greenLeftStyle.setAlignment(HorizontalAlignment.LEFT);
 
             String[] HEADERS = {
-                    "№", "Дата", "Екіпаж", "Подія", "Час взльоту", "Час втрати",
+                    "№", "Дата", "Екіпаж", "Пілот", "Подія", "Час взльоту", "Час втрати",
                     "Координати", "Азимут (°)", "Курс (°)", "Відстань (м)", "Вис. польоту (м)",
                     "Засіб ураження", "Вибухівка", "Детонатор",
                     "Висота цілі (м)", "Ціль", "Швидкість цілі (км/год)",
                     "Причина втрати", "Примітка"
             };
 
-            // ===== ЗБІЛЬШЕНО ШИРИНУ ДЛЯ "ПРИМІТКИ" (останній елемент) =====
             int[] COL_WIDTHS = {
-                    8, 14, 12, 24, 12, 12,
+                    8, 14, 12, 18, 24, 12, 12,
                     22, 10, 10, 14, 14,
                     22, 26, 28,
                     14, 20, 20,
-                    22, 70  // ← було 50, стало 70 для колонки "Примітка"
+                    22, 70
             };
 
             for (Map.Entry<String, List<FlightRecord>> entry : byMonth.entrySet()) {
@@ -195,6 +194,7 @@ public class FlightRecordService {
                     setCell(row, col++, r.getRecordNumber(), ctr);
                     setCell(row, col++, r.getFlightDate() != null ? r.getFlightDate().format(dateFmt) : "", ctr);
                     setCell(row, col++, r.getCrew(), ctr);
+                    setCell(row, col++, r.getPilot(), ctr);   // <-- НОВИЙ РЯДОК
                     setCell(row, col++, r.getEvent(), ctr);
                     setCell(row, col++, r.getTakeoffTime() != null ? r.getTakeoffTime().format(timeFmt) : "", ctr);
                     setCell(row, col++, r.getLossTime() != null ? r.getLossTime().format(timeFmt) : "", ctr);

@@ -744,6 +744,7 @@
                         <th style="width:36px" data-col="num" onclick="sortBy('num')">№</th>
                         <th style="width:86px" data-col="date" onclick="sortBy('date')">Дата</th>
                         <th style="width:75px" data-col="crew" onclick="sortBy('crew')">Екіпаж</th>
+                        <th style="width:120px" data-col="pilot" onclick="sortBy('pilot')">Пілот</th>
                         <th style="width:130px" data-col="event" onclick="sortBy('event')">Подія</th>
                         <th style="width:62px" data-col="takeoff" onclick="sortBy('takeoff')">Час взльоту</th>
                         <th style="width:62px" data-col="loss" onclick="sortBy('loss')">Час втрати</th>
@@ -797,6 +798,10 @@
             <div class="form-group">
                 <label>Екіпаж</label>
                 <input type="text" id="fCrew" placeholder="СКОПА">
+            </div>
+            <div class="form-group">
+                <label>Пілот</label>
+                <input type="text" id="fPilot" placeholder="Костянтин БИТКА">
             </div>
             <div class="form-group">
                 <label>Місяць (лист)</label>
@@ -1126,6 +1131,7 @@
                 <td style="text-align:center">${r.recordNumber ?? ''}</td>
                 <td style="text-align:center">${fmtDate(r.flightDate)}</td>
                 <td style="text-align:center">${r.crew ?? ''}</td>
+                <td style="text-align:center">${r.pilot ?? ''}</td>
                 <td style="text-align:center"><span class="${badgeCls}">${r.event ?? ''}</span></td>
                 <td style="text-align:center">${fmtTime(r.takeoffTime)}</td>
                 <td style="text-align:center">${fmtTime(r.lossTime)}</td>
@@ -1186,7 +1192,7 @@
     function openAddModal() {
         document.getElementById('modalTitle').textContent = 'Додати запис';
         document.getElementById('editId').value = '';
-        const fields = ['fNum','fDate','fCrew','fMonth','fEvent','fTakeoff','fLoss',
+        const fields = ['fNum','fDate','fCrew','fPilot','fMonth','fEvent','fTakeoff','fLoss',
             'fCoords','fAzimuth','fCourse','fDist','fFlightAlt','fType','fIdent',
             'fWeapon','fExplosive','fDetonator','fAltitude','fTargetAlt','fTarget','fSpeed','fNote'];
         document.getElementById('fLossReason').value = '';
@@ -1202,6 +1208,7 @@
         document.getElementById('fNum').value      = r.recordNumber ?? '';
         document.getElementById('fDate').value     = r.flightDate ? r.flightDate.substring(0,10) : '';
         document.getElementById('fCrew').value     = r.crew ?? '';
+        document.getElementById('fPilot').value    = r.pilot ?? '';
         document.getElementById('fMonth').value    = r.month ?? '';
         document.getElementById('fEvent').value    = r.event ?? '';
         document.getElementById('fTakeoff').value  = r.takeoffTime ? r.takeoffTime.substring(0,5) : '';
@@ -1252,6 +1259,7 @@
             recordNumber:   parseInt(document.getElementById('fNum').value) || null,
             flightDate:     document.getElementById('fDate').value || null,
             crew:           document.getElementById('fCrew').value.trim(),
+            pilot:          document.getElementById('fPilot').value.trim(),   // <-- НОВЕ
             month:          document.getElementById('fMonth').value.trim(),
             event:          document.getElementById('fEvent').value.trim(),
             takeoffTime:    document.getElementById('fTakeoff').value || null,
