@@ -573,31 +573,79 @@
                         return false;
                     }
 
-                    // Регулярний вираз для пошуку значень
-                    const regex = /Азимут[-:]\s*(\d+)°?\s*[,.]?\s*Курс[-:]\s*(\d+)°?\s*[,.]?\s*Дальність[-:]\s*(\d+)\s*м\.?\s*[,.]?\s*Висота[-:]\s*(\d+)\s*м\.?/i;
+                    // ===== 1. Азимут, Курс, Дальність, Висота =====
+                    // "м." після чисел тепер НЕобов'язкове (працює і "750", і "750 м.", і "750 м")
+                    const regex = /Азимут[-:]\s*(\d+)°?\s*[,.]?\s*Курс[-:]\s*(\d+)°?\s*[,.]?\s*Дальність[-:]\s*(\d+)\s*(?:м\.?)?\s*[,.]?\s*Висота[-:]\s*(\d+)\s*(?:м\.?)?/i;
                     const match = description.match(regex);
 
-                    if (!match) {
-                        setStatus('⚠️ Не вдалося розпізнати формат description. Очікується: "Азимут-105°, Курс-101, Дальність-40000 м., Висота-1500 м."', true);
+                    let parsedAzimuth = null, parsedCourse = null, parsedDistance = null, parsedAltitude = null;
+
+                    if (match) {
+                        parsedAzimuth  = parseInt(match[1]);
+                        parsedCourse   = parseInt(match[2]);
+                        parsedDistance = parseInt(match[3]);
+                        parsedAltitude = parseInt(match[4]);
+
+                        if (!isNaN(parsedAzimuth))  courseInput.value = parsedAzimuth;
+                        if (!isNaN(parsedCourse))   courseDirectionInput.value = parsedCourse;
+                        if (!isNaN(parsedDistance)) distanceInput.value = parsedDistance;
+                        if (!isNaN(parsedAltitude)) altitudeInput.value = parsedAltitude;
+                    }
+
+                    // ===== 2. Район підриву =====
+                    // Працює для: "Район-підрива "АЧМ"", "Район підриву: АЧМ", "Район-підриву: «АЧМ»"
+                    // Зупиняється на переносі рядка, комі, крапці або лапці
+                    const areaRegex = /Район[\s\-:]*підрив[ау]?[\s\-:]*["«]?([^"»\n,\.]+)["»]?/i;
+                    const areaMatch = description.match(areaRegex);
+                    let parsedArea = '';
+                    if (areaMatch) {
+                        parsedArea = areaMatch[1].trim();
+                        // Прибираємо залишкові лапки, двокрапки, пробіли та крапки
+                        parsedArea = parsedArea.replace(/^["«\s:]+|["»\s\.]+$/g, '');
+                        if (explosionAreaInput) explosionAreaInput.value = parsedArea;
+                    }
+
+                    // ===== 3. Особовий склад =====
+                    const crewRoles = [
+                        /Командир\s+екіпажу/i,
+                        /Пілот(\s+оператор)?/i,
+                        /Оператор/i,
+                        /Штурман/i,
+                        /Технік/i,
+                        /Водій[\s\-]*електрик/i
+                    ];
+                    const lines = description.split(/\r?\n/);
+                    const crewLines = [];
+                    for (const line of lines) {
+                        const trimmed = line.trim();
+                        if (!trimmed) continue;
+                        for (const role of crewRoles) {
+                            if (role.test(trimmed)) {
+                                // Прибираємо номер на початку: "3. ", "4) ", "5 - "
+                                const cleaned = trimmed.replace(/^\d+\s*[\.\)\-]\s*/, '');
+                                crewLines.push(cleaned);
+                                break;
+                            }
+                        }
+                    }
+                    const crewText = crewLines.join('\n');
+                    if (crewPersonnelInput && crewText) crewPersonnelInput.value = crewText;
+
+                    // ===== 4. Статус =====
+                    const parts = [];
+                    if (parsedAzimuth !== null)  parts.push(`Азимут=${parsedAzimuth}°`);
+                    if (parsedCourse !== null)   parts.push(`Курс=${parsedCourse}°`);
+                    if (parsedDistance !== null) parts.push(`Дальність=${parsedDistance} м`);
+                    if (parsedAltitude !== null) parts.push(`Висота=${parsedAltitude} м`);
+                    if (parsedArea)              parts.push(`Район=${parsedArea}`);
+                    if (crewText)                parts.push(`Екіпаж (${crewLines.length} осіб)`);
+
+                    if (parts.length === 0) {
+                        setStatus('⚠️ Не вдалося розпізнати жодного поля з description', true);
                         return false;
                     }
 
-                    const azimuth = parseInt(match[1]);
-                    const course = parseInt(match[2]);
-                    const distance = parseInt(match[3]);
-                    const altitude = parseInt(match[4]);
-
-                    if (isNaN(azimuth) || isNaN(course) || isNaN(distance) || isNaN(altitude)) {
-                        setStatus('⚠️ Помилка парсингу чисел з description', true);
-                        return false;
-                    }
-
-                    courseInput.value = azimuth;
-                    courseDirectionInput.value = course;
-                    distanceInput.value = distance;
-                    altitudeInput.value = altitude;
-
-                    setStatus(`✅ Автоматично заповнено: Азимут=${azimuth}°, Курс=${course}°, Дальність=${distance} м, Висота=${altitude} м`);
+                    setStatus('✅ Автоматично заповнено: ' + parts.join(', '));
                     return true;
                 }
 
