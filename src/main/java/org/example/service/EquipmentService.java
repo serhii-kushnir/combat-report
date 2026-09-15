@@ -240,10 +240,13 @@ public class EquipmentService {
             Sheet activeSheet = wb.createSheet("Активне");
             buildSheet(activeSheet, activeItems, "Активне");
 
+            // Аркуш "Архів" (завжди, якщо є записи)
             if (includeArchived) {
                 List<Equipment> archivedItems = getArchived();
-                Sheet archivedSheet = wb.createSheet("Архів");
-                buildSheet(archivedSheet, archivedItems, "Архів");
+                if (!archivedItems.isEmpty()) {
+                    Sheet archivedSheet = wb.createSheet("Архів");
+                    buildSheet(archivedSheet, archivedItems, "Архів");
+                }
             }
 
             wb.write(out);

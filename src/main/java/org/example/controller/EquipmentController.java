@@ -162,10 +162,11 @@ public class EquipmentController {
     }
 
     @GetMapping("/api/export")
-    public ResponseEntity<byte[]> exportToXlsx() {
+    public ResponseEntity<byte[]> exportToXlsx(
+            @RequestParam(name = "includeArchived", defaultValue = "true") boolean includeArchived) {
         try {
-            byte[] data = service.exportToXlsx(true); // завжди true
-            String filename = URLEncoder.encode("Майно_всі.xlsx", StandardCharsets.UTF_8)
+            byte[] data = service.exportToXlsx(includeArchived);
+            String filename = URLEncoder.encode("Майно.xlsx", StandardCharsets.UTF_8)
                     .replace("+", "%20");
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION,

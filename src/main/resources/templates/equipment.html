@@ -239,7 +239,7 @@
             color: var(--text-primary);
             transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
-        .search-input { width: 220px; }
+        .search-input { width: 40%; }
 
         /* ===== ВКЛАДКИ ===== */
         .table-tabs {
@@ -1711,8 +1711,7 @@
 
     // ===== ЕКСПОРТ =====
     function exportToXlsx() {
-        const includeArchived = document.getElementById('includeArchived').checked;
-        window.location.href = `/equipment/api/export?includeArchived=${includeArchived}`;
+        window.location.href = '/equipment/api/export';
     }
 
     // ===== ЗАКРИТТЯ МОДАЛЬНИХ ВІКОН =====
