@@ -7,7 +7,6 @@
     <link th:replace="~{fragments :: sidebar-css}">
     <style>
         /* ===== CSS ЗМІННІ ===== */
-        /* ===== CSS ЗМІННІ ===== */
         :root {
             --bg-body: #f0f2f5;
             --bg-card: #ffffff;
@@ -1242,7 +1241,9 @@
             <td>
                 <button class="btn btn-warning btn-sm" onclick="openEditModal(${d.id})" title="Редагувати">✏️</button>
                 <button class="btn btn-duplicate btn-sm" onclick="duplicateDuty(${d.id})" title="Дублювати">📋</button>
-                <button class="btn btn-print btn-sm" onclick="exportDocx(${d.id})" title="Експорт у DOCX" style="padding:4px 9px; font-size:11px;">📄</button>                <button class="btn btn-danger btn-sm" onclick="confirmDelete(${d.id})" title="Видалити">🗑</button>
+                <button class="btn btn-print btn-sm" onclick="exportDocx(${d.id})" title="Експорт у DOCX" style="padding:4px 9px; font-size:11px;">📄</button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete(${d.id})" title="Видалити">🗑</button>
+
             </td>
         </tr>`;
             }).join('');

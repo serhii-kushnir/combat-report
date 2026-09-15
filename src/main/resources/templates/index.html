@@ -835,7 +835,7 @@
                     }
                     let baseFilename = currentFilename;
                     if (lastRecordNumber) {
-                        baseFilename = `(${lastRecordNumber}) ${baseFilename}`;
+                        baseFilename = `${lastRecordNumber} ${baseFilename}`;
                     }
                     const success = await downloadFile('/save/docx', baseFilename + '.docx', currentReportText);
                     setStatus(success ? '✅ DOCX звіт збережено!' : '❌ Помилка збереження DOCX', !success);
