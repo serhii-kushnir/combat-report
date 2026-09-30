@@ -1531,12 +1531,6 @@
             setTimeout(() => t.classList.remove('show'), 3000);
         };
 
-        document.querySelectorAll('.modal-overlay').forEach(el => {
-            el.addEventListener('click', function(e) {
-                if (e.target === this) this.classList.remove('open');
-            });
-        });
-
         window.exportDocx = function(id) {
             window.open('/combat-duty/api/' + id + '/export/docx', '_blank');
         };

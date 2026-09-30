@@ -1714,11 +1714,6 @@
         window.location.href = '/equipment/api/export';
     }
 
-    // ===== ЗАКРИТТЯ МОДАЛЬНИХ ВІКОН =====
-    document.querySelectorAll('.modal-overlay, .confirm-overlay').forEach(el =>
-        el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
-    );
-
     document.getElementById('saveBtn').addEventListener('click', saveItem);
 
     // ===== ІНІЦІАЛІЗАЦІЯ =====
