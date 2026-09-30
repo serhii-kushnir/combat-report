@@ -834,8 +834,8 @@
         <div class="form-group"><label>Черговий вищестоящого ПУ</label><input type="text" id="fDutyOfficer" placeholder="полковник Петро Крикун"></div>
         <div class="form-group">
             <label>Доповідь про чергування</label>
-            <textarea id="fReportSummary" rows="3" placeholder="Доповідаю, що під час мого чергування..." maxlength="5000"></textarea>
-            <div class="char-counter" id="charCounterWrapper"><span id="charCounter">5000</span> символів залишилось</div>
+            <textarea id="fReportSummary" rows="3" placeholder="Доповідаю, що під час мого чергування..." maxlength="10000"></textarea>
+            <div class="char-counter" id="charCounterWrapper"><span id="charCounter">10000</span> символів залишилось</div>
         </div>
         <div class="form-row-3">
             <div class="form-group"><label>Вильотів</label><input type="number" id="fTotalSorties" value="0" min="0"></div>
@@ -890,7 +890,7 @@
         let totalElements = 0;
 
         // ===== ЛІЧИЛЬНИК =====
-        const MAX_CHARS = 5000;
+        const MAX_CHARS = 10000;
         const reportTextarea = document.getElementById('fReportSummary');
         const charCounter = document.getElementById('charCounter');
         const charCounterWrapper = document.getElementById('charCounterWrapper');

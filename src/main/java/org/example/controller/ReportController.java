@@ -382,13 +382,13 @@ public class ReportController {
                 // 6. ОБІДВІ СТОРОНИ (justify) – основний текст
                 else if (line.contains("Оператор безпілотних")
                         || line.contains("взводу перехоплювачів безпілотних")
-                        || line.contains("\tДійсним доповідаю")
+                        || line.contains("            Дійсним доповідаю")
                         || line.contains("Командир екіпажу:")
                         || line.contains("Командир екіпажу безпілотних")
                         || (line.contains("Командир взводу перехоплювачів")
                         && line.contains("військової частини")
                         && !line.contains("Командиру"))
-                        || (line.matches("^\\d{2}\\.\\d{2}\\.\\d{4}.*") && line.contains("БпЛА"))
+                        || (line.matches("^            \\d{2}\\.\\d{2}\\.\\d{4}.*") && line.contains("БпЛА"))
                         || (line.matches("^\t\\d{2}\\.\\d{2}\\.\\d{4}.*") && line.contains("БпЛА"))
                 ) {
                     paragraph.setAlignment(ParagraphAlignment.BOTH);

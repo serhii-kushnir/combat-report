@@ -251,7 +251,7 @@ public class ReportService {
 
         sb.append("Командиру військової частини ").append(militaryUnit).append("\n\n\n\n\n\n\n\n\n");
         sb.append("Рапорт\n\n");
-        sb.append("\tДійсним доповідаю, що ").append(reportDate)
+        sb.append("            Дійсним доповідаю, що ").append(reportDate)
                 .append(" о ").append(takeoffTime)
                 .append(" в районі c-ще. Балабанка, Одеської області, екіпажем «").append(unitName.toUpperCase())
                 .append("» військової частини ").append(militaryUnit)
@@ -259,7 +259,7 @@ public class ReportService {
                 .append(" спорядженого тротиловою шашкою «3-1.2 КУФ» 1,2 кг та вбудованою розумною платою ініціації для виконання бойового завдання з перехоплення повітряної цілі №").append(targetNumber)
                 .append(" (БпЛА противника типу ").append(targetTypeDisplay).append("). \n")
 
-                .append("\t").append(reportDate).append(" о ").append(contactTime)
+                .append("            ").append(reportDate).append(" о ").append(contactTime)
                 .append(" БпЛА \"").append(weapon).append("\" серійний номер ").append("\"").append(weaponNumber.toUpperCase()).append("\"")
                 .append(" споряджений тротиловою шашкою «3-1.2 КУФ» 1,2 кг та вбудованою розумною платою ініціації був витрачений у результаті контрольованого підриву для знищення повітряної цілі №").append(targetNumber)
                 .append(" (БпЛА противника типу ").append(targetTypeDisplay).append("). Ціль ").append(targetResult).append(".\n\n\n");

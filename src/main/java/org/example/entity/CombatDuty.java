@@ -43,7 +43,7 @@ public class CombatDuty {
     @Column(length = 255)
     private String dutyOfficer;
 
-    @Column(length = 5000)
+    @Column(length = 10000)
     private String reportSummary;
 
     @Column(name = "driver_electrician", length = 255)
