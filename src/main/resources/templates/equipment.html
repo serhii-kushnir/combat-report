@@ -1163,7 +1163,6 @@
             document.getElementById('pageTotal').textContent = 0;
             return;
         }
-
         tbody.innerHTML = activeItems.map((item, idx) => {
             const unitVal = item.unit || 'шт.';
             const crewVal = item.crew || '';
@@ -1171,29 +1170,27 @@
             const catVal = item.category || '';
             const pinned = item.pinned || false;
             const rowClass = pinned ? 'pinned-row' : '';
-
             return `
-            <tr class="${rowClass}">
-                <td class="col-num">${idx + 1}</td>
-                <td class="col-name">${escapeHtml(item.name)}</td>
-                <td class="col-quantity"><span class="badge-quantity">${item.quantity}</span></td>
-                <td class="col-stock"><span class="badge-stock">${item.stockQuantity ?? 0}</span></td>
-                <td class="col-written"><span class="badge-written">${item.writtenOffQuantity ?? 0}</span></td>
-                <td class="col-unit"><span class="badge-unit">${escapeHtml(unitVal)}</span></td>
-                <td class="col-crew"><span class="${crewVal ? 'badge-crew' : 'badge-empty'}">${escapeHtml(crewVal) || '—'}</span></td>
-                <td class="col-location"><span class="${locVal ? 'badge-location' : 'badge-empty'}">${escapeHtml(locVal) || '—'}</span></td>
-                <td class="col-category"><span class="${catVal ? 'badge-category' : 'badge-empty'}">${escapeHtml(catVal) || '—'}</span></td>
-                <td class="col-status"><span class="badge-status-active">Активне</span></td>
-                <td class="col-actions">
-                    <button class="btn-pin no-print ${pinned ? 'pinned' : ''}" onclick="togglePin(${item.id})" title="${pinned ? 'Відкріпити' : 'Закріпити'}">📌</button>
-                    <button class="btn-history no-print" onclick="showHistory(${item.id})" title="Історія змін">📜</button>
-                    <button class="btn-edit no-print" onclick="openEditItemModal(${item.id})" title="Редагувати">✏️</button>
-                    <button class="btn-duplicate no-print" onclick="duplicateItem(${item.id})" title="Дублювати">📋</button>
-                    <button class="btn-archive no-print" onclick="archiveItem(${item.id})" title="Архівувати">📦</button>
-                    <button class="btn-delete no-print" onclick="deleteItem(${item.id})" title="Видалити">🗑</button>
-                </td>
-            </tr>
-        `;
+        <tr class="${rowClass}">
+            <td data-label="№">${idx + 1}</td>
+            <td data-label="Назва">${escapeHtml(item.name)}</td>
+            <td data-label="На позиції"><span class="badge-quantity">${item.quantity}</span></td>
+            <td data-label="На складі"><span class="badge-stock">${item.stockQuantity ?? 0}</span></td>
+            <td data-label="Списано"><span class="badge-written">${item.writtenOffQuantity ?? 0}</span></td>
+            <td data-label="Одиниць"><span class="badge-unit">${escapeHtml(unitVal)}</span></td>
+            <td data-label="Екіпаж">${escapeHtml(crewVal) || '—'}</td>
+            <td data-label="Локація">${escapeHtml(locVal) || '—'}</td>
+            <td data-label="Категорія">${escapeHtml(catVal) || '—'}</td>
+            <td data-label="Статус"><span class="badge-status-active">Активне</span></td>
+            <td class="actions-cell no-print">
+                <button class="btn-pin ${pinned ? 'pinned' : ''}" onclick="togglePin(${item.id})" title="${pinned ? 'Відкріпити' : 'Закріпити'}">📌</button>
+                <button class="btn-history" onclick="showHistory(${item.id})" title="Історія">📜</button>
+                <button class="btn-edit" onclick="openEditItemModal(${item.id})" title="Редагувати">✏️</button>
+                <button class="btn-duplicate" onclick="duplicateItem(${item.id})" title="Дублювати">📋</button>
+                <button class="btn-archive" onclick="archiveItem(${item.id})" title="Архівувати">📦</button>
+                <button class="btn-delete" onclick="deleteItem(${item.id})" title="Видалити">🗑</button>
+            </td>
+        </tr>`;
         }).join('');
         document.getElementById('pageTotal').textContent = activeItems.length;
     }
@@ -1215,27 +1212,27 @@
             const rowClass = pinned ? 'pinned-row' : '';
 
             return `
-                <tr class="${rowClass}">
-                    <td class="col-num">${idx + 1}</td>
-                    <td class="col-name">${escapeHtml(item.name)}</td>
-                    <td class="col-quantity"><span class="badge-quantity">${item.quantity}</span></td>
-                    <td class="col-stock"><span class="badge-stock">${item.stockQuantity ?? 0}</span></td>
-                    <td class="col-written"><span class="badge-written">${item.writtenOffQuantity ?? 0}</span></td>
-                    <td class="col-unit"><span class="badge-unit">${escapeHtml(unitVal)}</span></td>
-                    <td class="col-crew"><span class="${crewVal ? 'badge-crew' : 'badge-empty'}">${escapeHtml(crewVal) || '—'}</span></td>
-                    <td class="col-location"><span class="${locVal ? 'badge-location' : 'badge-empty'}">${escapeHtml(locVal) || '—'}</span></td>
-                    <td class="col-category"><span class="${catVal ? 'badge-category' : 'badge-empty'}">${escapeHtml(catVal) || '—'}</span></td>
-                    <td class="col-status"><span class="badge-status-archived">Архів</span></td>
-                    <td class="col-actions">
-                        <button class="btn-pin no-print ${pinned ? 'pinned' : ''}" onclick="togglePin(${item.id})" title="${pinned ? 'Відкріпити' : 'Закріпити'}">📌</button>
-                        <button class="btn-history no-print" onclick="showHistory(${item.id})" title="Історія змін">📜</button>
-                        <button class="btn-edit no-print" onclick="openEditItemModal(${item.id})" title="Редагувати">✏️</button>
-                        <button class="btn-duplicate no-print" onclick="duplicateItem(${item.id})" title="Дублювати">📋</button>
-                        <button class="btn-unarchive no-print" onclick="unarchiveItem(${item.id})" title="Відновити">📤</button>
-                        <button class="btn-delete no-print" onclick="deleteItem(${item.id})" title="Видалити">🗑</button>
-                    </td>
-                </tr>
-            `;
+            <tr class="${rowClass}">
+                <td data-label="№">${idx + 1}</td>
+                <td data-label="Назва">${escapeHtml(item.name)}</td>
+                <td data-label="На позиції"><span class="badge-quantity">${item.quantity}</span></td>
+                <td data-label="На складі"><span class="badge-stock">${item.stockQuantity ?? 0}</span></td>
+                <td data-label="Списано"><span class="badge-written">${item.writtenOffQuantity ?? 0}</span></td>
+                <td data-label="Одиниць"><span class="badge-unit">${escapeHtml(unitVal)}</span></td>
+                <td data-label="Екіпаж">${escapeHtml(crewVal) || '—'}</td>
+                <td data-label="Локація">${escapeHtml(locVal) || '—'}</td>
+                <td data-label="Категорія">${escapeHtml(catVal) || '—'}</td>
+                <td data-label="Статус"><span class="badge-status-archived">Архів</span></td>
+                <td class="actions-cell no-print">
+                    <button class="btn-pin ${pinned ? 'pinned' : ''}" onclick="togglePin(${item.id})" title="${pinned ? 'Відкріпити' : 'Закріпити'}">📌</button>
+                    <button class="btn-history" onclick="showHistory(${item.id})" title="Історія змін">📜</button>
+                    <button class="btn-edit" onclick="openEditItemModal(${item.id})" title="Редагувати">✏️</button>
+                    <button class="btn-duplicate" onclick="duplicateItem(${item.id})" title="Дублювати">📋</button>
+                    <button class="btn-unarchive" onclick="unarchiveItem(${item.id})" title="Відновити">📤</button>
+                    <button class="btn-delete" onclick="deleteItem(${item.id})" title="Видалити">🗑</button>
+                </td>
+            </tr>
+        `;
         }).join('');
     }
 

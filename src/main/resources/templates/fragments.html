@@ -4,7 +4,9 @@
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        /* ========== CSS ЗМІННІ ДЛЯ ТЕМ ========== */
+        /* ============================================================
+           ========== CSS ЗМІННІ ДЛЯ ТЕМ =============================
+           ============================================================ */
         :root {
             --bg-body: #f0f2f5;
             --bg-card: #ffffff;
@@ -67,7 +69,9 @@
             color: var(--text-primary) !important;
         }
 
-        /* ========== LAYOUT ========== */
+        /* ============================================================
+           ========== LAYOUT =========================================
+           ============================================================ */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             background: var(--bg-body);
@@ -79,7 +83,9 @@
         }
         .layout { display: flex; min-height: 100vh; }
 
-        /* ========== SIDEBAR ========== */
+        /* ============================================================
+           ========== SIDEBAR ========================================
+           ============================================================ */
         .sidebar {
             width: 220px;
             background: var(--bg-sidebar);
@@ -134,22 +140,13 @@
             line-height: 1;
             margin-top: 4px;
         }
-        .toggle-btn:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
+        .toggle-btn:hover { background: rgba(255,255,255,0.1); color: white; }
 
         .sidebar.collapsed .sidebar-logo { padding: 14px 0 6px; }
         .sidebar.collapsed .logo-text-block {
-            opacity: 0;
-            height: 0;
-            pointer-events: none;
-            margin: 0;
+            opacity: 0; height: 0; pointer-events: none; margin: 0;
         }
-        .sidebar.collapsed .toggle-btn {
-            font-size: 20px;
-            padding: 8px 0;
-        }
+        .sidebar.collapsed .toggle-btn { font-size: 20px; padding: 8px 0; }
 
         /* ========== НАВІГАЦІЯ ========== */
         .sidebar-nav { flex: 1; padding: 8px 0; overflow-y: auto; overflow-x: hidden; }
@@ -188,7 +185,6 @@
             border-left-color: #90caf9;
             font-weight: 600;
         }
-
         .nav-item .icon {
             font-size: 16px;
             width: 20px;
@@ -199,7 +195,6 @@
         }
         .nav-item:hover .icon { transform: translateY(-2px); }
         .nav-item.active .icon { transform: translateY(-2px); }
-
         .nav-item .label { transition: opacity 0.2s; }
         .sidebar.collapsed .nav-item .label { opacity: 0; width: 0; overflow: hidden; }
         .sidebar.collapsed .nav-item { justify-content: center; padding: 10px 0; }
@@ -263,7 +258,6 @@
             transition: background 0.2s;
         }
         .logout-btn:hover { background: rgba(255,255,255,0.1); color: white; }
-
         .sidebar.collapsed .logout-text { display: none; }
         .sidebar.collapsed .logout-icon { font-size: 18px; }
 
@@ -342,11 +336,9 @@
         .dark-theme .btn-print { background: #4a5a6a; color: white; }
         .dark-theme .btn-print:hover { background: #5a6a7a; }
 
-        /* =============================================================
-           ========== ГЛОБАЛЬНА МОБІЛЬНА АДАПТАЦІЯ (додано) ==========
-           ============================================================= */
-
-        /* --- Планшети (до 1024px) --- */
+        /* ============================================================
+           ========== ПЛАНШЕТИ (до 1024px) ===========================
+           ============================================================ */
         @media (max-width: 1024px) {
             .sidebar { width: 200px; }
             .main-content { margin-left: 200px; }
@@ -354,13 +346,13 @@
             .col-name, .name-cell { width: 110px !important; min-width: 110px !important; }
         }
 
-        /* --- Мобільні (до 768px) --- */
+        /* ============================================================
+           ========== МОБІЛЬНІ – ЗАГАЛЬНЕ (до 768px) =================
+           ============================================================ */
         @media (max-width: 768px) {
-            /* Сайдбар – вузький, фіксований зліва */
-            .sidebar {
-                width: 52px;
-                min-width: 52px;
-            }
+
+            /* ----- Сайдбар ----- */
+            .sidebar { width: 52px; min-width: 52px; }
             .sidebar .logo-text-block { opacity: 0; height: 0; pointer-events: none; margin: 0; }
             .sidebar .sidebar-logo { padding: 10px 0 6px; }
             .sidebar .toggle-btn { font-size: 20px; padding: 8px 0; }
@@ -374,10 +366,10 @@
             .sidebar .logout-icon { font-size: 18px; }
             .main-content { margin-left: 52px !important; }
 
-            /* Контейнер */
+            /* ----- Контейнер ----- */
             .container { padding: 10px !important; }
 
-            /* Тулбар – стовпчиком, елементи на всю ширину */
+            /* ----- Тулбар ----- */
             .toolbar {
                 flex-direction: column !important;
                 align-items: stretch !important;
@@ -401,7 +393,7 @@
                 width: 100%;
             }
 
-            /* Статистика – у стовпчик */
+            /* ----- Статистика ----- */
             .stats-row { flex-direction: column !important; align-items: stretch !important; gap: 8px; }
             .stats-group { flex-wrap: wrap; justify-content: center; }
             .stat-card {
@@ -412,7 +404,7 @@
             .stat-card .num { font-size: 20px !important; }
             .stat-card .lbl { font-size: 10px !important; }
 
-            /* Модальні вікна – на всю ширину */
+            /* ----- Модальні вікна ----- */
             .modal {
                 width: 100% !important;
                 max-width: 100% !important;
@@ -437,7 +429,7 @@
                 gap: 8px !important;
             }
 
-            /* Форми */
+            /* ----- Форми ----- */
             .form-group input,
             .form-group select,
             .form-group textarea {
@@ -446,21 +438,7 @@
             }
             .form-group input[type="number"] { width: 100% !important; }
 
-            /* Таблиці – горизонтальний скрол */
-            .table-wrap {
-                overflow-x: auto !important;
-                -webkit-overflow-scrolling: touch;
-                max-height: 65vh !important;
-                border-radius: 8px;
-            }
-            table {
-                min-width: 900px !important; /* гарантує, що таблиця не стискається занадто */
-                font-size: 11px !important;
-            }
-            thead th { font-size: 11px !important; padding: 6px 4px !important; }
-            td { font-size: 11px !important; padding: 5px 4px !important; }
-
-            /* Кнопки – мінімум 44px для тач */
+            /* ----- Кнопки ----- */
             .btn {
                 min-height: 40px;
                 padding: 8px 12px !important;
@@ -476,7 +454,7 @@
                 padding: 3px 6px !important;
             }
 
-            /* Пагінація */
+            /* ----- Пагінація ----- */
             .pagination {
                 flex-wrap: wrap;
                 gap: 4px;
@@ -491,7 +469,7 @@
             }
             .load-more-container .btn { width: 100%; }
 
-            /* Toast */
+            /* ----- Toast ----- */
             .toast {
                 left: 10px !important;
                 right: 10px !important;
@@ -500,51 +478,268 @@
                 font-size: 13px;
             }
 
-            /* Прибираємо sticky-фіксацію колонок на дуже малих екранах */
-            .col-num, .num-cell,
-            .col-rank, .rank-cell,
-            .col-name, .name-cell {
-                position: sticky !important;
-            }
+            /* ----- Підтаблиці ----- */
+            .sub-table { display: block; overflow-x: auto; white-space: nowrap; }
 
-            /* Підтаблиці */
-            .sub-table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-
-            /* Поля типу info-value в pCard */
-            .info-grid {
-                grid-template-columns: 1fr !important;
-                gap: 10px !important;
-            }
+            /* ----- Картки полів (pCard) ----- */
+            .info-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
             .info-value { font-size: 13px; }
 
-            /* Section-title */
+            /* ----- Section-title ----- */
             .section-title {
                 font-size: 15px !important;
                 margin: 16px 0 10px 0 !important;
             }
 
-            /* Скорочені стилі для карток нотаток */
-            .notes-grid {
-                grid-template-columns: 1fr !important;
-                gap: 10px !important;
-            }
+            /* ----- Нотатки ----- */
+            .notes-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
 
-            /* Вкладки */
-            .table-tabs {
-                flex-direction: column;
-                gap: 6px;
-            }
+            /* ----- Вкладки ----- */
+            .table-tabs { flex-direction: column; gap: 6px; }
             .tab-btn { width: 100%; text-align: center; min-height: 44px; }
 
-            /* Легенда */
+            /* ----- Легенда ----- */
             .legend { flex-direction: column; align-items: flex-start; gap: 4px; }
         }
 
-        /* --- Дуже маленькі екрани (до 480px) --- */
+        /* ============================================================
+           ========== ТАБЛИЦІ ЯК КАРТКИ (крім .no-cards) =============
+           ============================================================ */
+        @media (max-width: 768px) {
+
+            .table-wrap:not(.no-cards) {
+                overflow: visible !important;
+                max-height: none !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+
+            .table-wrap:not(.no-cards) table thead { display: none !important; }
+
+            .table-wrap:not(.no-cards) table {
+                display: block !important;
+                min-width: 0 !important;
+                width: 100% !important;
+                background: transparent !important;
+            }
+            .table-wrap:not(.no-cards) table tbody {
+                display: block !important;
+                width: 100% !important;
+            }
+
+            .table-wrap:not(.no-cards) table tbody tr {
+                display: block !important;
+                background: var(--bg-card) !important;
+                border-radius: 12px !important;
+                margin-bottom: 12px !important;
+                padding: 12px 14px !important;
+                box-shadow: 0 2px 8px var(--shadow-color) !important;
+                border: 1px solid var(--border-color) !important;
+            }
+
+            .table-wrap:not(.no-cards) table td {
+                position: static !important;
+                left: auto !important;
+                display: block !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                text-align: left !important;
+                padding: 6px 0 !important;
+                border: none !important;
+                border-bottom: 1px dashed var(--border-color) !important;
+                background: transparent !important;
+                color: var(--text-primary) !important;
+                font-size: 13px !important;
+                white-space: normal !important;
+                word-break: break-word !important;
+            }
+
+            .table-wrap:not(.no-cards) table td:last-child {
+                border-bottom: none !important;
+                padding-top: 10px !important;
+            }
+
+            .table-wrap:not(.no-cards) table td[data-label]::before {
+                content: attr(data-label);
+                display: inline-block;
+                font-weight: 600;
+                color: var(--text-secondary);
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+                margin-right: 8px;
+                min-width: 100px;
+            }
+
+            .table-wrap:not(.no-cards) table td[data-label=""]::before {
+                display: none;
+            }
+
+            .table-wrap:not(.no-cards) table td.actions-cell {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 6px !important;
+                justify-content: flex-start !important;
+                padding-top: 10px !important;
+            }
+            .table-wrap:not(.no-cards) table td.actions-cell::before {
+                display: none !important;
+            }
+            .table-wrap:not(.no-cards) table td.actions-cell .btn {
+                flex: 0 0 auto;
+            }
+
+            .table-wrap:not(.no-cards) table td.note-cell,
+            .table-wrap:not(.no-cards) table td.personnel-cell {
+                max-height: none !important;
+                max-width: 100% !important;
+                -webkit-line-clamp: unset !important;
+                display: block !important;
+                overflow: visible !important;
+            }
+        }
+
+        /* ============================================================
+           ========== ВИКЛЮЧЕННЯ: КАЛЕНДАРНІ (.no-cards) =============
+           Для combat-schedule, ppd-schedule, schedule
+           ============================================================ */
+        @media (max-width: 768px) {
+
+            .table-wrap.no-cards {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch;
+                max-height: 70vh !important;
+                box-shadow: 0 1px 4px var(--shadow-color) !important;
+                border-radius: 8px !important;
+                background: var(--bg-card) !important;
+            }
+
+            .table-wrap.no-cards table {
+                display: table !important;
+                min-width: auto !important;
+                width: auto !important;
+                border-collapse: collapse !important;
+                background: var(--bg-card) !important;
+            }
+
+            .table-wrap.no-cards table thead {
+                display: table-header-group !important;
+                background: var(--bg-header) !important;
+            }
+            .table-wrap.no-cards table tbody {
+                display: table-row-group !important;
+            }
+
+            .table-wrap.no-cards table tbody tr {
+                display: table-row !important;
+                background: transparent !important;
+                border-radius: 0 !important;
+                margin-bottom: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            .table-wrap.no-cards table td {
+                display: table-cell !important;
+                width: auto !important;
+                min-width: 26px !important;
+                max-width: none !important;
+                padding: 3px 2px !important;
+                text-align: center !important;
+                font-size: 10px !important;
+                white-space: nowrap !important;
+                color: var(--text-primary) !important;
+                background: var(--bg-card) !important;
+                border: 1px solid var(--border-color) !important;
+                vertical-align: middle !important;
+            }
+
+            .table-wrap.no-cards table td[data-label]::before {
+                display: none !important;
+            }
+
+            .table-wrap.no-cards table thead th {
+                font-size: 9px !important;
+                padding: 4px 2px !important;
+                min-width: 26px !important;
+                color: var(--text-white) !important;
+                background: var(--bg-header) !important;
+                border: 1px solid var(--bg-header) !important;
+                white-space: nowrap !important;
+                text-align: center !important;
+            }
+
+            .table-wrap.no-cards table thead tr:last-child th {
+                font-size: 8px !important;
+                padding: 2px 1px !important;
+                color: #c5cae9 !important;
+            }
+
+            .table-wrap.no-cards table .col-num,
+            .table-wrap.no-cards table .num-cell {
+                min-width: 26px !important;
+                max-width: 30px !important;
+                text-align: center !important;
+                padding: 3px 2px !important;
+            }
+            .table-wrap.no-cards table .col-rank,
+            .table-wrap.no-cards table .rank-cell {
+                min-width: 70px !important;
+                max-width: 90px !important;
+                text-align: left !important;
+                padding-left: 4px !important;
+                font-size: 9px !important;
+                white-space: nowrap !important;
+            }
+            .table-wrap.no-cards table .col-name,
+            .table-wrap.no-cards table .name-cell {
+                min-width: 80px !important;
+                max-width: 110px !important;
+                text-align: left !important;
+                padding-left: 4px !important;
+                font-size: 9px !important;
+                white-space: nowrap !important;
+            }
+
+            .table-wrap.no-cards .cell-badge {
+                font-size: 8px !important;
+                padding: 1px 3px !important;
+                min-width: 20px !important;
+                display: inline-block !important;
+            }
+
+            .table-wrap.no-cards .stats-table {
+                width: 100% !important;
+                min-width: auto !important;
+            }
+            .table-wrap.no-cards .stats-table td,
+            .table-wrap.no-cards .stats-table th {
+                font-size: 10px !important;
+                padding: 4px 3px !important;
+                color: var(--text-primary) !important;
+                background: var(--bg-card) !important;
+                border: 1px solid var(--border-color) !important;
+                white-space: normal !important;
+            }
+            .table-wrap.no-cards .stats-table thead th {
+                background: var(--bg-header) !important;
+                color: var(--text-white) !important;
+            }
+            .table-wrap.no-cards .stats-table td:nth-child(2),
+            .table-wrap.no-cards .stats-table th:nth-child(2) {
+                min-width: 80px !important;
+            }
+            .table-wrap.no-cards .stats-table td:nth-child(3),
+            .table-wrap.no-cards .stats-table th:nth-child(3) {
+                min-width: 90px !important;
+            }
+        }
+
+        /* ============================================================
+           ========== ДУЖЕ МАЛЕНЬКІ ЕКРАНИ (до 480px) ================
+           ============================================================ */
         @media (max-width: 480px) {
             .container { padding: 8px !important; }
 
@@ -559,16 +754,91 @@
             .btn { font-size: 12px !important; padding: 7px 10px !important; }
             .btn-sm { font-size: 10px !important; padding: 4px 6px !important; }
 
-            /* Ховаємо менш важливі колонки в таблицях (можна налаштувати індивідуально) */
             .hide-mobile { display: none !important; }
+
+            /* Календарні таблиці ще компактніше */
+            .table-wrap.no-cards table td,
+            .table-wrap.no-cards table th {
+                font-size: 9px !important;
+                padding: 2px 1px !important;
+            }
+            .table-wrap.no-cards .cell-badge {
+                font-size: 7px !important;
+                padding: 0 2px !important;
+            }
         }
 
-        /* --- Ландшафтна орієнтація на телефоні --- */
+        /* ============================================================
+           ========== ЛАНДШАФТ НА ТЕЛЕФОНІ ===========================
+           ============================================================ */
         @media (max-width: 900px) and (orientation: landscape) {
             .sidebar { width: 52px; }
             .main-content { margin-left: 52px; }
-            .table-wrap { max-height: 55vh !important; }
+            .table-wrap:not(.no-cards) { max-height: 55vh !important; }
+            .table-wrap.no-cards { max-height: 55vh !important; }
             .modal { max-height: 90vh !important; }
+        }
+
+        /* ============================================================
+           ========== ДРУК ============================================
+           ============================================================ */
+        @media print {
+            .sidebar, .toolbar, .no-print, .btn, .btn-print,
+            .pagination, .load-more-container, .legend {
+                display: none !important;
+            }
+            body { background: white !important; color: black !important; }
+            .main-content { margin-left: 0 !important; padding: 0 !important; }
+            .table-wrap {
+                overflow: visible !important;
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                border-radius: 0 !important;
+                max-height: none !important;
+            }
+            .table-wrap table {
+                background: white !important;
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            .table-wrap table thead {
+                display: table-header-group !important;
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .table-wrap table thead th {
+                background: #1a237e !important;
+                color: white !important;
+                border: 1px solid #1a237e !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .table-wrap table td {
+                display: table-cell !important;
+                background: white !important;
+                color: black !important;
+                border: 1px solid #ddd !important;
+                padding: 3px !important;
+                font-size: 9px !important;
+            }
+            .table-wrap table td[data-label]::before { display: none !important; }
+            .table-wrap table tbody tr {
+                display: table-row !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .table-wrap table tbody tr.card-row { display: table-row !important; }
+
+            .dark-theme td { color: black !important; background: white !important; }
+            .dark-theme thead th { background: #1a237e !important; color: white !important; }
+            .dark-theme .table-wrap { background: white !important; }
+
+            @page { size: landscape; margin: 4mm 3mm; }
         }
     </style>
 </th:block>

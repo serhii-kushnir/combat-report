@@ -1149,7 +1149,7 @@
     function renderTable(records) {
         const body = document.getElementById('tableBody');
         if (!records || !records.length) {
-            body.innerHTML = '<tr><td colspan="20" class="empty-state">Записів немає</td></tr>';
+            body.innerHTML = '<tr><td colspan="21" class="empty-state">Записів немає</td></tr>';
             return;
         }
         body.innerHTML = records.map(r => {
@@ -1157,43 +1157,33 @@
             const badgeCls = isDestroyed ? 'badge-success' : 'badge-warning';
             const rowCls = isDestroyed ? 'row-success' : '';
             return `<tr class="${rowCls}">
-                <td style="text-align:center">${r.recordNumber ?? ''}</td>
-                <td style="text-align:center">${fmtDate(r.flightDate)}</td>
-                <td style="text-align:center">${r.crew ?? ''}</td>
-                <td style="text-align:center">${r.pilot ?? ''}</td>
-                <td style="text-align:center"><span class="${badgeCls}">${r.event ?? ''}</span></td>
-                <td style="text-align:center">${fmtTime(r.takeoffTime)}</td>
-                <td style="text-align:center">${fmtTime(r.lossTime)}</td>
-                <td style="text-align:center;font-size:11px">${r.coordinates ?? ''}</td>
-                <td style="text-align:center;font-size:11px">${r.explosionArea ?? ''}</td>
-                <td style="text-align:center">${r.azimuth != null ? r.azimuth + '°' : ''}</td>
-                <td style="text-align:center">${r.courseDirection != null ? r.courseDirection + '°' : ''}</td>
-                <td style="text-align:center">${r.distance ?? ''}</td>
-                <td style="text-align:center">${r.altitude ?? ''}</td>
-                <td style="text-align:left;font-size:11px">${r.weapon ?? ''}</td>
-                <td style="text-align:left;font-size:11px">${r.explosive ?? ''}</td>
-                <td style="text-align:left;font-size:11px">${r.detonator ?? ''}</td>
-                <td style="text-align:center">${r.targetAltitude ?? ''}</td>
-                <td style="text-align:center">${r.target ?? ''}</td>
-                <td style="text-align:center">${r.targetSpeed ?? ''}</td>
-                <td style="text-align:left;font-size:11px;color:var(--text-loss-reason, #c62828)">${r.lossReason ?? ''}</td>
-                <td style="text-align:left;font-size:11px;color:var(--text-note, #666);max-width:300px">
-                    <div class="note-cell" onclick="this.classList.toggle('expanded')"
-                         title="Натисни щоб розгорнути">
-                    ${r.crewPersonnel ?? ''}
-                    </div>
-                </td>
-                <td style="text-align:left;font-size:11px;color:var(--text-note, #666);max-width:300px">
-                    <div class="note-cell" onclick="this.classList.toggle('expanded')"
-                         title="Натисни щоб розгорнути">
-                        ${r.note ?? ''}
-                    </div>
-                </td>
-                <td class="actions-col no-print">
-                    <button class="btn btn-warning btn-sm" onclick="openEditModal(${r.id})">✏️</button>
-                    <button class="btn btn-danger btn-sm" onclick="confirmDelete(${r.id})">🗑</button>
-                </td>
-            </tr>`;
+            <td data-label="№">${r.recordNumber ?? ''}</td>
+            <td data-label="Дата">${fmtDate(r.flightDate)}</td>
+            <td data-label="Екіпаж">${r.crew ?? ''}</td>
+            <td data-label="Пілот">${r.pilot ?? ''}</td>
+            <td data-label="Подія"><span class="${badgeCls}">${r.event ?? ''}</span></td>
+            <td data-label="Час взльоту">${fmtTime(r.takeoffTime)}</td>
+            <td data-label="Час втрати">${fmtTime(r.lossTime)}</td>
+            <td data-label="Координати">${r.coordinates ?? ''}</td>
+            <td data-label="Район підриву">${r.explosionArea ?? ''}</td>
+            <td data-label="Азимут">${r.azimuth != null ? r.azimuth + '°' : ''}</td>
+            <td data-label="Курс">${r.courseDirection != null ? r.courseDirection + '°' : ''}</td>
+            <td data-label="Відстань (м)">${r.distance ?? ''}</td>
+            <td data-label="Висота польоту (м)">${r.altitude ?? ''}</td>
+            <td data-label="Засіб ураження">${r.weapon ?? ''}</td>
+            <td data-label="Вибухівка">${r.explosive ?? ''}</td>
+            <td data-label="Детонатор">${r.detonator ?? ''}</td>
+            <td data-label="Висота цілі (м)">${r.targetAltitude ?? ''}</td>
+            <td data-label="Ціль">${r.target ?? ''}</td>
+            <td data-label="Швидкість цілі (км/год)">${r.targetSpeed ?? ''}</td>
+            <td data-label="Причина втрати">${r.lossReason ?? ''}</td>
+            <td data-label="Особовий склад" class="crew-cell" onclick="this.classList.toggle('expanded')">${r.crewPersonnel ?? ''}</td>
+            <td data-label="Примітка" class="note-cell" onclick="this.classList.toggle('expanded')">${r.note ?? ''}</td>
+            <td class="actions-cell">
+                <button class="btn btn-warning btn-sm" onclick="openEditModal(${r.id})">✏️</button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete(${r.id})">🗑</button>
+            </td>
+        </tr>`;
         }).join('');
     }
 
