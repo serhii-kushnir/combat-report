@@ -2,7 +2,7 @@
 <html lang="uk" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">-->
     <title>Журнал БпАК</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     <link th:replace="~{fragments :: sidebar-css}">
@@ -1149,7 +1149,7 @@
     function renderTable(records) {
         const body = document.getElementById('tableBody');
         if (!records || !records.length) {
-            body.innerHTML = '<tr><td colspan="21" class="empty-state">Записів немає</td></tr>';
+            body.innerHTML = '<tr><td colspan="23" class="empty-state">Записів немає</td></tr>';
             return;
         }
         body.innerHTML = records.map(r => {
@@ -1177,8 +1177,16 @@
             <td data-label="Ціль">${r.target ?? ''}</td>
             <td data-label="Швидкість цілі (км/год)">${r.targetSpeed ?? ''}</td>
             <td data-label="Причина втрати">${r.lossReason ?? ''}</td>
-            <td data-label="Особовий склад" class="crew-cell" onclick="this.classList.toggle('expanded')">${r.crewPersonnel ?? ''}</td>
-            <td data-label="Примітка" class="note-cell" onclick="this.classList.toggle('expanded')">${r.note ?? ''}</td>
+            <td data-label="Особовий склад">
+                <div class="note-cell" onclick="this.classList.toggle('expanded')" title="Натисни щоб розгорнути">
+                    ${r.crewPersonnel ?? ''}
+                </div>
+            </td>
+            <td data-label="Примітка">
+                <div class="note-cell" onclick="this.classList.toggle('expanded')" title="Натисни щоб розгорнути">
+                    ${r.note ?? ''}
+                </div>
+            </td>
             <td class="actions-cell">
                 <button class="btn btn-warning btn-sm" onclick="openEditModal(${r.id})">✏️</button>
                 <button class="btn btn-danger btn-sm" onclick="confirmDelete(${r.id})">🗑</button>
