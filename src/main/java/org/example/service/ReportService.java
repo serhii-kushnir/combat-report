@@ -107,14 +107,30 @@ public class ReportService {
         sb.append(reportDate).append("\n");
         sb.append("Екіпаж: ").append(report.getUnitName()).append("\n");
 
+        // ===== ВИЗНАЧЕННЯ СТАТУСУ ТА ТЕКСТІВ =====
         String effectorStatus = report.getEffectorStatus() != null ? report.getEffectorStatus() : "";
-        if ("Ураження".equals(effectorStatus)) {
-            String targetNumber = safeTargetNumber(report);
-            sb.append("Знищення цілі").append(targetNumber.isEmpty() ? "" : " №" + targetNumber);
+        String targetNumber = safeTargetNumber(report);
+        String effectorLossReason = report.getEffectorLossReason() != null ? report.getEffectorLossReason() : "";
+
+        String headerText;   // що писати в заголовку (після "Екіпаж:")
+        String noteText;     // що писати в примітці в кінці
+
+        if ("Знищення цілі".equals(effectorStatus)) {
+            headerText = "Знищення цілі" + (targetNumber.isEmpty() ? "" : " №" + targetNumber);
+            noteText = "Знищення цілі, " + effectorLossReason.toLowerCase();
+        } else if ("Ураження".equals(effectorStatus)) {
+            headerText = "Втрата борта (ураження)";
+            noteText = "Ураження.";
+        } else if ("Втрата борту".equals(effectorStatus)) {
+            headerText = "Втрата борту";
+            noteText = "Втрата борту, " + effectorLossReason.toLowerCase();
         } else {
-            sb.append(effectorStatus);
+            // будь-який інший статус — виводимо як є
+            headerText = effectorStatus;
+            noteText = effectorStatus + (effectorLossReason.isEmpty() ? "" : ", " + effectorLossReason.toLowerCase());
         }
-        sb.append("\n\n");
+
+        sb.append(headerText).append("\n\n");
 
         sb.append("Час: ").append(takeoffTime).append(" - ").append(lossTime).append("\n");
         sb.append("Координати: ").append(report.getCoordinates() != null ? report.getCoordinates() : "").append("\n");
@@ -122,7 +138,6 @@ public class ReportService {
         // ===== РАЙОН ПІДРИВУ =====
         String area = (explosionArea != null && !explosionArea.isBlank()) ? explosionArea : "—";
         sb.append("Район підриву: ").append(area).append("\n");
-        // =========================
 
         sb.append("Азимут-").append(course).append("°")
                 .append(" Курсом-").append(courseDirection).append("°")
@@ -137,16 +152,16 @@ public class ReportService {
 
         String unitName = report.getUnitName() != null ? report.getUnitName() : "";
         String militaryUnit = report.getMilitaryUnit() != null ? report.getMilitaryUnit() : "";
-        String targetNumber = safeTargetNumber(report);
-        String effectorLossReason = report.getEffectorLossReason() != null ? report.getEffectorLossReason() : "";
 
         sb.append("Примітка: Екіпажем ").append("\"").append(unitName).append("\"")
                 .append(" в/ч ").append(militaryUnit)
                 .append(", який виконує завдання ведення повітряної розвідки та ураження противника в смузі відповідальності c-ще. Балабанка та околиці")
                 .append(" здійснено виліт дроном-камікадзе ").append("\"").append(weapon).append("\"")
-                .append(" з метою ураження ворожого ударного дрона №").append(targetNumber)
-                .append(". ").append(effectorStatus)
-                .append(", ").append(effectorLossReason.toLowerCase()).append("\n");
+                .append(" з метою ураження ворожого ударного дрона");
+        if (!targetNumber.isEmpty() && !"Ураження".equals(effectorStatus)) {
+            sb.append(" №").append(targetNumber);
+        }
+        sb.append(". ").append(noteText).append("\n");
 
         int targetNum = safeInt(report.getTargetNumberVirazh(), 0);
         String targetSubTypeDisplay = getTargetTypeDisplay(report);
@@ -156,7 +171,6 @@ public class ReportService {
 
         return sb.toString();
     }
-
 
     // ========== ФОРМАТ 2 – ДОДАНО ПАРАМЕТР explosionArea ==========
     public String formatShortReport(CombatReport report, int manualDistance, int course,
@@ -183,13 +197,20 @@ public class ReportService {
         sb.append("Екіпаж: ").append(report.getUnitName()).append("\n");
 
         String effectorStatus = report.getEffectorStatus() != null ? report.getEffectorStatus() : "";
-        if ("Ураження".equals(effectorStatus)) {
-            String targetNumber = safeTargetNumber(report);
-            sb.append("Знищення цілі").append(targetNumber.isEmpty() ? "" : " №" + targetNumber);
+        String targetNumber = safeTargetNumber(report);
+
+        String headerText;
+        if ("Знищення цілі".equals(effectorStatus)) {
+            headerText = "Знищення цілі" + (targetNumber.isEmpty() ? "" : " №" + targetNumber);
+        } else if ("Ураження".equals(effectorStatus)) {
+            headerText = "Втрата борта (ураження)";
+        } else if ("Втрата борту".equals(effectorStatus)) {
+            headerText = "Втрата борту";
         } else {
-            sb.append(effectorStatus);
+            headerText = effectorStatus;
         }
-        sb.append("\n");
+
+        sb.append(headerText).append("\n");
 
         if (report.getTakeoffTime() != null) {
             sb.append("Час вильоту: ").append(report.getTakeoffTime().format(TIME_FORMATTER)).append("\n");
