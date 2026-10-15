@@ -2,7 +2,6 @@
 <html lang="uk" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">-->
     <title>Журнал БпАК</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     <link th:replace="~{fragments :: sidebar-css}">
@@ -313,7 +312,7 @@
             width: 100%;
             border-collapse: collapse;
             background: var(--bg-table);
-            min-width: 1300px;
+            min-width: 2400px;
             transition: background 0.3s;
         }
         thead {
@@ -350,7 +349,13 @@
             transition: border-color 0.3s, color 0.3s;
         }
         tr:hover td { background: var(--bg-hover); }
-        .actions-col { white-space: nowrap; }
+        .actions-col,
+        .actions-cell {
+            white-space: nowrap;
+            text-align: center;
+            min-width: 120px;
+            vertical-align: middle;
+        }
 
         .badge-success {
             background: var(--bg-badge-success);
@@ -760,7 +765,7 @@
                         <th style="width:86px" data-col="date" onclick="sortBy('date')">Дата</th>
                         <th style="width:75px" data-col="crew" onclick="sortBy('crew')">Екіпаж</th>
                         <th style="width:120px" data-col="pilot" onclick="sortBy('pilot')">Пілот</th>
-                        <th style="width:130px" data-col="event" onclick="sortBy('event')">Подія</th>
+                        <th style="width:150px" data-col="event" onclick="sortBy('event')">Подія</th>
                         <th style="width:62px" data-col="takeoff" onclick="sortBy('takeoff')">Час взльоту</th>
                         <th style="width:62px" data-col="loss" onclick="sortBy('loss')">Час втрати</th>
                         <th style="width:120px" data-col="coords" onclick="sortBy('coords')">Координати</th>
@@ -778,7 +783,7 @@
                         <th style="width:130px" data-col="loss_reason" onclick="sortBy('loss_reason')">Причина втрати</th>
                         <th style="width:220px" data-col="crewPersonnel" onclick="sortBy('crewPersonnel')">Особовий склад</th>
                         <th style="width:280px" data-col="note" onclick="sortBy('note')">Примітка</th>
-                        <th style="width:55px">Дії</th>
+                        <th style="width:120px;" class="actions-col">Дії</th>
                     </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -818,7 +823,11 @@
             </div>
             <div class="form-group">
                 <label>Пілот</label>
-                <input type="text" id="fPilot" placeholder="Костянтин БИТКА">
+                <select id="fPilot">
+                    <option value="">— Оберіть пілота —</option>
+                    <option value="НАГОРНИЙ Ярослав Артемович">НАГОРНИЙ Ярослав Артемович</option>
+                    <option value="БИТКА Костянтин Романович">БИТКА Костянтин Романович</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>Місяць (лист)</label>
@@ -826,7 +835,11 @@
             </div>
             <div class="form-group full">
                 <label>Подія</label>
-                <input type="text" id="fEvent" placeholder="Підрив по цілі">
+                <select id="fEvent">
+                    <option value="">— Оберіть подію —</option>
+                    <option value="Втрата борту">Втрата борту</option>
+                    <option value="Знищення цілі">Знищення цілі</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>Час взльоту</label>
@@ -906,7 +919,9 @@
                     <option>Знищення цілі, успішне застосування (камікадзе)</option>
                     <option>Збитий ціллю</option>
                     <option>Технічна несправність</option>
-                    <option>РЕБ противника</option>
+                    <option>РЕБ</option>
+                    <option>Ураження противника</option>
+                    <option>Ураження дружнім бортом</option>
                     <option>Інше</option>
                 </select>
             </div>
@@ -1187,7 +1202,7 @@
                     ${r.note ?? ''}
                 </div>
             </td>
-            <td class="actions-cell">
+            <td class="actions-cell no-print">
                 <button class="btn btn-warning btn-sm" onclick="openEditModal(${r.id})">✏️</button>
                 <button class="btn btn-danger btn-sm" onclick="confirmDelete(${r.id})">🗑</button>
             </td>
@@ -1226,12 +1241,18 @@
     function openAddModal() {
         document.getElementById('modalTitle').textContent = 'Додати запис';
         document.getElementById('editId').value = '';
-        const fields = ['fNum','fDate','fCrew','fPilot','fMonth','fEvent','fTakeoff','fLoss',
+        const fields = ['fNum','fDate','fCrew','fMonth','fEvent','fTakeoff','fLoss',
             'fCoords','fExplosionArea','fAzimuth','fCourse','fDist','fFlightAlt','fType','fIdent',
             'fWeapon','fExplosive','fDetonator','fAltitude','fTargetAlt','fTarget','fSpeed',
             'fCrewPersonnel','fNote'];
         document.getElementById('fLossReason').value = '';
-        fields.forEach(id => document.getElementById(id).value = '');
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        // Окремо скидаємо select для пілота
+        const pilotSelect = document.getElementById('fPilot');
+        if (pilotSelect) pilotSelect.value = '';
         openModal('formModal');
     }
 
@@ -1243,19 +1264,21 @@
         document.getElementById('fNum').value      = r.recordNumber ?? '';
         document.getElementById('fDate').value     = r.flightDate ? r.flightDate.substring(0,10) : '';
         document.getElementById('fCrew').value     = r.crew ?? '';
-        document.getElementById('fPilot').value    = r.pilot ?? '';
         document.getElementById('fMonth').value    = r.month ?? '';
         document.getElementById('fEvent').value    = r.event ?? '';
         document.getElementById('fTakeoff').value  = r.takeoffTime ? r.takeoffTime.substring(0,5) : '';
         document.getElementById('fLoss').value     = r.lossTime ? r.lossTime.substring(0,5) : '';
         document.getElementById('fCoords').value   = r.coordinates ?? '';
-        document.getElementById('fExplosionArea').value = r.explosionArea ?? '';
+
+        // Район підриву (якщо поле додано)
+        const elExplosion = document.getElementById('fExplosionArea');
+        if (elExplosion) elExplosion.value = r.explosionArea ?? '';
+
         document.getElementById('fAzimuth').value  = r.azimuth ?? '';
         document.getElementById('fCourse').value   = r.courseDirection ?? '';
         document.getElementById('fDist').value     = r.distance ?? '';
         document.getElementById('fFlightAlt').value = r.flightAltitude ?? '';
         document.getElementById('fAltitude').value = r.altitude ?? '';
-        // якщо flightAltitude пустий, а altitude є – скопіюємо в flightAlt для зручності
         if (!r.flightAltitude && r.altitude) {
             const parsed = parseInt(r.altitude);
             if (!isNaN(parsed)) {
@@ -1271,12 +1294,13 @@
         document.getElementById('fTarget').value   = r.target ?? '';
         document.getElementById('fSpeed').value    = r.targetSpeed ?? '';
 
-        // ===== ВИПРАВЛЕННЯ: ПРИЧИНА ВТРАТИ =====
+        // ===== ПІЛОТ (select) =====
+        setSelectValue('fPilot', r.pilot ?? '');
+
+        // Причина втрати
         const lossReasonSelect = document.getElementById('fLossReason');
         const lossReasonVal = r.lossReason ?? '';
-        // спочатку встановлюємо значення
         lossReasonSelect.value = lossReasonVal;
-        // якщо не встановилось (тобто такого значення немає в списку), додаємо нову опцію
         if (lossReasonSelect.value !== lossReasonVal && lossReasonVal) {
             const opt = document.createElement('option');
             opt.value = lossReasonVal;
@@ -1284,7 +1308,11 @@
             lossReasonSelect.appendChild(opt);
             lossReasonSelect.value = lossReasonVal;
         }
-        document.getElementById('fCrewPersonnel').value = r.crewPersonnel ?? '';
+
+        // Особовий склад (якщо поле додано)
+        const elCrew = document.getElementById('fCrewPersonnel');
+        if (elCrew) elCrew.value = r.crewPersonnel ?? '';
+
         document.getElementById('fNote').value = r.note ?? '';
         openModal('formModal');
     }
@@ -1357,6 +1385,23 @@
             }
         };
         openModal('confirmModal');
+    }
+
+    function setSelectValue(selectId, value) {
+        const sel = document.getElementById(selectId);
+        if (!sel) return;
+        if (value) {
+            const exists = Array.from(sel.options).some(opt => opt.value === value);
+            if (!exists) {
+                const opt = document.createElement('option');
+                opt.value = value;
+                opt.textContent = value;
+                sel.appendChild(opt);
+            }
+            sel.value = value;
+        } else {
+            sel.value = '';
+        }
     }
 
     // ===== ЗАВАНТАЖЕННЯ ФІЛЬТРІВ (роки, місяці) =====
