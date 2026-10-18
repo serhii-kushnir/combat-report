@@ -261,7 +261,7 @@ public class CombatDutyController {
         CellStyle leftStyle = createLeftStyle(sheet.getWorkbook());
 
         String[] headers = {
-                "ID", "Початок", "Кінець", "Екіпаж", "Командир", "Пілот", "Штурман", "Технік",
+                "ID", "Початок", "Кінець", "Екіпаж", "Командир", "Оператор", "Механік", "Майстер",
                 "Водій-електрик",
                 "Озброєння", "Черговий ПУ", "Доповідь", "Вильотів", "Бойових", "Втрат", "Знищень", "НТП"
         };
@@ -406,9 +406,9 @@ public class CombatDutyController {
             // Екіпаж
             addParagraph(doc, "Екіпаж: " + nullSafe(duty.getUnitName()));
             addParagraph(doc, "Командир: " + nullSafe(duty.getCommander()));
-            addParagraph(doc, "Пілот: " + nullSafe(duty.getPilot()));
-            addParagraph(doc, "Штурман: " + nullSafe(duty.getNavigator()));
-            addParagraph(doc, "Технік: " + nullSafe(duty.getTechnician()));
+            addParagraph(doc, "Оператор: " + nullSafe(duty.getPilot()));
+            addParagraph(doc, "Механік: " + nullSafe(duty.getNavigator()));
+            addParagraph(doc, "Майстер: " + nullSafe(duty.getTechnician()));
             addParagraph(doc, "Водій-електрик: " + nullSafe(duty.getDriverElectrician()));
             addParagraph(doc, "Озброєння: " + nullSafe(duty.getWeapons()));
             addParagraph(doc, "Черговий ПУ: " + nullSafe(duty.getDutyOfficer()));

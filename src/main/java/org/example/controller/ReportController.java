@@ -84,7 +84,7 @@ public class ReportController {
             CombatReport report = reportService.parseJson(reportJson);
             int targetAltitude = report.getAltitude() != null ? report.getAltitude() : 0;
 
-            log.info("Конвертація: формат={}, пілот={}, відстань={}м, швидкість={}км/год, азимут={}°, курс={}°, висота(ручна)={}м, висота(з JSON)={}м",
+            log.info("Конвертація: формат={}, Оператор={}, відстань={}м, швидкість={}км/год, азимут={}°, курс={}°, висота(ручна)={}м, висота(з JSON)={}м",
                     request.getFormat(), request.getPilot(), request.getDistance(),
                     request.getSpeed(), request.getCourse(), request.getCourseDirection(),
                     request.getManualAltitude(), targetAltitude);
@@ -172,7 +172,7 @@ public class ReportController {
 
         r.setCrew(report.getUnitName());
 
-        // ===== ПІЛОТ =====
+        // ===== ОПЕРАТОР =====
         // Варіант 1: з поля запиту (те, що обрано в селекті)
         r.setPilot(request.getPilot());
 

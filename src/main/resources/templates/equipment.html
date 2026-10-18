@@ -2,7 +2,7 @@
 <html lang="uk" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Майно / Склад</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     <link th:replace="~{fragments :: sidebar-css}">
@@ -48,7 +48,7 @@
             --btn-unarchive-hover: #218838;
             --btn-duplicate-bg: #6a1b9a;
             --btn-duplicate-hover: #4a148c;
-            --row-pinned-bg: #e3f2fd;      /* Світло-синій */
+            --row-pinned-bg: #e3f2fd;
             --row-pinned-border: #1976d2;
         }
 
@@ -90,7 +90,7 @@
             --btn-unarchive-hover: #3a7a3a;
             --btn-duplicate-bg: #4a1a6a;
             --btn-duplicate-hover: #5a2a7a;
-            --row-pinned-bg: #1e1e24;      /* Темно-синій */
+            --row-pinned-bg: #1e1e24;
             --row-pinned-border: #4a7ab5;
         }
 
@@ -121,7 +121,6 @@
         .load-more-container { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.15s; }
         .pagination { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.20s; }
 
-        /* Анімація рядків */
         #activeBody tr, #archivedBody tr {
             animation: fadeInRow 0.3s ease forwards;
             opacity: 0;
@@ -218,14 +217,6 @@
         .btn-warning:hover { background: var(--btn-warning-hover); }
         .btn-danger { background: var(--btn-danger-bg); color: var(--text-white); }
         .btn-danger:hover { background: var(--btn-danger-hover); }
-        .btn-info-custom { background: var(--btn-info-bg); color: white; }
-        .btn-info-custom:hover { background: var(--btn-info-hover); }
-        .btn-archive { background: var(--btn-archive-bg); color: white; }
-        .btn-archive:hover { background: var(--btn-archive-hover); }
-        .btn-unarchive { background: var(--btn-unarchive-bg); color: white; }
-        .btn-unarchive:hover { background: var(--btn-unarchive-hover); }
-        .btn-duplicate { background: var(--btn-duplicate-bg); color: white; }
-        .btn-duplicate:hover { background: var(--btn-duplicate-hover); }
         .btn-print { background: var(--btn-print); color: white; }
         .btn-print:hover { background: var(--btn-print-hover); }
         .btn-sm { padding: 4px 9px; font-size: 11px; }
@@ -315,7 +306,7 @@
             width: 100%;
             border-collapse: collapse;
             background: var(--bg-table);
-            min-width: 1200px;
+            min-width: 1300px;
             transition: background 0.3s;
         }
         thead {
@@ -349,7 +340,12 @@
             border-bottom: 1px solid var(--border-light);
             color: var(--text-primary);
             vertical-align: middle;
+            text-align: center;
             transition: border-color 0.3s, color 0.3s;
+        }
+        td.name-cell,
+        td[data-label="Найменування"] {
+            text-align: left;
         }
         tr:hover td {
             background: var(--bg-hover);
@@ -368,16 +364,33 @@
         }
 
         .col-num { width: 40px; text-align: center; }
-        .col-name { width: auto; min-width: 180px; text-align: left; }
+        .col-name {
+            width: auto;
+            min-width: 220px;
+            text-align: left;
+            padding-left: 10px;
+        }
         .col-quantity { width: 100px; text-align: center; }
         .col-stock { width: 100px; text-align: center; }
         .col-written { width: 100px; text-align: center; }
         .col-unit { width: 70px; text-align: center; }
         .col-crew { width: 100px; text-align: center; }
         .col-location { width: 100px; text-align: center; }
-        .col-category { width: 100px; text-align: center; }
+        .col-category { width: 120px; text-align: center; }
         .col-status { width: 80px; text-align: center; }
-        .col-actions { width: 200px; text-align: center !important; white-space: nowrap; }
+
+        .col-actions,
+        td.actions-cell {
+            width: 280px;
+            min-width: 280px;
+            max-width: 280px;
+            text-align: center !important;
+            white-space: nowrap;
+        }
+        td.actions-cell {
+            padding: 4px 2px !important;
+            overflow: hidden;
+        }
 
         .badge-quantity {
             background: #17a2b8;
@@ -473,26 +486,22 @@
 
         .btn-edit, .btn-delete, .btn-history, .btn-archive, .btn-unarchive, .btn-duplicate, .btn-pin {
             display: inline-block !important;
-            margin: 0 2px !important;
-            padding: 4px 9px !important;
+            margin: 0 1px !important;
+            padding: 3px 6px !important;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             transition: all 0.2s ease;
             box-shadow: 0 1px 2px var(--shadow-light);
             line-height: 1.4;
+            vertical-align: middle;
         }
         .btn-edit:hover, .btn-delete:hover, .btn-history:hover,
         .btn-archive:hover, .btn-unarchive:hover, .btn-duplicate:hover,
         .btn-pin:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 8px var(--shadow-color);
-        }
-        .btn-edit:active, .btn-delete:active, .btn-history:active,
-        .btn-archive:active, .btn-unarchive:active, .btn-duplicate:active,
-        .btn-pin:active {
-            transform: translateY(1px);
         }
         .btn-edit { background: #fd7e14; color: white; }
         .btn-edit:hover { background: #e66a0b; }
@@ -513,31 +522,6 @@
         .btn-pin.pinned {
             background: #ffc107;
             color: #212529;
-        }
-        .btn-pin:not(.pinned) {
-            background: #6c757d;
-            color: white;
-        }
-
-        .export-options {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        .export-options label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: var(--text-secondary);
-            cursor: pointer;
-        }
-        .export-options input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
         }
 
         /* ===== МОДАЛЬНІ ВІКНА ===== */
@@ -696,48 +680,52 @@
             margin-top: 14px;
         }
 
+        /* ===== МОБІЛЬНА АДАПТАЦІЯ ===== */
         @media (max-width: 768px) {
             .toolbar {
                 flex-direction: column;
                 align-items: stretch;
             }
-            .toolbar h2 {
-                text-align: center;
-            }
-            .stats-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
+            .toolbar h2 { text-align: center; }
+            .stats-row { flex-direction: column; align-items: stretch; }
             .stat-card {
                 min-width: 80px;
                 padding: 8px 12px;
             }
-            .stat-card .num {
-                font-size: 20px;
+            .stat-card .num { font-size: 20px; }
+            .modal { padding: 16px; width: 100%; }
+            .form-grid { grid-template-columns: 1fr; }
+            .table-wrap { max-height: 50vh; }
+
+            /* Перекриваємо flex-wrap з fragments.html – тримаємо кнопки в один рядок */
+            .table-wrap:not(.no-cards) table td.actions-cell {
+                display: table-cell !important;
+                flex-wrap: nowrap !important;
+                white-space: nowrap !important;
+                width: 240px !important;
+                min-width: 240px !important;
+                max-width: 240px !important;
+                overflow-x: auto !important;
+                padding: 4px 2px !important;
             }
-            .modal {
-                padding: 16px;
-                width: 100%;
-            }
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            .table-wrap {
-                max-height: 50vh;
-            }
-            .col-actions {
-                width: 160px;
-            }
-            .export-options {
-                flex-direction: column;
-                align-items: stretch;
+            .table-wrap:not(.no-cards) table td.actions-cell .btn-edit,
+            .table-wrap:not(.no-cards) table td.actions-cell .btn-delete,
+            .table-wrap:not(.no-cards) table td.actions-cell .btn-history,
+            .table-wrap:not(.no-cards) table td.actions-cell .btn-archive,
+            .table-wrap:not(.no-cards) table td.actions-cell .btn-unarchive,
+            .table-wrap:not(.no-cards) table td.actions-cell .btn-duplicate,
+            .table-wrap:not(.no-cards) table td.actions-cell .btn-pin {
+                display: inline-block !important;
+                margin: 0 1px !important;
+                padding: 2px 5px !important;
+                font-size: 12px !important;
             }
         }
 
+        /* ===== ДРУК ===== */
         @media print {
             .sidebar, .toolbar, .stats-row, .no-print, .btn, .btn-print, .btn-success, .btn-primary,
-            .pagination, .load-more-container, .modal-overlay, .confirm-overlay, .table-tabs,
-            .export-options {
+            .pagination, .load-more-container, .modal-overlay, .confirm-overlay, .table-tabs {
                 display: none !important;
             }
             body {
@@ -779,25 +767,11 @@
                 color: black !important;
                 border-bottom: 1px solid #ddd !important;
             }
-            tr {
-                page-break-inside: avoid;
-            }
-            .dark-theme td {
-                color: black !important;
-                background: white !important;
-            }
-            .dark-theme thead {
-                background: #1a237e !important;
-                color: white !important;
-            }
-            .dark-theme thead th {
-                background: #1a237e !important;
-                color: white !important;
-            }
-            @page {
-                size: landscape;
-                margin: 8mm 6mm 8mm 6mm;
-            }
+            tr { page-break-inside: avoid; }
+            .dark-theme td { color: black !important; background: white !important; }
+            .dark-theme thead { background: #1a237e !important; color: white !important; }
+            .dark-theme thead th { background: #1a237e !important; color: white !important; }
+            @page { size: landscape; margin: 8mm 6mm 8mm 6mm; }
         }
     </style>
 </head>
@@ -846,7 +820,7 @@
                         <thead>
                         <tr>
                             <th class="col-num" data-col="num" onclick="sortBy('num')">№</th>
-                            <th class="col-name" data-col="name" onclick="sortBy('name')">Назва</th>
+                            <th class="col-name" data-col="name" onclick="sortBy('name')">Найменування</th>
                             <th class="col-quantity" data-col="quantity" onclick="sortBy('quantity')">На позиції</th>
                             <th class="col-stock" data-col="stockQuantity" onclick="sortBy('stockQuantity')">На складі</th>
                             <th class="col-written" data-col="writtenOffQuantity" onclick="sortBy('writtenOffQuantity')">Списано</th>
@@ -872,7 +846,7 @@
                         <thead>
                         <tr>
                             <th class="col-num" data-col="num" onclick="sortBy('num')">№</th>
-                            <th class="col-name" data-col="name" onclick="sortBy('name')">Назва</th>
+                            <th class="col-name" data-col="name" onclick="sortBy('name')">Найменування</th>
                             <th class="col-quantity" data-col="quantity" onclick="sortBy('quantity')">На позиції</th>
                             <th class="col-stock" data-col="stockQuantity" onclick="sortBy('stockQuantity')">На складі</th>
                             <th class="col-written" data-col="writtenOffQuantity" onclick="sortBy('writtenOffQuantity')">Списано</th>
@@ -909,8 +883,8 @@
         <input type="hidden" id="editItemId">
         <div class="form-grid">
             <div class="form-group full">
-                <label>Назва *</label>
-                <input type="text" id="eqName" placeholder="Наприклад, Merops ">
+                <label>Найменування *</label>
+                <input type="text" id="eqName" placeholder="Наприклад, Merops">
             </div>
             <div class="form-group">
                 <label>Кількість на позиції</label>
@@ -946,7 +920,7 @@
             </div>
         </div>
         <div class="modal-actions">
-            <button class="btn" onclick="closeModal('editItemModal')" style="background:#eee">Скасувати</button>
+            <button class="btn" onclick="closeModal('editItemModal')" style="background:#eee;color:#333">Скасувати</button>
             <button class="btn btn-primary" id="saveBtn">Зберегти</button>
         </div>
     </div>
@@ -962,7 +936,7 @@
             <input type="text" id="duplicateNameInput" placeholder="Оригінал (копія)">
         </div>
         <div class="modal-actions">
-            <button class="btn" onclick="closeModal('duplicateModal')" style="background:#eee;">Скасувати</button>
+            <button class="btn" onclick="closeModal('duplicateModal')" style="background:#eee;color:#333">Скасувати</button>
             <button class="btn btn-primary" id="confirmDuplicateBtn">Створити копію</button>
         </div>
     </div>
@@ -976,7 +950,7 @@
             <div class="history-empty">Завантаження...</div>
         </div>
         <div class="modal-actions">
-            <button class="btn" onclick="closeModal('historyModal')" style="background:#eee">Закрити</button>
+            <button class="btn" onclick="closeModal('historyModal')" style="background:#eee;color:#333">Закрити</button>
         </div>
     </div>
 </div>
@@ -986,7 +960,7 @@
     <div class="confirm-box">
         <p>Видалити запис?</p>
         <div class="confirm-actions">
-            <button class="btn" onclick="closeModal('confirmDeleteModal')" style="background:#eee">Скасувати</button>
+            <button class="btn" onclick="closeModal('confirmDeleteModal')" style="background:#eee;color:#333">Скасувати</button>
             <button class="btn btn-danger" id="confirmDeleteBtn">Видалити</button>
         </div>
     </div>
@@ -998,19 +972,19 @@
         <h2 id="archiveConfirmTitle">📦 Архівувати</h2>
         <p id="archiveConfirmMessage" style="margin:12px 0; color:var(--text-secondary);">Ви впевнені, що хочете архівувати цю позицію?</p>
         <div class="modal-actions" style="justify-content:center;">
-            <button class="btn" onclick="closeModal('archiveConfirmModal')" style="background:#eee;">Скасувати</button>
+            <button class="btn" onclick="closeModal('archiveConfirmModal')" style="background:#eee;color:#333">Скасувати</button>
             <button class="btn btn-warning" id="archiveConfirmBtn">Архівувати</button>
         </div>
     </div>
 </div>
 
-<!-- ===== МОДАЛЬНЕ ВІКНО ВІДНОВЛЕННЯ (опціонально) ===== -->
+<!-- ===== МОДАЛЬНЕ ВІКНО ВІДНОВЛЕННЯ ===== -->
 <div class="modal-overlay" id="unarchiveConfirmModal">
     <div class="modal" style="width:400px;">
         <h2 id="unarchiveConfirmTitle">📤 Відновити</h2>
         <p id="unarchiveConfirmMessage" style="margin:12px 0; color:var(--text-secondary);">Ви впевнені, що хочете відновити цю позицію з архіву?</p>
         <div class="modal-actions" style="justify-content:center;">
-            <button class="btn" onclick="closeModal('unarchiveConfirmModal')" style="background:#eee;">Скасувати</button>
+            <button class="btn" onclick="closeModal('unarchiveConfirmModal')" style="background:#eee;color:#333">Скасувати</button>
             <button class="btn btn-success" id="unarchiveConfirmBtn">Відновити</button>
         </div>
     </div>
@@ -1033,7 +1007,6 @@
     let pageSize = 20;
     let totalElements = 0;
     let archivedTotalElements = 0;
-    let duplicateOriginalName = '';
 
     function escapeHtml(str) {
         if (!str) return '';
@@ -1051,29 +1024,24 @@
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
     // ===== ЗАВАНТАЖЕННЯ ДАНИХ =====
-
     async function loadActive() {
         try {
             const search = document.getElementById('searchInput').value.trim();
 
-            // Завантажуємо закріплені окремо (без пагінації)
             const pinnedRes = await fetch('/equipment/api/pinned/active');
             let pinnedItems = [];
             if (pinnedRes.ok) {
                 pinnedItems = await pinnedRes.json();
             }
 
-            // Завантажуємо звичайні з пагінацією
             const url = `/equipment/api?page=${currentPage}&size=${pageSize}${search ? '&search=' + encodeURIComponent(search) : ''}`;
             const res = await fetch(url);
             if (!res.ok) throw new Error('Network error');
             const pageData = await res.json();
 
-            // Фільтруємо закріплені з основного списку (щоб не дублювати)
             const pinnedIds = new Set(pinnedItems.map(p => p.id));
             const regularItems = (pageData.content || []).filter(item => !pinnedIds.has(item.id));
 
-            // Об'єднуємо: спочатку закріплені, потім звичайні
             activeItems = [...pinnedItems, ...regularItems];
             totalElements = pageData.totalElements || 0;
 
@@ -1091,14 +1059,12 @@
         try {
             const search = document.getElementById('searchInput').value.trim();
 
-            // Завантажуємо закріплені з архіву
             const pinnedRes = await fetch('/equipment/api/pinned/archived');
             let pinnedItems = [];
             if (pinnedRes.ok) {
                 pinnedItems = await pinnedRes.json();
             }
 
-            // Завантажуємо звичайні з пагінацією
             const url = `/equipment/api/archived?page=${currentPage}&size=${pageSize}${search ? '&search=' + encodeURIComponent(search) : ''}`;
             const res = await fetch(url);
             if (!res.ok) throw new Error('Network error');
@@ -1173,14 +1139,20 @@
             return `
         <tr class="${rowClass}">
             <td data-label="№">${idx + 1}</td>
-            <td data-label="Назва">${escapeHtml(item.name)}</td>
+            <td data-label="Найменування" class="name-cell">${escapeHtml(item.name)}</td>
             <td data-label="На позиції"><span class="badge-quantity">${item.quantity}</span></td>
             <td data-label="На складі"><span class="badge-stock">${item.stockQuantity ?? 0}</span></td>
             <td data-label="Списано"><span class="badge-written">${item.writtenOffQuantity ?? 0}</span></td>
             <td data-label="Одиниць"><span class="badge-unit">${escapeHtml(unitVal)}</span></td>
-            <td data-label="Екіпаж">${escapeHtml(crewVal) || '—'}</td>
-            <td data-label="Локація">${escapeHtml(locVal) || '—'}</td>
-            <td data-label="Категорія">${escapeHtml(catVal) || '—'}</td>
+            <td data-label="Екіпаж">
+                <span class="${crewVal ? 'badge-crew' : 'badge-empty'}">${escapeHtml(crewVal) || '—'}</span>
+            </td>
+            <td data-label="Локація">
+                <span class="${locVal ? 'badge-location' : 'badge-empty'}">${escapeHtml(locVal) || '—'}</span>
+            </td>
+            <td data-label="Категорія">
+                <span class="${catVal ? 'badge-category' : 'badge-empty'}">${escapeHtml(catVal) || '—'}</span>
+            </td>
             <td data-label="Статус"><span class="badge-status-active">Активне</span></td>
             <td class="actions-cell no-print">
                 <button class="btn-pin ${pinned ? 'pinned' : ''}" onclick="togglePin(${item.id})" title="${pinned ? 'Відкріпити' : 'Закріпити'}">📌</button>
@@ -1195,7 +1167,7 @@
         document.getElementById('pageTotal').textContent = activeItems.length;
     }
 
-    // ===== РЕНДЕРИНГ АРХІВНИХ (без сортування) =====
+    // ===== РЕНДЕРИНГ АРХІВНИХ =====
     function renderArchived() {
         const tbody = document.getElementById('archivedBody');
         if (!archivedItems || !archivedItems.length) {
@@ -1214,14 +1186,20 @@
             return `
             <tr class="${rowClass}">
                 <td data-label="№">${idx + 1}</td>
-                <td data-label="Назва">${escapeHtml(item.name)}</td>
+                <td data-label="Найменування" class="name-cell">${escapeHtml(item.name)}</td>
                 <td data-label="На позиції"><span class="badge-quantity">${item.quantity}</span></td>
                 <td data-label="На складі"><span class="badge-stock">${item.stockQuantity ?? 0}</span></td>
                 <td data-label="Списано"><span class="badge-written">${item.writtenOffQuantity ?? 0}</span></td>
                 <td data-label="Одиниць"><span class="badge-unit">${escapeHtml(unitVal)}</span></td>
-                <td data-label="Екіпаж">${escapeHtml(crewVal) || '—'}</td>
-                <td data-label="Локація">${escapeHtml(locVal) || '—'}</td>
-                <td data-label="Категорія">${escapeHtml(catVal) || '—'}</td>
+                <td data-label="Екіпаж">
+                    <span class="${crewVal ? 'badge-crew' : 'badge-empty'}">${escapeHtml(crewVal) || '—'}</span>
+                </td>
+                <td data-label="Локація">
+                    <span class="${locVal ? 'badge-location' : 'badge-empty'}">${escapeHtml(locVal) || '—'}</span>
+                </td>
+                <td data-label="Категорія">
+                    <span class="${catVal ? 'badge-category' : 'badge-empty'}">${escapeHtml(catVal) || '—'}</span>
+                </td>
                 <td data-label="Статус"><span class="badge-status-archived">Архів</span></td>
                 <td class="actions-cell no-print">
                     <button class="btn-pin ${pinned ? 'pinned' : ''}" onclick="togglePin(${item.id})" title="${pinned ? 'Відкріпити' : 'Закріпити'}">📌</button>
@@ -1407,7 +1385,6 @@
             return;
         }
 
-        // Перевірка на фронтенді – чи існує запис із такою назвою
         const allItems = [...activeItems, ...archivedItems];
         const exists = allItems.some(item => item.name && item.name.toLowerCase() === name.toLowerCase());
         if (exists) {
@@ -1448,7 +1425,6 @@
             return;
         }
 
-        // Перевірка унікальності назви (крім поточного запису)
         const allItems = [...activeItems, ...archivedItems];
         const exists = allItems.some(item =>
             item.id != id && item.name && item.name.toLowerCase() === name.toLowerCase()
@@ -1474,7 +1450,6 @@
             showToast('Помилка: ' + err, 'err');
         }
     }
-
 
     // ===== ЗАКРІПЛЕННЯ =====
     async function togglePin(id) {
@@ -1508,7 +1483,6 @@
         openModal('duplicateModal');
     }
 
-    // ЄДИНИЙ обробник для дублювання
     document.getElementById('confirmDuplicateBtn').addEventListener('click', async function() {
         const name = document.getElementById('duplicateNameInput').value.trim();
         if (!name) {
@@ -1516,7 +1490,6 @@
             return;
         }
 
-        // Перевірка унікальності назви
         const allItems = [...activeItems, ...archivedItems];
         const exists = allItems.some(item =>
             item.id != duplicateTargetId && item.name && item.name.toLowerCase() === name.toLowerCase()
@@ -1574,7 +1547,6 @@
         openModal('unarchiveConfirmModal');
     }
 
-    // Обробник архівації
     document.getElementById('archiveConfirmBtn').addEventListener('click', async function() {
         if (!archiveTargetId) return;
         closeModal('archiveConfirmModal');
@@ -1592,7 +1564,6 @@
         archiveTargetId = null;
     });
 
-    // Обробник відновлення
     document.getElementById('unarchiveConfirmBtn').addEventListener('click', async function() {
         if (!unarchiveTargetId) return;
         closeModal('unarchiveConfirmModal');
@@ -1655,7 +1626,7 @@
             };
 
             const fieldMap = {
-                'name': 'Назва',
+                'name': 'Найменування',
                 'quantity': 'Кількість на позиції',
                 'stockQuantity': 'Кількість на складі',
                 'writtenOffQuantity': 'Кількість списано',
@@ -1663,19 +1634,20 @@
                 'crew': 'Екіпаж',
                 'location': 'Локація',
                 'category': 'Категорія',
-                'archived': 'Статус'
+                'archived': 'Статус',
+                'pinned': 'Закріплено'
             };
 
             let html = `
                 <div style="overflow-x:auto;">
-                <table class="history-table">
+                <table class="history-table" style="width:100%;border-collapse:collapse;">
                     <thead>
-                        <tr>
-                            <th style="width:90px;">Час</th>
-                            <th style="width:120px;">Поле</th>
-                            <th style="min-width:150px;">Нове значення</th>
-                            <th style="min-width:150px;">Старе значення</th>
-                            <th style="width:100px;">Ким змінено</th>
+                        <tr style="background:var(--bg-header);color:var(--text-white);">
+                            <th style="width:100px;padding:8px;border:1px solid var(--border-color);">Час</th>
+                            <th style="width:130px;padding:8px;border:1px solid var(--border-color);">Поле</th>
+                            <th style="min-width:150px;padding:8px;border:1px solid var(--border-color);">Нове значення</th>
+                            <th style="min-width:150px;padding:8px;border:1px solid var(--border-color);">Старе значення</th>
+                            <th style="width:110px;padding:8px;border:1px solid var(--border-color);">Ким змінено</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1690,11 +1662,11 @@
                 }
                 html += `
                     <tr>
-                        <td class="history-timestamp">${formatDate(h.changedAt)}</td>
-                        <td class="field-name">${escapeHtml(fieldLabel)}</td>
-                        <td class="new-value">${escapeHtml(newVal) || '—'}</td>
-                        <td class="old-value">${escapeHtml(oldVal) || '—'}</td>
-                        <td>${escapeHtml(h.changedBy || 'system')}</td>
+                        <td style="padding:6px;border:1px solid var(--border-color);text-align:center;">${formatDate(h.changedAt)}</td>
+                        <td style="padding:6px;border:1px solid var(--border-color);">${escapeHtml(fieldLabel)}</td>
+                        <td style="padding:6px;border:1px solid var(--border-color);">${escapeHtml(newVal) || '—'}</td>
+                        <td style="padding:6px;border:1px solid var(--border-color);">${escapeHtml(oldVal) || '—'}</td>
+                        <td style="padding:6px;border:1px solid var(--border-color);text-align:center;">${escapeHtml(h.changedBy || 'system')}</td>
                     </tr>
                 `;
             });

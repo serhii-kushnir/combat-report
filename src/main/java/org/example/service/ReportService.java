@@ -294,7 +294,7 @@ public class ReportService {
 
         sb.append("\n");
         sb.append("Рапорт\n\n");
-        sb.append("Клопочу по суті рапорту старшого сержанта Олександра ШЕПРУКА").append("\n\n");
+        sb.append("Клопочу по суті рапорту старшого сержанта Олександра ШЕПРУКА").append("\n\n\n");
         sb.append("Командир військової частини ").append(militaryUnit).append("\n");
         sb.append("підполковник                                                                                                       Андрій ШИШАЛ");
         sb.append("\n").append(reportDate).append(" р.\n\n");

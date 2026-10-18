@@ -764,7 +764,7 @@
                         <th style="width:36px" data-col="num" onclick="sortBy('num')">№</th>
                         <th style="width:86px" data-col="date" onclick="sortBy('date')">Дата</th>
                         <th style="width:75px" data-col="crew" onclick="sortBy('crew')">Екіпаж</th>
-                        <th style="width:120px" data-col="pilot" onclick="sortBy('pilot')">Пілот</th>
+                        <th style="width:120px" data-col="pilot" onclick="sortBy('pilot')">Оператор</th>
                         <th style="width:150px" data-col="event" onclick="sortBy('event')">Подія</th>
                         <th style="width:62px" data-col="takeoff" onclick="sortBy('takeoff')">Час взльоту</th>
                         <th style="width:62px" data-col="loss" onclick="sortBy('loss')">Час втрати</th>
@@ -822,9 +822,9 @@
                 <input type="text" id="fCrew" placeholder="СКОПА">
             </div>
             <div class="form-group">
-                <label>Пілот</label>
+                <label>Оператор</label>
                 <select id="fPilot">
-                    <option value="">— Оберіть пілота —</option>
+                    <option value="">— Оберіть оператора —</option>
                     <option value="НАГОРНИЙ Ярослав Артемович">НАГОРНИЙ Ярослав Артемович</option>
                     <option value="БИТКА Костянтин Романович">БИТКА Костянтин Романович</option>
                 </select>
@@ -927,10 +927,10 @@
             </div>
             <div class="form-group full">
                 <label>Особовий склад</label>
-                <textarea id="fCrewPersonnel" rows="5" placeholder="Командир екіпажу: головний сержант ПРАЧУК Сергій Леонідович
-Пілот оператор БПЛА: ст. солдат НАГОРНИЙ Ярослав Артемович
-Штурман: ст. солдат КУШНІР Сергій Олегович
-Технік: солдат ГАРІН Євген В'ячеславович
+                <textarea id="fCrewPersonnel" rows="5" placeholder="Командир екіпажу: старший сержант ШЕПРУК Олександр Васильович
+Оператор: ст. солдат НАГОРНИЙ Ярослав Артемович
+Механік: ст. солдат КУШНІР Сергій Олегович
+Майстер: солдат ГАРІН Євген В'ячеславович
 Водій-електрик: солдат МУШИНСЬКИЙ Вадим Васильович"></textarea>
             </div>
             <div class="form-group full">
@@ -1175,7 +1175,7 @@
             <td data-label="№">${r.recordNumber ?? ''}</td>
             <td data-label="Дата">${fmtDate(r.flightDate)}</td>
             <td data-label="Екіпаж">${r.crew ?? ''}</td>
-            <td data-label="Пілот">${r.pilot ?? ''}</td>
+            <td data-label="Оператор">${r.pilot ?? ''}</td>
             <td data-label="Подія"><span class="${badgeCls}">${r.event ?? ''}</span></td>
             <td data-label="Час взльоту">${fmtTime(r.takeoffTime)}</td>
             <td data-label="Час втрати">${fmtTime(r.lossTime)}</td>
@@ -1294,7 +1294,7 @@
         document.getElementById('fTarget').value   = r.target ?? '';
         document.getElementById('fSpeed').value    = r.targetSpeed ?? '';
 
-        // ===== ПІЛОТ (select) =====
+        // ===== ОПЕРАТОР (select) =====
         setSelectValue('fPilot', r.pilot ?? '');
 
         // Причина втрати

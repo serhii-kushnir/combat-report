@@ -782,9 +782,9 @@
                         <th data-col="endTime" onclick="sortBy('endTime')" style="min-width:130px;">Кінець</th>
                         <th data-col="unitName" onclick="sortBy('unitName')" style="min-width:80px;">Екіпаж</th>
                         <th data-col="commander" onclick="sortBy('commander')" style="min-width:160px;">Командир</th>
-                        <th data-col="pilot" onclick="sortBy('pilot')" style="min-width:140px;">Пілот</th>
-                        <th data-col="navigator" onclick="sortBy('navigator')" style="min-width:140px;">Штурман</th>
-                        <th data-col="technician" onclick="sortBy('technician')" style="min-width:140px;">Технік</th>
+                        <th data-col="pilot" onclick="sortBy('pilot')" style="min-width:140px;">Оператор</th>
+                        <th data-col="navigator" onclick="sortBy('navigator')" style="min-width:140px;">Механік</th>
+                        <th data-col="technician" onclick="sortBy('technician')" style="min-width:140px;">Майстер</th>
                         <th data-col="driverElectrician" onclick="sortBy('driverElectrician')" style="min-width:140px;">Водій-електрик</th>
                         <th data-col="weapons" onclick="sortBy('weapons')" style="min-width:120px;">Озброєння</th>
                         <th data-col="dutyOfficer" onclick="sortBy('dutyOfficer')" style="min-width:140px;">Черговий ПУ</th>
@@ -826,10 +826,10 @@
         <div class="form-group"><label>Екіпаж</label><input type="text" id="fUnitName" placeholder="СКОПА" value="СКОПА"></div>
         <div class="form-group"><label>Командир екіпажу</label><select id="fCommander"><option value="">— Оберіть командира —</option></select></div>
         <div class="form-row">
-            <div class="form-group"><label>Пілот</label><select id="fPilot"><option value="">— Оберіть пілота —</option></select></div>
-            <div class="form-group"><label>Штурман</label><select id="fNavigator"><option value="">— Оберіть штурмана —</option></select></div>
+            <div class="form-group"><label>Оператор</label><select id="fPilot"><option value="">— Оберіть оператора —</option></select></div>
+            <div class="form-group"><label>Механік</label><select id="fNavigator"><option value="">— Оберіть механіка —</option></select></div>
         </div>
-        <div class="form-group"><label>Технік</label><select id="fTechnician"><option value="">— Оберіть техніка —</option></select></div>
+        <div class="form-group"><label>Майстер</label><select id="fTechnician"><option value="">— Оберіть майстра —</option></select></div>
         <div class="form-group"><label>Водій-електрик</label><select id="fDriverElectrician"><option value="">— Оберіть водія-електрика —</option></select></div>
         <div class="form-group"><label>Озброєння</label><input type="text" id="fWeapons" placeholder="Shulika Kupol – 2 шт.; Werewolf – 1 шт."></div>
         <div class="form-group"><label>Черговий вищестоящого ПУ</label><input type="text" id="fDutyOfficer" placeholder="полковник Петро Крикун"></div>
@@ -917,9 +917,9 @@
                 const pageData = await res.json();
                 personnelList = pageData.content || [];
                 populateSelect('fCommander', 'Командир', personnelList);
-                populateSelect('fPilot', 'Пілот', personnelList);
-                populateSelect('fNavigator', 'Штурман', personnelList);
-                populateSelect('fTechnician', 'Технік', personnelList);
+                populateSelect('fPilot', 'Оператор', personnelList);
+                populateSelect('fNavigator', 'Механік', personnelList);
+                populateSelect('fTechnician', 'Майстер', personnelList);
                 populateSelect('fDriverElectrician', 'Водій-електрик', personnelList);
             } catch (err) {
                 console.warn('Помилка завантаження персоналу:', err);
@@ -1225,9 +1225,9 @@
             <td data-label="Кінець">${end}</td>
             <td data-label="Екіпаж">${escapeHtml(d.unitName || 'СКОПА')}</td>
             <td data-label="Командир">${escapeHtml(d.commander || '—')}</td>
-            <td data-label="Пілот">${escapeHtml(d.pilot || '—')}</td>
-            <td data-label="Штурман">${escapeHtml(d.navigator || '—')}</td>
-            <td data-label="Технік">${escapeHtml(d.technician || '—')}</td>
+            <td data-label="Оператор">${escapeHtml(d.pilot || '—')}</td>
+            <td data-label="Механік">${escapeHtml(d.navigator || '—')}</td>
+            <td data-label="Майстер">${escapeHtml(d.technician || '—')}</td>
             <td data-label="Водій-електрик">${escapeHtml(d.driverElectrician || '—')}</td>
             <td data-label="Озброєння">${escapeHtml(d.weapons || '—')}</td>
             <td data-label="Черговий ПУ">${escapeHtml(d.dutyOfficer || '—')}</td>
