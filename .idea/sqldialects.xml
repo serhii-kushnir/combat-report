@@ -6,5 +6,6 @@
     <file url="file://$PROJECT_DIR$/src/main/resources/db/migration/V22__add_equipment_stock_fields_and_history.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/resources/db/migration/V24__increase_report_summary_length.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/resources/db/migration/V25__add_archived_to_equipment.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/db/migration/V34__create_vacation.sql" dialect="GenericSQL" />
   </component>
 </project>

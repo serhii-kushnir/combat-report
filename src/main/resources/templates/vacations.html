@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Відпустки</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link th:replace="~{fragments :: sidebar-css}">
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --bg-card: #ffffff;
+            --bg-toolbar: #ffffff;
+            --bg-header: #1a237e;
+            --bg-table: #ffffff;
+            --bg-hover: #f5f9ff;
+            --bg-weekend: #f5f5f5;
+            --bg-today: #fffde7;
+            --text-primary: #222;
+            --text-secondary: #555;
+            --text-light: #999;
+            --text-white: #fff;
+            --border-color: #ddd;
+            --shadow-color: rgba(0,0,0,0.08);
+            --shadow-light: rgba(0,0,0,0.05);
+            --btn-nav-bg: #e8eaf6;
+            --btn-nav-color: #1a237e;
+            --btn-today-bg: #1976d2;
+            --btn-today-hover: #1565c0;
+            --btn-primary-bg: #1565c0;
+            --btn-primary-hover: #0d47a1;
+            --btn-success-bg: #2e7d32;
+            --btn-success-hover: #1b5e20;
+            --btn-danger-bg: #c62828;
+            --btn-danger-hover: #b71c1c;
+            --btn-print-bg: #607d8b;
+            --btn-print-hover: #546e7a;
+            --toast-success: #2e7d32;
+            --toast-error: #c62828;
+            --h1-color: #1976d2;
+            --h2-color: #6a1b9a;
+            --total-color: #2e7d32;
+        }
+        body.dark-theme {
+            --bg-body: #1e1e24;
+            --bg-card: #2d2d35;
+            --bg-toolbar: #2d2d35;
+            --bg-header: #2a2a3a;
+            --bg-table: #2d2d35;
+            --bg-hover: #3a3a44;
+            --bg-weekend: #2a2a35;
+            --bg-today: #3a3a30;
+            --text-primary: #e8e8ec;
+            --text-secondary: #b0b0b8;
+            --text-light: #88888f;
+            --text-white: #fff;
+            --border-color: #3d3d48;
+            --shadow-color: rgba(0,0,0,0.4);
+            --shadow-light: rgba(0,0,0,0.3);
+            --btn-nav-bg: #3a3a4a;
+            --btn-nav-color: #90caf9;
+            --btn-today-bg: #4a7ab5;
+            --btn-today-hover: #5a8ac5;
+            --btn-primary-bg: #2a4a7a;
+            --btn-primary-hover: #3a5a8a;
+            --btn-success-bg: #2a4a2a;
+            --btn-success-hover: #3a5a3a;
+            --btn-danger-bg: #6a2a3a;
+            --btn-danger-hover: #7a3a4a;
+            --btn-print-bg: #4a5a6a;
+            --btn-print-hover: #5a6a7a;
+            --h1-color: #5a8ac5;
+            --h2-color: #b39ddb;
+            --total-color: #81c784;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            margin: 0;
+            transition: background 0.3s, color 0.3s;
+        }
+        .container { padding: 16px 20px; max-width: 100%; overflow-x: auto; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .toolbar { animation: fadeIn 0.4s ease forwards; opacity: 0; }
+        .table-wrap { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.05s; }
+
+        .toolbar {
+            background: var(--bg-toolbar);
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+
+        .btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            line-height: 1.4;
+            box-shadow: 0 1px 2px var(--shadow-light);
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 8px var(--shadow-color); }
+        .btn-primary { background: var(--btn-primary-bg); color: white; }
+        .btn-primary:hover { background: var(--btn-primary-hover); }
+        .btn-success { background: var(--btn-success-bg); color: white; }
+        .btn-success:hover { background: var(--btn-success-hover); }
+        .btn-danger { background: var(--btn-danger-bg); color: white; }
+        .btn-danger:hover { background: var(--btn-danger-hover); }
+        .btn-print { background: var(--btn-print-bg); color: white; }
+        .btn-print:hover { background: var(--btn-print-hover); }
+        .btn-sm { padding: 4px 9px; font-size: 11px; }
+
+        select, input[type="text"], input[type="date"], input[type="number"] {
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            cursor: pointer;
+            outline: none;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            background: var(--bg-card);
+        }
+        table {
+            border-collapse: collapse;
+            background: var(--bg-table);
+            min-width: 100%;
+            width: 100%;
+        }
+        thead tr:first-child th {
+            background: var(--bg-header);
+            color: var(--text-white);
+            font-size: 12px;
+            padding: 10px 4px;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+        }
+        th.h1-col { background: var(--h1-color) !important; }
+        th.h2-col { background: var(--h2-color) !important; }
+        th.total-col { background: var(--total-color) !important; }
+
+        .col-num  { width: 36px; min-width: 36px; }
+        .col-rank { width: 110px; min-width: 110px; text-align: left !important; padding-left: 6px !important; }
+        .col-name { width: 130px; min-width: 130px; text-align: left !important; padding-left: 8px !important; }
+        .col-month { width: 40px; min-width: 40px; }
+        .col-total { width: 70px; min-width: 70px; }
+
+        .col-num, .col-rank, .col-name,
+        .num-cell, .rank-cell, .name-cell {
+            position: sticky;
+            z-index: 2;
+            background: var(--bg-table);
+        }
+        thead .col-num, thead .col-rank, thead .col-name { z-index: 3; }
+        .col-num, .num-cell { left: 0; }
+        .col-rank, .rank-cell { left: 36px; }
+        .col-name, .name-cell { left: calc(36px + 110px); }
+
+        td {
+            padding: 4px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            font-size: 12px;
+            color: var(--text-primary);
+        }
+        td.name-cell {
+            text-align: left;
+            padding: 4px 6px 4px 8px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        td.rank-cell {
+            text-align: left;
+            padding: 4px 4px 4px 6px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        td.num-cell {
+            color: var(--text-light);
+            font-size: 11px;
+            text-align: center;
+        }
+        tr:hover td { background: var(--bg-hover); }
+
+        .month-cell {
+            cursor: pointer;
+            height: 30px;
+            vertical-align: middle;
+            transition: background 0.15s;
+            padding: 0 !important;
+        }
+        .month-cell:hover { background: var(--bg-hover) !important; }
+
+        .days-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            background: var(--btn-primary-bg);
+            color: white;
+            min-width: 22px;
+        }
+
+        .h1-cell, .h2-cell, .total-cell {
+            font-weight: 700;
+            font-size: 12px;
+            text-align: center;
+            padding: 4px;
+        }
+        .h1-cell { background: rgba(25, 118, 210, 0.1); color: var(--h1-color); }
+        .h2-cell { background: rgba(106, 27, 154, 0.1); color: var(--h2-color); }
+        .total-cell { background: rgba(46, 125, 50, 0.1); color: var(--total-color); }
+
+        .status-icon {
+            display: inline-block;
+            font-size: 14px;
+        }
+        .status-ok { color: #2e7d32; }
+        .status-no { color: #c62828; opacity: 0.5; }
+
+        /* Модалка */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            width: 700px;
+            max-width: 96vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .modal h2 { margin: 0 0 16px; font-size: 18px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            box-sizing: border-box;
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
+
+        /* Список відпусток */
+        .vac-list { margin-top: 16px; }
+        .vac-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--bg-hover);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .vac-item .vac-dates { font-weight: 600; }
+        .vac-item .vac-type { color: var(--text-secondary); font-size: 12px; margin-left: 8px; }
+        .vac-item .vac-actions { display: flex; gap: 4px; }
+
+        .toast {
+            position: fixed; bottom: 20px; right: 20px;
+            padding: 10px 18px; border-radius: 8px;
+            color: white; font-size: 13px; font-weight: 600;
+            opacity: 0; transition: opacity 0.3s;
+            z-index: 9999;
+        }
+        .toast.show { opacity: 1; }
+        .toast.ok { background: var(--toast-success); }
+        .toast.err { background: var(--toast-error); }
+
+        .legend {
+            margin-top: 12px;
+            padding: 10px 14px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 2px 6px var(--shadow-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .legend-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: white;
+            font-weight: 700;
+            margin-right: 4px;
+        }
+        /* ===== СОРТУВАННЯ ===== */
+        thead th[data-col] {
+            cursor: pointer;
+            user-select: none;
+        }
+        thead th[data-col]:hover {
+            filter: brightness(1.15);
+        }
+        thead th.sort-asc::after  { content: ' ▲'; font-size: 10px; }
+        thead th.sort-desc::after { content: ' ▼'; font-size: 10px; }
+
+        @media (max-width: 768px) {
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar select, .toolbar button, .toolbar input { width: 100%; }
+            .modal { padding: 16px; width: 100%; }
+            .form-row { grid-template-columns: 1fr; }
+            .col-rank { width: 80px; min-width: 80px; }
+            .col-name { width: 90px; min-width: 90px; }
+            .col-month { width: 32px; min-width: 32px; }
+            .col-num { width: 28px; min-width: 28px; }
+            .rank-cell { left: 28px; }
+            .name-cell { left: calc(28px + 80px); }
+            th { font-size: 10px !important; padding: 6px 2px !important; }
+            td { font-size: 10px !important; }
+            .days-badge { font-size: 9px; padding: 1px 4px; min-width: 18px; }
+        }
+
+        @media print {
+            .sidebar, .toolbar, .legend, .no-print, .btn,
+            select, input, .modal-overlay { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .main-content { margin-left: 0 !important; padding: 0 !important; }
+            .container { padding: 4px !important; }
+            .table-wrap { overflow: visible !important; box-shadow: none !important; border: 1px solid #ccc !important; }
+            table { background: white !important; }
+            thead th { background: #1a237e !important; color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            td { color: black !important; border: 1px solid #ccc !important; }
+            tr { page-break-inside: avoid; }
+            @page { size: landscape; margin: 4mm; }
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments :: sidebar('vacations')}"></div>
+    <div class="main-content">
+        <div class="container">
+            <div class="toolbar">
+                <h2 style="margin:0;flex:1;font-size:18px;">🏖️ Відпустки</h2>
+                <select id="yearFilter"></select>
+                <button class="btn btn-nav" id="prevYearBtn">◀</button>
+                <button class="btn btn-today" id="currentYearBtn">Поточний рік</button>
+                <button class="btn btn-nav" id="nextYearBtn">▶</button>
+                <button class="btn btn-success" id="addBtn">+ Додати відпустку</button>
+                <button class="btn btn-primary" id="exportBtn">📊 Експорт XLSX</button>
+                <button class="btn btn-print" onclick="window.print()">🖨️ Друк</button>
+            </div>
+
+            <div class="table-wrap">
+                <table id="vacTable">
+                    <thead>
+                    <tr>
+                        <th class="col-num" data-col="num" onclick="sortBy('num')">№</th>
+                        <th class="col-rank" data-col="rank" onclick="sortBy('rank')" style="text-align:left">Звання</th>
+                        <th class="col-name" data-col="name" onclick="sortBy('name')" style="text-align:left">ПІБ</th>
+                        <th class="col-month" data-col="m1" onclick="sortBy('m1')">Січ</th>
+                        <th class="col-month" data-col="m2" onclick="sortBy('m2')">Лют</th>
+                        <th class="col-month" data-col="m3" onclick="sortBy('m3')">Бер</th>
+                        <th class="col-month" data-col="m4" onclick="sortBy('m4')">Кві</th>
+                        <th class="col-month" data-col="m5" onclick="sortBy('m5')">Тра</th>
+                        <th class="col-month" data-col="m6" onclick="sortBy('m6')">Чер</th>
+                        <th class="col-month" data-col="m7" onclick="sortBy('m7')">Лип</th>
+                        <th class="col-month" data-col="m8" onclick="sortBy('m8')">Сер</th>
+                        <th class="col-month" data-col="m9" onclick="sortBy('m9')">Вер</th>
+                        <th class="col-month" data-col="m10" onclick="sortBy('m10')">Жов</th>
+                        <th class="col-month" data-col="m11" onclick="sortBy('m11')">Лис</th>
+                        <th class="col-month" data-col="m12" onclick="sortBy('m12')">Гру</th>
+                        <th class="col-total h1-col" data-col="h1" onclick="sortBy('h1')">1 півр.</th>
+                        <th class="col-total h2-col" data-col="h2" onclick="sortBy('h2')">2 півр.</th>
+                        <th class="col-total total-col" data-col="total" onclick="sortBy('total')">Всього</th>
+                    </tr>
+                    </thead>
+                    <tbody id="vacBody">
+                    <tr><td colspan="18" style="text-align:center;padding:32px;color:var(--text-light)">Завантаження...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="legend">
+                <span><span class="legend-badge" style="background:var(--h1-color)">1 півр.</span> січень–червень</span>
+                <span><span class="legend-badge" style="background:var(--h2-color)">2 півр.</span> липень–грудень</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== МОДАЛКА ФОРМИ ===== -->
+<div class="modal-overlay" id="formModal">
+    <div class="modal">
+        <h2 id="modalTitle">Додати відпустку</h2>
+        <input type="hidden" id="editId">
+        <div class="form-group">
+            <label>Особа *</label>
+            <select id="fPersonnel">
+                <option value="">— Оберіть особу —</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Початок *</label>
+                <input type="date" id="fStartDate" required>
+            </div>
+            <div class="form-group">
+                <label>Кінець *</label>
+                <input type="date" id="fEndDate" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Тип відпустки</label>
+            <select id="fType">
+                <option value="">— Не вказано —</option>
+                <option value="Щорічна основна">Щорічна основна</option>
+                <option value="Щорічна додаткова">Щорічна додаткова</option>
+                <option value="За сімейними обставинами">За сімейними обставинами</option>
+                <option value="Навчальна">Навчальна</option>
+                <option value="Без збереження зарплати">Без збереження зарплати</option>
+                <option value="Інше">Інше</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Примітка</label>
+            <textarea id="fNote" rows="2" style="resize:vertical"></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="btn" onclick="closeModal('formModal')" style="background:#eee;color:#333">Скасувати</button>
+            <button class="btn btn-primary" onclick="saveVacation()">Зберегти</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== МОДАЛКА СПИСКУ ===== -->
+<div class="modal-overlay" id="listModal">
+    <div class="modal">
+        <h2 id="listTitle">Відпустки</h2>
+        <div id="vacList" class="vac-list"></div>
+        <div class="modal-actions">
+            <button class="btn btn-success" onclick="openAddForPerson()">+ Додати</button>
+            <button class="btn" onclick="closeModal('listModal')" style="background:#eee;color:#333">Закрити</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script th:replace="~{fragments :: sidebar-js}"></script>
+<script>
+    (function() {
+        let currentYear = new Date().getFullYear();
+        let tableData = [];
+        let personnelList = [];
+        let currentPersonId = null;
+
+        // ===== СТАН СОРТУВАННЯ =====
+        let sortCol = 'num';
+        let sortDir = 1;
+
+        init();
+
+        async function init() {
+            await loadPersonnel();
+            await loadYears();
+            loadData();
+            bindEvents();
+        }
+
+        function bindEvents() {
+            document.getElementById('yearFilter').onchange = function() {
+                currentYear = parseInt(this.value);
+                loadData();
+            };
+            document.getElementById('prevYearBtn').onclick = () => {
+                currentYear--;
+                document.getElementById('yearFilter').value = currentYear;
+                loadData();
+            };
+            document.getElementById('nextYearBtn').onclick = () => {
+                currentYear++;
+                document.getElementById('yearFilter').value = currentYear;
+                loadData();
+            };
+            document.getElementById('currentYearBtn').onclick = () => {
+                currentYear = new Date().getFullYear();
+                document.getElementById('yearFilter').value = currentYear;
+                loadData();
+            };
+            document.getElementById('addBtn').onclick = () => openForm(null);
+            document.getElementById('exportBtn').onclick = () => {
+                window.location.href = '/vacations/export?year=' + currentYear;
+            };
+        }
+
+        async function loadPersonnel() {
+            try {
+                const res = await fetch('/personnel/api?page=0&size=1000');
+                const data = await res.json();
+                personnelList = data.content || [];
+                const sel = document.getElementById('fPersonnel');
+                sel.innerHTML = '<option value="">— Оберіть особу —</option>';
+                personnelList
+                    .sort((a, b) => (a.personnelNumber || 0) - (b.personnelNumber || 0))
+                    .forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p.id;
+                        const rank = p.rank || '';
+                        const name = (p.lastName || '') + ' ' + (p.firstName || '') + ' ' + (p.middleName || '');
+                        opt.textContent = (rank ? rank + ' ' : '') + name.trim();
+                        sel.appendChild(opt);
+                    });
+            } catch (e) {
+                console.error('Помилка завантаження персоналу', e);
+            }
+        }
+
+        async function loadYears() {
+            try {
+                const res = await fetch('/vacations/api/years');
+                const years = await res.json();
+                const sel = document.getElementById('yearFilter');
+                sel.innerHTML = '';
+                if (!years.includes(new Date().getFullYear())) years.push(new Date().getFullYear());
+                years.sort((a,b) => b - a);
+                years.forEach(y => {
+                    const opt = document.createElement('option');
+                    opt.value = y;
+                    opt.textContent = y;
+                    if (y === currentYear) opt.selected = true;
+                    sel.appendChild(opt);
+                });
+            } catch (e) {
+                console.error('Помилка завантаження років', e);
+            }
+        }
+
+        async function loadData() {
+            try {
+                const res = await fetch('/vacations/api?year=' + currentYear);
+                if (!res.ok) throw new Error('Network error');
+                tableData = await res.json();
+                // Скидаємо сортування при зміні року
+                sortCol = 'num';
+                sortDir = 1;
+                applySortAndRender();
+            } catch (e) {
+                console.error(e);
+                showToast('Помилка завантаження даних', 'err');
+            }
+        }
+
+// ===== СОРТУВАННЯ =====
+        function getSortValue(row, col) {
+            if (col === 'num')  return row.personnelNumber ?? row.id ?? 0;
+            if (col === 'rank') return row.rank || '';
+            if (col === 'name') return row.shortName || '';
+            if (col === 'h1')   return row.h1Days || 0;
+            if (col === 'h2')   return row.h2Days || 0;
+            if (col === 'total') return row.totalDays || 0;
+            if (col.startsWith('m')) {
+                const month = parseInt(col.substring(1));
+                return (row.months && row.months[month]) ? row.months[month] : 0;
+            }
+            return '';
+        }
+
+        function applySortAndRender() {
+            if (!tableData || !tableData.length) {
+                renderTable([]);
+                return;
+            }
+            const sorted = [...tableData].sort((a, b) => {
+                let va = getSortValue(a, sortCol);
+                let vb = getSortValue(b, sortCol);
+                if (typeof va === 'number' && typeof vb === 'number') {
+                    return (va - vb) * sortDir;
+                }
+                va = String(va).toLowerCase();
+                vb = String(vb).toLowerCase();
+                if (va < vb) return -1 * sortDir;
+                if (va > vb) return 1 * sortDir;
+                return 0;
+            });
+            renderTable(sorted);
+            updateSortArrows();
+        }
+
+        function updateSortArrows() {
+            document.querySelectorAll('#vacTable thead th[data-col]').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+                if (th.dataset.col === sortCol) {
+                    th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+                }
+            });
+        }
+
+        window.sortBy = function(col) {
+            if (sortCol === col) {
+                sortDir *= -1;
+            } else {
+                sortCol = col;
+                sortDir = 1;
+            }
+            applySortAndRender();
+        };
+
+// ===== РЕНДЕРИНГ ТАБЛИЦІ =====
+        function renderTable(data) {
+            const tbody = document.getElementById('vacBody');
+            if (!data || !data.length) {
+                tbody.innerHTML = '<tr><td colspan="18" style="text-align:center;padding:32px;color:var(--text-light)">Немає особового складу</td></tr>';
+                return;
+            }
+            let html = '';
+            data.forEach((row, idx) => {
+                const num = row.personnelNumber ?? (idx + 1);
+                let rowHtml = `<tr>
+            <td class="num-cell">${num}</td>
+            <td class="rank-cell">${escapeHtml(row.rank)}</td>
+            <td class="name-cell">${escapeHtml(row.shortName)}</td>`;
+
+                const months = row.months || {};
+                for (let m = 1; m <= 12; m++) {
+                    const days = months[m] || 0;
+                    let badge = '';
+                    if (days > 0) {
+                        badge = `<span class="days-badge">${days}</span>`;
+                    }
+                    rowHtml += `<td class="month-cell" data-pid="${row.id}" data-month="${m}" onclick="openList(event, this)">${badge}</td>`;
+                }
+
+                const h1 = row.h1Days || 0;
+                const h2 = row.h2Days || 0;
+                const total = row.totalDays || 0;
+                const h1Icon = h1 > 0 ? '✅' : '—';
+                const h2Icon = h2 > 0 ? '✅' : '—';
+                rowHtml += `<td class="h1-cell">${h1 > 0 ? h1 : ''} ${h1Icon}</td>`;
+                rowHtml += `<td class="h2-cell">${h2 > 0 ? h2 : ''} ${h2Icon}</td>`;
+                rowHtml += `<td class="total-cell">${total}</td>`;
+                rowHtml += `</tr>`;
+                html += rowHtml;
+            });
+            tbody.innerHTML = html;
+        }
+
+        window.openList = function(event, cell) {
+            event.stopPropagation();
+            const pid = parseInt(cell.dataset.pid);
+            const row = tableData.find(r => r.id === pid);
+            if (!row) return;
+            currentPersonId = pid;
+
+            document.getElementById('listTitle').textContent =
+                'Відпустки: ' + row.shortName + (row.rank ? ' (' + row.rank + ')' : '');
+
+            const listEl = document.getElementById('vacList');
+            const vacs = row.vacations || [];
+            if (!vacs.length) {
+                listEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-light)">Відпусток немає</div>';
+            } else {
+                listEl.innerHTML = vacs.map(v => `
+                    <div class="vac-item">
+                        <div>
+                            <span class="vac-dates">${fmtDate(v.startDate)} — ${fmtDate(v.endDate)}</span>
+                            ${v.vacationType ? `<span class="vac-type">${escapeHtml(v.vacationType)}</span>` : ''}
+                            ${v.note ? `<div style="font-size:11px;color:var(--text-secondary);margin-top:4px">${escapeHtml(v.note)}</div>` : ''}
+                        </div>
+                        <div class="vac-actions">
+                            <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="editVacation(${v.id})">✏️</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteVacation(${v.id})">🗑</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('listModal').classList.add('open');
+        };
+
+        window.openAddForPerson = function() {
+            closeModal('listModal');
+            openForm(null, currentPersonId);
+        };
+
+        window.openForm = function(id, personId) {
+            document.getElementById('editId').value = id || '';
+            document.getElementById('modalTitle').textContent = id ? 'Редагувати відпустку' : 'Додати відпустку';
+            document.getElementById('fPersonnel').value = personId || '';
+            document.getElementById('fStartDate').value = '';
+            document.getElementById('fEndDate').value = '';
+            document.getElementById('fType').value = '';
+            document.getElementById('fNote').value = '';
+
+            if (id) {
+                // Завантажити дані
+                for (const row of tableData) {
+                    const vac = (row.vacations || []).find(v => v.id === id);
+                    if (vac) {
+                        document.getElementById('fPersonnel').value = row.id;
+                        document.getElementById('fStartDate').value = vac.startDate;
+                        document.getElementById('fEndDate').value = vac.endDate;
+                        document.getElementById('fType').value = vac.vacationType || '';
+                        document.getElementById('fNote').value = vac.note || '';
+                        break;
+                    }
+                }
+            }
+            document.getElementById('formModal').classList.add('open');
+        };
+
+        window.editVacation = function(id) {
+            closeModal('listModal');
+            openForm(id);
+        };
+
+        window.saveVacation = async function() {
+            const id = document.getElementById('editId').value;
+            const personnelId = document.getElementById('fPersonnel').value;
+            const startDate = document.getElementById('fStartDate').value;
+            const endDate = document.getElementById('fEndDate').value;
+            const type = document.getElementById('fType').value;
+            const note = document.getElementById('fNote').value.trim();
+
+            if (!personnelId) { showToast('Оберіть особу', 'err'); return; }
+            if (!startDate || !endDate) { showToast('Вкажіть дати', 'err'); return; }
+            if (startDate > endDate) { showToast('Дата початку пізніше дати кінця', 'err'); return; }
+
+            const body = {
+                personnelId: parseInt(personnelId),
+                startDate,
+                endDate,
+                vacationType: type,
+                note
+            };
+
+            const url = id ? '/vacations/api/' + id : '/vacations/api';
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method,
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                });
+                if (res.ok) {
+                    closeModal('formModal');
+                    await loadData();
+                    await loadYears();
+                    showToast(id ? 'Оновлено' : 'Додано', 'ok');
+                } else {
+                    const err = await res.text();
+                    showToast('Помилка: ' + err, 'err');
+                }
+            } catch (e) {
+                showToast('Помилка мережі', 'err');
+            }
+        };
+
+        window.deleteVacation = async function(id) {
+            if (!confirm('Видалити цю відпустку?')) return;
+            try {
+                const res = await fetch('/vacations/api/' + id, { method: 'DELETE' });
+                if (res.ok) {
+                    closeModal('listModal');
+                    await loadData();
+                    showToast('Видалено', 'ok');
+                } else {
+                    showToast('Помилка видалення', 'err');
+                }
+            } catch (e) {
+                showToast('Помилка мережі', 'err');
+            }
+        };
+
+        window.closeModal = function(id) {
+            document.getElementById(id).classList.remove('open');
+        };
+
+        function fmtDate(d) {
+            if (!d) return '';
+            const [y, m, day] = d.split('-');
+            return `${day}.${m}.${y}`;
+        }
+
+        function escapeHtml(s) {
+            if (!s) return '';
+            return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
+        }
+
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `toast ${type} show`;
+            setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
+        // Закриття модалок кліком поза вікном (лише для listModal)
+        document.querySelectorAll('.modal-overlay').forEach(el => {
+            el.addEventListener('click', function(e) {
+                if (e.target === this && this.id !== 'formModal') {
+                    this.classList.remove('open');
+                }
+            });
+        });
+    })();
+</script>
+</body>
+</html>
