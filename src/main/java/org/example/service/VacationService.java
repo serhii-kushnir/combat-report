@@ -127,11 +127,13 @@ public class VacationService {
         if (vacationRepo.existsOverlap(personnelId, start, end, id)) {
             throw new IllegalArgumentException("Період перетинається з існуючою відпусткою");
         }
-        if (!v.getPersonnel().getId().equals(personnelId)) {
-            Personnel p = personnelRepo.findById(personnelId)
-                    .orElseThrow(() -> new IllegalArgumentException("Особу не знайдено: " + personnelId));
-            v.setPersonnel(p);
-        }
+
+        // ===== ЗАВЖДИ завантажуємо особу заново (навіть якщо не змінилась) =====
+        Personnel p = personnelRepo.findById(personnelId)
+                .orElseThrow(() -> new IllegalArgumentException("Особу не знайдено: " + personnelId));
+        v.setPersonnel(p);
+        // ======================================================================
+
         v.setStartDate(start);
         v.setEndDate(end);
         v.setVacationType(type);
