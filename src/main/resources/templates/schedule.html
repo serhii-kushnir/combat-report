@@ -2,6 +2,7 @@
 <html lang="uk" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">-->
     <title>Графік чергувань</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     <link th:replace="~{fragments :: sidebar-css}">
@@ -965,7 +966,7 @@
                 </button>
             </div>
 
-            <div class="table-wrap">
+            <div class="table-wrap no-cards">
                 <table id="scheduleTable">
                     <thead id="tableHead"></thead>
                     <tbody id="tableBody">
@@ -978,7 +979,7 @@
 
             <div class="stats-container" id="statsContainer">
                 <h3>📊 Статистика за категоріями (поточний місяць)</h3>
-                <div class="stats-table-wrap">
+                <div class="stats-table-wrap table-wrap no-cards">
                     <table class="stats-table" id="statsTable">
                         <thead>
                         <tr>

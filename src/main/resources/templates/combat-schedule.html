@@ -2,6 +2,7 @@
 <html lang="uk" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">-->
     <title>БЧ Графік чергувань</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     <link th:replace="~{fragments :: sidebar-css}">
@@ -95,6 +96,7 @@
 
         .toolbar { animation: fadeIn 0.4s ease forwards; opacity: 0; }
         .table-wrap { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.05s; }
+        .legend { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.10s; }
         .stats-container { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.15s; }
         .load-more-container { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.20s; }
         .pagination { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.25s; }
@@ -125,7 +127,7 @@
         #tableBody tr:nth-child(19) { animation-delay: 0.38s; }
         #tableBody tr:nth-child(20) { animation-delay: 0.40s; }
 
-        /* ===== АНІМАЦІЯ ДЛЯ РЯДКІВ СТАТИСТИКИ ===== */
+        /* Анімація рядків статистики */
         #statsBody tr {
             animation: fadeInRow 0.3s ease forwards;
             opacity: 0;
@@ -298,20 +300,12 @@
             min-width: 100%;
             transition: background 0.3s;
         }
-
-        /* Заголовки – виправлено курсор і hover */
         thead tr:first-child th {
             background: var(--bg-header);
             color: var(--text-white);
             font-size: 12px;
             padding: 10px 4px;
-            transition: background 0.3s, color 0.3s;
-            cursor: pointer;
-            user-select: none;
-        }
-        thead tr:first-child th:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
+            transition: background 0.3s;
         }
         thead tr:last-child th {
             background: var(--bg-header);
@@ -406,12 +400,11 @@
             font-weight: 700;
             line-height: 1.4;
             white-space: nowrap;
-            transition: none; /* прибрано анімацію */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        /* СКАСОВАНО HOVER У КОМІРКАХ */
         .day-cell:hover .cell-badge {
-            transform: none !important;
-            box-shadow: none !important;
+            transform: scale(1.05);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
 
         /* Кольори статусів */
@@ -419,41 +412,13 @@
         .s-П { background: #c8e6c9; color: #1b5e20; }
         .s-Ш { background: #bbdefb; color: #0d47a1; }
         .s-Т { background: #fff9c4; color: #f57f17; }
+        .s-ВЕ { background: #ffab91; color: #bf360c; }
 
-        /* ===== ЛЕГЕНДА ===== */
-        .legend {
-            background: var(--bg-card);
-            border-radius: 12px;
-            padding: 10px 14px;
-            margin-top: 12px;
-            box-shadow: 0 2px 6px var(--shadow-color);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            align-items: center;
-            transition: background 0.3s, box-shadow 0.3s;
+        /* ===== НОВИЙ КЛАС ДЛЯ КОМБІНОВАНИХ РОЛЕЙ ===== */
+        .s-multi {
+            background: #b39ddb;
+            color: #311b92;
         }
-        .legend-title {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-right: 4px;
-            transition: color 0.3s;
-        }
-        .legend-item {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 2px 7px;
-            border-radius: 6px;
-            transition: transform 0.2s ease;
-        }
-        .legend-item:hover {
-            transform: scale(1.05);
-        }
-        .legend-item.К { background: #ffcdd2; color: #b71c1c; }
-        .legend-item.П { background: #c8e6c9; color: #1b5e20; }
-        .legend-item.Ш { background: #bbdefb; color: #0d47a1; }
-        .legend-item.Т { background: #fff9c4; color: #f57f17; }
-
 
         /* ===== СТАТИСТИКА ===== */
         .stats-container {
@@ -504,8 +469,46 @@
         .stats-table td:nth-child(5) { text-align: center; min-width: 50px; }
         .stats-table td:nth-child(6) { text-align: center; min-width: 50px; }
         .stats-table td:nth-child(7) { text-align: center; min-width: 50px; }
-        .stats-table td:nth-child(8) { text-align: center; min-width: 60px; font-weight: 600; }
+        .stats-table td:nth-child(8) { text-align: center; min-width: 50px; }
+        .stats-table td:nth-child(9) { text-align: center; min-width: 60px; font-weight: 600; }
         .stats-table tr:hover td { background: var(--bg-hover); }
+
+        /* ===== ЛЕГЕНДА ===== */
+        .legend {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-top: 12px;
+            box-shadow: 0 2px 6px var(--shadow-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .legend-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-right: 4px;
+            transition: color 0.3s;
+        }
+        .legend-item {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            transition: transform 0.2s ease;
+        }
+        .legend-item:hover {
+            transform: scale(1.05);
+        }
+        .legend-item.К { background: #ffcdd2; color: #b71c1c; }
+        .legend-item.П { background: #c8e6c9; color: #1b5e20; }
+        .legend-item.Ш { background: #bbdefb; color: #0d47a1; }
+        .legend-item.Т { background: #fff9c4; color: #f57f17; }
+        .legend-item.ВЕ { background: #ffab91; color: #bf360c; }
+        /* НОВИЙ ЕЛЕМЕНТ ЛЕГЕНДИ ДЛЯ КОМБІНОВАНИХ РОЛЕЙ */
+        .legend-item.s-multi { background: #b39ddb; color: #311b92; }
 
         /* ===== TOAST ===== */
         .toast {
@@ -589,7 +592,7 @@
 
         /* ===== ДРУК ===== */
         @media print {
-            .sidebar, .toolbar, .no-print, .btn, .btn-print,
+            .sidebar, .toolbar, .legend, .no-print, .btn, .btn-print,
             .pagination, .load-more-container {
                 display: none !important;
             }
@@ -668,7 +671,7 @@
             </div>
 
             <!-- ГРАФІК -->
-            <div class="table-wrap" id="scheduleTableWrap">
+            <div class="table-wrap no-cards" id="scheduleTableWrap">
                 <table id="scheduleTable">
                     <thead id="tableHead"></thead>
                     <tbody id="tableBody">
@@ -683,17 +686,22 @@
                 <span class="legend-item К">К</span>
                 <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Командир</span>
                 <span class="legend-item П">П</span>
-                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Пілот</span>
+                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Оператор</span>
                 <span class="legend-item Ш">Ш</span>
-                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Штурман</span>
+                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Механік</span>
                 <span class="legend-item Т">Т</span>
-                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Технік</span>
+                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Майстер</span>
+                <span class="legend-item ВЕ">ВЕ</span>
+                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— Водій-електрик</span>
+                <!-- НОВИЙ ЕЛЕМЕНТ -->
+                <span class="legend-item s-multi">Комбінована</span>
+                <span style="font-size:11px;color:var(--text-secondary);margin-right:12px;">— кілька ролей</span>
             </div>
 
             <!-- СТАТИСТИКА -->
             <div class="stats-container">
                 <h3>📊 Статистика чергувань за місяць</h3>
-                <div class="table-wrap">
+                <div class="table-wrap no-cards">
                     <table class="stats-table" id="statsTable">
                         <thead>
                         <tr>
@@ -704,11 +712,12 @@
                             <th data-col="countP" style="width:50px;">П</th>
                             <th data-col="countSh" style="width:50px;">Ш</th>
                             <th data-col="countT" style="width:50px;">Т</th>
+                            <th data-col="countVE" style="width:50px;">ВЕ</th>
                             <th data-col="total" style="width:60px;">Днів БЧ</th>
                         </tr>
                         </thead>
                         <tbody id="statsBody">
-                        <tr><td colspan="8" style="text-align:center;color:var(--text-light);">Завантаження...</td></tr>
+                        <tr><td colspan="9" style="text-align:center;color:var(--text-light);">Завантаження...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -821,7 +830,7 @@
                     document.getElementById('tableBody').innerHTML =
                         '<tr><td colspan="40" style="text-align:center;padding:32px;color:var(--text-light)">Помилка завантаження</td></tr>';
                     document.getElementById('statsBody').innerHTML =
-                        '<tr><td colspan="8" style="text-align:center;color:var(--text-light);">Помилка завантаження статистики</td></tr>';
+                        '<tr><td colspan="9" style="text-align:center;color:var(--text-light);">Помилка завантаження статистики</td></tr>';
                 });
         }
 
@@ -921,6 +930,7 @@
             if (col === 'countP') return row.countP || 0;
             if (col === 'countSh') return row.countSh || 0;
             if (col === 'countT') return row.countT || 0;
+            if (col === 'countVE') return row.countVE || 0;
             if (col === 'total') return row.total || 0;
             return '';
         }
@@ -1001,10 +1011,20 @@
                     let badge = '';
                     if (status) {
                         let badgeClass = '';
-                        if (status.includes('К')) badgeClass = 's-К';
-                        else if (status.includes('П')) badgeClass = 's-П';
-                        else if (status.includes('Ш')) badgeClass = 's-Ш';
-                        else if (status.includes('Т')) badgeClass = 's-Т';
+                        // ===== НОВА ЛОГІКА: перевірка на комбіновану роль =====
+                        if (status.includes('/')) {
+                            badgeClass = 's-multi';
+                        } else if (status.includes('К')) {
+                            badgeClass = 's-К';
+                        } else if (status.includes('П')) {
+                            badgeClass = 's-П';
+                        } else if (status.includes('Ш')) {
+                            badgeClass = 's-Ш';
+                        } else if (status.includes('Т')) {
+                            badgeClass = 's-Т';
+                        } else if (status.includes('ВЕ')) {
+                            badgeClass = 's-ВЕ';
+                        }
                         if (badgeClass) {
                             badge = `<span class="cell-badge ${badgeClass}">${status}</span>`;
                         } else {
@@ -1022,7 +1042,7 @@
         function renderStats() {
             const tbody = document.getElementById('statsBody');
             if (!statsData || !statsData.length) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-light);">Немає даних для статистики</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-light);">Немає даних для статистики</td></tr>';
                 return;
             }
 
@@ -1049,6 +1069,7 @@
                     <td>${row.countP ?? 0}</td>
                     <td>${row.countSh ?? 0}</td>
                     <td>${row.countT ?? 0}</td>
+                    <td>${row.countVE ?? 0}</td>
                     <td><strong>${row.total ?? 0}</strong></td>
                 </tr>`;
             }).join('');

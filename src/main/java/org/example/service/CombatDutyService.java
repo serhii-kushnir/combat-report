@@ -2,6 +2,8 @@ package org.example.service;
 
 import org.example.entity.CombatDuty;
 import org.example.repository.CombatDutyRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,13 +20,15 @@ import java.util.Optional;
 @Service
 public class CombatDutyService {
 
+    private static final Logger log = LoggerFactory.getLogger(CombatDutyService.class);
+
     private final CombatDutyRepository dutyRepo;
 
     public CombatDutyService(CombatDutyRepository dutyRepo) {
         this.dutyRepo = dutyRepo;
     }
 
-    // ===== БЕЗ ПАГІНАЦІЇ (для експорту та фільтрів) =====
+    // ===== БЕЗ ПАГІНАЦІЇ =====
     @Transactional(readOnly = true)
     public List<CombatDuty> getAll() {
         return dutyRepo.findAll();
@@ -56,15 +61,23 @@ public class CombatDutyService {
 
     public Page<CombatDuty> getByYear(int year, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("startTime").descending());
-        return dutyRepo.findByYear(year, pageable);
+        LocalDateTime start = LocalDateTime.of(year, 1, 1, 0, 0);
+        LocalDateTime end = LocalDateTime.of(year + 1, 1, 1, 0, 0);
+        return dutyRepo.findByDateRange(start, end, pageable);
     }
 
     public Page<CombatDuty> getByYearAndMonth(int year, int month, int page, int size) {
+        log.info("📅 Фільтрація CombatDuty: year={}, month={}", year, month);
         Pageable pageable = PageRequest.of(page, size, Sort.by("startTime").descending());
-        return dutyRepo.findByYearAndMonth(year, month, pageable);
+        LocalDateTime start = LocalDateTime.of(year, month, 1, 0, 0);
+        LocalDateTime end = start.plusMonths(1);
+        log.info("📅 Діапазон: start={}, end={}", start, end);
+        Page<CombatDuty> result = dutyRepo.findByDateRange(start, end, pageable);
+        log.info("✅ Знайдено {} записів", result.getTotalElements());
+        return result;
     }
 
-    // ===== ЗАГАЛЬНА СТАТИСТИКА (НОВИЙ МЕТОД) =====
+    // ===== ЗАГАЛЬНА СТАТИСТИКА =====
     @Transactional(readOnly = true)
     public Map<String, Long> getGeneralStats() {
         List<CombatDuty> all = dutyRepo.findAll();

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "equipment")
 @Data
@@ -15,20 +17,64 @@ public class Equipment {
     private Long id;
 
     @Column(nullable = false)
-    private String name;          // Назва
+    private String name;
 
-    private int quantity;         // Кількість
+    private Integer quantity = 0;
 
-    private String unit;          // Одиниця виміру
+    @Column(name = "stock_quantity")
+    private Integer stockQuantity = 0;
 
-    // НОВІ ПОЛЯ
-    private String crew;          // Екіпаж (наприклад, "СКОПА")
-    private String location;      // Локація (наприклад, "А0826")
-    private String category;      // Категорія (наприклад, "Боєприпаси", "Дрони", "Паливо")
+    @Column(name = "written_off_quantity")
+    private Integer writtenOffQuantity = 0;
 
-    public Equipment(String name, int quantity, String unit, String crew, String location, String category) {
+    private String unit;
+    private String crew;
+    private String location;
+    private String category;
+
+    @Column(name = "last_modified")
+    private LocalDateTime lastModified;
+
+    @Column(name = "modified_by")
+    private String modifiedBy;
+
+    @Column(name = "archived")
+    private boolean archived = false;
+
+    @Column(name = "pinned")
+    private boolean pinned = false;  // НОВЕ ПОЛЕ
+
+    @PreUpdate
+    protected void onUpdate() {
+        lastModified = LocalDateTime.now();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        lastModified = LocalDateTime.now();
+        if (modifiedBy == null) modifiedBy = "system";
+    }
+
+    // Конструктори
+    public Equipment(String name, Integer quantity, Integer stockQuantity,
+                     Integer writtenOffQuantity, String unit, String crew,
+                     String location, String category) {
         this.name = name;
         this.quantity = quantity;
+        this.stockQuantity = stockQuantity;
+        this.writtenOffQuantity = writtenOffQuantity;
+        this.unit = unit;
+        this.crew = crew;
+        this.location = location;
+        this.category = category;
+    }
+
+    public Equipment(String name, int quantity, String unit, String crew,
+                     String location, String category) {
+        this.name = name;
+        this.quantity = quantity;
+        this.stockQuantity = 0;
+        this.writtenOffQuantity = 0;
         this.unit = unit;
         this.crew = crew;
         this.location = location;

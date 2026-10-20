@@ -138,25 +138,30 @@ public class FlightRecordService {
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
             XSSFCellStyle headerStyle = createHeaderStyle(wb);
-            XSSFCellStyle dataStyle   = createDataStyle(wb);
-            XSSFCellStyle greenStyle  = createGreenStyle(wb);
-            XSSFCellStyle leftStyle   = createLeftStyle(wb);
+            XSSFCellStyle dataStyle = createDataStyle(wb);
+            XSSFCellStyle greenStyle = createGreenStyle(wb);
+            XSSFCellStyle leftStyle = createLeftStyle(wb);
             XSSFCellStyle greenLeftStyle = createGreenStyle(wb);
             greenLeftStyle.setAlignment(HorizontalAlignment.LEFT);
 
             String[] HEADERS = {
-                    "№", "Дата", "Екіпаж", "Подія", "Час взльоту", "Час втрати",
-                    "Координати", "Азимут (°)", "Відстань (м)", "Вис. польоту (м)",
+                    "№", "Дата", "Екіпаж", "Оператор", "Подія", "Час взльоту", "Час втрати",
+                    "Координати", "Район підриву", "Азимут (°)", "Курс (°)", "Відстань (м)", "Вис. польоту (м)",
                     "Засіб ураження", "Вибухівка", "Детонатор",
                     "Висота цілі (м)", "Ціль", "Швидкість цілі (км/год)",
-                    "Причина втрати", "Примітка"
+                    "Причина втрати",
+                    "Особовий склад",       // <-- НОВЕ
+                    "Примітка"
             };
+
             int[] COL_WIDTHS = {
-                    8, 14, 12, 24, 12, 12,
-                    22, 10, 14, 14,
+                    8, 14, 12, 18, 24, 12, 12,
+                    22, 22, 10, 10, 14, 14,
                     22, 26, 28,
                     14, 20, 20,
-                    22, 50
+                    22,
+                    50,                     // <-- НОВЕ (широкий стовпець для тексту)
+                    70
             };
 
             for (Map.Entry<String, List<FlightRecord>> entry : byMonth.entrySet()) {
@@ -178,11 +183,14 @@ public class FlightRecordService {
 
                 for (FlightRecord r : entry.getValue()) {
                     XSSFRow row = sheet.createRow(rowIdx++);
-                    row.setHeightInPoints(40);
 
+                    // ===== ЗБІЛЬШЕНО ВИСОТУ РЯДКА =====
+                    row.setHeightInPoints(120); // ← було 40, стало 60
+
+                    // Перевірка на "Знищення цілі" (та "Ураження" для сумісності)
                     boolean isDestroyed = r.getEvent() != null &&
-                            (r.getEvent().toLowerCase().contains("знищен") ||
-                                    r.getEvent().toLowerCase().contains("підрив"));
+                            (r.getEvent().toLowerCase().contains("знищен"));
+
                     XSSFCellStyle ctr = isDestroyed ? greenStyle : dataStyle;
                     XSSFCellStyle lft = isDestroyed ? greenLeftStyle : leftStyle;
 
@@ -190,11 +198,14 @@ public class FlightRecordService {
                     setCell(row, col++, r.getRecordNumber(), ctr);
                     setCell(row, col++, r.getFlightDate() != null ? r.getFlightDate().format(dateFmt) : "", ctr);
                     setCell(row, col++, r.getCrew(), ctr);
+                    setCell(row, col++, r.getPilot(), ctr);   // <-- НОВИЙ РЯДОК
                     setCell(row, col++, r.getEvent(), ctr);
                     setCell(row, col++, r.getTakeoffTime() != null ? r.getTakeoffTime().format(timeFmt) : "", ctr);
                     setCell(row, col++, r.getLossTime() != null ? r.getLossTime().format(timeFmt) : "", ctr);
                     setCell(row, col++, r.getCoordinates(), ctr);
+                    setCell(row, col++, r.getExplosionArea(), ctr);   // <-- НОВИЙ РЯДОК
                     setCell(row, col++, r.getAzimuth() != null ? r.getAzimuth() + "°" : "", ctr);
+                    setCell(row, col++, r.getCourseDirection() != null ? r.getCourseDirection() + "°" : "", ctr);
                     setCell(row, col++, r.getDistance(), ctr);
                     setCell(row, col++, r.getAltitude(), ctr);
                     setCell(row, col++, r.getWeapon(), lft);
@@ -204,6 +215,7 @@ public class FlightRecordService {
                     setCell(row, col++, r.getTarget(), ctr);
                     setCell(row, col++, r.getTargetSpeed(), ctr);
                     setCell(row, col++, r.getLossReason(), lft);
+                    setCell(row, col++, r.getCrewPersonnel(), lft);   // <-- НОВИЙ РЯДОК
                     setCell(row, col++, r.getNote(), lft);
                 }
             }
@@ -300,9 +312,17 @@ public class FlightRecordService {
     }
 
     private XSSFCellStyle createGreenStyle(XSSFWorkbook wb) {
-        XSSFCellStyle style = createDataStyle(wb);
-        style.setFillForegroundColor(new XSSFColor(new byte[]{(byte)232, (byte)245, (byte)233}, null));
+        XSSFCellStyle style = wb.createCellStyle();
+        XSSFFont font = wb.createFont();
+        font.setFontHeightInPoints((short) 10);
+        font.setFontName("Arial");
+        style.setFont(font);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setWrapText(true);
+        style.setFillForegroundColor(new XSSFColor(new byte[]{(byte) 200, (byte) 240, (byte) 200}, null));
         style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        setBorders(style);
         return style;
     }
 

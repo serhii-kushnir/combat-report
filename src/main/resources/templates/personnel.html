@@ -2,6 +2,7 @@
 <html lang="uk" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">-->
     <title>Особовий склад</title>
     <link th:replace="~{fragments :: sidebar-css}">
     <style>
@@ -1096,14 +1097,14 @@
             const fullName = `${p.lastName} ${p.firstName || ''} ${p.middleName || ''}`.trim();
             const num = p.personnelNumber ?? (i + 1);
             return `<tr>
-                <td style="text-align:center">${num}</td>
-                <td>${p.rank || '—'}</td>
-                <td><strong>${escapeHtml(fullName)}</strong></td>
-                <td>${p.fullPosition || p.position || '—'}</td>
-                <td style="text-align:center; white-space:nowrap;">
-                    <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
-                </td>
-            </tr>`;
+            <td data-label="№">${num}</td>
+            <td data-label="Звання">${p.rank || '—'}</td>
+            <td data-label="ПІБ"><strong>${escapeHtml(fullName)}</strong></td>
+            <td data-label="Посада">${p.fullPosition || p.position || '—'}</td>
+            <td class="actions-cell">
+                <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇 Картка</button>
+            </td>
+        </tr>`;
         }).join('');
     }
 
@@ -1118,64 +1119,64 @@
             const num = p.personnelNumber ?? (i + 1);
             const age = p.birthDate ? calcAge(p.birthDate) : '—';
             return `<tr>
-                <td style="text-align:center">${num}</td>
-                <td style="text-align:center">${val(p.personnelStatus)}</td>
-                <td style="text-align:center">${val(p.rank)}</td>
-                <td><strong>${escapeHtml(p.lastName)} ${escapeHtml(p.firstName||'')} ${escapeHtml(p.middleName||'')}</strong></td>
-                <td>${val(p.phone)}</td>
-                <td style="text-align:center">${fmtDate(p.birthDate)}</td>
-                <td style="text-align:center">${age}</td>
-                <td style="text-align:center">${val(p.taxId)}</td>
-                <td style="text-align:center">${val(p.bloodGroup)}</td>
-                <td style="text-align:center">${val(p.passportSeries)}</td>
-                <td style="text-align:center">${val(p.passportNumber)}</td>
-                <td style="text-align:center">${val(p.driverLicenseSeries)}</td>
-                <td style="text-align:center">${val(p.driverLicenseNumber)}</td>
-                <td style="text-align:center">${val(p.driverLicenseCategory)}</td>
-                <td style="font-size:11px">${val(p.registrationAddress)}</td>
-                <td style="font-size:11px">${val(p.livingAddress)}</td>
-                <td style="text-align:center">${val(p.maritalStatus)}</td>
-                <td>${val(p.spouseName)}</td>
-                <td style="font-size:11px">${val(p.familyAddress)}</td>
-                <td style="text-align:center">${val(p.education)}</td>
-                <td style="text-align:center">${val(p.academicDegree)}</td>
-                <td style="font-size:11px">${val(p.educationInstitution)}</td>
-                <td style="font-size:11px">${val(p.educationSpeciality)}</td>
-                <td style="text-align:center">${fmtDate(p.educationStart)}</td>
-                <td style="text-align:center">${fmtDate(p.educationEnd)}</td>
-                <td style="text-align:center">${val(p.diploma)}</td>
-                <td>${val(p.position)}</td>
-                <td style="font-size:11px">${val(p.fullPosition)}</td>
-                <td>${val(p.militaryUnit)}</td>
-                <td style="text-align:center">${val(p.vos)}</td>
-                <td style="text-align:center">${val(p.tariffGrade)}</td>
-                <td style="text-align:center">${fmtDate(p.draftDate)}</td>
-                <td>${val(p.draftOrganization)}</td>
-                <td>${val(p.drafObl)}</td>
-                <td>${val(p.draftLoc)}</td>
-                <td style="text-align:center">${fmtDate(p.enrollmentDate)}</td>
-                <td>${val(p.enrollmentNakaz)}</td>
-                <td>${val(p.ubdNumber)}</td>
-                <td style="text-align:center">${fmtDate(p.ubdDate)}</td>
-                <td>${val(p.admissionForm)}</td>
-                <td>${val(p.admissionNakaz)}</td>
-                <td style="text-align:center">${fmtDate(p.admissionDate)}</td>
-                <td>${val(p.serviceFor)}</td>
-                <td style="text-align:center">${val(p.shoeSize)}</td>
-                <td style="text-align:center">${val(p.uniformSize)}</td>
-                <td style="text-align:center">${val(p.headwearSize)}</td>
-                <td>${val(p.weaponType)}</td>
-                <td>${val(p.weaponSerial)}</td>
-                <td>${val(p.weaponBayonet)}</td>
-                <td>${val(p.weaponMagazines)}</td>
-                <td>${val(p.weaponCaliber)}</td>
-                <td>${val(p.weaponIssuedDate)}</td>
-                <td style="text-align:center">${p.childrenCount ?? 0}</td>
-                <td style="font-size:11px; max-width:200px; white-space:normal; word-wrap:break-word;">${val(p.note)}</td>
-                <td class="no-print" style="text-align:center; white-space:nowrap;">
-                    <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
-                </td>
-            </tr>`;
+            <td data-label="№">${num}</td>
+            <td data-label="Статус">${val(p.personnelStatus)}</td>
+            <td data-label="Звання">${val(p.rank)}</td>
+            <td data-label="ПІБ"><strong>${escapeHtml(p.lastName)} ${escapeHtml(p.firstName||'')} ${escapeHtml(p.middleName||'')}</strong></td>
+            <td data-label="Телефон">${val(p.phone)}</td>
+            <td data-label="Дата народження">${fmtDate(p.birthDate)}</td>
+            <td data-label="Вік">${age}</td>
+            <td data-label="ІПН">${val(p.taxId)}</td>
+            <td data-label="Група крові">${val(p.bloodGroup)}</td>
+            <td data-label="Паспорт серія">${val(p.passportSeries)}</td>
+            <td data-label="Паспорт №">${val(p.passportNumber)}</td>
+            <td data-label="Вод. серія">${val(p.driverLicenseSeries)}</td>
+            <td data-label="Вод. №">${val(p.driverLicenseNumber)}</td>
+            <td data-label="Вод. категорія">${val(p.driverLicenseCategory)}</td>
+            <td data-label="Адреса реєстрації">${val(p.registrationAddress)}</td>
+            <td data-label="Адреса проживання">${val(p.livingAddress)}</td>
+            <td data-label="Сімейний стан">${val(p.maritalStatus)}</td>
+            <td data-label="Дружина/Чоловік">${val(p.spouseName)}</td>
+            <td data-label="Адреса сім'ї">${val(p.familyAddress)}</td>
+            <td data-label="Освіта">${val(p.education)}</td>
+            <td data-label="Ступінь">${val(p.academicDegree)}</td>
+            <td data-label="Заклад">${val(p.educationInstitution)}</td>
+            <td data-label="Спеціальність">${val(p.educationSpeciality)}</td>
+            <td data-label="Початок">${fmtDate(p.educationStart)}</td>
+            <td data-label="Кінець">${fmtDate(p.educationEnd)}</td>
+            <td data-label="Диплом №">${val(p.diploma)}</td>
+            <td data-label="Посада кор.">${val(p.position)}</td>
+            <td data-label="Посада повна">${val(p.fullPosition)}</td>
+            <td data-label="Військова частина">${val(p.militaryUnit)}</td>
+            <td data-label="ВОС">${val(p.vos)}</td>
+            <td data-label="Тариф">${val(p.tariffGrade)}</td>
+            <td data-label="Дата призову">${fmtDate(p.draftDate)}</td>
+            <td data-label="Ким призваний">${val(p.draftOrganization)}</td>
+            <td data-label="Область призову">${val(p.drafObl)}</td>
+            <td data-label="Місто/Сел. призову">${val(p.draftLoc)}</td>
+            <td data-label="Дата зарахув.">${fmtDate(p.enrollmentDate)}</td>
+            <td data-label="Наказ зарахув.">${val(p.enrollmentNakaz)}</td>
+            <td data-label="УБД №">${val(p.ubdNumber)}</td>
+            <td data-label="УБД дата">${fmtDate(p.ubdDate)}</td>
+            <td data-label="Форма допуску">${val(p.admissionForm)}</td>
+            <td data-label="Ф-Наказ">${val(p.admissionNakaz)}</td>
+            <td data-label="Ф-Дата">${fmtDate(p.admissionDate)}</td>
+            <td data-label="Служба за">${val(p.serviceFor)}</td>
+            <td data-label="Розм. взуття">${val(p.shoeSize)}</td>
+            <td data-label="Розм. форми">${val(p.uniformSize)}</td>
+            <td data-label="Розм. гол. убору">${val(p.headwearSize)}</td>
+            <td data-label="Модель зброї">${val(p.weaponType)}</td>
+            <td data-label="Серійний №">${val(p.weaponSerial)}</td>
+            <td data-label="Штик-багнет">${val(p.weaponBayonet)}</td>
+            <td data-label="Магазини">${val(p.weaponMagazines)}</td>
+            <td data-label="Калібр">${val(p.weaponCaliber)}</td>
+            <td data-label="Дата видачі">${val(p.weaponIssuedDate)}</td>
+            <td data-label="Діти">${p.childrenCount ?? 0}</td>
+            <td data-label="Примітка">${val(p.note)}</td>
+            <td class="actions-cell">
+                <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇 Картка</button>
+            </td>
+        </tr>`;
         }).join('');
     }
 
@@ -1190,9 +1191,7 @@
             sorted.sort((a, b) => {
                 let va = getSortValArchived(a, sortArchivedCol);
                 let vb = getSortValArchived(b, sortArchivedCol);
-                if (typeof va === 'number' && typeof vb === 'number') {
-                    return (va - vb) * sortArchivedDir;
-                }
+                if (typeof va === 'number' && typeof vb === 'number') return (va - vb) * sortArchivedDir;
                 va = String(va).toLowerCase();
                 vb = String(vb).toLowerCase();
                 if (va < vb) return -1 * sortArchivedDir;
@@ -1204,14 +1203,14 @@
             const fullName = `${p.lastName} ${p.firstName || ''} ${p.middleName || ''}`.trim();
             const num = p.personnelNumber ?? (i + 1);
             return `<tr>
-                <td style="text-align:center">${num}</td>
-                <td>${p.rank || '—'}</td>
-                <td><strong>${escapeHtml(fullName)}</strong></td>
-                <td>${p.fullPosition || p.position || '—'}</td>
-                <td style="text-align:center; white-space:nowrap;">
-                    <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇</button>
-                </td>
-            </tr>`;
+            <td data-label="№">${num}</td>
+            <td data-label="Звання">${p.rank || '—'}</td>
+            <td data-label="ПІБ"><strong>${escapeHtml(fullName)}</strong></td>
+            <td data-label="Посада">${p.fullPosition || p.position || '—'}</td>
+            <td class="actions-cell">
+                <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="location.href='/personnel/${p.id}/pcard'">📇 Картка</button>
+            </td>
+        </tr>`;
         }).join('');
     }
 
@@ -1421,9 +1420,6 @@
     // ===== ДОПОМІЖНІ =====
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-    document.querySelectorAll('.modal-overlay').forEach(el =>
-        el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
-    );
 
     function showToast(msg, type = 'success') {
         const t = document.getElementById('toast');

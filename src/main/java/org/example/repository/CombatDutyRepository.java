@@ -42,4 +42,7 @@ public interface CombatDutyRepository extends JpaRepository<CombatDuty, Long> {
 
     @Query("SELECT c FROM CombatDuty c WHERE YEAR(c.startTime) = :year")
     Page<CombatDuty> findByYear(@Param("year") int year, Pageable pageable);
+
+    @Query("SELECT c FROM CombatDuty c WHERE c.startTime >= :start AND c.startTime < :end")
+    Page<CombatDuty> findByDateRange(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, Pageable pageable);
 }

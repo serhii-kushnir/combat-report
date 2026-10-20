@@ -4,7 +4,9 @@
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        /* ========== CSS ЗМІННІ ДЛЯ ТЕМ ========== */
+        /* ============================================================
+           ========== CSS ЗМІННІ ДЛЯ ТЕМ =============================
+           ============================================================ */
         :root {
             --bg-body: #f0f2f5;
             --bg-card: #ffffff;
@@ -57,11 +59,8 @@
             --text-sidebar-active: #ffffff;
             --border-color: #3d3d48;
             --shadow-color: rgba(0,0,0,0.4);
-            --toast-success: #2e7d32;
-            --toast-error: #c62828;
         }
 
-        /* ========== ВИПРАВЛЕННЯ ДЛЯ ТЕМНОЇ ТЕМИ – ПОЛЯ ВВОДУ ========== */
         body.dark-theme .info-value.editable,
         body.dark-theme .info-value.editable input,
         body.dark-theme .info-value.editable select,
@@ -69,28 +68,24 @@
             background: var(--bg-input) !important;
             color: var(--text-primary) !important;
         }
-        body.dark-theme .info-value.editable input,
-        body.dark-theme .info-value.editable select,
-        body.dark-theme .info-value.editable textarea {
-            background-color: var(--bg-input) !important;
-            color: var(--text-primary) !important;
-            border-color: var(--border-color) !important;
-        }
-        body.dark-theme .info-value.editable input::placeholder {
-            color: #88888f;
-        }
 
-        /* ========== LAYOUT ========== */
+        /* ============================================================
+           ========== LAYOUT =========================================
+           ============================================================ */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             background: var(--bg-body);
             color: var(--text-primary);
             transition: background 0.3s, color 0.3s;
             font-family: 'Segoe UI', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
         }
         .layout { display: flex; min-height: 100vh; }
 
-        /* ========== SIDEBAR ========== */
+        /* ============================================================
+           ========== SIDEBAR ========================================
+           ============================================================ */
         .sidebar {
             width: 220px;
             background: var(--bg-sidebar);
@@ -103,11 +98,10 @@
             z-index: 100;
             box-shadow: 2px 0 8px rgba(0,0,0,0.2);
             overflow: hidden;
-            transition: width 0.25s ease;
+            transition: width 0.25s ease, transform 0.3s ease;
         }
         .sidebar.collapsed { width: 52px; min-width: 52px; }
 
-        /* --- ЛОГОТИП ТА КНОПКА --- */
         .sidebar-logo {
             display: flex;
             flex-direction: column;
@@ -133,7 +127,6 @@
         .sidebar-logo .unit { font-size: 15px; font-weight: bold; color: white; }
         .sidebar-logo .sub  { font-size: 11px; color: #90caf9; margin-top: 2px; }
 
-        /* Кнопка перемикання – на всю ширину */
         .toggle-btn {
             background: none;
             border: none;
@@ -147,26 +140,13 @@
             line-height: 1;
             margin-top: 4px;
         }
-        .toggle-btn:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            transform: translateY(-2px);
-        }
+        .toggle-btn:hover { background: rgba(255,255,255,0.1); color: white; }
 
-        /* --- СТАН ЗГОРНУТОГО САЙДБАРУ --- */
-        .sidebar.collapsed .sidebar-logo {
-            padding: 14px 0 6px;
-        }
+        .sidebar.collapsed .sidebar-logo { padding: 14px 0 6px; }
         .sidebar.collapsed .logo-text-block {
-            opacity: 0;
-            height: 0;
-            pointer-events: none;
-            margin: 0;
+            opacity: 0; height: 0; pointer-events: none; margin: 0;
         }
-        .sidebar.collapsed .toggle-btn {
-            font-size: 20px;
-            padding: 8px 0;
-        }
+        .sidebar.collapsed .toggle-btn { font-size: 20px; padding: 8px 0; }
 
         /* ========== НАВІГАЦІЯ ========== */
         .sidebar-nav { flex: 1; padding: 8px 0; overflow-y: auto; overflow-x: hidden; }
@@ -196,6 +176,7 @@
             transition: background 0.15s, color 0.15s;
             white-space: nowrap;
             overflow: hidden;
+            min-height: 44px;
         }
         .nav-item:hover { background: var(--bg-sidebar-hover); color: var(--text-sidebar-active); }
         .nav-item.active {
@@ -204,8 +185,6 @@
             border-left-color: #90caf9;
             font-weight: 600;
         }
-
-        /* ========== АНІМАЦІЯ ІКОНОК ПРИ НАВЕДЕННІ ========== */
         .nav-item .icon {
             font-size: 16px;
             width: 20px;
@@ -214,13 +193,8 @@
             display: inline-block;
             transition: transform 0.3s ease;
         }
-        .nav-item:hover .icon {
-            transform: translateY(-2px);
-        }
-        .nav-item.active .icon {
-            transform: translateY(-2px);
-        }
-
+        .nav-item:hover .icon { transform: translateY(-2px); }
+        .nav-item.active .icon { transform: translateY(-2px); }
         .nav-item .label { transition: opacity 0.2s; }
         .sidebar.collapsed .nav-item .label { opacity: 0; width: 0; overflow: hidden; }
         .sidebar.collapsed .nav-item { justify-content: center; padding: 10px 0; }
@@ -230,7 +204,7 @@
         .sidebar-footer {
             padding: 12px 16px;
             border-top: 1px solid rgba(255,255,255,0.1);
-            transition: padding 0.2s, opacity 0.2s;
+            transition: padding 0.2s;
             flex-shrink: 0;
             text-align: center;
         }
@@ -244,20 +218,15 @@
             color: #90caf9;
             padding: 4px 10px;
             border-radius: 4px;
-            transition: background 0.3s, transform 0.3s;
+            transition: background 0.3s;
             margin-bottom: 6px;
             display: inline-block;
             width: 100%;
+            min-height: 40px;
         }
-        .theme-toggle:hover {
-            background: rgba(255,255,255,0.1);
-            transform: translateY(-2px);
-        }
-        .theme-toggle:active {
-            transform: scale(0.9);
-        }
+        .theme-toggle:hover { background: rgba(255,255,255,0.1); }
+        .theme-toggle:active { transform: scale(0.9); }
 
-        /* Версія – показуємо повний текст або тільки номер */
         .version {
             display: block;
             font-size: 11px;
@@ -267,20 +236,11 @@
             overflow: hidden;
             transition: opacity 0.2s, height 0.2s, margin 0.2s;
         }
-        .version .version-short {
-            display: none;
-        }
-        .sidebar.collapsed .version .version-full {
-            display: none;
-        }
-        .sidebar.collapsed .version .version-short {
-            display: inline;
-        }
+        .version .version-short { display: none; }
+        .sidebar.collapsed .version .version-full { display: none; }
+        .sidebar.collapsed .version .version-short { display: inline; }
 
-        .logout-form {
-            width: 100%;
-            margin: 0 0 4px 0;
-        }
+        .logout-form { width: 100%; margin: 0 0 4px 0; }
         .logout-btn {
             background: none;
             border: none;
@@ -292,22 +252,12 @@
             justify-content: center;
             gap: 6px;
             width: 100%;
-            padding: 6px 0;
+            padding: 8px 0;
             border-radius: 4px;
-            transition: background 0.2s, transform 0.2s;
+            min-height: 40px;
+            transition: background 0.2s;
         }
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            /*transform: scale(1.02);*/
-        }
-        /*.logout-btn .logout-icon {*/
-        /*    transition: transform 0.3s ease;*/
-        /*}*/
-        .logout-btn:hover .logout-icon {
-            transform: translateY(-2px);
-        }
-
+        .logout-btn:hover { background: rgba(255,255,255,0.1); color: white; }
         .sidebar.collapsed .logout-text { display: none; }
         .sidebar.collapsed .logout-icon { font-size: 18px; }
 
@@ -323,69 +273,36 @@
         .main-content.collapsed { margin-left: 52px; }
 
         /* ========== ГЛОБАЛЬНІ СТИЛІ ========== */
-        .btn-primary {
-            background: var(--bg-btn-primary);
-            color: white;
-        }
-        .btn-primary:hover:not(:disabled) {
-            background: var(--bg-btn-primary-hover);
-        }
+        .btn-primary { background: var(--bg-btn-primary); color: white; }
+        .btn-primary:hover:not(:disabled) { background: var(--bg-btn-primary-hover); }
 
         .card {
             background: var(--bg-card);
             box-shadow: 0 4px 12px var(--shadow-color);
             transition: background 0.3s, box-shadow 0.3s;
         }
-        .card-header {
-            background: var(--bg-header);
-            transition: background 0.3s;
-        }
-        .info-value {
-            background: var(--bg-editable);
-            color: var(--text-primary);
-            transition: background 0.3s, color 0.3s;
-        }
-        .info-value:hover {
-            background: var(--bg-hover);
-        }
-        .info-value.editable {
-            background: var(--bg-input);
-            border-color: var(--border-color);
-        }
+        .card-header { background: var(--bg-header); transition: background 0.3s; }
+        .info-value { background: var(--bg-editable); color: var(--text-primary); }
+        .info-value:hover { background: var(--bg-hover); }
+        .info-value.editable { background: var(--bg-input); border-color: var(--border-color); }
         .info-value.editable input,
         .info-value.editable select,
         .info-value.editable textarea {
             background: var(--bg-input);
             color: var(--text-primary);
         }
-        .sub-table th {
-            background: var(--bg-table-header);
-            color: white;
-            transition: background 0.3s;
-        }
-        .sub-table td {
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-primary);
-        }
-        .sub-table tr:hover td {
-            background: var(--bg-table-hover);
-        }
-        .modal {
-            background: var(--bg-card);
-            color: var(--text-primary);
-        }
-        .modal-overlay {
-            background: var(--bg-modal);
-        }
+        .sub-table th { background: var(--bg-table-header); color: white; transition: background 0.3s; }
+        .sub-table td { border-bottom: 1px solid var(--border-color); color: var(--text-primary); }
+        .sub-table tr:hover td { background: var(--bg-table-hover); }
+        .modal { background: var(--bg-card); color: var(--text-primary); }
+        .modal-overlay { background: var(--bg-modal); }
         input, select, textarea {
             background: var(--bg-input);
             color: var(--text-primary);
             border-color: var(--border-color);
             transition: background 0.3s, color 0.3s, border-color 0.3s;
         }
-        .section-title {
-            color: var(--text-primary);
-        }
+        .section-title { color: var(--text-primary); }
         .toolbar {
             background: var(--bg-toolbar);
             box-shadow: 0 1px 4px var(--shadow-color);
@@ -395,51 +312,15 @@
         .toast.error { background: var(--toast-error); }
         .btn-secondary { background: #6c757d; color: white; }
         .btn-secondary:hover { background: #5a6268; }
+        .dark-theme .btn-secondary { background: #4a4a55; color: white; }
+        .dark-theme .btn-secondary:hover { background: #5a5a65; }
+        .dark-theme .btn-warning { background: #b87a2a; color: white; }
+        .dark-theme .btn-warning:hover { background: #c88a3a; }
+        .dark-theme .btn-danger { background: #a03040; color: white; }
+        .dark-theme .btn-danger:hover { background: #b04050; }
+        .dark-theme .btn-outline { border-color: rgba(255,255,255,0.3); color: #ccc; }
+        .dark-theme .btn-outline:hover { background: rgba(255,255,255,0.1); }
 
-        .dark-theme .btn-secondary {
-            background: #4a4a55;
-            color: white;
-        }
-        .dark-theme .btn-secondary:hover {
-            background: #5a5a65;
-        }
-        .dark-theme .btn-warning {
-            background: #b87a2a;
-            color: white;
-        }
-        .dark-theme .btn-warning:hover {
-            background: #c88a3a;
-        }
-        .dark-theme .btn-danger {
-            background: #a03040;
-            color: white;
-        }
-        .dark-theme .btn-danger:hover {
-            background: #b04050;
-        }
-        .dark-theme .btn-outline {
-            border-color: rgba(255,255,255,0.3);
-            color: #ccc;
-        }
-        .dark-theme .btn-outline:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
-        @media (max-width: 768px) {
-            .sidebar { width: 52px; min-width: 52px; }
-            .sidebar .logo-text-block { opacity: 0; height: 0; pointer-events: none; margin:0; }
-            .sidebar .sidebar-logo { padding: 14px 0 6px; }
-            .sidebar .toggle-btn { font-size: 20px; padding: 8px 0; }
-            .sidebar .version .version-full { display: none; }
-            .sidebar .version .version-short { display: inline; }
-            .sidebar .nav-item .label { opacity: 0; width: 0; overflow: hidden; }
-            .sidebar .nav-item { justify-content: center; padding: 10px 0; }
-            .sidebar .nav-item.active { border-left-color: transparent; border-right: 3px solid #90caf9; }
-            .sidebar .nav-section-title { opacity: 0; height: 0; padding: 0; }
-            .sidebar .logout-text { display: none; }
-            .sidebar .logout-icon { font-size: 18px; }
-            .main-content { margin-left: 52px; }
-        }
         .btn-print {
             background: #607d8b;
             color: white;
@@ -451,15 +332,513 @@
             font-weight: 600;
             transition: background 0.2s;
         }
-        .btn-print:hover {
-            background: #546e7a;
+        .btn-print:hover { background: #546e7a; }
+        .dark-theme .btn-print { background: #4a5a6a; color: white; }
+        .dark-theme .btn-print:hover { background: #5a6a7a; }
+
+        /* ============================================================
+           ========== ПЛАНШЕТИ (до 1024px) ===========================
+           ============================================================ */
+        @media (max-width: 1024px) {
+            .sidebar { width: 200px; }
+            .main-content { margin-left: 200px; }
+            .col-rank, .rank-cell { width: 100px !important; min-width: 100px !important; }
+            .col-name, .name-cell { width: 110px !important; min-width: 110px !important; }
         }
-        .dark-theme .btn-print {
-            background: #4a5a6a;
-            color: white;
+
+        /* ============================================================
+           ========== МОБІЛЬНІ – ЗАГАЛЬНЕ (до 768px) =================
+           ============================================================ */
+        @media (max-width: 768px) {
+
+            /* ----- Сайдбар ----- */
+            .sidebar { width: 52px; min-width: 52px; }
+            .sidebar .logo-text-block { opacity: 0; height: 0; pointer-events: none; margin: 0; }
+            .sidebar .sidebar-logo { padding: 10px 0 6px; }
+            .sidebar .toggle-btn { font-size: 20px; padding: 8px 0; }
+            .sidebar .version .version-full { display: none; }
+            .sidebar .version .version-short { display: inline; }
+            .sidebar .nav-item .label { opacity: 0; width: 0; overflow: hidden; }
+            .sidebar .nav-item { justify-content: center; padding: 10px 0; min-height: 48px; }
+            .sidebar .nav-item.active { border-left-color: transparent; border-right: 3px solid #90caf9; }
+            .sidebar .nav-section-title { opacity: 0; height: 0; padding: 0; }
+            .sidebar .logout-text { display: none; }
+            .sidebar .logout-icon { font-size: 18px; }
+            .main-content { margin-left: 52px !important; }
+
+            /* ----- Контейнер ----- */
+            .container { padding: 10px !important; }
+
+            /* ----- Тулбар ----- */
+            .toolbar {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 8px !important;
+                padding: 10px 12px !important;
+            }
+            .toolbar input,
+            .toolbar select,
+            .toolbar button,
+            .toolbar .btn,
+            .toolbar .current-date,
+            .toolbar h2 {
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+            .toolbar h2 { font-size: 16px !important; text-align: center; }
+            .toolbar .filter-group {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                width: 100%;
+            }
+
+            /* ----- Статистика ----- */
+            .stats-row { flex-direction: column !important; align-items: stretch !important; gap: 8px; }
+            .stats-group { flex-wrap: wrap; justify-content: center; }
+            .stat-card {
+                min-width: 70px !important;
+                padding: 6px 10px !important;
+                flex: 1 1 calc(50% - 8px);
+            }
+            .stat-card .num { font-size: 20px !important; }
+            .stat-card .lbl { font-size: 10px !important; }
+
+            /* ----- Модальні вікна ----- */
+            .modal {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 16px !important;
+                margin: 0;
+                border-radius: 12px;
+                max-height: 95vh !important;
+            }
+            .modal-overlay { padding: 8px !important; }
+            .modal-actions {
+                flex-direction: column !important;
+                gap: 8px !important;
+            }
+            .modal-actions .btn,
+            .modal-actions button {
+                width: 100% !important;
+                justify-content: center;
+            }
+            .form-row,
+            .form-row-3 {
+                grid-template-columns: 1fr !important;
+                gap: 8px !important;
+            }
+
+            /* ----- Форми ----- */
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                font-size: 15px !important; /* запобігає авто-зуму на iOS */
+                padding: 10px 12px !important;
+            }
+            .form-group input[type="number"] { width: 100% !important; }
+
+            /* ----- Кнопки ----- */
+            .btn {
+                min-height: 40px;
+                padding: 8px 12px !important;
+                font-size: 13px !important;
+            }
+            .btn-sm {
+                min-height: 32px;
+                padding: 5px 8px !important;
+                font-size: 11px !important;
+            }
+            .btn-xs {
+                min-height: 28px;
+                padding: 3px 6px !important;
+            }
+
+            /* ----- Пагінація ----- */
+            .pagination {
+                flex-wrap: wrap;
+                gap: 4px;
+                justify-content: center;
+            }
+            .pagination button { min-width: 40px; min-height: 40px; }
+            .pagination .page-info {
+                width: 100%;
+                text-align: center;
+                font-size: 12px;
+                padding: 4px 0;
+            }
+            .load-more-container .btn { width: 100%; }
+
+            /* ----- Toast ----- */
+            .toast {
+                left: 10px !important;
+                right: 10px !important;
+                bottom: 10px !important;
+                text-align: center;
+                font-size: 13px;
+            }
+
+            /* ----- Підтаблиці ----- */
+            .sub-table { display: block; overflow-x: auto; white-space: nowrap; }
+
+            /* ----- Картки полів (pCard) ----- */
+            .info-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
+            .info-value { font-size: 13px; }
+
+            /* ----- Section-title ----- */
+            .section-title {
+                font-size: 15px !important;
+                margin: 16px 0 10px 0 !important;
+            }
+
+            /* ----- Нотатки ----- */
+            .notes-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
+
+            /* ----- Вкладки ----- */
+            .table-tabs { flex-direction: column; gap: 6px; }
+            .tab-btn { width: 100%; text-align: center; min-height: 44px; }
+
+            /* ----- Легенда ----- */
+            .legend { flex-direction: column; align-items: flex-start; gap: 4px; }
         }
-        .dark-theme .btn-print:hover {
-            background: #5a6a7a;
+
+        /* ============================================================
+           ========== ТАБЛИЦІ ЯК КАРТКИ (крім .no-cards) =============
+           ============================================================ */
+        @media (max-width: 768px) {
+
+            .table-wrap:not(.no-cards) {
+                overflow: visible !important;
+                max-height: none !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+
+            .table-wrap:not(.no-cards) table thead { display: none !important; }
+
+            .table-wrap:not(.no-cards) table {
+                display: block !important;
+                min-width: 0 !important;
+                width: 100% !important;
+                background: transparent !important;
+            }
+            .table-wrap:not(.no-cards) table tbody {
+                display: block !important;
+                width: 100% !important;
+            }
+
+            .table-wrap:not(.no-cards) table tbody tr {
+                display: block !important;
+                background: var(--bg-card) !important;
+                border-radius: 12px !important;
+                margin-bottom: 12px !important;
+                padding: 12px 14px !important;
+                box-shadow: 0 2px 8px var(--shadow-color) !important;
+                border: 1px solid var(--border-color) !important;
+            }
+
+            .table-wrap:not(.no-cards) table td {
+                position: static !important;
+                left: auto !important;
+                display: block !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                text-align: left !important;
+                padding: 6px 0 !important;
+                border: none !important;
+                border-bottom: 1px dashed var(--border-color) !important;
+                background: transparent !important;
+                color: var(--text-primary) !important;
+                font-size: 13px !important;
+                white-space: normal !important;
+                word-break: break-word !important;
+            }
+
+            .table-wrap:not(.no-cards) table td:last-child {
+                border-bottom: none !important;
+                padding-top: 10px !important;
+            }
+
+            .table-wrap:not(.no-cards) table td[data-label]::before {
+                content: attr(data-label);
+                display: inline-block;
+                font-weight: 600;
+                color: var(--text-secondary);
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+                margin-right: 8px;
+                min-width: 100px;
+            }
+
+            .table-wrap:not(.no-cards) table td[data-label=""]::before {
+                display: none;
+            }
+
+            .table-wrap:not(.no-cards) table td.actions-cell {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 6px !important;
+                justify-content: flex-start !important;
+                padding-top: 10px !important;
+            }
+            .table-wrap:not(.no-cards) table td.actions-cell::before {
+                display: none !important;
+            }
+            .table-wrap:not(.no-cards) table td.actions-cell .btn {
+                flex: 0 0 auto;
+            }
+
+            .table-wrap:not(.no-cards) table td.note-cell,
+            .table-wrap:not(.no-cards) table td.personnel-cell {
+                max-height: none !important;
+                max-width: 100% !important;
+                -webkit-line-clamp: unset !important;
+                display: block !important;
+                overflow: visible !important;
+            }
+        }
+
+        /* ============================================================
+           ========== ВИКЛЮЧЕННЯ: КАЛЕНДАРНІ (.no-cards) =============
+           Для combat-schedule, ppd-schedule, schedule
+           ============================================================ */
+        @media (max-width: 768px) {
+
+            .table-wrap.no-cards {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch;
+                max-height: 70vh !important;
+                box-shadow: 0 1px 4px var(--shadow-color) !important;
+                border-radius: 8px !important;
+                background: var(--bg-card) !important;
+            }
+
+            .table-wrap.no-cards table {
+                display: table !important;
+                min-width: auto !important;
+                width: auto !important;
+                border-collapse: collapse !important;
+                background: var(--bg-card) !important;
+            }
+
+            .table-wrap.no-cards table thead {
+                display: table-header-group !important;
+                background: var(--bg-header) !important;
+            }
+            .table-wrap.no-cards table tbody {
+                display: table-row-group !important;
+            }
+
+            .table-wrap.no-cards table tbody tr {
+                display: table-row !important;
+                background: transparent !important;
+                border-radius: 0 !important;
+                margin-bottom: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            .table-wrap.no-cards table td {
+                display: table-cell !important;
+                width: auto !important;
+                min-width: 26px !important;
+                max-width: none !important;
+                padding: 3px 2px !important;
+                text-align: center !important;
+                font-size: 10px !important;
+                white-space: nowrap !important;
+                color: var(--text-primary) !important;
+                background: var(--bg-card) !important;
+                border: 1px solid var(--border-color) !important;
+                vertical-align: middle !important;
+            }
+
+            .table-wrap.no-cards table td[data-label]::before {
+                display: none !important;
+            }
+
+            .table-wrap.no-cards table thead th {
+                font-size: 9px !important;
+                padding: 4px 2px !important;
+                min-width: 26px !important;
+                color: var(--text-white) !important;
+                background: var(--bg-header) !important;
+                border: 1px solid var(--bg-header) !important;
+                white-space: nowrap !important;
+                text-align: center !important;
+            }
+
+            .table-wrap.no-cards table thead tr:last-child th {
+                font-size: 8px !important;
+                padding: 2px 1px !important;
+                color: #c5cae9 !important;
+            }
+
+            .table-wrap.no-cards table .col-num,
+            .table-wrap.no-cards table .num-cell {
+                min-width: 26px !important;
+                max-width: 30px !important;
+                text-align: center !important;
+                padding: 3px 2px !important;
+            }
+            .table-wrap.no-cards table .col-rank,
+            .table-wrap.no-cards table .rank-cell {
+                min-width: 70px !important;
+                max-width: 90px !important;
+                text-align: left !important;
+                padding-left: 4px !important;
+                font-size: 9px !important;
+                white-space: nowrap !important;
+            }
+            .table-wrap.no-cards table .col-name,
+            .table-wrap.no-cards table .name-cell {
+                min-width: 80px !important;
+                max-width: 110px !important;
+                text-align: left !important;
+                padding-left: 4px !important;
+                font-size: 9px !important;
+                white-space: nowrap !important;
+            }
+
+            .table-wrap.no-cards .cell-badge {
+                font-size: 8px !important;
+                padding: 1px 3px !important;
+                min-width: 20px !important;
+                display: inline-block !important;
+            }
+
+            .table-wrap.no-cards .stats-table {
+                width: 100% !important;
+                min-width: auto !important;
+            }
+            .table-wrap.no-cards .stats-table td,
+            .table-wrap.no-cards .stats-table th {
+                font-size: 10px !important;
+                padding: 4px 3px !important;
+                color: var(--text-primary) !important;
+                background: var(--bg-card) !important;
+                border: 1px solid var(--border-color) !important;
+                white-space: normal !important;
+            }
+            .table-wrap.no-cards .stats-table thead th {
+                background: var(--bg-header) !important;
+                color: var(--text-white) !important;
+            }
+            .table-wrap.no-cards .stats-table td:nth-child(2),
+            .table-wrap.no-cards .stats-table th:nth-child(2) {
+                min-width: 80px !important;
+            }
+            .table-wrap.no-cards .stats-table td:nth-child(3),
+            .table-wrap.no-cards .stats-table th:nth-child(3) {
+                min-width: 90px !important;
+            }
+        }
+
+        /* ============================================================
+           ========== ДУЖЕ МАЛЕНЬКІ ЕКРАНИ (до 480px) ================
+           ============================================================ */
+        @media (max-width: 480px) {
+            .container { padding: 8px !important; }
+
+            .stat-card { flex: 1 1 100%; }
+            .stat-card .num { font-size: 18px !important; }
+
+            .modal { padding: 12px !important; }
+            .modal h2, .modal h3 { font-size: 16px !important; }
+
+            .toolbar { padding: 8px 10px !important; gap: 6px !important; }
+
+            .btn { font-size: 12px !important; padding: 7px 10px !important; }
+            .btn-sm { font-size: 10px !important; padding: 4px 6px !important; }
+
+            .hide-mobile { display: none !important; }
+
+            /* Календарні таблиці ще компактніше */
+            .table-wrap.no-cards table td,
+            .table-wrap.no-cards table th {
+                font-size: 9px !important;
+                padding: 2px 1px !important;
+            }
+            .table-wrap.no-cards .cell-badge {
+                font-size: 7px !important;
+                padding: 0 2px !important;
+            }
+        }
+
+        /* ============================================================
+           ========== ЛАНДШАФТ НА ТЕЛЕФОНІ ===========================
+           ============================================================ */
+        @media (max-width: 900px) and (orientation: landscape) {
+            .sidebar { width: 52px; }
+            .main-content { margin-left: 52px; }
+            .table-wrap:not(.no-cards) { max-height: 55vh !important; }
+            .table-wrap.no-cards { max-height: 55vh !important; }
+            .modal { max-height: 90vh !important; }
+        }
+
+        /* ============================================================
+           ========== ДРУК ============================================
+           ============================================================ */
+        @media print {
+            .sidebar, .toolbar, .no-print, .btn, .btn-print,
+            .pagination, .load-more-container, .legend {
+                display: none !important;
+            }
+            body { background: white !important; color: black !important; }
+            .main-content { margin-left: 0 !important; padding: 0 !important; }
+            .table-wrap {
+                overflow: visible !important;
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                border-radius: 0 !important;
+                max-height: none !important;
+            }
+            .table-wrap table {
+                background: white !important;
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            .table-wrap table thead {
+                display: table-header-group !important;
+                background: #1a237e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .table-wrap table thead th {
+                background: #1a237e !important;
+                color: white !important;
+                border: 1px solid #1a237e !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .table-wrap table td {
+                display: table-cell !important;
+                background: white !important;
+                color: black !important;
+                border: 1px solid #ddd !important;
+                padding: 3px !important;
+                font-size: 9px !important;
+            }
+            .table-wrap table td[data-label]::before { display: none !important; }
+            .table-wrap table tbody tr {
+                display: table-row !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .table-wrap table tbody tr.card-row { display: table-row !important; }
+
+            .dark-theme td { color: black !important; background: white !important; }
+            .dark-theme thead th { background: #1a237e !important; color: white !important; }
+            .dark-theme .table-wrap { background: white !important; }
+
+            @page { size: landscape; margin: 4mm 3mm; }
         }
     </style>
 </th:block>
@@ -467,14 +846,11 @@
 <!-- ===== SIDEBAR HTML ===== -->
 <div th:fragment="sidebar(activePage)" id="sidebar" class="sidebar">
     <div class="sidebar-logo">
-        <!-- Іконка завжди видима -->
         <img src="/favicon.png" alt="Логотип" class="logo-icon">
-        <!-- Текстовий блок -->
         <span class="logo-text-block">
             <div class="unit">БпЛА "СКОПА"</div>
             <div class="sub">Система управління</div>
         </span>
-        <!-- Кнопка згортання/розгортання – на всю ширину -->
         <button class="toggle-btn" id="toggleBtn" title="Згорнути меню">☰</button>
     </div>
 
@@ -488,15 +864,21 @@
             <span class="icon">✈️</span>
             <span class="label">Журнал БпАК</span>
         </a>
-
         <a href="/combat-duty" class="nav-item" th:classappend="${activePage == 'combat-duty' ? 'active' : ''}" title="Бойове чергування">
             <span class="icon">⚔️</span>
             <span class="label">Бойове чергування</span>
         </a>
-
         <a href="/combat-schedule" class="nav-item" th:classappend="${activePage == 'combat-schedule' ? 'active' : ''}" title="БЧ Графік">
             <span class="icon">📊</span>
             <span class="label">БЧ Графік</span>
+        </a>
+        <a href="/ppd-schedule" class="nav-item" th:classappend="${activePage == 'ppd-schedule' ? 'active' : ''}" title="Графік ППД">
+            <span class="icon">📈</span>
+            <span class="label">Графік ППД</span>
+        </a>
+        <a href="/vacations" class="nav-item" th:classappend="${activePage == 'vacations' ? 'active' : ''}" title="Відпустки">
+            <span class="icon">🏖️</span>
+            <span class="label">Відпустки</span>
         </a>
 
         <div class="nav-section-title">Особовий склад</div>
@@ -550,11 +932,15 @@
             var main    = document.querySelector('.main-content');
             var KEY     = 'sidebar_collapsed';
 
-            if (!sidebar) { console.error('Сайдбар не знайдено!'); return; }
-            if (!btn) { console.error('Кнопка toggle не знайдена!'); return; }
+            if (!sidebar) return;
+            if (!btn) return;
+
+            function isMobile() {
+                return window.matchMedia('(max-width: 768px)').matches;
+            }
 
             function applyState(collapsed) {
-                if (collapsed) {
+                if (collapsed || isMobile()) {
                     sidebar.classList.add('collapsed');
                     sidebar.style.width = '52px';
                     sidebar.style.minWidth = '52px';
@@ -567,10 +953,8 @@
                     if (main) { main.classList.remove('collapsed'); main.style.marginLeft = '220px'; }
                     btn.title = 'Згорнути меню';
                 }
-                console.log('Стан сайдбару:', collapsed ? 'згорнуто' : 'розгорнуто');
             }
 
-            // За замовчуванням – згорнуто, якщо в localStorage немає значення
             var stored = localStorage.getItem(KEY);
             var initialCollapsed = (stored === null) ? '1' : stored;
 
@@ -583,10 +967,32 @@
             }, 50);
 
             btn.addEventListener('click', function() {
-                console.log('Клік по кнопці!');
-                var collapsed = !sidebar.classList.contains('collapsed');
-                localStorage.setItem(KEY, collapsed ? '1' : '0');
-                applyState(collapsed);
+                if (isMobile()) {
+                    // На мобільному – сайдбар завжди згорнутий, але дозволяємо розгорнути поверх
+                    var isCollapsed = sidebar.classList.contains('collapsed');
+                    if (isCollapsed) {
+                        sidebar.classList.remove('collapsed');
+                        sidebar.style.width = '220px';
+                        sidebar.style.minWidth = '220px';
+                        // Додаємо оверлей для закриття при кліку поза сайдбаром
+                        var overlay = document.createElement('div');
+                        overlay.id = 'sidebarOverlay';
+                        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;';
+                        overlay.addEventListener('click', function() {
+                            applyState(true);
+                            overlay.remove();
+                        });
+                        document.body.appendChild(overlay);
+                    } else {
+                        applyState(true);
+                        var ov = document.getElementById('sidebarOverlay');
+                        if (ov) ov.remove();
+                    }
+                } else {
+                    var collapsed = !sidebar.classList.contains('collapsed');
+                    localStorage.setItem(KEY, collapsed ? '1' : '0');
+                    applyState(collapsed);
+                }
             });
 
             // ===== ТЕМА =====
@@ -604,6 +1010,22 @@
                     localStorage.setItem('theme', isDark ? 'dark' : 'light');
                 });
             }
+
+            // ===== АВТООНОВЛЕННЯ ПРИ ЗМІНІ РОЗМІРУ =====
+            var resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    var ov = document.getElementById('sidebarOverlay');
+                    if (ov) ov.remove();
+                    if (isMobile()) {
+                        applyState(true);
+                    } else {
+                        var collapsed = localStorage.getItem(KEY) === '1';
+                        applyState(collapsed);
+                    }
+                }, 200);
+            });
         })();
     </script>
 </th:block>

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -70,22 +71,16 @@ public class NoteController {
     }
 
     @PutMapping("/api/{id}")
-    @ResponseBody
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Note note) {
-        try {
-            return service.getById(id)
-                    .map(existing -> {
-                        existing.setTitle(note.getTitle());
-                        existing.setContent(note.getContent());
-                        existing.setColor(note.getColor());
-                        existing.setUpdatedAt(java.time.LocalDateTime.now());
-                        return ResponseEntity.ok(service.save(existing));
-                    })
-                    .orElse(ResponseEntity.notFound().build());
-        } catch (Exception e) {
-            log.error("Помилка оновлення нотатки id={}", id, e);
-            return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
-        }
+        return service.getById(id)
+                .map(existing -> {
+                    existing.setTitle(note.getTitle());
+                    existing.setContent(note.getContent());
+                    existing.setColor(note.getColor()); // тепер працює
+                    existing.setUpdatedAt(LocalDateTime.now());
+                    return ResponseEntity.ok(service.save(existing));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PatchMapping("/api/{id}/pin")

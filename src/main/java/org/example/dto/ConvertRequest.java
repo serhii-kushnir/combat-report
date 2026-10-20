@@ -13,7 +13,9 @@ public class ConvertRequest {
     private int distance;
     private int speed;
     private int course;
+    private int courseDirection;
     private int manualAltitude;
     private int targetAltitude;
-    private String explosionArea;   // НОВЕ ПОЛЕ – Район підриву
+    private String explosionArea;
+    private String crewPersonnel;   // <-- НОВЕ ПОЛЕ
 }

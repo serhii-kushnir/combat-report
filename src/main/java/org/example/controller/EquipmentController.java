@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import org.example.entity.Equipment;
+import org.example.entity.EquipmentHistory;
 import org.example.service.EquipmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -30,62 +32,118 @@ public class EquipmentController {
 
     @GetMapping
     public String list(Model model) {
-        // Для відображення беремо всі записи (або можна з пагінацією на фронтенді)
-        model.addAttribute("items", service.getAll());
         return "equipment";
     }
 
-    // ===== API З ПАГІНАЦІЄЮ =====
+    // ===== АКТИВНІ (з пагінацією) =====
+// ===== АКТИВНІ (з пошуком) =====
     @GetMapping("/api")
     @ResponseBody
-    public Page<Equipment> getApi(@RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(defaultValue = "20") int size) {
-        return service.getPage(page, size);
+    public Page<Equipment> getActive(@RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "20") int size,
+                                     @RequestParam(required = false) String search) {
+        return service.searchActive(search, page, size);
+    }
+
+    // ===== АРХІВНІ (з пошуком) =====
+    @GetMapping("/api/archived")
+    @ResponseBody
+    public Page<Equipment> getArchived(@RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "20") int size,
+                                       @RequestParam(required = false) String search) {
+        return service.searchArchived(search, page, size);
+    }
+
+    @PatchMapping("/api/{id}/toggle-pinned")
+    @ResponseBody
+    public ResponseEntity<?> togglePinned(@PathVariable Long id, Principal principal) {
+        try {
+            String changedBy = principal != null ? principal.getName() : "system";
+            service.togglePinned(id, changedBy);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("Помилка зміни закріплення equipment id={}", id, e);
+            return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
+        }
+    }
+
+    // ===== ІСТОРІЯ =====
+    @GetMapping("/api/{id}/history")
+    @ResponseBody
+    public ResponseEntity<List<EquipmentHistory>> getHistory(@PathVariable Long id) {
+        try {
+            List<EquipmentHistory> history = service.getHistory(id);
+            return ResponseEntity.ok(history);
+        } catch (Exception e) {
+            log.error("Помилка отримання історії для equipment id={}", id, e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping("/api")
     @ResponseBody
-    public ResponseEntity<?> addItem(@RequestBody Equipment equipment) {
+    public ResponseEntity<?> addItem(@RequestBody Equipment equipment,
+                                     Principal principal) {
         try {
             if (equipment.getName() == null || equipment.getName().trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("Назва не може бути порожньою");
             }
-            Equipment saved = service.save(equipment);
+            // Перевірка унікальності назви
+            if (service.existsByName(equipment.getName().trim())) {
+                return ResponseEntity.badRequest().body("Запис із назвою '" + equipment.getName().trim() + "' вже існує.");
+            }
+            String changedBy = principal != null ? principal.getName() : "system";
+            Equipment saved = service.save(equipment, changedBy);
             return ResponseEntity.ok(saved);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
         }
     }
 
+    @GetMapping("/api/pinned/active")
+    @ResponseBody
+    public List<Equipment> getPinnedActive() {
+        return service.getPinnedActive();
+    }
+
+    @GetMapping("/api/pinned/archived")
+    @ResponseBody
+    public List<Equipment> getPinnedArchived() {
+        return service.getPinnedArchived();
+    }
+
     @PutMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> updateEquipment(@PathVariable Long id,
-                                             @RequestBody Map<String, Object> updates) {
+                                             @RequestBody Map<String, Object> updates,
+                                             Principal principal) {
         try {
-            Equipment eq = service.getById(id);
-            if (updates.containsKey("name")) {
-                String newName = (String) updates.get("name");
-                if (newName == null || newName.trim().isEmpty()) {
-                    return ResponseEntity.badRequest().body("Назва не може бути порожньою");
-                }
-                eq.setName(newName);
-            }
-            if (updates.containsKey("quantity")) {
-                eq.setQuantity(((Number) updates.get("quantity")).intValue());
-            }
-            if (updates.containsKey("unit")) {
-                eq.setUnit((String) updates.get("unit"));
-            }
-            if (updates.containsKey("crew")) {
-                eq.setCrew((String) updates.get("crew"));
-            }
-            if (updates.containsKey("location")) {
-                eq.setLocation((String) updates.get("location"));
-            }
-            if (updates.containsKey("category")) {
-                eq.setCategory((String) updates.get("category"));
-            }
-            service.save(eq);
+            String changedBy = principal != null ? principal.getName() : "system";
+            Equipment updated = service.updateFields(id, updates, changedBy);
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
+        }
+    }
+
+    @PatchMapping("/api/{id}/archive")
+    @ResponseBody
+    public ResponseEntity<?> archive(@PathVariable Long id, Principal principal) {
+        try {
+            String changedBy = principal != null ? principal.getName() : "system";
+            service.archive(id, changedBy);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
+        }
+    }
+
+    @PatchMapping("/api/{id}/unarchive")
+    @ResponseBody
+    public ResponseEntity<?> unarchive(@PathVariable Long id, Principal principal) {
+        try {
+            String changedBy = principal != null ? principal.getName() : "system";
+            service.unarchive(id, changedBy);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
@@ -104,10 +162,10 @@ public class EquipmentController {
     }
 
     @GetMapping("/api/export")
-    @ResponseBody
-    public ResponseEntity<byte[]> exportToXlsx() {
+    public ResponseEntity<byte[]> exportToXlsx(
+            @RequestParam(name = "includeArchived", defaultValue = "true") boolean includeArchived) {
         try {
-            byte[] data = service.exportToXlsx();
+            byte[] data = service.exportToXlsx(includeArchived);
             String filename = URLEncoder.encode("Майно.xlsx", StandardCharsets.UTF_8)
                     .replace("+", "%20");
             return ResponseEntity.ok()
@@ -118,6 +176,26 @@ public class EquipmentController {
         } catch (Exception e) {
             log.error("Помилка експорту майна", e);
             return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    // Додаємо метод дублювання
+    @PostMapping("/api/{id}/duplicate")
+    @ResponseBody
+    public ResponseEntity<?> duplicate(@PathVariable Long id,
+                                       @RequestBody(required = false) Map<String, String> payload,
+                                       Principal principal) {
+        try {
+            String changedBy = principal != null ? principal.getName() : "system";
+            String newName = payload != null ? payload.get("name") : null;
+            Equipment duplicated = service.duplicate(id, changedBy, newName);
+            return ResponseEntity.ok(duplicated);
+        } catch (IllegalArgumentException e) {
+            log.warn("Помилка дублювання: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Помилка дублювання equipment id={}", id, e);
+            return ResponseEntity.internalServerError().body("Помилка: " + e.getMessage());
         }
     }
 }
