@@ -83,6 +83,86 @@
             from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes fadeInRow {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Анімація появи заголовка деталей */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .details-section {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+            animation-delay: 0.15s;
+        }
+
+        .details-header {
+            animation: slideDown 0.4s ease forwards;
+            opacity: 0;
+            animation-delay: 0.20s;
+        }
+
+        .details-header .count-badge {
+            animation: fadeIn 0.3s ease forwards;
+            opacity: 0;
+            animation-delay: 0.35s;
+        }
+
+        /* Анімація рядків основної таблиці */
+        #vacBody tr {
+            animation: fadeInRow 0.3s ease forwards;
+            opacity: 0;
+        }
+        #vacBody tr:nth-child(1) { animation-delay: 0.02s; }
+        #vacBody tr:nth-child(2) { animation-delay: 0.04s; }
+        #vacBody tr:nth-child(3) { animation-delay: 0.06s; }
+        #vacBody tr:nth-child(4) { animation-delay: 0.08s; }
+        #vacBody tr:nth-child(5) { animation-delay: 0.10s; }
+        #vacBody tr:nth-child(6) { animation-delay: 0.12s; }
+        #vacBody tr:nth-child(7) { animation-delay: 0.14s; }
+        #vacBody tr:nth-child(8) { animation-delay: 0.16s; }
+        #vacBody tr:nth-child(9) { animation-delay: 0.18s; }
+        #vacBody tr:nth-child(10) { animation-delay: 0.20s; }
+        #vacBody tr:nth-child(11) { animation-delay: 0.22s; }
+        #vacBody tr:nth-child(12) { animation-delay: 0.24s; }
+        #vacBody tr:nth-child(13) { animation-delay: 0.26s; }
+        #vacBody tr:nth-child(14) { animation-delay: 0.28s; }
+        #vacBody tr:nth-child(15) { animation-delay: 0.30s; }
+        #vacBody tr:nth-child(16) { animation-delay: 0.32s; }
+        #vacBody tr:nth-child(17) { animation-delay: 0.34s; }
+        #vacBody tr:nth-child(18) { animation-delay: 0.36s; }
+        #vacBody tr:nth-child(19) { animation-delay: 0.38s; }
+        #vacBody tr:nth-child(20) { animation-delay: 0.40s; }
+
+        /* Анімація рядків таблиці подробиць */
+        #detailsBody tr {
+            animation: fadeInRow 0.3s ease forwards;
+            opacity: 0;
+        }
+        #detailsBody tr:nth-child(1) { animation-delay: 0.02s; }
+        #detailsBody tr:nth-child(2) { animation-delay: 0.04s; }
+        #detailsBody tr:nth-child(3) { animation-delay: 0.06s; }
+        #detailsBody tr:nth-child(4) { animation-delay: 0.08s; }
+        #detailsBody tr:nth-child(5) { animation-delay: 0.10s; }
+        #detailsBody tr:nth-child(6) { animation-delay: 0.12s; }
+        #detailsBody tr:nth-child(7) { animation-delay: 0.14s; }
+        #detailsBody tr:nth-child(8) { animation-delay: 0.16s; }
+        #detailsBody tr:nth-child(9) { animation-delay: 0.18s; }
+        #detailsBody tr:nth-child(10) { animation-delay: 0.20s; }
+        #detailsBody tr:nth-child(11) { animation-delay: 0.22s; }
+        #detailsBody tr:nth-child(12) { animation-delay: 0.24s; }
+        #detailsBody tr:nth-child(13) { animation-delay: 0.26s; }
+        #detailsBody tr:nth-child(14) { animation-delay: 0.28s; }
+        #detailsBody tr:nth-child(15) { animation-delay: 0.30s; }
+        #detailsBody tr:nth-child(16) { animation-delay: 0.32s; }
+        #detailsBody tr:nth-child(17) { animation-delay: 0.34s; }
+        #detailsBody tr:nth-child(18) { animation-delay: 0.36s; }
+        #detailsBody tr:nth-child(19) { animation-delay: 0.38s; }
+        #detailsBody tr:nth-child(20) { animation-delay: 0.40s; }
         .toolbar { animation: fadeIn 0.4s ease forwards; opacity: 0; }
         .table-wrap { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.05s; }
         .details-section { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.10s; }
