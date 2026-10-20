@@ -143,19 +143,26 @@ public class VacationController {
         try (XSSFWorkbook wb = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-            Sheet sheet = wb.createSheet("Відпустки " + year);
-
             CellStyle headerStyle = createHeaderStyle(wb);
             CellStyle centerStyle = createCenterStyle(wb);
             CellStyle leftStyle = createLeftStyle(wb);
             CellStyle badgeStyle = createBadgeStyle(wb);
+            CellStyle h1HeaderStyle = createColoredHeaderStyle(wb, 21, 101, 192);
+            CellStyle h2HeaderStyle = createColoredHeaderStyle(wb, 106, 27, 154);
+            CellStyle totalHeaderStyle = createColoredHeaderStyle(wb, 46, 125, 50);
+
+            // ===== АРКУШ 1: ГРАФІК =====
+            Sheet sheet = wb.createSheet("Графік " + year);
 
             Row headerRow = sheet.createRow(0);
             headerRow.setHeightInPoints(30);
             for (int i = 0; i < HEADERS.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(HEADERS[i]);
-                cell.setCellStyle(headerStyle);
+                if (i == 15) cell.setCellStyle(h1HeaderStyle);
+                else if (i == 16) cell.setCellStyle(h2HeaderStyle);
+                else if (i == 17) cell.setCellStyle(totalHeaderStyle);
+                else cell.setCellStyle(headerStyle);
             }
 
             int rowNum = 1;
@@ -191,9 +198,103 @@ public class VacationController {
                 sheet.setColumnWidth(i, (i < 3 ? 20 : 8) * 256);
             }
 
+            // ===== АРКУШ 2: ДЕТАЛІ =====
+            Sheet detailsSheet = wb.createSheet("Деталі " + year);
+
+            String[] DETAIL_HEADERS = {
+                    "№", "Звання", "ПІБ", "Початок", "Кінець", "Днів", "Тип", "Примітка"
+            };
+            int[] DETAIL_WIDTHS = {8, 20, 30, 14, 14, 10, 26, 40};
+
+            Row detHeader = detailsSheet.createRow(0);
+            detHeader.setHeightInPoints(28);
+            for (int i = 0; i < DETAIL_HEADERS.length; i++) {
+                Cell cell = detHeader.createCell(i);
+                cell.setCellValue(DETAIL_HEADERS[i]);
+                cell.setCellStyle(headerStyle);
+                detailsSheet.setColumnWidth(i, DETAIL_WIDTHS[i] * 256);
+            }
+
+            // Збираємо всі відпустки
+            List<VacationDetail> allDetails = new ArrayList<>();
+            for (Map<String, Object> row : rows) {
+                Integer pNum = (Integer) row.get("personnelNumber");
+                String rank = (String) row.get("rank");
+                String shortName = (String) row.get("shortName");
+                @SuppressWarnings("unchecked")
+                List<org.example.entity.Vacation> vacs =
+                        (List<org.example.entity.Vacation>) row.get("vacations");
+                if (vacs == null) continue;
+                for (org.example.entity.Vacation v : vacs) {
+                    VacationDetail vd = new VacationDetail();
+                    vd.personnelNumber = pNum;
+                    vd.rank = rank;
+                    vd.shortName = shortName;
+                    vd.startDate = v.getStartDate();
+                    vd.endDate = v.getEndDate();
+                    vd.type = v.getVacationType();
+                    vd.note = v.getNote();
+                    if (vd.startDate != null && vd.endDate != null) {
+                        vd.days = (int) java.time.temporal.ChronoUnit.DAYS.between(vd.startDate, vd.endDate) + 1;
+                    }
+                    allDetails.add(vd);
+                }
+            }
+
+            // Сортуємо за ПІБ, потім за датою
+            allDetails.sort((a, b) -> {
+                String na = a.shortName != null ? a.shortName.toLowerCase() : "";
+                String nb = b.shortName != null ? b.shortName.toLowerCase() : "";
+                if (!na.equals(nb)) return na.compareTo(nb);
+                return a.startDate.compareTo(b.startDate);
+            });
+
+            int detRowNum = 1;
+            for (VacationDetail vd : allDetails) {
+                Row r = detailsSheet.createRow(detRowNum++);
+                r.setHeightInPoints(22);
+                setCell(r, 0, vd.personnelNumber, centerStyle);
+                setCell(r, 1, vd.rank, leftStyle);
+                setCell(r, 2, vd.shortName, leftStyle);
+                setCell(r, 3, vd.startDate != null ? vd.startDate.format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "", centerStyle);
+                setCell(r, 4, vd.endDate != null ? vd.endDate.format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "", centerStyle);
+                setCell(r, 5, vd.days, centerStyle);
+                setCell(r, 6, vd.type, leftStyle);
+                setCell(r, 7, vd.note, leftStyle);
+            }
+
             wb.write(out);
             return out.toByteArray();
         }
+    }
+
+    // Допоміжний клас для деталей
+    private static class VacationDetail {
+        Integer personnelNumber;
+        String rank;
+        String shortName;
+        java.time.LocalDate startDate;
+        java.time.LocalDate endDate;
+        Integer days = 0;
+        String type;
+        String note;
+    }
+
+    // Новий стиль для кольорових заголовків
+    private CellStyle createColoredHeaderStyle(Workbook wb, int r, int g, int b) {
+        CellStyle s = wb.createCellStyle();
+        Font f = wb.createFont();
+        f.setBold(true);
+        f.setColor(IndexedColors.WHITE.getIndex());
+        s.setFont(f);
+        s.setFillForegroundColor(new org.apache.poi.xssf.usermodel.XSSFColor(
+                new byte[]{(byte)r, (byte)g, (byte)b}, null));
+        s.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        s.setAlignment(HorizontalAlignment.CENTER);
+        s.setVerticalAlignment(VerticalAlignment.CENTER);
+        s.setWrapText(true);
+        setBorders(s);
+        return s;
     }
 
     private void setCell(Row row, int col, Object value, CellStyle style) {
