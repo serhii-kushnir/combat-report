@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>ВЛК — графік і черга</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link th:replace="~{fragments :: sidebar-css}">
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --bg-card: #ffffff;
+            --bg-toolbar: #ffffff;
+            --bg-header: #1a237e;
+            --bg-table: #ffffff;
+            --bg-hover: #f5f9ff;
+            --text-primary: #222;
+            --text-secondary: #555;
+            --text-light: #999;
+            --text-white: #fff;
+            --border-color: #ddd;
+            --shadow-color: rgba(0,0,0,0.08);
+            --shadow-light: rgba(0,0,0,0.05);
+            --btn-nav-bg: #e8eaf6;
+            --btn-nav-color: #1a237e;
+            --btn-today-bg: #1976d2;
+            --btn-today-hover: #1565c0;
+            --btn-primary-bg: #1565c0;
+            --btn-primary-hover: #0d47a1;
+            --btn-success-bg: #2e7d32;
+            --btn-success-hover: #1b5e20;
+            --btn-danger-bg: #c62828;
+            --btn-danger-hover: #b71c1c;
+            --btn-warning-bg: #e65100;
+            --btn-warning-hover: #bf360c;
+            --btn-print-bg: #607d8b;
+            --btn-print-hover: #546e7a;
+            --toast-success: #2e7d32;
+            --toast-error: #c62828;
+            --stat-num-color: #1976d2;
+            --stat-active: #e65100;
+            --stat-upcoming: #1565c0;
+            --stat-past: #757575;
+            --h2-color: #00838f;
+            --total-color: #2e7d32;
+        }
+        body.dark-theme {
+            --bg-body: #1e1e24;
+            --bg-card: #2d2d35;
+            --bg-toolbar: #2d2d35;
+            --bg-header: #2a2a3a;
+            --bg-table: #2d2d35;
+            --bg-hover: #3a3a44;
+            --text-primary: #e8e8ec;
+            --text-secondary: #b0b0b8;
+            --text-light: #88888f;
+            --text-white: #fff;
+            --border-color: #3d3d48;
+            --shadow-color: rgba(0,0,0,0.4);
+            --shadow-light: rgba(0,0,0,0.3);
+            --btn-nav-bg: #3a3a4a;
+            --btn-nav-color: #90caf9;
+            --btn-today-bg: #4a7ab5;
+            --btn-today-hover: #5a8ac5;
+            --btn-primary-bg: #2a4a7a;
+            --btn-primary-hover: #3a5a8a;
+            --btn-success-bg: #2a4a2a;
+            --btn-success-hover: #3a5a3a;
+            --btn-danger-bg: #6a2a3a;
+            --btn-danger-hover: #7a3a4a;
+            --btn-warning-bg: #7a5a2a;
+            --btn-warning-hover: #8a6a3a;
+            --btn-print-bg: #4a5a6a;
+            --btn-print-hover: #5a6a7a;
+            --stat-num-color: #5a8ac5;
+            --stat-active: #ffb74d;
+            --stat-upcoming: #90caf9;
+            --stat-past: #9e9e9e;
+            --h2-color: #4dd0e1;
+            --total-color: #81c784;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            margin: 0;
+            transition: background 0.3s, color 0.3s;
+        }
+        .container { padding: 16px 20px; max-width: 100%; overflow-x: auto; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInRow {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .toolbar { animation: fadeIn 0.4s ease forwards; opacity: 0; }
+        .stats-row { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.05s; }
+        .table-wrap { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.10s; }
+        .legend { animation: fadeIn 0.4s ease forwards; opacity: 0; animation-delay: 0.15s; }
+        .details-section { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.20s; }
+        .details-header  { animation: slideDown 0.4s ease forwards; opacity: 0; animation-delay: 0.25s; }
+
+        #gridBody tr, #queueBody tr { animation: fadeInRow 0.3s ease forwards; opacity: 0; }
+        #gridBody tr:nth-child(1), #queueBody tr:nth-child(1) { animation-delay: 0.02s; }
+        #gridBody tr:nth-child(2), #queueBody tr:nth-child(2) { animation-delay: 0.04s; }
+        #gridBody tr:nth-child(3), #queueBody tr:nth-child(3) { animation-delay: 0.06s; }
+        #gridBody tr:nth-child(4), #queueBody tr:nth-child(4) { animation-delay: 0.08s; }
+        #gridBody tr:nth-child(5), #queueBody tr:nth-child(5) { animation-delay: 0.10s; }
+        #gridBody tr:nth-child(6), #queueBody tr:nth-child(6) { animation-delay: 0.12s; }
+        #gridBody tr:nth-child(7), #queueBody tr:nth-child(7) { animation-delay: 0.14s; }
+        #gridBody tr:nth-child(8), #queueBody tr:nth-child(8) { animation-delay: 0.16s; }
+        #gridBody tr:nth-child(9), #queueBody tr:nth-child(9) { animation-delay: 0.18s; }
+        #gridBody tr:nth-child(10), #queueBody tr:nth-child(10) { animation-delay: 0.20s; }
+
+        /* ===== ТУЛБАР ===== */
+        .toolbar {
+            background: var(--bg-toolbar);
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+        .toolbar h2 { margin: 0; flex: 1; font-size: 18px; }
+
+        .btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            line-height: 1.4;
+            box-shadow: 0 1px 2px var(--shadow-light);
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 8px var(--shadow-color); }
+        .btn:active { transform: translateY(1px); }
+        .btn-primary { background: var(--btn-primary-bg); color: white; }
+        .btn-primary:hover { background: var(--btn-primary-hover); }
+        .btn-success { background: var(--btn-success-bg); color: white; }
+        .btn-success:hover { background: var(--btn-success-hover); }
+        .btn-danger { background: var(--btn-danger-bg); color: white; }
+        .btn-danger:hover { background: var(--btn-danger-hover); }
+        .btn-warning { background: var(--btn-warning-bg); color: white; }
+        .btn-warning:hover { background: var(--btn-warning-hover); }
+        .btn-print { background: var(--btn-print-bg); color: white; }
+        .btn-print:hover { background: var(--btn-print-hover); }
+        .btn-nav { background: var(--btn-nav-bg); color: var(--btn-nav-color); }
+        .btn-nav:hover { background: #c5cae9; }
+        .btn-today { background: var(--btn-today-bg); color: white; }
+        .btn-today:hover { background: var(--btn-today-hover); }
+        .btn-sm { padding: 4px 9px; font-size: 11px; }
+
+        select {
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* ===== СТАТИСТИКА ===== */
+        .stats-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 10px 18px;
+            text-align: center;
+            box-shadow: 0 1px 4px var(--shadow-color);
+            min-width: 110px;
+        }
+        .stat-card .num { font-size: 26px; font-weight: bold; color: var(--stat-num-color); }
+        .stat-card .num.active   { color: var(--stat-active); }
+        .stat-card .num.upcoming { color: var(--stat-upcoming); }
+        .stat-card .num.past     { color: var(--stat-past); }
+        .stat-card .lbl { font-size: 11px; color: var(--text-secondary); }
+
+        /* ===== ТАБЛИЦІ ===== */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            background: var(--bg-card);
+            margin-bottom: 16px;
+        }
+        #gridWrap { max-height: 60vh; }
+        #queueWrap { max-height: 60vh; }
+        table {
+            border-collapse: collapse;
+            background: var(--bg-table);
+            width: 100%;
+        }
+        thead tr th {
+            background: var(--bg-header);
+            color: var(--text-white);
+            font-size: 12px;
+            padding: 10px 6px;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        th[data-col] { cursor: pointer; user-select: none; }
+        th[data-col]:hover { filter: brightness(1.15); }
+        th.sort-asc::after  { content: ' ▲'; font-size: 10px; }
+        th.sort-desc::after { content: ' ▼'; font-size: 10px; }
+
+        /* ===== СІТКА ===== */
+        #gridTable { min-width: 1400px; }
+        .col-num  { width: 36px; min-width: 36px; }
+        .col-rank { width: 110px; min-width: 110px; text-align: center !important; }
+        .col-name { width: 130px; min-width: 130px; text-align: center !important; }
+        .col-month { width: 70px; min-width: 70px; }
+        .col-total { width: 70px; min-width: 70px; }
+
+        .col-num, .col-rank, .col-name,
+        .num-cell, .rank-cell, .name-cell {
+            position: sticky;
+            z-index: 2;
+            background: var(--bg-table);
+        }
+        thead .col-num, thead .col-rank, thead .col-name { z-index: 6; background: var(--bg-header); }
+        .col-num, .num-cell { left: 0; }
+        .col-rank, .rank-cell { left: 36px; }
+        .col-name, .name-cell { left: calc(36px + 110px); }
+
+        td {
+            padding: 4px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            font-size: 12px;
+            color: var(--text-primary);
+        }
+        td.name-cell {
+            text-align: left;
+            padding: 4px 6px 4px 8px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        td.rank-cell {
+            text-align: left;
+            padding: 4px 4px 4px 6px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        td.num-cell {
+            color: var(--text-light);
+            font-size: 11px;
+            text-align: center;
+        }
+        tr:hover td { background: var(--bg-hover); }
+        tr:hover td.num-cell,
+        tr:hover td.rank-cell,
+        tr:hover td.name-cell { background: var(--bg-hover); }
+
+        .month-cell {
+            cursor: pointer;
+            height: 30px;
+            vertical-align: middle;
+            transition: background 0.15s;
+            padding: 0 !important;
+        }
+        .month-cell:hover { background: var(--bg-hover) !important; }
+
+        .days-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            background: var(--h2-color);
+            color: white;
+            min-width: 22px;
+        }
+        .total-cell {
+            font-weight: 700;
+            font-size: 12px;
+            text-align: center;
+            padding: 4px;
+            background: rgba(46, 125, 50, 0.1);
+            color: var(--total-color);
+        }
+        th.total-col { background: var(--total-color) !important; }
+
+        /* ===== ЧЕРГА ===== */
+        #queueTable { min-width: 1150px; }
+        .col-queue { width: 60px; min-width: 60px; }
+
+        .col-queue, .queue-cell {
+            position: sticky;
+            z-index: 2;
+            background: var(--bg-table);
+        }
+        thead .col-queue { z-index: 6; background: var(--bg-header); }
+        .col-queue, .queue-cell { left: 0; }
+
+        td.queue-cell {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--stat-num-color);
+        }
+
+        /* ===== СТАТУСИ ЧЕРГИ ===== */
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .status-active   { background: #ffe0b2; color: #e65100; }
+        .status-upcoming { background: #bbdefb; color: #0d47a1; }
+        .status-past     { background: #e0e0e0; color: #616161; }
+
+        /* ===== БЕЙДЖІ ЗАКЛЮЧЕНЬ ===== */
+        .conclusion-badge {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .conclusion-fit       { background: #c8e6c9; color: #1b5e20; }
+        .conclusion-limited   { background: #ffe0b2; color: #e65100; }
+        .conclusion-unfit     { background: #ffcdd2; color: #b71c1c; }
+        .conclusion-temp      { background: #cfd8dc; color: #37474f; }
+        .conclusion-treatment { background: #bbdefb; color: #0d47a1; }
+        .conclusion-default   { background: #e0e0e0; color: #555; }
+
+        /* ===== ЛЕГЕНДА ===== */
+        .legend {
+            padding: 10px 14px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 2px 6px var(--shadow-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+        .legend .legend-title { margin-right: 4px; font-weight: 600; }
+        .legend-divider { width: 1px; height: 18px; background: var(--border-color); margin: 0 4px; }
+
+        /* ===== ЗАГОЛОВОК СЕКЦІЇ ЧЕРГИ ===== */
+        .details-section {
+            margin-top: 20px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            overflow: hidden;
+        }
+        .details-header {
+            padding: 12px 16px;
+            background: var(--bg-header);
+            color: var(--text-white);
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .details-header .count-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        /* ===== МОДАЛКА ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            width: 620px;
+            max-width: 96vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .modal h2 { margin: 0 0 16px; font-size: 18px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            box-sizing: border-box;
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
+
+        .vlk-list { margin-top: 16px; }
+        .vlk-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--bg-hover);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .vlk-item .vlk-dates { font-weight: 600; }
+        .vlk-item .vlk-type { color: var(--text-secondary); font-size: 12px; margin-left: 8px; }
+        .vlk-item .vlk-actions { display: flex; gap: 4px; }
+
+        .toast {
+            position: fixed; bottom: 20px; right: 20px;
+            padding: 10px 18px; border-radius: 8px;
+            color: white; font-size: 13px; font-weight: 600;
+            opacity: 0; transition: opacity 0.3s;
+            z-index: 9999;
+        }
+        .toast.show { opacity: 1; }
+        .toast.ok { background: var(--toast-success); }
+        .toast.err { background: var(--toast-error); }
+
+        .print-only { display: none; }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 768px) {
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar select, .toolbar button { width: 100%; }
+            .modal { padding: 16px; width: 100%; }
+            .form-row { grid-template-columns: 1fr; }
+            .col-rank { width: 80px; min-width: 80px; }
+            .col-name { width: 90px; min-width: 90px; }
+            .col-month { width: 60px; min-width: 60px; }
+            .col-num { width: 28px; min-width: 28px; }
+            .rank-cell { left: 28px; }
+            .name-cell { left: calc(28px + 80px); }
+            .col-queue { width: 44px; min-width: 44px; }
+            th { font-size: 10px !important; padding: 6px 3px !important; }
+            td { font-size: 10px !important; }
+            .days-badge { font-size: 9px; padding: 1px 4px; min-width: 18px; }
+        }
+
+        /* ===== ДРУК ===== */
+        @media print {
+            *,
+            *::before,
+            *::after {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            /* ===== ХОВАЄМО ІНТЕРАКТИВ ===== */
+            .sidebar, .toolbar, .no-print, .btn, .btn-print, .btn-success,
+            .btn-primary, .btn-danger, .btn-warning, .btn-nav, .btn-today,
+            select, input, .modal-overlay, .stats-row, .legend {
+                display: none !important;
+            }
+            .print-only { display: block !important; }
+
+            /* ===== БІЛИЙ ФОН НА ВСІХ РІВНЯХ (перекриває темну тему) ===== */
+            html, body,
+            .layout, .main-content, .container,
+            .table-wrap, .details-section, .details-table-wrap,
+            body.dark-theme,
+            body.dark-theme .layout,
+            body.dark-theme .main-content,
+            body.dark-theme .container {
+                background: #ffffff !important;
+                background-color: #ffffff !important;
+                background-image: none !important;
+                color: #000000 !important;
+            }
+            html, body { margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+            .layout { display: block !important; }
+            .main-content { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow: visible !important; }
+            .container { margin: 0 !important; padding: 2mm !important; width: 100% !important; max-width: 100% !important; box-sizing: border-box !important; overflow: visible !important; }
+
+            .print-title {
+                text-align: center !important;
+                font-size: 12px !important;
+                font-weight: bold !important;
+                margin: 0 0 2mm 0 !important;
+                color: black !important;
+            }
+
+            /* ===== КОНТЕЙНЕРИ ТАБЛИЦЬ ===== */
+            .table-wrap, .details-section {
+                overflow: visible !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                border: none !important;
+                max-height: none !important;
+                width: 100% !important;
+                margin: 0 0 4mm 0 !important;
+            }
+            .details-header {
+                background: #1a237e !important;
+                color: white !important;
+                padding: 4px 8px !important;
+                font-size: 9px !important;
+                border-bottom: 1px solid #0d1654 !important;
+            }
+            .details-header .count-badge { display: none !important; }
+
+            /* ===== ТАБЛИЦЯ ===== */
+            table {
+                border-collapse: separate !important;
+                border-spacing: 0 !important;
+                border: 1px solid #000 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                table-layout: fixed !important;
+                background: white !important;
+                font-size: 6.5px !important;
+                page-break-inside: auto !important;
+            }
+            thead { display: table-header-group !important; }
+            tbody { display: table-row-group !important; }
+            tr { page-break-inside: avoid !important; break-inside: avoid !important; }
+
+            .col-num, .num-cell, .col-rank, .rank-cell, .col-name, .name-cell,
+            .col-queue, .queue-cell, .col-month, .month-cell, .col-total, .total-cell {
+                position: static !important;
+                left: auto !important;
+                z-index: auto !important;
+            }
+
+            /* Місяці — повні назви */
+            .col-month {
+                width: 5% !important;
+                min-width: 0 !important;
+                font-size: 5.5px !important;
+            }
+
+            th, td {
+                border: 1px solid #000 !important;
+                box-sizing: border-box !important;
+                overflow: visible !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 2px 1px !important;
+                font-size: 6.5px !important;
+                text-align: center !important;
+                vertical-align: middle !important;
+                line-height: 1.2 !important;
+                word-break: break-word !important;
+            }
+            td.name-cell, td.rank-cell { text-align: left !important; padding: 2px 3px !important; }
+
+            tbody tr:nth-child(even) td { background: #f2f2f5 !important; }
+
+            thead th {
+                background: #1a237e !important;
+                color: #ffffff !important;
+                border: 1px solid #000 !important;
+                padding: 3px 1px !important;
+                font-size: 6px !important;
+                font-weight: bold !important;
+            }
+            thead th.total-col { background: #2e7d32 !important; border-color: #000 !important; }
+
+            /* ===== ЗБЕРЕЖЕНІ КОЛЬОРИ ===== */
+            td.total-cell {
+                background: #e8f5e9 !important;
+                color: #1b5e20 !important;
+                font-weight: 700 !important;
+            }
+            td.queue-cell {
+                background: #e8f0fe !important;
+                color: #1565c0 !important;
+                font-weight: 700 !important;
+            }
+            .days-badge {
+                display: inline-block !important;
+                padding: 1px 3px !important;
+                font-size: 6.5px !important;
+                font-weight: 700 !important;
+                border-radius: 2px !important;
+                background: #00838f !important;
+                color: #ffffff !important;
+                min-width: 14px !important;
+            }
+            .status-badge, .conclusion-badge {
+                display: inline-block !important;
+                padding: 1px 3px !important;
+                font-size: 6px !important;
+                font-weight: 700 !important;
+                border-radius: 2px !important;
+                white-space: nowrap !important;
+            }
+            .status-active    { background: #ffe0b2 !important; color: #e65100 !important; }
+            .status-upcoming  { background: #bbdefb !important; color: #0d47a1 !important; }
+            .status-past      { background: #e0e0e0 !important; color: #424242 !important; }
+            .conclusion-fit       { background: #c8e6c9 !important; color: #1b5e20 !important; }
+            .conclusion-limited   { background: #ffe0b2 !important; color: #e65100 !important; }
+            .conclusion-unfit     { background: #ffcdd2 !important; color: #b71c1c !important; }
+            .conclusion-temp      { background: #cfd8dc !important; color: #263238 !important; }
+            .conclusion-treatment { background: #bbdefb !important; color: #0d47a1 !important; }
+            .conclusion-default   { background: #e0e0e0 !important; color: #424242 !important; }
+
+            /* Темна тема не повинна протікати у друк */
+            body.dark-theme td { color: black !important; background: #ffffff !important; }
+            body.dark-theme tbody tr:nth-child(even) td { background: #f2f2f5 !important; }
+            body.dark-theme thead th { background: #1a237e !important; color: white !important; }
+
+            @page { size: A4 landscape; margin: 5mm 4mm; }
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments :: sidebar('vlk')}"></div>
+    <div class="main-content">
+        <div class="container">
+
+            <h1 class="print-only print-title">
+                ВЛК — <span id="printYear"></span>
+            </h1>
+
+            <!-- ТУЛБАР -->
+            <div class="toolbar">
+                <h2>🩺 Військово-лікарська комісія (ВЛК)</h2>
+                <select id="yearFilter"></select>
+                <button class="btn btn-nav" id="prevYearBtn">◀</button>
+                <button class="btn btn-today" id="currentYearBtn">Поточний рік</button>
+                <button class="btn btn-nav" id="nextYearBtn">▶</button>
+                <button class="btn btn-success" id="addBtn">+ Додати ВЛК</button>
+                <button class="btn btn-primary" id="exportBtn">📊 Експорт XLSX</button>
+                <button class="btn btn-print" onclick="window.print()">🖨️ Друк</button>
+            </div>
+
+            <!-- ========== ТАБЛИЦЯ 1: МІСЯЧНА СІТКА ========== -->
+            <div class="table-wrap no-cards" id="gridWrap">
+                <table id="gridTable">
+                    <thead>
+                    <tr>
+                        <th class="col-num"  data-col="num"       onclick="sortGridBy('num')">№</th>
+                        <th class="col-rank" data-col="rank"      onclick="sortGridBy('rank')">Звання</th>
+                        <th class="col-name" data-col="name"      onclick="sortGridBy('name')">ПІБ</th>
+                        <th class="col-month" data-col="m1"  onclick="sortGridBy('m1')">Січень</th>
+                        <th class="col-month" data-col="m2"  onclick="sortGridBy('m2')">Лютий</th>
+                        <th class="col-month" data-col="m3"  onclick="sortGridBy('m3')">Березень</th>
+                        <th class="col-month" data-col="m4"  onclick="sortGridBy('m4')">Квітень</th>
+                        <th class="col-month" data-col="m5"  onclick="sortGridBy('m5')">Травень</th>
+                        <th class="col-month" data-col="m6"  onclick="sortGridBy('m6')">Червень</th>
+                        <th class="col-month" data-col="m7"  onclick="sortGridBy('m7')">Липень</th>
+                        <th class="col-month" data-col="m8"  onclick="sortGridBy('m8')">Серпень</th>
+                        <th class="col-month" data-col="m9"  onclick="sortGridBy('m9')">Вересень</th>
+                        <th class="col-month" data-col="m10" onclick="sortGridBy('m10')">Жовтень</th>
+                        <th class="col-month" data-col="m11" onclick="sortGridBy('m11')">Листопад</th>
+                        <th class="col-month" data-col="m12" onclick="sortGridBy('m12')">Грудень</th>
+                        <th class="col-total total-col" data-col="total" onclick="sortGridBy('total')">Всього</th>
+                    </tr>
+                    </thead>
+                    <tbody id="gridBody">
+                    <tr><td colspan="16" style="text-align:center;padding:32px;color:var(--text-light)">Завантаження...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ЛЕГЕНДА -->
+            <div class="legend">
+                <span class="legend-title">Заключення:</span>
+                <span class="conclusion-badge conclusion-fit">Придатний</span>
+                <span class="conclusion-badge conclusion-limited">Обмежено</span>
+                <span class="conclusion-badge conclusion-unfit">Непридатний</span>
+                <span class="conclusion-badge conclusion-temp">Тимчасово</span>
+                <span class="conclusion-badge conclusion-treatment">Лікування</span>
+                <div class="legend-divider"></div>
+                <span class="legend-title">Статуси:</span>
+                <span class="status-badge status-active">Триває</span>
+                <span class="status-badge status-upcoming">Майбутній</span>
+                <span class="status-badge status-past">Завершено</span>
+            </div>
+
+            <!-- ========== ТАБЛИЦЯ 2: ЧЕРГА ========== -->
+            <div class="details-section">
+                <div class="details-header">
+                    <span>📋 Черга ВЛК — хто за ким іде</span>
+                    <span class="count-badge" id="queueCount">0</span>
+                </div>
+
+                <!-- СТАТИСТИКА ЧЕРГИ -->
+                <div class="stats-row" style="padding: 12px 16px 0 16px;">
+                    <div class="stat-card">
+                        <div class="num" id="statTotal">—</div>
+                        <div class="lbl">Всього</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="num active" id="statActive">—</div>
+                        <div class="lbl">Триває</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="num upcoming" id="statUpcoming">—</div>
+                        <div class="lbl">Майбутніх</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="num past" id="statPast">—</div>
+                        <div class="lbl">Завершено</div>
+                    </div>
+                </div>
+
+                <div class="table-wrap no-cards" id="queueWrap" style="margin:12px 16px 16px; box-shadow:none; border:1px solid var(--border-color);">
+                    <table id="queueTable">
+                        <thead>
+                        <tr>
+                            <th class="col-queue" data-col="queueNum" onclick="sortQueueBy('queueNum')">Черга</th>
+                            <th style="width:50px;" data-col="personnelNumber" onclick="sortQueueBy('personnelNumber')">№</th>
+                            <th style="width:120px; text-align:left; padding-left:8px;" data-col="rank" onclick="sortQueueBy('rank')">Звання</th>
+                            <th style="width:150px; text-align:left; padding-left:8px;" data-col="shortName" onclick="sortQueueBy('shortName')">ПІБ</th>
+                            <th style="width:90px;" data-col="startDate" onclick="sortQueueBy('startDate')">Початок</th>
+                            <th style="width:90px;" data-col="endDate" onclick="sortQueueBy('endDate')">Кінець</th>
+                            <th style="width:55px;" data-col="days" onclick="sortQueueBy('days')">Днів</th>
+                            <th style="width:130px;" data-col="vlkType" onclick="sortQueueBy('vlkType')">Тип ВЛК</th>
+                            <th style="width:150px;" data-col="conclusion" onclick="sortQueueBy('conclusion')">Заключення</th>
+                            <th style="width:110px;" data-col="status" onclick="sortQueueBy('status')">Статус</th>
+                            <th data-col="note" onclick="sortQueueBy('note')">Примітка</th>
+                            <th class="no-print" style="width:90px;">Дії</th>
+                        </tr>
+                        </thead>
+                        <tbody id="queueBody">
+                        <tr><td colspan="12" style="text-align:center;padding:32px;color:var(--text-light)">Завантаження...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ===== МОДАЛКА ФОРМИ ===== -->
+<div class="modal-overlay" id="formModal">
+    <div class="modal">
+        <h2 id="modalTitle">Додати ВЛК</h2>
+        <input type="hidden" id="editId">
+        <div class="form-group">
+            <label>Особа *</label>
+            <select id="fPersonnel">
+                <option value="">— Оберіть особу —</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Початок *</label>
+                <input type="date" id="fStartDate" required>
+            </div>
+            <div class="form-group">
+                <label>Кінець *</label>
+                <input type="date" id="fEndDate" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Тип ВЛК</label>
+                <select id="fVlkType">
+                    <option value="">— Не вказано —</option>
+                    <option value="Планова">Планова</option>
+                    <option value="За станом здоров'я">За станом здоров'я</option>
+                    <option value="При переведенні">При переведенні</option>
+                    <option value="При звільненні">При звільненні</option>
+                    <option value="За направленням">За направленням</option>
+                    <option value="Повторна">Повторна</option>
+                    <option value="Інше">Інше</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Заключення</label>
+                <select id="fConclusion">
+                    <option value="">— Не вказано —</option>
+                    <option value="Придатний">Придатний</option>
+                    <option value="Обмежено придатний">Обмежено придатний</option>
+                    <option value="Непридатний">Непридатний</option>
+                    <option value="Тимчасово непридатний">Тимчасово непридатний</option>
+                    <option value="Потребує лікування">Потребує лікування</option>
+                    <option value="Потребує обстеження">Потребує обстеження</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Примітка</label>
+            <textarea id="fNote" rows="2" style="resize:vertical;width:100%;padding:8px 10px;border:1px solid var(--border-color);border-radius:6px;font-size:13px;font-family:inherit;background:var(--bg-card);color:var(--text-primary);box-sizing:border-box;"></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="btn" onclick="closeModal('formModal')" style="background:#eee;color:#333">Скасувати</button>
+            <button class="btn btn-primary" onclick="saveVlk()">Зберегти</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== МОДАЛКА СПИСКУ (клік по місяцю) ===== -->
+<div class="modal-overlay" id="listModal">
+    <div class="modal">
+        <h2 id="listTitle">ВЛК</h2>
+        <div id="vlkList" class="vlk-list"></div>
+        <div class="modal-actions">
+            <button class="btn btn-success" onclick="openAddForPerson()">+ Додати</button>
+            <button class="btn" onclick="closeModal('listModal')" style="background:#eee;color:#333">Закрити</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script th:replace="~{fragments :: sidebar-js}"></script>
+<script>
+    (function() {
+        let currentYear = new Date().getFullYear();
+
+        // Дані
+        let gridData = [];
+        let queueData = [];
+        let currentPersonId = null;
+
+        // Сортування
+        let gridSortCol = 'num';
+        let gridSortDir = 1;
+        let queueSortCol = 'queueNum';
+        let queueSortDir = 1;
+
+        init();
+
+        async function init() {
+            await loadYears();
+            await loadPersonnel();
+            await Promise.all([loadGrid(), loadQueue()]);
+            bindEvents();
+        }
+
+        function bindEvents() {
+            document.getElementById('yearFilter').onchange = function() {
+                currentYear = parseInt(this.value);
+                loadAll();
+            };
+            document.getElementById('prevYearBtn').onclick = () => {
+                const years = Array.from(document.getElementById('yearFilter').options)
+                    .map(o => parseInt(o.value)).filter(v => !isNaN(v));
+                const prev = years.filter(y => y < currentYear).sort((a,b)=>b-a)[0];
+                if (prev) { currentYear = prev; document.getElementById('yearFilter').value = prev; loadAll(); }
+            };
+            document.getElementById('nextYearBtn').onclick = () => {
+                const years = Array.from(document.getElementById('yearFilter').options)
+                    .map(o => parseInt(o.value)).filter(v => !isNaN(v));
+                const next = years.filter(y => y > currentYear).sort((a,b)=>a-b)[0];
+                if (next) { currentYear = next; document.getElementById('yearFilter').value = next; loadAll(); }
+            };
+            document.getElementById('currentYearBtn').onclick = () => {
+                currentYear = new Date().getFullYear();
+                document.getElementById('yearFilter').value = currentYear;
+                loadAll();
+            };
+            document.getElementById('addBtn').onclick = () => openForm(null);
+            document.getElementById('exportGridBtn').onclick = () => {
+                window.location.href = '/vlk/export?year=' + currentYear;
+            };
+            document.getElementById('exportQueueBtn').onclick = () => {
+                window.location.href = '/vlk/export/queue?year=' + currentYear;
+            };
+        }
+
+        function loadAll() {
+            loadGrid();
+            loadQueue();
+        }
+
+        async function loadPersonnel() {
+            try {
+                const res = await fetch('/personnel/api?page=0&size=1000');
+                const data = await res.json();
+                const list = data.content || [];
+                const sel = document.getElementById('fPersonnel');
+                sel.innerHTML = '<option value="">— Оберіть особу —</option>';
+                list.sort((a,b) => (a.personnelNumber||0) - (b.personnelNumber||0)).forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    const rank = p.rank || '';
+                    const name = (p.lastName||'') + ' ' + (p.firstName||'') + ' ' + (p.middleName||'');
+                    opt.textContent = (rank ? rank + ' ' : '') + name.trim();
+                    sel.appendChild(opt);
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadYears() {
+            try {
+                const res = await fetch('/vlk/api/years');
+                const years = await res.json();
+                const sel = document.getElementById('yearFilter');
+                sel.innerHTML = '';
+                if (!years.includes(new Date().getFullYear())) years.push(new Date().getFullYear());
+                years.sort((a,b) => b-a).forEach(y => {
+                    const opt = document.createElement('option');
+                    opt.value = y;
+                    opt.textContent = y;
+                    if (y === currentYear) opt.selected = true;
+                    sel.appendChild(opt);
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        // ============================================================
+        //  ТАБЛИЦЯ 1: МІСЯЧНА СІТКА
+        // ============================================================
+        async function loadGrid() {
+            try {
+                const res = await fetch('/vlk/api?year=' + currentYear);
+                if (!res.ok) throw new Error('Network error');
+                gridData = await res.json();
+                gridSortCol = 'num';
+                gridSortDir = 1;
+                renderGrid();
+                updateGridSortArrows();
+
+                const printYearEl = document.getElementById('printYear');
+                if (printYearEl) printYearEl.textContent = currentYear;
+            } catch (e) {
+                console.error(e);
+                showToast('Помилка завантаження графіка', 'err');
+            }
+        }
+
+        function getGridSortValue(row, col) {
+            if (col === 'num')   return row.personnelNumber ?? row.id ?? 0;
+            if (col === 'rank')  return row.rank || '';
+            if (col === 'name')  return row.shortName || '';
+            if (col === 'total') return row.totalDays || 0;
+            if (col.startsWith('m')) {
+                const m = parseInt(col.substring(1));
+                return (row.months && row.months[m]) ? row.months[m] : 0;
+            }
+            return '';
+        }
+
+        function sortGridBy(col) {
+            if (gridSortCol === col) gridSortDir *= -1;
+            else { gridSortCol = col; gridSortDir = 1; }
+            renderGrid();
+            updateGridSortArrows();
+        }
+        window.sortGridBy = sortGridBy;
+
+        function updateGridSortArrows() {
+            document.querySelectorAll('#gridTable thead th[data-col]').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+                if (th.dataset.col === gridSortCol) {
+                    th.classList.add(gridSortDir === 1 ? 'sort-asc' : 'sort-desc');
+                }
+            });
+        }
+
+        function renderGrid() {
+            const tbody = document.getElementById('gridBody');
+            if (!gridData || !gridData.length) {
+                tbody.innerHTML = '<tr><td colspan="16" style="text-align:center;padding:32px;color:var(--text-light)">Немає особового складу</td></tr>';
+                return;
+            }
+
+            const sorted = [...gridData].sort((a, b) => {
+                let va = getGridSortValue(a, gridSortCol);
+                let vb = getGridSortValue(b, gridSortCol);
+                if (typeof va === 'number' && typeof vb === 'number') return (va - vb) * gridSortDir;
+                va = String(va).toLowerCase();
+                vb = String(vb).toLowerCase();
+                if (va < vb) return -1 * gridSortDir;
+                if (va > vb) return 1 * gridSortDir;
+                return 0;
+            });
+
+            let html = '';
+            sorted.forEach((row, idx) => {
+                const num = row.personnelNumber ?? (idx + 1);
+                let rowHtml = `<tr>
+                    <td class="num-cell">${num}</td>
+                    <td class="rank-cell">${escapeHtml(row.rank)}</td>
+                    <td class="name-cell">${escapeHtml(row.shortName)}</td>`;
+
+                const months = row.months || {};
+                for (let m = 1; m <= 12; m++) {
+                    const days = months[m] || 0;
+                    let badge = '';
+                    if (days > 0) badge = `<span class="days-badge">${days}</span>`;
+                    rowHtml += `<td class="month-cell" data-pid="${row.id}" data-month="${m}" onclick="openList(event, this)">${badge}</td>`;
+                }
+                rowHtml += `<td class="total-cell">${row.totalDays || 0}</td>`;
+                rowHtml += `</tr>`;
+                html += rowHtml;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // ============================================================
+        //  ТАБЛИЦЯ 2: ЧЕРГА
+        // ============================================================
+        async function loadQueue() {
+            try {
+                const res = await fetch('/vlk/api/queue?year=' + currentYear);
+                if (!res.ok) throw new Error('Network error');
+                queueData = await res.json();
+                queueSortCol = 'queueNum';
+                queueSortDir = 1;
+                renderQueue();
+                updateQueueSortArrows();
+                renderQueueStats();
+            } catch (e) {
+                console.error(e);
+                showToast('Помилка завантаження черги', 'err');
+            }
+        }
+
+        function renderQueueStats() {
+            const total = queueData.length;
+            const active = queueData.filter(r => r.status === 'active').length;
+            const upcoming = queueData.filter(r => r.status === 'upcoming').length;
+            const past = queueData.filter(r => r.status === 'past').length;
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statActive').textContent = active;
+            document.getElementById('statUpcoming').textContent = upcoming;
+            document.getElementById('statPast').textContent = past;
+            document.getElementById('queueCount').textContent = total;
+        }
+
+        function getQueueSortValue(row, col) {
+            if (col === 'queueNum') return row.queueNum ?? 0;
+            if (col === 'personnelNumber') return row.personnelNumber ?? 0;
+            if (col === 'rank') return row.rank || '';
+            if (col === 'shortName') return row.shortName || '';
+            if (col === 'startDate') return row.startDate || '';
+            if (col === 'endDate') return row.endDate || '';
+            if (col === 'days') return row.days || 0;
+            if (col === 'vlkType') return row.vlkType || '';
+            if (col === 'conclusion') return row.conclusion || '';
+            if (col === 'status') {
+                const p = { active: 0, upcoming: 1, past: 2 };
+                return p[row.status] ?? 3;
+            }
+            if (col === 'note') return row.note || '';
+            return '';
+        }
+
+        function sortQueueBy(col) {
+            if (queueSortCol === col) queueSortDir *= -1;
+            else { queueSortCol = col; queueSortDir = 1; }
+            renderQueue();
+            updateQueueSortArrows();
+        }
+        window.sortQueueBy = sortQueueBy;
+
+        function updateQueueSortArrows() {
+            document.querySelectorAll('#queueTable thead th[data-col]').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+                if (th.dataset.col === queueSortCol) {
+                    th.classList.add(queueSortDir === 1 ? 'sort-asc' : 'sort-desc');
+                }
+            });
+        }
+
+        function renderQueue() {
+            const tbody = document.getElementById('queueBody');
+            if (!queueData || !queueData.length) {
+                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:32px;color:var(--text-light)">Записів ВЛК немає</td></tr>';
+                return;
+            }
+
+            const sorted = [...queueData].sort((a, b) => {
+                let va = getQueueSortValue(a, queueSortCol);
+                let vb = getQueueSortValue(b, queueSortCol);
+                if (typeof va === 'number' && typeof vb === 'number') return (va - vb) * queueSortDir;
+                va = String(va).toLowerCase();
+                vb = String(vb).toLowerCase();
+                if (va < vb) return -1 * queueSortDir;
+                if (va > vb) return 1 * queueSortDir;
+                return 0;
+            });
+
+            tbody.innerHTML = sorted.map(row => `
+                <tr>
+                    <td class="queue-cell">${row.queueNum ?? '—'}</td>
+                    <td class="num-cell">${row.personnelNumber ?? '—'}</td>
+                    <td class="rank-cell">${escapeHtml(row.rank) || '—'}</td>
+                    <td class="name-cell">${escapeHtml(row.shortName)}</td>
+                    <td>${fmtDate(row.startDate)}</td>
+                    <td>${fmtDate(row.endDate)}</td>
+                    <td><strong>${row.days ?? 0}</strong></td>
+                    <td style="text-align:left;padding-left:6px;font-size:11px;">${escapeHtml(row.vlkType) || '—'}</td>
+                    <td>${conclusionBadge(row.conclusion)}</td>
+                    <td>${statusBadge(row.status)}</td>
+                    <td style="text-align:left;padding-left:6px;font-size:11px;max-width:220px;white-space:pre-wrap;word-break:break-word;">${escapeHtml(row.note) || '—'}</td>
+                    <td class="actions-cell no-print">
+                        <button class="btn btn-warning btn-sm" onclick="editVlk(${row.id})" title="Редагувати">✏️</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteVlk(${row.id})" title="Видалити">🗑</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function statusBadge(status) {
+            if (status === 'active')   return '<span class="status-badge status-active">Триває</span>';
+            if (status === 'upcoming') return '<span class="status-badge status-upcoming">Майбутній</span>';
+            return '<span class="status-badge status-past">Завершено</span>';
+        }
+
+        function conclusionBadge(conclusion) {
+            if (!conclusion) return '<span class="conclusion-badge conclusion-default">—</span>';
+            const c = conclusion.toLowerCase();
+            let cls = 'conclusion-default';
+            if (c.includes('непридат') && !c.includes('обмежено')) cls = 'conclusion-unfit';
+            else if (c.includes('обмежено')) cls = 'conclusion-limited';
+            else if (c.includes('тимчасов')) cls = 'conclusion-temp';
+            else if (c.includes('лікув') || c.includes('обстеж')) cls = 'conclusion-treatment';
+            else if (c.includes('придат')) cls = 'conclusion-fit';
+            return `<span class="conclusion-badge ${cls}">${escapeHtml(conclusion)}</span>`;
+        }
+
+        // ============================================================
+        //  МОДАЛКИ
+        // ============================================================
+        window.openList = function(event, cell) {
+            event.stopPropagation();
+            const pid = parseInt(cell.dataset.pid);
+            const row = gridData.find(r => r.id === pid);
+            if (!row) return;
+            currentPersonId = pid;
+
+            document.getElementById('listTitle').textContent =
+                'ВЛК: ' + row.shortName + (row.rank ? ' (' + row.rank + ')' : '');
+
+            const listEl = document.getElementById('vlkList');
+            const vlks = row.vlks || [];
+            if (!vlks.length) {
+                listEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-light)">Записів ВЛК немає</div>';
+            } else {
+                listEl.innerHTML = vlks.map(v => `
+                    <div class="vlk-item">
+                        <div>
+                            <span class="vlk-dates">${fmtDate(v.startDate)} — ${fmtDate(v.endDate)}</span>
+                            <span class="vlk-type">${escapeHtml(v.vlkType) || ''}</span>
+                            ${v.conclusion ? `<div style="margin-top:4px;">${conclusionBadge(v.conclusion)}</div>` : ''}
+                            ${v.note ? `<div style="font-size:11px;color:var(--text-secondary);margin-top:4px">${escapeHtml(v.note)}</div>` : ''}
+                        </div>
+                        <div class="vlk-actions">
+                            <button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0" onclick="editVlk(${v.id})">✏️</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteVlk(${v.id})">🗑</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('listModal').classList.add('open');
+        };
+
+        window.openAddForPerson = function() {
+            closeModal('listModal');
+            openForm(null, currentPersonId);
+        };
+
+        window.openForm = function(id, personId) {
+            document.getElementById('editId').value = id || '';
+            document.getElementById('modalTitle').textContent = id ? 'Редагувати ВЛК' : 'Додати ВЛК';
+            document.getElementById('fPersonnel').value = personId || '';
+            document.getElementById('fStartDate').value = '';
+            document.getElementById('fEndDate').value = '';
+            document.getElementById('fVlkType').value = '';
+            document.getElementById('fConclusion').value = '';
+            document.getElementById('fNote').value = '';
+
+            if (id) {
+                const v = queueData.find(x => x.id === id);
+                if (v) {
+                    document.getElementById('fPersonnel').value = v.personnelId || '';
+                    document.getElementById('fStartDate').value = v.startDate || '';
+                    document.getElementById('fEndDate').value = v.endDate || '';
+                    document.getElementById('fVlkType').value = v.vlkType || '';
+                    document.getElementById('fConclusion').value = v.conclusion || '';
+                    document.getElementById('fNote').value = v.note || '';
+                }
+            }
+            document.getElementById('formModal').classList.add('open');
+        };
+
+        window.editVlk = function(id) {
+            closeModal('listModal');
+            openForm(id);
+        };
+
+        window.saveVlk = async function() {
+            const id = document.getElementById('editId').value;
+            const personnelId = document.getElementById('fPersonnel').value;
+            const startDate = document.getElementById('fStartDate').value;
+            const endDate = document.getElementById('fEndDate').value;
+            const vlkType = document.getElementById('fVlkType').value;
+            const conclusion = document.getElementById('fConclusion').value;
+            const note = document.getElementById('fNote').value.trim();
+
+            if (!personnelId) { showToast('Оберіть особу', 'err'); return; }
+            if (!startDate || !endDate) { showToast('Вкажіть дати', 'err'); return; }
+            if (startDate > endDate) { showToast('Дата початку пізніше дати кінця', 'err'); return; }
+
+            const body = { personnelId: parseInt(personnelId), startDate, endDate, vlkType, conclusion, note };
+            const url = id ? '/vlk/api/' + id : '/vlk/api';
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method,
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                });
+                if (res.ok) {
+                    closeModal('formModal');
+                    await loadAll();
+                    await loadYears();
+                    showToast(id ? 'Оновлено' : 'Додано', 'ok');
+                } else {
+                    const err = await res.text();
+                    showToast('Помилка: ' + err, 'err');
+                }
+            } catch (e) {
+                showToast('Помилка мережі', 'err');
+            }
+        };
+
+        window.deleteVlk = async function(id) {
+            if (!confirm('Видалити цей запис ВЛК?')) return;
+            try {
+                const res = await fetch('/vlk/api/' + id, { method: 'DELETE' });
+                if (res.ok) {
+                    closeModal('listModal');
+                    await loadAll();
+                    showToast('Видалено', 'ok');
+                } else {
+                    showToast('Помилка видалення', 'err');
+                }
+            } catch (e) {
+                showToast('Помилка мережі', 'err');
+            }
+        };
+
+        window.closeModal = function(id) {
+            document.getElementById(id).classList.remove('open');
+        };
+
+        // ===== Допоміжні =====
+        function fmtDate(d) {
+            if (!d) return '—';
+            const [y, m, day] = d.split('-');
+            return `${day}.${m}.${y}`;
+        }
+
+        function escapeHtml(s) {
+            if (!s) return '';
+            return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
+        }
+
+        document.getElementById('exportBtn').onclick = () => {
+            window.location.href = '/vlk/export?year=' + currentYear;
+        };
+
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `toast ${type} show`;
+            setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(el => {
+            el.addEventListener('click', function(e) {
+                if (e.target === this && this.id !== 'formModal') {
+                    this.classList.remove('open');
+                }
+            });
+        });
+    })();
+</script>
+</body>
+</html>
