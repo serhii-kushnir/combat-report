@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Controller
@@ -40,6 +41,17 @@ public class VacationController {
             return ResponseEntity.ok(service.getYearData(year));
         } catch (Exception e) {
             log.error("Помилка отримання даних відпусток: year={}", year, e);
+            return ResponseEntity.badRequest().body("Помилка: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/api/queue")
+    @ResponseBody
+    public ResponseEntity<?> getQueue(@RequestParam(required = false) Integer year) {
+        try {
+            return ResponseEntity.ok(service.getQueue(year));
+        } catch (Exception e) {
+            log.error("Помилка отримання черги відпусток: year={}", year, e);
             return ResponseEntity.badRequest().body("Помилка: " + e.getMessage());
         }
     }
@@ -109,7 +121,7 @@ public class VacationController {
         }
     }
 
-    // ===== ЕКСПОРТ XLSX =====
+    // ===== ЕКСПОРТ XLSX (3 аркуші: Графік, Деталі, Черга) =====
     @GetMapping("/export")
     public ResponseEntity<byte[]> exportXlsx(@RequestParam int year) {
         try {
@@ -129,8 +141,8 @@ public class VacationController {
     }
 
     private byte[] buildXlsx(int year, List<Map<String, Object>> rows) throws Exception {
-        String[] MONTHS = {"Січ", "Лют", "Бер", "Кві", "Тра", "Чер",
-                "Лип", "Сер", "Вер", "Жов", "Лис", "Гру"};
+        String[] MONTHS = {"Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
+                "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"};
         String[] HEADERS = new String[3 + 12 + 3];
         HEADERS[0] = "№";
         HEADERS[1] = "Звання";
@@ -143,13 +155,16 @@ public class VacationController {
         try (XSSFWorkbook wb = new XSSFWorkbook();
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-            CellStyle headerStyle = createHeaderStyle(wb);
-            CellStyle centerStyle = createCenterStyle(wb);
-            CellStyle leftStyle = createLeftStyle(wb);
-            CellStyle badgeStyle = createBadgeStyle(wb);
-            CellStyle h1HeaderStyle = createColoredHeaderStyle(wb, 21, 101, 192);
-            CellStyle h2HeaderStyle = createColoredHeaderStyle(wb, 106, 27, 154);
+            CellStyle headerStyle      = createHeaderStyle(wb);
+            CellStyle centerStyle      = createCenterStyle(wb);
+            CellStyle leftStyle        = createLeftStyle(wb);
+            CellStyle badgeStyle       = createBadgeStyle(wb);
+            CellStyle h1HeaderStyle    = createColoredHeaderStyle(wb, 21, 101, 192);
+            CellStyle h2HeaderStyle    = createColoredHeaderStyle(wb, 106, 27, 154);
             CellStyle totalHeaderStyle = createColoredHeaderStyle(wb, 46, 125, 50);
+            CellStyle activeStyle      = createColoredHeaderStyle(wb, 230, 81, 0);
+            CellStyle upcomingStyle    = createColoredHeaderStyle(wb, 21, 101, 192);
+            CellStyle pastStyle        = createColoredHeaderStyle(wb, 96, 125, 139);
 
             // ===== АРКУШ 1: ГРАФІК =====
             Sheet sheet = wb.createSheet("Графік " + year);
@@ -195,7 +210,11 @@ public class VacationController {
             }
 
             for (int i = 0; i < HEADERS.length; i++) {
-                sheet.setColumnWidth(i, (i < 3 ? 20 : 8) * 256);
+                int w;
+                if (i < 3) w = 20;
+                else if (i < 15) w = 12;
+                else w = 10;
+                sheet.setColumnWidth(i, w * 256);
             }
 
             // ===== АРКУШ 2: ДЕТАЛІ =====
@@ -215,7 +234,6 @@ public class VacationController {
                 detailsSheet.setColumnWidth(i, DETAIL_WIDTHS[i] * 256);
             }
 
-            // Збираємо всі відпустки
             List<VacationDetail> allDetails = new ArrayList<>();
             for (Map<String, Object> row : rows) {
                 Integer pNum = (Integer) row.get("personnelNumber");
@@ -241,7 +259,6 @@ public class VacationController {
                 }
             }
 
-            // Сортуємо за ПІБ, потім за датою
             allDetails.sort((a, b) -> {
                 String na = a.shortName != null ? a.shortName.toLowerCase() : "";
                 String nb = b.shortName != null ? b.shortName.toLowerCase() : "";
@@ -256,11 +273,55 @@ public class VacationController {
                 setCell(r, 0, vd.personnelNumber, centerStyle);
                 setCell(r, 1, vd.rank, leftStyle);
                 setCell(r, 2, vd.shortName, leftStyle);
-                setCell(r, 3, vd.startDate != null ? vd.startDate.format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "", centerStyle);
-                setCell(r, 4, vd.endDate != null ? vd.endDate.format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "", centerStyle);
+                setCell(r, 3, vd.startDate != null ? vd.startDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "", centerStyle);
+                setCell(r, 4, vd.endDate != null ? vd.endDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "", centerStyle);
                 setCell(r, 5, vd.days, centerStyle);
                 setCell(r, 6, vd.type, leftStyle);
                 setCell(r, 7, vd.note, leftStyle);
+            }
+
+            // ===== АРКУШ 3: ЧЕРГА =====
+            Sheet queueSheet = wb.createSheet("Черга " + year);
+
+            String[] QUEUE_HEADERS = {
+                    "Черга", "№", "Звання", "ПІБ", "Початок", "Кінець", "Днів",
+                    "Тип", "Статус", "Примітка"
+            };
+            int[] QUEUE_WIDTHS = {8, 8, 20, 30, 14, 14, 8, 22, 16, 40};
+
+            Row qh = queueSheet.createRow(0);
+            qh.setHeightInPoints(28);
+            for (int i = 0; i < QUEUE_HEADERS.length; i++) {
+                Cell cell = qh.createCell(i);
+                cell.setCellValue(QUEUE_HEADERS[i]);
+                cell.setCellStyle(headerStyle);
+                queueSheet.setColumnWidth(i, QUEUE_WIDTHS[i] * 256);
+            }
+
+            List<Map<String, Object>> queueRows = service.getQueue(year);
+
+            int qr = 1;
+            for (Map<String, Object> row : queueRows) {
+                Row r = queueSheet.createRow(qr++);
+                r.setHeightInPoints(22);
+
+                String status = (String) row.get("status");
+                CellStyle statusStyle;
+                String statusText;
+                if ("active".equals(status))        { statusStyle = activeStyle;   statusText = "Триває"; }
+                else if ("upcoming".equals(status)) { statusStyle = upcomingStyle; statusText = "Запланована"; }
+                else                                { statusStyle = pastStyle;     statusText = "Завершена"; }
+
+                setCell(r, 0, row.get("queueNum"), centerStyle);
+                setCell(r, 1, row.get("personnelNumber"), centerStyle);
+                setCell(r, 2, row.get("rank"), leftStyle);
+                setCell(r, 3, row.get("shortName"), leftStyle);
+                setCell(r, 4, fmtDate(row.get("startDate")), centerStyle);
+                setCell(r, 5, fmtDate(row.get("endDate")), centerStyle);
+                setCell(r, 6, row.get("days"), centerStyle);
+                setCell(r, 7, row.get("vacationType"), leftStyle);
+                setCell(r, 8, statusText, statusStyle);
+                setCell(r, 9, row.get("note"), leftStyle);
             }
 
             wb.write(out);
@@ -268,19 +329,26 @@ public class VacationController {
         }
     }
 
+    private String fmtDate(Object d) {
+        if (d == null) return "";
+        if (d instanceof LocalDate) {
+            return ((LocalDate) d).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        }
+        return d.toString();
+    }
+
     // Допоміжний клас для деталей
     private static class VacationDetail {
         Integer personnelNumber;
         String rank;
         String shortName;
-        java.time.LocalDate startDate;
-        java.time.LocalDate endDate;
+        LocalDate startDate;
+        LocalDate endDate;
         Integer days = 0;
         String type;
         String note;
     }
 
-    // Новий стиль для кольорових заголовків
     private CellStyle createColoredHeaderStyle(Workbook wb, int r, int g, int b) {
         CellStyle s = wb.createCellStyle();
         Font f = wb.createFont();

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -26,6 +27,9 @@ public class VacationService {
         this.personnelRepo = personnelRepo;
     }
 
+    // ============================================================
+    //  МІСЯЧНА СІТКА (як було)
+    // ============================================================
     @Transactional(readOnly = true)
     public List<Map<String, Object>> getYearData(int year) {
         LocalDate yearStart = LocalDate.of(year, 1, 1);
@@ -35,7 +39,6 @@ public class VacationService {
                 .findByActiveTrueAndPersonnelStatusOrderByLastNameAsc("В особовому складі");
         List<Vacation> allVacations = vacationRepo.findByYear(yearStart, yearEnd);
 
-        // Групуємо за id особи
         Map<Long, List<Vacation>> byPerson = new HashMap<>();
         for (Vacation v : allVacations) {
             Long pid = v.getPersonnel() != null ? v.getPersonnel().getId() : null;
@@ -54,7 +57,6 @@ public class VacationService {
 
             List<Vacation> personVacations = byPerson.getOrDefault(p.getId(), Collections.emptyList());
 
-            // Підрахунок днів по місяцях
             Map<Integer, Integer> monthDays = new LinkedHashMap<>();
             for (int m = 1; m <= 12; m++) monthDays.put(m, 0);
 
@@ -80,12 +82,80 @@ public class VacationService {
             row.put("h1Days", h1Days);
             row.put("h2Days", h2Days);
             row.put("totalDays", totalDays);
-            row.put("hasH1", h1Days > 0);
-            row.put("hasH2", h2Days > 0);
             row.put("vacations", personVacations);
             rows.add(row);
         }
         return rows;
+    }
+
+    // ============================================================
+    //  ЧЕРГА ВІДПУСТОК — "хто пройшов, хто наступний"
+    // ============================================================
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> getQueue(Integer year) {
+        List<Vacation> vacations;
+        if (year != null) {
+            LocalDate yearStart = LocalDate.of(year, 1, 1);
+            LocalDate yearEnd   = LocalDate.of(year, 12, 31);
+            vacations = vacationRepo.findByYear(yearStart, yearEnd);
+        } else {
+            vacations = vacationRepo.findAllWithPersonnel();
+        }
+
+        LocalDate today = LocalDate.now();
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        for (Vacation v : vacations) {
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("id", v.getId());
+            row.put("personnelId", v.getPersonnel().getId());
+            row.put("personnelNumber", v.getPersonnel().getPersonnelNumber());
+            row.put("rank", v.getPersonnel().getRank() != null ? v.getPersonnel().getRank() : "");
+            row.put("shortName", v.getPersonnel().getShortName());
+            row.put("startDate", v.getStartDate());
+            row.put("endDate", v.getEndDate());
+            row.put("vacationType", v.getVacationType());
+            row.put("note", v.getNote());
+
+            String status;
+            if (v.getStartDate().isAfter(today))        status = "upcoming";
+            else if (v.getEndDate().isBefore(today))    status = "past";
+            else                                        status = "active";
+            row.put("status", status);
+
+            int days = (int) ChronoUnit.DAYS.between(v.getStartDate(), v.getEndDate()) + 1;
+            row.put("days", days);
+            if (v.getStartDate().isAfter(today)) {
+                row.put("daysUntil", (int) ChronoUnit.DAYS.between(today, v.getStartDate()));
+            }
+
+            result.add(row);
+        }
+
+        // Активні → майбутні (ASC) → минулі (DESC)
+        result.sort((a, b) -> {
+            int pa = statusPriority((String) a.get("status"));
+            int pb = statusPriority((String) b.get("status"));
+            if (pa != pb) return pa - pb;
+            LocalDate da = (LocalDate) a.get("startDate");
+            LocalDate db = (LocalDate) b.get("startDate");
+            if ("past".equals(a.get("status"))) return db.compareTo(da);
+            return da.compareTo(db);
+        });
+
+        for (int i = 0; i < result.size(); i++) {
+            result.get(i).put("queueNum", i + 1);
+        }
+        return result;
+    }
+
+    private int statusPriority(String status) {
+        switch (status) {
+            case "active":   return 0;
+            case "upcoming": return 1;
+            case "past":     return 2;
+            default:         return 3;
+        }
     }
 
     @Transactional(readOnly = true)
@@ -128,12 +198,9 @@ public class VacationService {
             throw new IllegalArgumentException("Період перетинається з існуючою відпусткою");
         }
 
-        // ===== ЗАВЖДИ завантажуємо особу заново (навіть якщо не змінилась) =====
         Personnel p = personnelRepo.findById(personnelId)
                 .orElseThrow(() -> new IllegalArgumentException("Особу не знайдено: " + personnelId));
         v.setPersonnel(p);
-        // ======================================================================
-
         v.setStartDate(start);
         v.setEndDate(end);
         v.setVacationType(type);

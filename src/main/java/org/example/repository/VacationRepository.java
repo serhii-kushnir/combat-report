@@ -18,6 +18,9 @@ public interface VacationRepository extends JpaRepository<Vacation, Long> {
     List<Vacation> findByYear(@Param("yearStart") LocalDate yearStart,
                               @Param("yearEnd") LocalDate yearEnd);
 
+    @Query("SELECT v FROM Vacation v JOIN FETCH v.personnel ORDER BY v.startDate ASC")
+    List<Vacation> findAllWithPersonnel();
+
     @Query("SELECT v FROM Vacation v WHERE v.personnel.id = :personnelId " +
            "ORDER BY v.startDate DESC")
     List<Vacation> findByPersonnelId(@Param("personnelId") Long personnelId);

@@ -87,36 +87,15 @@
             from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        /* Анімація появи заголовка деталей */
         @keyframes slideDown {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .details-section {
-            animation: fadeIn 0.5s ease forwards;
-            opacity: 0;
-            animation-delay: 0.15s;
-        }
+        .details-section { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.15s; }
+        .details-header  { animation: slideDown 0.4s ease forwards; opacity: 0; animation-delay: 0.20s; }
 
-        .details-header {
-            animation: slideDown 0.4s ease forwards;
-            opacity: 0;
-            animation-delay: 0.20s;
-        }
-
-        .details-header .count-badge {
-            animation: fadeIn 0.3s ease forwards;
-            opacity: 0;
-            animation-delay: 0.35s;
-        }
-
-        /* Анімація рядків основної таблиці */
-        #vacBody tr {
-            animation: fadeInRow 0.3s ease forwards;
-            opacity: 0;
-        }
+        #vacBody tr { animation: fadeInRow 0.3s ease forwards; opacity: 0; }
         #vacBody tr:nth-child(1) { animation-delay: 0.02s; }
         #vacBody tr:nth-child(2) { animation-delay: 0.04s; }
         #vacBody tr:nth-child(3) { animation-delay: 0.06s; }
@@ -138,34 +117,20 @@
         #vacBody tr:nth-child(19) { animation-delay: 0.38s; }
         #vacBody tr:nth-child(20) { animation-delay: 0.40s; }
 
-        /* Анімація рядків таблиці подробиць */
-        #detailsBody tr {
-            animation: fadeInRow 0.3s ease forwards;
-            opacity: 0;
-        }
-        #detailsBody tr:nth-child(1) { animation-delay: 0.02s; }
-        #detailsBody tr:nth-child(2) { animation-delay: 0.04s; }
-        #detailsBody tr:nth-child(3) { animation-delay: 0.06s; }
-        #detailsBody tr:nth-child(4) { animation-delay: 0.08s; }
-        #detailsBody tr:nth-child(5) { animation-delay: 0.10s; }
-        #detailsBody tr:nth-child(6) { animation-delay: 0.12s; }
-        #detailsBody tr:nth-child(7) { animation-delay: 0.14s; }
-        #detailsBody tr:nth-child(8) { animation-delay: 0.16s; }
-        #detailsBody tr:nth-child(9) { animation-delay: 0.18s; }
-        #detailsBody tr:nth-child(10) { animation-delay: 0.20s; }
-        #detailsBody tr:nth-child(11) { animation-delay: 0.22s; }
-        #detailsBody tr:nth-child(12) { animation-delay: 0.24s; }
-        #detailsBody tr:nth-child(13) { animation-delay: 0.26s; }
-        #detailsBody tr:nth-child(14) { animation-delay: 0.28s; }
-        #detailsBody tr:nth-child(15) { animation-delay: 0.30s; }
-        #detailsBody tr:nth-child(16) { animation-delay: 0.32s; }
-        #detailsBody tr:nth-child(17) { animation-delay: 0.34s; }
-        #detailsBody tr:nth-child(18) { animation-delay: 0.36s; }
-        #detailsBody tr:nth-child(19) { animation-delay: 0.38s; }
-        #detailsBody tr:nth-child(20) { animation-delay: 0.40s; }
+        #queueBody tr { animation: fadeInRow 0.3s ease forwards; opacity: 0; }
+        #queueBody tr:nth-child(1) { animation-delay: 0.02s; }
+        #queueBody tr:nth-child(2) { animation-delay: 0.04s; }
+        #queueBody tr:nth-child(3) { animation-delay: 0.06s; }
+        #queueBody tr:nth-child(4) { animation-delay: 0.08s; }
+        #queueBody tr:nth-child(5) { animation-delay: 0.10s; }
+        #queueBody tr:nth-child(6) { animation-delay: 0.12s; }
+        #queueBody tr:nth-child(7) { animation-delay: 0.14s; }
+        #queueBody tr:nth-child(8) { animation-delay: 0.16s; }
+        #queueBody tr:nth-child(9) { animation-delay: 0.18s; }
+        #queueBody tr:nth-child(10) { animation-delay: 0.20s; }
+
         .toolbar { animation: fadeIn 0.4s ease forwards; opacity: 0; }
         .table-wrap { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.05s; }
-        .details-section { animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: 0.10s; }
 
         /* ===== ТУЛБАР ===== */
         .toolbar {
@@ -257,7 +222,7 @@
         .col-num  { width: 36px; min-width: 36px; }
         .col-rank { width: 110px; min-width: 110px; text-align: center !important; }
         .col-name { width: 130px; min-width: 130px; text-align: center !important; }
-        .col-month { width: 40px; min-width: 40px; }
+        .col-month { width: 70px; min-width: 70px; }
         .col-total { width: 70px; min-width: 70px; }
 
         .col-num, .col-rank, .col-name,
@@ -329,31 +294,7 @@
         .h2-cell { background: rgba(106, 27, 154, 0.1); color: var(--h2-color); }
         .total-cell { background: rgba(46, 125, 50, 0.1); color: var(--total-color); }
 
-        /* ===== ЛЕГЕНДА ===== */
-        .legend {
-            margin-top: 4px;
-            padding: 10px 14px;
-            background: var(--bg-card);
-            border-radius: 12px;
-            box-shadow: 0 2px 6px var(--shadow-color);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            align-items: center;
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-        }
-        .legend-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            color: white;
-            font-weight: 700;
-            margin-right: 4px;
-        }
-
-        /* ===== ДЕТАЛІ (друга таблиця) ===== */
+        /* ===== ДЕТАЛІ (секція черги) ===== */
         .details-section {
             margin-top: 20px;
             background: var(--bg-card);
@@ -383,7 +324,7 @@
         }
         .details-table {
             width: 100%;
-            min-width: 900px;
+            min-width: 1000px;
         }
         .details-table thead th {
             background: var(--bg-header);
@@ -398,9 +339,7 @@
             cursor: pointer;
             user-select: none;
         }
-        .details-table thead th[data-col]:hover {
-            filter: brightness(1.15);
-        }
+        .details-table thead th[data-col]:hover { filter: brightness(1.15); }
         .details-table thead th.sort-asc::after  { content: ' ▲'; font-size: 10px; }
         .details-table thead th.sort-desc::after { content: ' ▼'; font-size: 10px; }
 
@@ -432,6 +371,54 @@
             text-align: center;
             color: var(--text-light);
             font-size: 14px;
+        }
+
+        /* ===== СТАТУСИ ЧЕРГИ ===== */
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .status-active   { background: #ffe0b2; color: #e65100; }
+        .status-upcoming { background: #bbdefb; color: #0d47a1; }
+        .status-past     { background: #e0e0e0; color: #424242; }
+
+        .queue-cell {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--btn-primary-bg);
+        }
+
+        /* ===== СТАТИСТИКА ЧЕРГИ ===== */
+        .queue-stats {
+            display: flex;
+            gap: 10px;
+            padding: 12px 16px 4px;
+            flex-wrap: wrap;
+        }
+        .queue-stats .stat-card {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 8px 16px;
+            text-align: center;
+            box-shadow: 0 1px 4px var(--shadow-color);
+            min-width: 100px;
+            border: 1px solid var(--border-color);
+        }
+        .queue-stats .stat-card .num {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--btn-primary-bg);
+        }
+        .queue-stats .stat-card .num.active   { color: #e65100; }
+        .queue-stats .stat-card .num.upcoming { color: #1565c0; }
+        .queue-stats .stat-card .num.past     { color: #757575; }
+        .queue-stats .stat-card .lbl {
+            font-size: 11px;
+            color: var(--text-secondary);
         }
 
         /* ===== МОДАЛКА ===== */
@@ -512,7 +499,7 @@
 
         .print-only { display: none; }
 
-        /* ===== МОБІЛЬНА АДАПТАЦІЯ ===== */
+        /* ===== АДАПТИВ ===== */
         @media (max-width: 768px) {
             .toolbar { flex-direction: column; align-items: stretch; }
             .toolbar select, .toolbar button, .toolbar input { width: 100%; }
@@ -520,207 +507,174 @@
             .form-row { grid-template-columns: 1fr; }
             .col-rank { width: 80px; min-width: 80px; }
             .col-name { width: 90px; min-width: 90px; }
-            .col-month { width: 32px; min-width: 32px; }
+            .col-month { width: 60px; min-width: 60px; }
             .col-num { width: 28px; min-width: 28px; }
             .rank-cell { left: 28px; }
             .name-cell { left: calc(28px + 80px); }
             th { font-size: 10px !important; padding: 6px 2px !important; }
             td { font-size: 10px !important; }
             .days-badge { font-size: 9px; padding: 1px 4px; min-width: 18px; }
-            .details-table { min-width: 700px; }
+            .details-table { min-width: 800px; }
         }
 
         /* ===== ДРУК ===== */
         @media print {
+            /* Примусово друкувати кольори */
+            *, *::before, *::after {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
             /* Ховаємо інтерактив */
             .sidebar, .toolbar, .no-print, .btn, .btn-print, .btn-success,
             .btn-primary, .btn-danger, .btn-nav, .btn-today, select, input,
-            .modal-overlay, .legend, .pagination, .actions-cell,
-            .details-header .count-badge {
+            .modal-overlay, .pagination, .actions-cell,
+            .details-header .count-badge, .queue-stats {
                 display: none !important;
             }
             .print-only { display: block !important; }
 
-            /* Базові */
-            html, body {
-                margin: 0 !important; padding: 0 !important;
-                width: 100% !important; max-width: none !important;
-                background: white !important; color: black !important;
-                overflow: visible !important;
+            /* Білий фон на ВСІХ рівнях, включно з темною темою */
+            html, body, .layout, .main-content, .container,
+            .table-wrap, .details-section, .details-table-wrap,
+            body.dark-theme, body.dark-theme .layout,
+            body.dark-theme .main-content,
+            body.dark-theme .container {
+                background: #ffffff !important;
+                background-color: #ffffff !important;
+                background-image: none !important;
+                color: #000000 !important;
             }
+            html, body { margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+            .layout { display: block !important; }
+            .main-content { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow: visible !important; }
+            .container { margin: 0 !important; padding: 2mm !important; width: 100% !important; max-width: 100% !important; box-sizing: border-box !important; overflow: visible !important; }
 
-            .layout { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
-            .main-content {
-                margin: 0 !important; margin-left: 0 !important;
-                padding: 0 !important; width: 100% !important; max-width: 100% !important;
-            }
-            .container {
-                margin: 0 !important; padding: 2mm !important;
-                width: 100% !important; max-width: 100% !important;
-                box-sizing: border-box !important;
-            }
-
-            /* Контейнери таблиць */
-            .table-wrap, .details-section, .details-table-wrap {
-                width: 100% !important; max-width: 100% !important; min-width: 0 !important;
-                margin: 0 0 3mm 0 !important; padding: 0 !important;
-                overflow: visible !important; box-shadow: none !important;
-                border-radius: 0 !important; border: 1px solid #999 !important;
-                background: white !important; max-height: none !important;
-                box-sizing: border-box !important;
-            }
-
-            /* Таблиці */
-            .table-wrap table, .details-table-wrap table {
-                display: table !important;
-                width: 100% !important; min-width: 0 !important; max-width: 100% !important;
-                table-layout: fixed !important; /* фіксована розкладка для точних ширин */
-                border-collapse: collapse !important;
-                background: white !important; font-size: 6px !important;
-                box-sizing: border-box !important;
-            }
-            .table-wrap table thead, .details-table-wrap table thead { display: table-header-group !important; }
-            .table-wrap table tbody, .details-table-wrap table tbody { display: table-row-group !important; }
-            .table-wrap table tr, .details-table-wrap table tr {
-                display: table-row !important;
-                page-break-inside: avoid !important; break-inside: avoid !important;
-                background: transparent !important; box-shadow: none !important;
-                border: none !important; margin: 0 !important; padding: 0 !important;
-            }
-
-            /* Скидаємо sticky, min/max ширини */
-            .col-num, .num-cell, .col-rank, .rank-cell, .col-name, .name-cell,
-            .col-month, .month-cell, .col-total, .h1-cell, .h2-cell, .total-cell {
-                position: static !important; left: auto !important; top: auto !important;
-                z-index: auto !important; min-width: 0 !important; max-width: none !important;
-                background: white !important;
-            }
-            td[data-label]::before { display: none !important; }
-
-            /* Заголовки таблиці */
-            thead th {
-                background: #1a237e !important; color: white !important;
-                -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-                padding: 3px 1px !important;
-                font-size: 5.5px !important;
-                border: 1px solid #1a237e !important;
-                text-align: center !important;
-                vertical-align: middle !important;
-                line-height: 1.1 !important;
-                box-sizing: border-box !important;
-            }
-            thead th.h1-col    { background: #1565c0 !important; border-color: #1565c0 !important; }
-            thead th.h2-col    { background: #6a1b9a !important; border-color: #6a1b9a !important; }
-            thead th.total-col { background: #2e7d32 !important; border-color: #2e7d32 !important; }
-
-            /* Місяці - горизонтально, без обертання та дублювання */
-            thead th.col-month {
-                font-size: 5.5px !important;
-                padding: 3px 1px !important;
-                white-space: nowrap !important;
-                text-align: center !important;
-                vertical-align: middle !important;
-            }
-            thead th.col-month::after {
-                display: none !important;
-                content: none !important;
-            }
-
-            /* Ширини колонок (%) */
-            .col-num,   .num-cell   { width: 3%  !important; }
-            .col-rank,  .rank-cell  { width: 10% !important; text-align: center !important; padding: 1px !important; }
-            .col-name,  .name-cell  { width: 13% !important; text-align: center !important; padding: 1px !important; }
-            .col-month, .month-cell { width: 4.5% !important; }
-            .col-total, .h1-cell, .h2-cell, .total-cell { width: 6% !important; }
-
-            /* Комірки таблиці */
-            td {
-                color: black !important; background: white !important;
-                border: 1px solid #999 !important;
-                padding: 1px 1px !important; font-size: 6px !important;
-                text-align: center !important; vertical-align: middle !important;
-                line-height: 1.15 !important; box-sizing: border-box !important;
-                white-space: normal !important;
-                word-break: break-word !important;
-            }
-            td.name-cell, td.rank-cell {
-                text-align: left !important;
-                font-size: 5.5px !important;
-            }
-
-            /* Бейджі днів */
-            .days-badge {
-                background: #1565c0 !important; color: white !important;
-                -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-                padding: 1px 2px !important; font-size: 6px !important;
-                border-radius: 2px !important; display: inline-block !important;
-                min-width: 12px !important; font-weight: 700 !important;
-            }
-
-            /* Півріччя та Всього */
-            .h1-cell {
-                background: #e3f2fd !important; color: #0d47a1 !important;
-                -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-                font-weight: 700 !important; font-size: 6px !important;
-            }
-            .h2-cell {
-                background: #f3e5f5 !important; color: #4a148c !important;
-                -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-                font-weight: 700 !important; font-size: 6px !important;
-            }
-            .total-cell {
-                background: #e8f5e9 !important; color: #1b5e20 !important;
-                -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-                font-weight: 700 !important; font-size: 6px !important;
-            }
-
-            /* Заголовок друку */
             .print-title {
-                text-align: center !important; font-size: 11px !important;
-                font-weight: bold !important; margin: 0 0 2mm 0 !important;
+                text-align: center !important;
+                font-size: 12px !important;
+                font-weight: bold !important;
+                margin: 0 0 2mm 0 !important;
                 color: black !important;
             }
 
-            /* Деталі */
+            /* Контейнери таблиць */
+            .table-wrap, .details-section {
+                overflow: visible !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                border: none !important;
+                max-height: none !important;
+                width: 100% !important;
+                margin: 0 0 4mm 0 !important;
+            }
             .details-header {
-                background: #1a237e !important; color: white !important;
-                -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-                padding: 3px 6px !important; font-size: 8px !important;
-            }
-            .details-table { font-size: 6px !important; }
-            #detailsTable th:nth-child(1), #detailsTable td:nth-child(1) { width: 4%  !important; }
-            #detailsTable th:nth-child(2), #detailsTable td:nth-child(2) { width: 11% !important; }
-            #detailsTable th:nth-child(3), #detailsTable td:nth-child(3) { width: 16% !important; }
-            #detailsTable th:nth-child(4), #detailsTable td:nth-child(4) { width: 10% !important; }
-            #detailsTable th:nth-child(5), #detailsTable td:nth-child(5) { width: 10% !important; }
-            #detailsTable th:nth-child(6), #detailsTable td:nth-child(6) { width: 6%  !important; }
-            #detailsTable th:nth-child(7), #detailsTable td:nth-child(7) { width: 15% !important; }
-
-            .details-table td {
-                padding: 1px 2px !important; font-size: 6px !important;
-                color: black !important; background: white !important;
-                border: 1px solid #999 !important;
-            }
-            .details-table thead th {
-                background: #1a237e !important; color: white !important;
-                -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-                font-size: 5.5px !important; padding: 2px 1px !important;
+                background: #1a237e !important;
+                color: white !important;
+                padding: 3px 6px !important;
+                font-size: 9px !important;
+                border-bottom: 1px solid #0d1654 !important;
             }
 
-            /* Темна тема */
-            .dark-theme td { color: black !important; background: white !important; }
-            .dark-theme thead th { background: #1a237e !important; color: white !important; }
-            .dark-theme thead th.h1-col    { background: #1565c0 !important; }
-            .dark-theme thead th.h2-col    { background: #6a1b9a !important; }
-            .dark-theme thead th.total-col { background: #2e7d32 !important; }
-            .dark-theme .days-badge { background: #1565c0 !important; color: white !important; }
-            .dark-theme .details-header { background: #1a237e !important; color: white !important; }
-
-            /* Сторінка */
-            @page {
-                size: A4 landscape;
-                margin: 3mm 3mm 3mm 3mm;
+            /* Таблиця з рамками */
+            table {
+                border-collapse: separate !important;
+                border-spacing: 0 !important;
+                border: 1px solid #000 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                table-layout: fixed !important;
+                background: white !important;
+                font-size: 6px !important;
+                page-break-inside: auto !important;
             }
+            thead { display: table-header-group !important; }
+            tbody { display: table-row-group !important; }
+            tr { page-break-inside: avoid !important; break-inside: avoid !important; }
+
+            /* Скидаємо sticky */
+            .col-num, .num-cell, .col-rank, .rank-cell, .col-name, .name-cell,
+            .col-month, .month-cell, .col-total, .total-cell,
+            .queue-cell, .queue-num {
+                position: static !important;
+                left: auto !important;
+                z-index: auto !important;
+            }
+
+            /* Рамки для кожної комірки */
+            th, td {
+                border: 1px solid #000 !important;
+                box-sizing: border-box !important;
+                overflow: visible !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 1px 2px !important;
+                font-size: 6px !important;
+                text-align: center !important;
+                vertical-align: middle !important;
+                line-height: 1.2 !important;
+                word-break: break-word !important;
+            }
+            td.name-cell, td.rank-cell { text-align: left !important; padding: 1px 2px !important; }
+
+            /* Зебра */
+            tbody tr:nth-child(even) td { background: #f2f2f5 !important; }
+
+            /* Заголовки */
+            thead th {
+                background: #1a237e !important;
+                color: #ffffff !important;
+                border: 1px solid #000 !important;
+                padding: 2px 1px !important;
+                font-size: 5.5px !important;
+                font-weight: bold !important;
+            }
+            thead th.h1-col { background: #1565c0 !important; border-color: #000 !important; }
+            thead th.h2-col { background: #6a1b9a !important; border-color: #000 !important; }
+            thead th.total-col { background: #2e7d32 !important; border-color: #000 !important; }
+
+            /* Ширини */
+            .col-num, .num-cell { width: 3% !important; min-width: 0 !important; }
+            .col-rank, .rank-cell { width: 10% !important; min-width: 0 !important; }
+            .col-name, .name-cell { width: 13% !important; min-width: 0 !important; }
+            .col-month, .month-cell { width: 4.5% !important; min-width: 0 !important; font-size: 5px !important; }
+            .col-total, .total-cell { width: 6% !important; min-width: 0 !important; }
+
+            /* Кольори, що зберігаються */
+            .days-badge {
+                display: inline-block !important;
+                padding: 1px 3px !important;
+                font-size: 6px !important;
+                font-weight: 700 !important;
+                border-radius: 2px !important;
+                background: #1565c0 !important;
+                color: #ffffff !important;
+                min-width: 12px !important;
+            }
+            .h1-cell { background: #e3f2fd !important; color: #0d47a1 !important; font-weight: 700 !important; }
+            .h2-cell { background: #f3e5f5 !important; color: #4a148c !important; font-weight: 700 !important; }
+            .total-cell { background: #e8f5e9 !important; color: #1b5e20 !important; font-weight: 700 !important; }
+            .queue-cell { background: #e8f0fe !important; color: #1565c0 !important; font-weight: 700 !important; }
+
+            .status-badge {
+                display: inline-block !important;
+                padding: 1px 3px !important;
+                font-size: 6px !important;
+                font-weight: 700 !important;
+                border-radius: 2px !important;
+                white-space: nowrap !important;
+            }
+            .status-active   { background: #ffe0b2 !important; color: #e65100 !important; }
+            .status-upcoming { background: #bbdefb !important; color: #0d47a1 !important; }
+            .status-past     { background: #e0e0e0 !important; color: #424242 !important; }
+
+            /* Темна тема → світла */
+            body.dark-theme td { color: #000 !important; }
+            body.dark-theme tbody tr:nth-child(even) td { background: #f2f2f5 !important; }
+            body.dark-theme thead th { background: #1a237e !important; color: white !important; }
+
+            @page { size: A4 landscape; margin: 4mm 3mm; }
         }
     </style>
 </head>
@@ -744,7 +698,7 @@
                 <button class="btn btn-print" onclick="window.print()">🖨️ Друк</button>
             </div>
 
-            <!-- ОСНОВНА ТАБЛИЦЯ -->
+            <!-- ОСНОВНА ТАБЛИЦЯ (місячна сітка) -->
             <div class="table-wrap no-cards">
                 <table id="vacTable">
                     <thead>
@@ -752,20 +706,20 @@
                         <th class="col-num" data-col="num" onclick="sortBy('num')">№</th>
                         <th class="col-rank" data-col="rank" onclick="sortBy('rank')">Звання</th>
                         <th class="col-name" data-col="name" onclick="sortBy('name')">ПІБ</th>
-                        <th class="col-month" data-col="m1" data-full="Січень" onclick="sortBy('m1')">Січень</th>
-                        <th class="col-month" data-col="m2" data-full="Лютий" onclick="sortBy('m2')">Лютий</th>
-                        <th class="col-month" data-col="m3" data-full="Березень" onclick="sortBy('m3')">Березень</th>
-                        <th class="col-month" data-col="m4" data-full="Квітень" onclick="sortBy('m4')">Квітень</th>
-                        <th class="col-month" data-col="m5" data-full="Травень" onclick="sortBy('m5')">Травень</th>
-                        <th class="col-month" data-col="m6" data-full="Червень" onclick="sortBy('m6')">Червень</th>
-                        <th class="col-month" data-col="m7" data-full="Липень" onclick="sortBy('m7')">Липень</th>
-                        <th class="col-month" data-col="m8" data-full="Серпень" onclick="sortBy('m8')">Серпень</th>
-                        <th class="col-month" data-col="m9" data-full="Вересень" onclick="sortBy('m9')">Вересень</th>
-                        <th class="col-month" data-col="m10" data-full="Жовтень" onclick="sortBy('m10')">Жовтень</th>
-                        <th class="col-month" data-col="m11" data-full="Листопад" onclick="sortBy('m11')">Листопад</th>
-                        <th class="col-month" data-col="m12" data-full="Грудень" onclick="sortBy('m12')">Грудень</th>
-                        <th class="col-total h1-col" data-col="h1" onclick="sortBy('h1')">1 піврічя</th>
-                        <th class="col-total h2-col" data-col="h2" onclick="sortBy('h2')">2 піврічя</th>
+                        <th class="col-month" data-col="m1" onclick="sortBy('m1')">Січень</th>
+                        <th class="col-month" data-col="m2" onclick="sortBy('m2')">Лютий</th>
+                        <th class="col-month" data-col="m3" onclick="sortBy('m3')">Березень</th>
+                        <th class="col-month" data-col="m4" onclick="sortBy('m4')">Квітень</th>
+                        <th class="col-month" data-col="m5" onclick="sortBy('m5')">Травень</th>
+                        <th class="col-month" data-col="m6" onclick="sortBy('m6')">Червень</th>
+                        <th class="col-month" data-col="m7" onclick="sortBy('m7')">Липень</th>
+                        <th class="col-month" data-col="m8" onclick="sortBy('m8')">Серпень</th>
+                        <th class="col-month" data-col="m9" onclick="sortBy('m9')">Вересень</th>
+                        <th class="col-month" data-col="m10" onclick="sortBy('m10')">Жовтень</th>
+                        <th class="col-month" data-col="m11" onclick="sortBy('m11')">Листопад</th>
+                        <th class="col-month" data-col="m12" onclick="sortBy('m12')">Грудень</th>
+                        <th class="col-total h1-col" data-col="h1" onclick="sortBy('h1')">1 півріччя</th>
+                        <th class="col-total h2-col" data-col="h2" onclick="sortBy('h2')">2 півріччя</th>
                         <th class="col-total total-col" data-col="total" onclick="sortBy('total')">Всього</th>
                     </tr>
                     </thead>
@@ -775,29 +729,52 @@
                 </table>
             </div>
 
-            <!-- ТАБЛИЦЯ ПОДРОБИЦЬ -->
+            <!-- ========== ЧЕРГА ВІДПУСТОК ========== -->
             <div class="details-section">
                 <div class="details-header">
-                    <span>📋 Детальна інформація про відпустки</span>
-                    <span class="count-badge" id="detailsCount">0</span>
+                    <span>📋 Черга відпусток — хто пройшов, хто наступний</span>
+                    <span class="count-badge" id="queueCount">0</span>
                 </div>
+
+                <!-- СТАТИСТИКА -->
+                <div class="queue-stats">
+                    <div class="stat-card">
+                        <div class="num" id="statTotal">—</div>
+                        <div class="lbl">Всього</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="num active" id="statActive">—</div>
+                        <div class="lbl">Триває</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="num upcoming" id="statUpcoming">—</div>
+                        <div class="lbl">Заплановано</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="num past" id="statPast">—</div>
+                        <div class="lbl">Завершено</div>
+                    </div>
+                </div>
+
                 <div class="details-table-wrap no-cards">
-                    <table class="details-table" id="detailsTable">
+                    <table class="details-table" id="queueTable">
                         <thead>
                         <tr>
-                            <th style="width:36px;" data-col="dnum" onclick="sortDetailsBy('dnum')">№</th>
-                            <th style="width:100px;" data-col="drank" onclick="sortDetailsBy('drank')">Звання</th>
-                            <th style="width:180px;" data-col="dname" onclick="sortDetailsBy('dname')">ПІБ</th>
-                            <th style="width:100px;" data-col="dstart" onclick="sortDetailsBy('dstart')">Початок</th>
-                            <th style="width:100px;" data-col="dend" onclick="sortDetailsBy('dend')">Кінець</th>
-                            <th style="width:70px;" data-col="ddays" onclick="sortDetailsBy('ddays')">Днів</th>
-                            <th style="width:160px;" data-col="dtype" onclick="sortDetailsBy('dtype')">Тип</th>
-                            <th data-col="dnote" onclick="sortDetailsBy('dnote')">Примітка</th>
+                            <th style="width:60px;"  data-col="queueNum" onclick="sortQueueBy('queueNum')">Черга</th>
+                            <th style="width:50px;"  data-col="personnelNumber" onclick="sortQueueBy('personnelNumber')">№</th>
+                            <th style="width:110px;" data-col="rank" onclick="sortQueueBy('rank')">Звання</th>
+                            <th style="width:150px;" data-col="shortName" onclick="sortQueueBy('shortName')">ПІБ</th>
+                            <th style="width:100px;" data-col="startDate" onclick="sortQueueBy('startDate')">Початок</th>
+                            <th style="width:100px;" data-col="endDate" onclick="sortQueueBy('endDate')">Кінець</th>
+                            <th style="width:60px;"  data-col="days" onclick="sortQueueBy('days')">Днів</th>
+                            <th style="width:140px;" data-col="vacationType" onclick="sortQueueBy('vacationType')">Тип</th>
+                            <th style="width:120px;" data-col="status" onclick="sortQueueBy('status')">Статус</th>
+                            <th data-col="note" onclick="sortQueueBy('note')">Примітка</th>
                             <th class="actions-cell no-print" style="width:90px;">Дії</th>
                         </tr>
                         </thead>
-                        <tbody id="detailsBody">
-                        <tr><td colspan="9" class="empty-details">Завантаження...</td></tr>
+                        <tbody id="queueBody">
+                        <tr><td colspan="11" class="empty-details">Завантаження...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -851,7 +828,7 @@
     </div>
 </div>
 
-<!-- ===== МОДАЛКА СПИСКУ ===== -->
+<!-- ===== МОДАЛКА СПИСКУ (клік по місяцю) ===== -->
 <div class="modal-overlay" id="listModal">
     <div class="modal">
         <h2 id="listTitle">Відпустки</h2>
@@ -870,22 +847,24 @@
     (function() {
         let currentYear = new Date().getFullYear();
         let tableData = [];
-        let detailsData = [];
+        let queueData = [];
         let personnelList = [];
         let currentPersonId = null;
 
+        // Сортування сітки
         let sortCol = 'num';
         let sortDir = 1;
 
-        let detailsSortCol = 'dnum';
-        let detailsSortDir = 1;
+        // Сортування черги
+        let queueSortCol = 'queueNum';
+        let queueSortDir = 1;
 
         init();
 
         async function init() {
             await loadPersonnel();
             await loadYears();
-            loadData();
+            await loadData();
             bindEvents();
         }
 
@@ -895,14 +874,16 @@
                 loadData();
             };
             document.getElementById('prevYearBtn').onclick = () => {
-                currentYear--;
-                document.getElementById('yearFilter').value = currentYear;
-                loadData();
+                const years = Array.from(document.getElementById('yearFilter').options)
+                    .map(o => parseInt(o.value)).filter(v => !isNaN(v));
+                const prev = years.filter(y => y < currentYear).sort((a,b)=>b-a)[0];
+                if (prev) { currentYear = prev; document.getElementById('yearFilter').value = prev; loadData(); }
             };
             document.getElementById('nextYearBtn').onclick = () => {
-                currentYear++;
-                document.getElementById('yearFilter').value = currentYear;
-                loadData();
+                const years = Array.from(document.getElementById('yearFilter').options)
+                    .map(o => parseInt(o.value)).filter(v => !isNaN(v));
+                const next = years.filter(y => y > currentYear).sort((a,b)=>a-b)[0];
+                if (next) { currentYear = next; document.getElementById('yearFilter').value = next; loadData(); }
             };
             document.getElementById('currentYearBtn').onclick = () => {
                 currentYear = new Date().getFullYear();
@@ -964,11 +945,10 @@
                 tableData = await res.json();
                 sortCol = 'num';
                 sortDir = 1;
-                detailsSortCol = 'dnum';
-                detailsSortDir = 1;
                 applySortAndRender();
-                buildDetailsData();
-                renderDetails();
+
+                // Завантажуємо чергу
+                await loadQueue();
 
                 const printYearEl = document.getElementById('printYear');
                 if (printYearEl) printYearEl.textContent = currentYear;
@@ -978,7 +958,7 @@
             }
         }
 
-        // ===== СОРТУВАННЯ ОСНОВНОЇ ТАБЛИЦІ =====
+        // ===== СОРТУВАННЯ СІТКИ =====
         function getSortValue(row, col) {
             if (col === 'num')  return row.personnelNumber ?? row.id ?? 0;
             if (col === 'rank') return row.rank || '';
@@ -1033,7 +1013,7 @@
             applySortAndRender();
         };
 
-        // ===== РЕНДЕРИНГ ОСНОВНОЇ ТАБЛИЦІ =====
+        // ===== РЕНДЕРИНГ СІТКИ =====
         function renderTable(data) {
             const tbody = document.getElementById('vacBody');
             if (!data || !data.length) {
@@ -1061,10 +1041,8 @@
                 const h1 = row.h1Days || 0;
                 const h2 = row.h2Days || 0;
                 const total = row.totalDays || 0;
-                const h1Text = h1 > 0 ? h1 : '—';
-                const h2Text = h2 > 0 ? h2 : '—';
-                rowHtml += `<td class="h1-cell">${h1Text}</td>`;
-                rowHtml += `<td class="h2-cell">${h2Text}</td>`;
+                rowHtml += `<td class="h1-cell">${h1 > 0 ? h1 : '—'}</td>`;
+                rowHtml += `<td class="h2-cell">${h2 > 0 ? h2 : '—'}</td>`;
                 rowHtml += `<td class="total-cell">${total}</td>`;
                 rowHtml += `</tr>`;
                 html += rowHtml;
@@ -1072,104 +1050,112 @@
             tbody.innerHTML = html;
         }
 
-        // ===== ДАНІ ПОДРОБИЦЬ =====
-        function buildDetailsData() {
-            detailsData = [];
-            (tableData || []).forEach(row => {
-                (row.vacations || []).forEach(v => {
-                    detailsData.push({
-                        id: v.id,
-                        personnelId: row.id,
-                        personnelNumber: row.personnelNumber,
-                        shortName: row.shortName,
-                        rank: row.rank,
-                        startDate: v.startDate,
-                        endDate: v.endDate,
-                        vacationType: v.vacationType,
-                        note: v.note,
-                        days: calcDays(v.startDate, v.endDate)
-                    });
-                });
-            });
+        // ============================================================
+        //  ЧЕРГА ВІДПУСТОК
+        // ============================================================
+        async function loadQueue() {
+            try {
+                const res = await fetch('/vacations/api/queue?year=' + currentYear);
+                if (!res.ok) throw new Error('Network error');
+                queueData = await res.json();
+                queueSortCol = 'queueNum';
+                queueSortDir = 1;
+                renderQueue();
+                updateQueueSortArrows();
+                renderQueueStats();
+            } catch (e) {
+                console.error(e);
+                showToast('Помилка завантаження черги', 'err');
+            }
         }
 
-        // ===== СОРТУВАННЯ ПОДРОБИЦЬ =====
-        function getDetailsSortValue(row, col) {
-            if (col === 'dnum')   return row.personnelNumber ?? row.id ?? 0;
-            if (col === 'drank')  return row.rank || '';
-            if (col === 'dname')  return row.shortName || '';
-            if (col === 'dstart') return row.startDate || '';
-            if (col === 'dend')   return row.endDate || '';
-            if (col === 'ddays')  return row.days || 0;
-            if (col === 'dtype')  return row.vacationType || '';
-            if (col === 'dnote')  return row.note || '';
+        function renderQueueStats() {
+            const total    = queueData.length;
+            const active   = queueData.filter(r => r.status === 'active').length;
+            const upcoming = queueData.filter(r => r.status === 'upcoming').length;
+            const past     = queueData.filter(r => r.status === 'past').length;
+            document.getElementById('statTotal').textContent    = total;
+            document.getElementById('statActive').textContent   = active;
+            document.getElementById('statUpcoming').textContent = upcoming;
+            document.getElementById('statPast').textContent     = past;
+            document.getElementById('queueCount').textContent   = total;
+        }
+
+        function getQueueSortValue(row, col) {
+            if (col === 'queueNum')         return row.queueNum ?? 0;
+            if (col === 'personnelNumber')  return row.personnelNumber ?? 0;
+            if (col === 'rank')             return row.rank || '';
+            if (col === 'shortName')        return row.shortName || '';
+            if (col === 'startDate')        return row.startDate || '';
+            if (col === 'endDate')          return row.endDate || '';
+            if (col === 'days')             return row.days || 0;
+            if (col === 'vacationType')     return row.vacationType || '';
+            if (col === 'status') {
+                const p = { active: 0, upcoming: 1, past: 2 };
+                return p[row.status] ?? 3;
+            }
+            if (col === 'note')             return row.note || '';
             return '';
         }
 
-        window.sortDetailsBy = function(col) {
-            if (detailsSortCol === col) {
-                detailsSortDir *= -1;
-            } else {
-                detailsSortCol = col;
-                detailsSortDir = 1;
-            }
-            renderDetails();
+        window.sortQueueBy = function(col) {
+            if (queueSortCol === col) queueSortDir *= -1;
+            else { queueSortCol = col; queueSortDir = 1; }
+            renderQueue();
+            updateQueueSortArrows();
         };
 
-        function updateDetailsSortArrows() {
-            document.querySelectorAll('#detailsTable thead th[data-col]').forEach(th => {
+        function updateQueueSortArrows() {
+            document.querySelectorAll('#queueTable thead th[data-col]').forEach(th => {
                 th.classList.remove('sort-asc', 'sort-desc');
-                if (th.dataset.col === detailsSortCol) {
-                    th.classList.add(detailsSortDir === 1 ? 'sort-asc' : 'sort-desc');
+                if (th.dataset.col === queueSortCol) {
+                    th.classList.add(queueSortDir === 1 ? 'sort-asc' : 'sort-desc');
                 }
             });
         }
 
-        // ===== РЕНДЕРИНГ ПОДРОБИЦЬ =====
-        function renderDetails() {
-            const tbody = document.getElementById('detailsBody');
-            const countEl = document.getElementById('detailsCount');
-
-            countEl.textContent = detailsData.length;
-
-            if (!detailsData.length) {
-                tbody.innerHTML = '<tr><td colspan="9" class="empty-details">📭 Відпусток за цей рік немає</td></tr>';
-                updateDetailsSortArrows();
+        function renderQueue() {
+            const tbody = document.getElementById('queueBody');
+            if (!queueData || !queueData.length) {
+                tbody.innerHTML = '<tr><td colspan="11" class="empty-details">📭 Записів відпусток за цей рік немає</td></tr>';
                 return;
             }
 
-            const sorted = [...detailsData].sort((a, b) => {
-                let va = getDetailsSortValue(a, detailsSortCol);
-                let vb = getDetailsSortValue(b, detailsSortCol);
-                if (typeof va === 'number' && typeof vb === 'number') {
-                    return (va - vb) * detailsSortDir;
-                }
+            const sorted = [...queueData].sort((a, b) => {
+                let va = getQueueSortValue(a, queueSortCol);
+                let vb = getQueueSortValue(b, queueSortCol);
+                if (typeof va === 'number' && typeof vb === 'number') return (va - vb) * queueSortDir;
                 va = String(va).toLowerCase();
                 vb = String(vb).toLowerCase();
-                if (va < vb) return -1 * detailsSortDir;
-                if (va > vb) return 1 * detailsSortDir;
+                if (va < vb) return -1 * queueSortDir;
+                if (va > vb) return 1 * queueSortDir;
                 return 0;
             });
 
-            let html = '';
-            sorted.forEach((v, idx) => {
-                html += `<tr>
-                    <td>${v.personnelNumber ?? (idx + 1)}</td>
-                    <td style="text-align:left;padding-left:8px;font-size:11px;color:var(--text-secondary);">${escapeHtml(v.rank)}</td>
+            tbody.innerHTML = sorted.map(v => `
+                <tr>
+                    <td class="queue-cell">${v.queueNum ?? '—'}</td>
+                    <td>${v.personnelNumber ?? '—'}</td>
+                    <td style="text-align:left;padding-left:8px;font-size:11px;color:var(--text-secondary);">${escapeHtml(v.rank) || '—'}</td>
                     <td class="d-name">${escapeHtml(v.shortName)}</td>
                     <td>${fmtDate(v.startDate)}</td>
                     <td>${fmtDate(v.endDate)}</td>
-                    <td><strong>${v.days}</strong></td>
+                    <td><strong>${v.days ?? 0}</strong></td>
                     <td class="d-type">${escapeHtml(v.vacationType) || '—'}</td>
+                    <td>${statusBadge(v.status)}</td>
                     <td class="d-note">${escapeHtml(v.note) || '—'}</td>
                     <td class="actions-cell no-print">
                         <button class="btn btn-warning btn-sm" onclick="editVacation(${v.id})" title="Редагувати">✏️</button>
                         <button class="btn btn-danger btn-sm" onclick="deleteVacation(${v.id})" title="Видалити">🗑</button>
                     </td>
-                </tr>`;
-            });
-            tbody.innerHTML = html;
-            updateDetailsSortArrows();
+                </tr>
+            `).join('');
+        }
+
+        function statusBadge(status) {
+            if (status === 'active')   return '<span class="status-badge status-active">Триває</span>';
+            if (status === 'upcoming') return '<span class="status-badge status-upcoming">Запланована</span>';
+            return '<span class="status-badge status-past">Завершена</span>';
         }
 
         // ===== МОДАЛКИ =====
@@ -1220,16 +1206,13 @@
             document.getElementById('fNote').value = '';
 
             if (id) {
-                for (const row of tableData) {
-                    const vac = (row.vacations || []).find(v => v.id === id);
-                    if (vac) {
-                        document.getElementById('fPersonnel').value = row.id;
-                        document.getElementById('fStartDate').value = vac.startDate;
-                        document.getElementById('fEndDate').value = vac.endDate;
-                        document.getElementById('fType').value = vac.vacationType || '';
-                        document.getElementById('fNote').value = vac.note || '';
-                        break;
-                    }
+                const v = queueData.find(x => x.id === id);
+                if (v) {
+                    document.getElementById('fPersonnel').value = v.personnelId || '';
+                    document.getElementById('fStartDate').value = v.startDate || '';
+                    document.getElementById('fEndDate').value = v.endDate || '';
+                    document.getElementById('fType').value = v.vacationType || '';
+                    document.getElementById('fNote').value = v.note || '';
                 }
             }
             document.getElementById('formModal').classList.add('open');
@@ -1308,13 +1291,6 @@
             if (!d) return '';
             const [y, m, day] = d.split('-');
             return `${day}.${m}.${y}`;
-        }
-
-        function calcDays(start, end) {
-            if (!start || !end) return 0;
-            const s = new Date(start);
-            const e = new Date(end);
-            return Math.round((e - s) / (1000 * 60 * 60 * 24)) + 1;
         }
 
         function escapeHtml(s) {
