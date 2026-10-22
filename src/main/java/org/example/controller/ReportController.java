@@ -251,7 +251,7 @@ public class ReportController {
 
         String generatedNote = "Екіпажем \"" + unitNameVal + "\" в/ч " + militaryUnitVal +
                 ", який виконує завдання ведення повітряної розвідки та ураження противника" +
-                " в смузі відповідальності ОТУ м. Одеса здійснено виліт дроном-камікадзе" +
+                " в смузі відповідальності c-ще. Балабанка та околиці здійснено виліт дроном-камікадзе" +
                 " \"" + weaponName + "\" з метою ураження ворожого ударного дрона №" + targetNum +
                 (targetTypeFull.isEmpty() ? "" : " (" + targetTypeFull + ")") + ". " +
                 effLossReason;

@@ -153,6 +153,12 @@ public class ReportService {
         String unitName = report.getUnitName() != null ? report.getUnitName() : "";
         String militaryUnit = report.getMilitaryUnit() != null ? report.getMilitaryUnit() : "";
 
+        int targetNum = safeInt(report.getTargetNumberVirazh(), 0);
+        String targetSubTypeDisplay = getTargetTypeDisplay(report);
+        sb.append("Висота цілі: ").append(targetAltitude).append(" м, ціль \"").append(targetSubTypeDisplay).append("\"");
+        if (targetNum != 0) sb.append(" №").append(targetNum).append(" (по віражу)");
+        sb.append(", швидкість цілі: ").append(manualSpeed).append(" км/год.\n\n");
+
         sb.append("Примітка: Екіпажем ").append("\"").append(unitName).append("\"")
                 .append(" в/ч ").append(militaryUnit)
                 .append(", який виконує завдання ведення повітряної розвідки та ураження противника в смузі відповідальності c-ще. Балабанка та околиці")
@@ -162,12 +168,6 @@ public class ReportService {
             sb.append(" №").append(targetNumber);
         }
         sb.append(". ").append(noteText).append("\n");
-
-        int targetNum = safeInt(report.getTargetNumberVirazh(), 0);
-        String targetSubTypeDisplay = getTargetTypeDisplay(report);
-        sb.append("Висота цілі: ").append(targetAltitude).append(" м, ціль \"").append(targetSubTypeDisplay).append("\"");
-        if (targetNum != 0) sb.append(" №").append(targetNum).append(" (по віражу)");
-        sb.append(", швидкість цілі: ").append(manualSpeed).append(" км/год.");
 
         return sb.toString();
     }
